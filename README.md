@@ -6,7 +6,8 @@ O nome é provisório — vem da ideia de puxar um fio: você entra por *A Revol
 dos Bichos* e sai em Hannah Arendt sem ter planejado.
 
 > **Estado:** no ar em <https://gabrielcavalcantep2307-creator.github.io/fio/>.
-> 645 obras no catálogo, **113 para ler inteiras**, com leitor próprio.
+> **1.509 obras** no catálogo, com capa e categoria; **113 para ler inteiras**
+> num leitor próprio; e um sistema de contas pronto, esperando servidor.
 
 **O acervo é só em português.** Traduzido ou original, mas em português — livro
 em inglês não aparece nem no catálogo. É uma decisão do dono do acervo, e ela
@@ -55,6 +56,8 @@ A investigação completa, com os números e as fontes, está em
 ## Os documentos
 
 - [`docs/ACERVO.md`](docs/ACERVO.md) — de onde vêm os livros. **Comece aqui.**
+- [`docs/CONTAS.md`](docs/CONTAS.md) — login, senha e sessão, com o motivo de
+  cada decisão. É a parte em que um erro não aparece usando.
 - [`docs/ARQUITETURA.md`](docs/ARQUITETURA.md) — as cinco decisões técnicas e
   por quê.
 - [`servidor/esquema.sql`](servidor/esquema.sql) — o domínio. Está comentado
@@ -69,10 +72,16 @@ Precisa só de Node 22+. **Nenhuma dependência** — o SQLite vem no Node
 (`node:sqlite`), com FTS5 e remoção de acento.
 
 ```bash
-node ingestao/gutenberg.mjs    # o catálogo (baixa 21 MB do Gutenberg na 1ª vez)
-node ingestao/normalizar.mjs   # baixa o texto integral e parte em capítulos
-node ingestao/publicar.mjs     # exporta o site estático para web/public/dados
-node ingestao/conferir.mjs     # a prova executável do que o ACERVO.md afirma
+npm run acervo      # o catálogo do Gutenberg (baixa 21 MB na 1ª vez)
+npm run temas       # classifica em 31 prateleiras
+npm run capas       # baixa as capas, e descarta as que o Gutenberg inventa
+npm run autores     # os autores que faltavam, pela Open Library
+npm run curadoria   # a camada editorial escrita à mão
+npm run textos      # o texto integral, partido em capítulos
+npm run publicar    # exporta o site estático
+
+npm test            # os 16 testes do login
+npm run contas      # o servidor de contas, na porta 8787
 
 npm --prefix web install && npm --prefix web run dev
 ```

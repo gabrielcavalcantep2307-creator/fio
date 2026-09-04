@@ -14,10 +14,26 @@ o arquivo dela.
 - [x] Cálculo de direito por jurisdição, com a armadilha da tradução
 - [x] Ingestão do Gutenberg — 659 obras, 528 legíveis no Brasil
 - [x] Busca textual em português (FTS5, acha "revolucao" em "Revolução")
+- [x] Normalizador de EPUB → capítulos de HTML no banco
+- [x] O leitor: página de verdade, três temas, modo foco, marcação em 4 cores
+- [x] 31 categorias, tiradas das colunas que a 1ª ingestão jogava fora
+- [x] Capas — e o descarte das que o Gutenberg inventa quando não tem a real
+- [x] 864 obras dos autores que faltavam, pela Open Library (trilho B)
+- [x] A camada editorial escrita à mão, em 10 obras — o padrão de qualidade
+- [x] Contas: criar com convite, entrar, recuperar senha, 16 testes
 
 ---
 
-## Fase 1 — Uma obra completa, de ponta a ponta
+## Fase 1 — o que falta para o acervo parar de ser raso
+
+- [ ] **Legislação brasileira**: CF/88, códigos, súmulas, acórdãos. São livres
+      por lei (art. 8º da 9.610/98), e é o núcleo do Direito da lista
+- [ ] **Domínio Público (MEC)**: ~174 mil textos em português
+- [ ] Texto integral para mais 200 obras já catalogadas
+- [ ] Subir o servidor de contas numa VPS e apontar `VITE_API`
+- [ ] Entrar com o Google (a coluna já existe; falta a rota)
+
+## Fase 1b — Uma obra completa, de ponta a ponta
 
 **O objetivo não é ter muitos livros. É ter UM livro perfeito**, para provar
 que a proposta se sustenta antes de escalar.
