@@ -1,7 +1,14 @@
 # A VPS, e como publicar
 
-O Fio está no ar em **<https://fio.142-93-57-2.sslip.io>**, na mesma máquina
-do Wallt (`142.93.57.2`, 2 GB de RAM, 48 GB de disco).
+O Fio está no ar em **<https://fiolib.duckdns.org>** — e também em
+`fio.142-93-57-2.sslip.io`, que continua valendo — na mesma máquina do Wallt
+(`142.93.57.2`, 2 GB de RAM, 48 GB de disco).
+
+> **`fiolib.duckdns.org` só responde depois que o DuckDNS apontar para a
+> VPS.** Hoje ele resolve para outro IP: ao criar o domínio, o DuckDNS grava o
+> IP de quem criou. A correção é um clique — pôr `142.93.57.2` no campo e
+> apertar **"atualizar ip"** no painel do DuckDNS. O Caddy já aceita o nome e
+> pede o certificado sozinho no primeiro acesso depois disso.
 
 ```bash
 bash infra/publicar.sh              # o caso de todo dia: só o site
@@ -42,7 +49,8 @@ existe.
        │        │
        │        └──► waltt.duckdns.org      → /srv/site  (Wallt)
        │
-       └──► fio.142-93-57-2.sslip.io        → 127.0.0.1:8787
+       └──► fiolib.duckdns.org              → 127.0.0.1:8787
+            fio.142-93-57-2.sslip.io  ┘
                                                     │
                                           ┌─────────▼──────────┐
                                           │ container `fio`    │
@@ -54,9 +62,11 @@ existe.
                                   o site construído   catalogo.db
 ```
 
-**Por que sslip.io.** `fio.142-93-57-2.sslip.io` devolve `142.93.57.2` sem
-cadastrar DNS em lugar nenhum — o próprio nome carrega o IP. Trocar por um
-domínio de verdade é mexer numa linha do `Caddyfile` e recarregar.
+**Dois nomes, e o de trás não é sobra.** `fio.142-93-57-2.sslip.io` devolve
+`142.93.57.2` sem cadastrar DNS em lugar nenhum — o próprio nome carrega o IP.
+Ele fica de pé como rede de segurança: no dia em que o DuckDNS estiver fora do
+ar ou o domínio expirar, o site continua alcançável por um nome que não
+depende de ninguém.
 
 **Por que a porta é só `127.0.0.1:8787`.** Publicar em `0.0.0.0` seria deixar
 o servidor **sem TLS** exposto ao lado do que tem TLS, e alguém acharia. Quem
@@ -85,6 +95,37 @@ numa chamada do Wallt sentiu nada. A cópia anterior ficou em
 Antes de aplicar, `caddy validate` conferiu a sintaxe. Um Caddyfile inválido
 recarregado derruba **os dois sites** — validar não é zelo, é o que separa uma
 mudança de um incidente.
+
+> ### A armadilha que custou meia hora: bind mount de ARQUIVO segue o inode
+>
+> O Caddy monta `./Caddyfile` como **arquivo**, não como pasta. O Docker
+> resolve isso pelo inode — e `sed -i`, `mv` e quase todo editor **não editam
+> o arquivo: escrevem outro e trocam o nome**. O inode muda, o vínculo com o
+> container quebra, e o container continua vendo o conteúdo antigo.
+>
+> O pior é o silêncio: no host o arquivo está certo, `caddy validate` diz
+> "Valid configuration" (porque valida o que o container tem), o `reload`
+> responde "adapted config to JSON", e **nada muda**. Duas mudanças minhas
+> sumiram assim antes de eu conferir por dentro:
+>
+> ```bash
+> docker exec picord-caddy-1 grep -c fiolib /etc/caddy/Caddyfile   # → 0
+> ```
+>
+> Para editar sem quebrar, escreva **por dentro do arquivo**:
+>
+> ```bash
+> cat novo > /opt/picord/Caddyfile     # trunca o mesmo inode: o vínculo sobrevive
+> cat trecho >> /opt/picord/Caddyfile  # idem
+> mv novo /opt/picord/Caddyfile        # QUEBRA
+> sed -i 's/a/b/' /opt/picord/Caddyfile # QUEBRA
+> ```
+>
+> Depois de quebrado, só recriar o container conserta:
+> `docker compose up -d --force-recreate caddy` — dois segundos, e o LiveKit
+> não é tocado, então quem está numa chamada não sente.
+>
+> **Confira sempre por dentro do container**, e não no host.
 
 ---
 

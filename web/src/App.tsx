@@ -4,6 +4,7 @@ import * as dados from './lib/dados'
 import * as conta from './lib/conta'
 import { aplicarSincronia, paraSincronia, preferir, useEstante } from './lib/estante'
 import { Busca, useAtalhoDeBusca } from './componentes/Busca'
+import { Logotipo } from './componentes/Marca'
 import { Inicio } from './telas/Inicio'
 import { Estante } from './telas/Estante'
 import { Obra } from './telas/Obra'
@@ -120,9 +121,7 @@ function Cabecalho({ rota, abrirBusca }: { rota: string; abrirBusca: () => void 
     <header className="sticky top-0 z-20 backdrop-blur"
       style={{ borderBottom: '1px solid var(--linha)', background: 'color-mix(in srgb, var(--papel) 88%, transparent)' }}>
       <div className="max-w-6xl mx-auto px-4 sm:px-8 h-14 flex items-center gap-5">
-        <a href="#/" className="font-medium tracking-tight text-lg shrink-0" style={{ fontFamily: 'Literata, serif' }}>
-          Fio
-        </a>
+        <Logotipo />
         <nav className="flex gap-4 sm:gap-5 ml-auto items-center">
           <button onClick={abrirBusca} className="miudo hover:opacity-70 flex items-center gap-1.5"
             title="Buscar ( / )">

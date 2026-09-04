@@ -261,3 +261,21 @@ test('relogio do futuro nao vence para sempre', () => {
   assert.ok(gravado.mudou_em < Date.now() + 120000,
     'um relogio adiantado grudaria o registro para sempre; tem que ser aparado')
 })
+
+test('o convite aceita como a pessoa digita, nao como o sistema imprime', async () => {
+  zerarFreio()
+  const codigo = novoConvite()                     // FIO-7K2M-9QXB
+  const bagunca = ` ${codigo.toLowerCase().replaceAll('-', ' ')}  `
+  const { pessoa } = await contas.criar(banco,
+    { nome: 'Dora', email: 'dora@exemplo.com', senha: BOA, convite: bagunca })
+  assert.equal(pessoa.nome, 'Dora')
+})
+
+test('convite errado por um caractere continua sendo errado', async () => {
+  zerarFreio()
+  const codigo = novoConvite()
+  await assert.rejects(
+    contas.criar(banco, { nome: 'Eva', email: 'eva@exemplo.com', senha: BOA, convite: codigo + 'D' }),
+    /Convite inválido/,
+  )
+})

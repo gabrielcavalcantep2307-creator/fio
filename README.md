@@ -5,10 +5,11 @@ Uma biblioteca que não guarda livros: **liga um livro ao próximo.**
 O nome é provisório — vem da ideia de puxar um fio: você entra por *A Revolução
 dos Bichos* e sai em Hannah Arendt sem ter planejado.
 
-> **No ar em <https://fio.142-93-57-2.sslip.io>**, na mesma VPS do Wallt.
-> **1.509 obras** com capa e categoria, **113 para ler inteiras** num leitor
-> próprio, e contas funcionando — criar (com convite), entrar, recuperar
-> senha, e o que você marca aparece no outro aparelho.
+> **No ar em <https://fiolib.duckdns.org>**, na mesma VPS do Wallt.
+> **1.537 obras** com capa e categoria, **123 para ler inteiras** num leitor
+> próprio — inclusive a Constituição e nove códigos, que são livres por lei.
+> Contas funcionando: criar (com convite), entrar, recuperar senha, e o que
+> você marca aparece no outro aparelho.
 
 **O acervo é só em português.** Traduzido ou original, mas em português — livro
 em inglês não aparece nem no catálogo. É uma decisão do dono do acervo, e ela

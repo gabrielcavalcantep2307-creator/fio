@@ -78,9 +78,17 @@ export type Autor = {
   obras: number
 }
 
+/** Prateleira com curadoria — escolha de gente, não filtro de metadado. */
+export type Colecao = {
+  nome: string
+  resumo: string | null
+  obras: number[]
+}
+
 export type Catalogo = {
   geradoEm: string
   obras: ObraResumo[]
   temas: Tema[]
   autores: Autor[]
+  colecoes: Colecao[]
 }

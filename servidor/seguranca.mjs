@@ -75,6 +75,23 @@ export function sortearConvite() {
   return `FIO-${bloco()}-${bloco()}`
 }
 
+/**
+ * A forma canônica de um convite, para comparar.
+ *
+ * O código é dito no telefone, colado de um WhatsApp, digitado com o dedo no
+ * celular. Ele chega com espaço no meio, sem os hífens, em minúscula, com o
+ * `FIO-` esquecido, com um espaço no fim que o teclado do celular põe sozinho.
+ * Nada disso é um código diferente — e recusar por causa disso é o sistema
+ * culpando a pessoa por um problema dele.
+ *
+ * Some tudo que não é letra ou número, sobe para maiúscula, e tira o `FIO`
+ * da frente. Sobram oito caracteres, que é o convite de verdade.
+ */
+export function normalizarConvite(bruto) {
+  const cru = String(bruto ?? '').toUpperCase().replace(/[^A-Z0-9]/g, '')
+  return cru.startsWith('FIO') ? cru.slice(3) : cru
+}
+
 // ── freio ────────────────────────────────────────────────────
 
 /**

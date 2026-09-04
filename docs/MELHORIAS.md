@@ -29,22 +29,28 @@ vez (a conta está em [`ARQUITETURA.md`](ARQUITETURA.md), decisão 3). Revisar
 
 ---
 
-## 2. Legislação brasileira: o único jeito de ter Direito legível
+## 2. Legislação brasileira ✔ FEITA
 
-**O problema.** Direito é o maior tema do acervo (247 obras) e **nenhuma dá
-para ler aqui** — são todas manuais comerciais, no trilho B. É a categoria que
-mais interessa ao dono da biblioteca, e a mais vazia.
+**O problema era.** Direito era o maior tema do acervo (247 obras) e **nenhuma
+dava para ler** — todas manuais comerciais, no trilho B. A categoria que mais
+interessa ao dono da biblioteca era a mais vazia.
 
-**A saída.** A Lei 9.610/98, art. 8º, diz que **texto de lei e decisão
-judicial não são obra protegida**. Constituição, códigos, súmulas e acórdãos
-são livres por definição — não há cinza jurídico nenhum.
+**Feito.** `ingestao/legislacao.mjs` traz dez textos do Planalto: CF/88,
+Código Civil, Penal, de Processo Penal, de Processo Civil, CLT, CDC, Lei de
+Direitos Autorais, Maria da Penha e LGPD. **1.444 artigos, 584 mil palavras**,
+todos legíveis. O corte é por **artigo**, que é como se lê e como se cita.
 
-**O que falta.** Um ingestor do Planalto e do LexML. O formato é estável, e a
-estrutura de artigo/parágrafo/inciso cai bem no modelo de capítulo que já
-existe: cada artigo vira uma unidade, e o anti-spoiler não se aplica.
+Duas pedras no caminho, registradas: o Planalto **fecha a conexão** na cara de
+quem não parece navegador, e serve alguns arquivos em **UTF-16LE** sem avisar
+— lido como UTF-8 não dá erro, dá lixo, e o script conclui que "a lei só tem
+um pedaço".
 
-**Custo.** Dois dias. É a maior mudança de acervo por hora de trabalho que
-existe hoje — de 0 para "a CF/88 inteira, lida no leitor".
+**Por que foi possível.** A Lei 9.610/98, art. 8º, IV, diz que texto de lei e
+decisão judicial **não são objeto de proteção**. Sem zona cinzenta, sem prazo
+a esperar, sem tradutor com direito próprio.
+
+**O que ainda falta:** súmulas e jurisprudência (melhoria 15), e o histórico
+de versões de cada artigo (melhoria 14).
 
 ---
 
@@ -66,9 +72,17 @@ personagem com o capítulo de estreia marcado.
 
 ---
 
-## 4. Trilhas de leitura
+## 4. Trilhas de leitura ◐ METADE FEITA
 
-**O problema.** "Você terminou. E agora?" não tem resposta. A página da obra
+**Feito.** Quatro coleções com curadoria — *Todo mundo está lendo*, *Poder e
+sociedade*, *Distopias que continuam atuais*, *Para começar a pensar* — nas
+tabelas `trilha`/`trilha_item`, e aparecendo na home antes das prateleiras de
+tema. Escolha de gente na frente de filtro de metadado.
+
+**Falta.** A sequência: "você está no 3 de 7, e o próximo vem depois deste
+porque…". Ver melhoria 16.
+
+**O problema original.** "Você terminou. E agora?" não tem resposta. A página da obra
 mostra "do mesmo autor" e "quem lê este, lê" — sugestão por proximidade, não
 por caminho.
 
@@ -187,3 +201,98 @@ de dono.
 
 Backup fora (8) e o aviso de queda (9) são horas soltas: dá para encaixar
 entre as outras, e é o tipo de coisa que só se lamenta não ter feito depois.
+
+---
+---
+
+# Mais dez, depois destas
+
+As dez de cima eram sobre **o que falta construir**. Estas são sobre o que
+aparece quando o que já existe começa a ser usado de verdade.
+
+## 11. Progresso na capa
+
+A prateleira "Você parou aqui" mostra a capa e mais nada. Um anel de progresso
+por cima dela — ou uma barra fina no pé — responde "quanto falta" sem clicar,
+e é a informação que decide se você abre aquele livro hoje.
+**Custo:** duas horas. O dado já está no `progresso`.
+
+## 12. Ler dois livros ao mesmo tempo, sem perder nenhum
+
+Hoje o progresso é por obra e funciona, mas a interface trata leitura como uma
+coisa só. Quem lê três de uma vez — e todo leitor pesado lê — precisa de uma
+tela que diga onde parou em cada um, e há quanto tempo não toca no terceiro.
+**Custo:** meio dia.
+
+## 13. Citação que se copia com a fonte junto
+
+Marcar um trecho é fácil; usar depois é que não. Copiar deveria sair já
+formatado: *"trecho" — Machado de Assis, Dom Casmurro, cap. XLVI*. Para quem
+estuda Direito, com o artigo e a lei. Isso transforma o caderno de lembrança
+em ferramenta de trabalho.
+**Custo:** duas horas, e muda o uso.
+
+## 14. Comparar duas versões de um artigo de lei
+
+O Planalto serve o texto **compilado** — com as alterações já aplicadas. O que
+o texto dizia antes da reforma some. Para Direito isso importa: metade da
+discussão é sobre o que mudou e quando.
+**O que falta:** guardar as versões e mostrar lado a lado. O LexML tem o
+histórico.
+**Custo:** três dias, e é a coisa que nenhum site de lei brasileiro faz bem.
+
+## 15. Súmulas e jurisprudência
+
+Leis são a base; súmulas do STF e do STJ são o que se cita no dia a dia. São
+curtas, numeradas, e **livres pelo mesmo art. 8º**. Cada uma vira uma unidade
+de leitura, e a busca textual que já existe passa a responder "o que o STJ diz
+sobre isso".
+**Custo:** dois dias.
+
+## 16. A trilha visível dentro do livro
+
+As trilhas existem no banco e aparecem como prateleira. Falta o fim: ao
+terminar um livro, a tela devia dizer *"você está no 3 de 7 — o próximo é
+este, e vem depois deste porque…"*. É o "Fio" do nome fechando o ciclo.
+**Custo:** um dia, depois da melhoria 4.
+
+## 17. Exportar o caderno como documento
+
+O caderno baixa JSON, que serve para backup e para mais nada. Sair em Markdown
+ou `.docx` — agrupado por livro, com as citações formatadas — é o que faz um
+semestre de leitura virar material de estudo.
+**Custo:** meio dia.
+
+## 18. Uma página por tema, escrita
+
+`/tema/Direito` hoje é uma grade filtrada. Podia abrir com dois parágrafos:
+por onde começar, o que vem depois, e por que estas obras e não outras. Trinta
+e duas páginas dessas são trinta e duas portas de entrada — e é o tipo de
+texto que um buscador encontra.
+**Custo:** um dia de código, e curadoria contínua.
+
+## 19. Medir o que ninguém acha
+
+Uma busca que não devolve nada é a informação mais valiosa que o site produz:
+é uma pessoa dizendo o que ela esperava encontrar. Guardar os termos sem
+resultado — **sem guardar quem buscou** — dá a fila de aquisição do acervo,
+escrita pelos próprios leitores.
+**Custo:** três horas, e precisa ser feito com cuidado de privacidade: termo e
+data, nada mais.
+
+## 20. Leitura em voz alta
+
+O navegador tem síntese de voz embutida (`speechSynthesis`), de graça e sem
+dependência. Para quem tem dificuldade de leitura, para quem quer ouvir no
+trânsito, e para acessibilidade de verdade — não a de rótulo.
+**Custo:** um dia. O texto já está partido em capítulos, que é o formato de
+que a fala precisa.
+
+---
+
+## Onde encaixar
+
+11, 13 e 17 são horas soltas que mudam o uso diário — cabem em qualquer
+semana. 14 e 15 são o que faria deste o melhor lugar em português para ler
+Direito, e nenhum outro site faz. 19 é a que se paga sozinha: depois de um
+mês, ela diz o que construir em seguida melhor do que qualquer lista.

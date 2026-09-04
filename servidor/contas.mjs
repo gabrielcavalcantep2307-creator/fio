@@ -5,7 +5,7 @@
 
 import {
   guardarSenha, conferirSenha, gastarTempoAtoa, sortearToken, resumo,
-  sortearConvite, freio, perdoar, conferirEmail, conferirSenha_, dicaDeIp,
+  sortearConvite, normalizarConvite, freio, perdoar, conferirEmail, conferirSenha_, dicaDeIp,
 } from './seguranca.mjs'
 
 const DIAS_DE_SESSAO = 30
@@ -37,7 +37,7 @@ export async function criar(banco, { nome, email, senha, convite }, ctx = {}) {
   const conv = banco.prepare(
     `SELECT id FROM convite
       WHERE codigo_hash = ? AND usado_em IS NULL AND expira_em > datetime('now')`,
-  ).get(resumo(String(convite ?? '').trim().toUpperCase()))
+  ).get(resumo(normalizarConvite(convite)))
   if (!conv) throw new Recusa('Convite inválido, já usado ou vencido.')
 
   if (banco.prepare('SELECT 1 FROM leitor WHERE email = ?').get(limpo)) {
@@ -296,7 +296,7 @@ export function criarConvite(banco, { criadoPor = null, nota = null } = {}) {
   banco.prepare(
     `INSERT INTO convite (codigo_hash, criado_por, expira_em, nota)
      VALUES (?,?, datetime('now', ?), ?)`,
-  ).run(resumo(codigo), criadoPor, `+${DIAS_DE_CONVITE} days`, nota)
+  ).run(resumo(normalizarConvite(codigo)), criadoPor, `+${DIAS_DE_CONVITE} days`, nota)
   // é a única vez que o código existe em claro
   return { codigo, dias: DIAS_DE_CONVITE }
 }

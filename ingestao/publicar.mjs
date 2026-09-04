@@ -154,6 +154,21 @@ const autores = banco.prepare(`
    GROUP BY p.id HAVING obras >= 1
    ORDER BY obras DESC`).all()
 
+// ── coleções: prateleiras com curadoria, não com filtro ──
+//
+// A diferença importa. "Romance" é um filtro: sai do metadado. "Todo mundo
+// está lendo" é uma escolha de gente, e é o que uma biblioteca faz que uma
+// planilha não faz.
+const colecoes = banco.prepare(`
+  SELECT t.id, t.nome, t.resumo FROM trilha t WHERE t.publicada = 1 ORDER BY t.id`).all()
+const itensDe = banco.prepare(
+  'SELECT obra_id, porque FROM trilha_item WHERE trilha_id = ? ORDER BY ordem')
+const publicadas = new Set(resumo.map(o => o.id))
+for (const c of colecoes) {
+  c.obras = itensDe.all(c.id).map(i => i.obra_id).filter(id => publicadas.has(id))
+  delete c.id
+}
+
 // o trilho A no catálogo é o calculado aqui, não o gravado na obra
 const legiveis = resumo.filter(o => o.trilho === 'A').length
 for (const t of temas) {
@@ -162,7 +177,7 @@ for (const t of temas) {
 
 writeFileSync(join(SAIDA, 'catalogo.json'), JSON.stringify({
   geradoEm: new Date().toISOString().slice(0, 10),
-  obras: resumo, temas, autores,
+  obras: resumo, temas, autores, colecoes: colecoes.filter(c => c.obras.length >= 3),
 }))
 
 const capas = existsSync(join(RAIZ, 'web', 'public', 'capas'))
@@ -172,6 +187,7 @@ console.log(`só ficha ...... ${resumo.length - legiveis}`)
 console.log(`com capa ...... ${resumo.filter(o => o.capa || o.capaOL).length}`)
 console.log(`com chamada ... ${resumo.filter(o => o.chamada).length}`)
 console.log(`prateleiras ... ${temas.length}`)
+console.log(`coleções ...... ${colecoes.length}`)
 console.log(`autores ....... ${autores.length}`)
 console.log(`capas locais .. ${capas ? 'sim' : 'não (rode ingestao/capas.mjs)'}`)
 fechar()

@@ -89,6 +89,16 @@ export function Inicio({ catalogo }: { catalogo: Catalogo }) {
         verMais="#/estante"
       />
 
+      {/* Coleções vêm ANTES dos temas: escolha de gente na frente de filtro
+          de metadado. É a diferença entre uma biblioteca e uma planilha. */}
+      {catalogo.colecoes.map(c => {
+        const obras = c.obras.map(id => porId.get(id)).filter((o): o is ObraResumo => !!o)
+        if (obras.length < 3) return null
+        return (
+          <Prateleira key={c.nome} titulo={c.nome} subtitulo={c.resumo ?? undefined} obras={obras} />
+        )
+      })}
+
       {doMachado.length > 0 && (
         <Prateleira
           titulo="Machado de Assis, inteiro"

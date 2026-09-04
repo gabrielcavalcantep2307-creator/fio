@@ -1,0 +1,13 @@
+{
+  "name": "Fio — biblioteca",
+  "short_name": "Fio",
+  "description": "Uma biblioteca em português que liga um livro ao próximo.",
+  "lang": "pt-BR",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fbf9f5",
+  "theme_color": "#7a2e2e",
+  "icons": [
+    { "src": "/fio.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

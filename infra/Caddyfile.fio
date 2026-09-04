@@ -21,10 +21,15 @@ fio.142-93-57-2.sslip.io {
 		# `img-src`: se um dia o site tentar buscar imagem de outro lugar,
 		# quebra na cara em vez de passar batido.
 		#
+		# `archive.org` está aqui porque `covers.openlibrary.org` REDIRECIONA
+		# para lá — e a política vale para o endereço FINAL, não para o que a
+		# página pediu. Sem esta linha, metade das capas some sem erro visível
+		# na tela, só no console.
+		#
 		# `style-src` precisa de 'unsafe-inline' porque os temas são
 		# aplicados por variável em atributo `style`. É uma folga conhecida,
 		# e ela não permite executar código.
-		Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://covers.openlibrary.org; font-src 'self'; connect-src 'self'; form-action 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'"
+		Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://covers.openlibrary.org https://archive.org https://*.archive.org; font-src 'self'; connect-src 'self'; form-action 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'"
 		Strict-Transport-Security "max-age=63072000; includeSubDomains"
 		Referrer-Policy "no-referrer"
 		X-Content-Type-Options "nosniff"
