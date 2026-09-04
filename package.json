@@ -1,0 +1,10 @@
+{
+  "name": "fio",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "acervo": "node ingestao/gutenberg.mjs",
+    "conferir": "node ingestao/conferir.mjs"
+  }
+}
