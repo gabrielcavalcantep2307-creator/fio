@@ -205,6 +205,40 @@ encontrar em português" com as seis edições. É honesto, e é útil.
 
 ---
 
+## A regra do idioma, e o que ela custa
+
+**O site é só em português.** Traduzido ou original, tanto faz — mas em
+português. Livro em inglês não aparece nem no catálogo.
+
+Isso é decisão do dono do acervo, e ela vale antes de qualquer outra. O custo
+é conhecido e está medido acima: o cânone de filosofia política sai do site
+inteiro, porque só existe livre em inglês. O ganho é um acervo que não mente
+sobre o que entrega.
+
+Consequência prática: **o crescimento do acervo depende de fontes brasileiras
+e portuguesas**, não do Gutenberg. O Gutenberg deu 645 obras e acabou.
+
+## Como crescer o acervo em português, na ordem certa
+
+Por rendimento, do maior para o menor. Nenhuma destas exige contornar direito
+autoral de ninguém:
+
+| Fonte | Tamanho | O que é | Dificuldade |
+|---|---|---|---|
+| **Legislação e jurisprudência** | ilimitado | Constituição, códigos, súmulas, acórdãos. **A Lei 9.610/98, art. 8º, diz que texto de lei e decisão judicial não são obra protegida.** É acervo livre por definição, e é o núcleo do Direito | baixa — Planalto e LexML têm formato estável |
+| **Domínio Público (MEC)** | ~174 mil textos | O maior acervo livre em português que existe | média — sem API, formulário JSP, bloqueia robô; exige paciência e educação |
+| **Internet Archive** | 15.352 textos em pt sem empréstimo | livros escaneados e digitalizados | média — API boa, metadado sujo, muito PDF de imagem |
+| **Biblioteca Brasiliana (USP)** | milhares | obras raras brasileiras digitalizadas | média — IIIF |
+| **Biblioteca Nacional Digital** | milhares | periódicos e livros | média |
+| **Obras que caem em domínio público a cada 1º de janeiro** | cresce sozinho | quem morreu há 71 anos | baixa — é uma consulta ao Wikidata por ano de morte |
+
+A última linha é a que responde ao pedido de "o acervo mais recente possível":
+**todo 1º de janeiro um lote novo de autores entra em domínio público no
+Brasil.** O sistema já tem o cálculo (`direitoBR`), e já guarda `livre_em` em
+cada texto — então a fila do que entra no ano que vem é uma consulta, não uma
+pesquisa. Isso vira uma rotina anual, e o acervo cresce sem ninguém decidir
+nada.
+
 ## O que não vamos fazer
 
 Não por ser difícil, mas por quebrar o produto:
