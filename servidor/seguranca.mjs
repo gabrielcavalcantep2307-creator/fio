@@ -90,6 +90,9 @@ export const LIMITES = {
   'entrar': { quantas: 8, minutos: 15 },
   'criar': { quantas: 5, minutos: 60 },
   'esqueci': { quantas: 4, minutos: 60 },
+  // A sincronia roda a cada dois minutos por aparelho. 40 numa hora dá folga
+  // para três ou quatro aparelhos e ainda assim tranca uma torneira.
+  'guardar': { quantas: 40, minutos: 60 },
 }
 
 export function freio(banco, acao, chave) {

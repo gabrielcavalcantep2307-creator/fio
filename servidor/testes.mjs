@@ -190,3 +190,74 @@ test('conta desativada não entra', async () => {
   await assert.rejects(contas.entrar(banco, { email: 'gabriel@exemplo.com', senha: 'bentinho e o seminario' }))
   banco.prepare('UPDATE leitor SET desativado = 0 WHERE email = ?').run('gabriel@exemplo.com')
 })
+
+// ── o que a auditoria de segurança encontrou, e que agora tem teste ────
+
+test('apagar os dados apaga no servidor — senão a sincronia ressuscita', async () => {
+  zerarFreio()
+  const { pessoa } = await contas.criar(banco,
+    { nome: 'Ana', email: 'ana@exemplo.com', senha: BOA, convite: novoConvite() })
+
+  contas.guardar(banco, pessoa.id, {
+    itens: [{ tipo: 'progresso', chave: '1', valor: { capitulo: 3 }, mudouEm: Date.now() }],
+  })
+  assert.equal(contas.lerGuardado(banco, pessoa.id).itens.length, 1)
+
+  contas.apagarGuardado(banco, pessoa.id)
+  assert.equal(contas.lerGuardado(banco, pessoa.id).itens.length, 0,
+    'depois de apagar, o servidor nao pode devolver nada')
+})
+
+test('apagar a conta apaga sessao e dados junto', async () => {
+  zerarFreio()
+  const { pessoa, sessao } = await contas.criar(banco,
+    { nome: 'Bia', email: 'bia@exemplo.com', senha: BOA, convite: novoConvite() })
+  contas.guardar(banco, pessoa.id, {
+    itens: [{ tipo: 'marcacao', chave: 'x', valor: { trecho: 'oi' }, mudouEm: Date.now() }],
+  })
+
+  contas.apagarConta(banco, pessoa.id)
+
+  assert.equal(contas.deQuemE(banco, sessao.token), null, 'a sessao tem que morrer')
+  assert.equal(banco.prepare('SELECT COUNT(*) n FROM guardado WHERE leitor_id = ?').get(pessoa.id).n, 0)
+  assert.equal(banco.prepare('SELECT COUNT(*) n FROM leitor WHERE id = ?').get(pessoa.id).n, 0)
+  zerarFreio()
+  await assert.rejects(contas.entrar(banco, { email: 'bia@exemplo.com', senha: BOA }))
+})
+
+test('as sessoes tem teto — nao crescem para sempre', async () => {
+  zerarFreio()
+  const { pessoa } = await contas.criar(banco,
+    { nome: 'Caio', email: 'caio@exemplo.com', senha: BOA, convite: novoConvite() })
+  for (let i = 0; i < 20; i++) contas.abrirSessao(banco, pessoa.id, {})
+  const { n } = banco.prepare('SELECT COUNT(*) n FROM sessao WHERE leitor_id = ?').get(pessoa.id)
+  assert.ok(n <= 12, `sobraram ${n} sessoes, e o teto e 12`)
+})
+
+test('a sincronia nao aceita lixo', () => {
+  zerarFreio()
+  const l = banco.prepare("SELECT id FROM leitor WHERE email = 'ana@exemplo.com'").get()
+
+  contas.guardar(banco, l.id, {
+    itens: [
+      { tipo: 'invadir', chave: 'x', valor: 1, mudouEm: Date.now() },
+      { tipo: 'progresso', chave: 'y'.repeat(500), valor: 1, mudouEm: Date.now() },
+      { tipo: 'progresso', chave: 'z', valor: 1, mudouEm: -5 },
+    ],
+  })
+  assert.equal(contas.lerGuardado(banco, l.id).itens.length, 0)
+  assert.throws(() => contas.guardar(banco, l.id, { itens: 'nao e lista' }), /Formato/)
+})
+
+test('relogio do futuro nao vence para sempre', () => {
+  zerarFreio()
+  const l = banco.prepare("SELECT id FROM leitor WHERE email = 'ana@exemplo.com'").get()
+  const daquiA100Anos = Date.now() + 100 * 365 * 24 * 3600 * 1000
+  contas.guardar(banco, l.id, {
+    itens: [{ tipo: 'progresso', chave: '9', valor: { capitulo: 1 }, mudouEm: daquiA100Anos }],
+  })
+  const gravado = banco.prepare(
+    "SELECT mudou_em FROM guardado WHERE leitor_id = ? AND chave = '9'").get(l.id)
+  assert.ok(gravado.mudou_em < Date.now() + 120000,
+    'um relogio adiantado grudaria o registro para sempre; tem que ser aparado')
+})

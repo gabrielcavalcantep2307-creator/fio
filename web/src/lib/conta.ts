@@ -74,6 +74,16 @@ export type Item = { tipo: string; chave: string; valor: unknown; mudouEm: numbe
 export const baixarGuardado = () => chamar<{ itens: Item[] }>('/meus-dados', undefined, 'GET')
 export const subirGuardado = (itens: Item[]) => chamar<{ itens: Item[] }>('/meus-dados', { itens })
 
+/** Apaga no SERVIDOR. Sem isto, apagar no navegador é mentira: a sincronia
+ *  roda dois minutos depois e traz tudo de volta. */
+export const apagarDados = () => chamar<{ apagados: number }>('/apagar-dados', {})
+
+export async function apagarConta(email: string) {
+  await chamar('/apagar-conta', { email })
+  quem = null
+  avisar()
+}
+
 export async function entrar(email: string, senha: string) {
   quem = (await chamar<{ pessoa: Pessoa }>('/entrar', { email, senha })).pessoa
   avisar()

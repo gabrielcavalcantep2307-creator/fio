@@ -5,9 +5,10 @@ Uma biblioteca que não guarda livros: **liga um livro ao próximo.**
 O nome é provisório — vem da ideia de puxar um fio: você entra por *A Revolução
 dos Bichos* e sai em Hannah Arendt sem ter planejado.
 
-> **Estado:** no ar em <https://gabrielcavalcantep2307-creator.github.io/fio/>.
-> **1.509 obras** no catálogo, com capa e categoria; **113 para ler inteiras**
-> num leitor próprio; e um sistema de contas pronto, esperando servidor.
+> **No ar em <https://fio.142-93-57-2.sslip.io>**, na mesma VPS do Wallt.
+> **1.509 obras** com capa e categoria, **113 para ler inteiras** num leitor
+> próprio, e contas funcionando — criar (com convite), entrar, recuperar
+> senha, e o que você marca aparece no outro aparelho.
 
 **O acervo é só em português.** Traduzido ou original, mas em português — livro
 em inglês não aparece nem no catálogo. É uma decisão do dono do acervo, e ela
@@ -58,6 +59,11 @@ A investigação completa, com os números e as fontes, está em
 - [`docs/ACERVO.md`](docs/ACERVO.md) — de onde vêm os livros. **Comece aqui.**
 - [`docs/CONTAS.md`](docs/CONTAS.md) — login, senha e sessão, com o motivo de
   cada decisão. É a parte em que um erro não aparece usando.
+- [`docs/VPS.md`](docs/VPS.md) — a máquina, e como publicar sem derrubar o Wallt.
+- [`docs/AUDITORIA.md`](docs/AUDITORIA.md) — a auditoria de segurança: seis
+  problemas achados, seis corrigidos, e o que continua aberto.
+- [`docs/MELHORIAS.md`](docs/MELHORIAS.md) — dez melhorias, em ordem de quanto
+  mudam o produto.
 - [`docs/ARQUITETURA.md`](docs/ARQUITETURA.md) — as cinco decisões técnicas e
   por quê.
 - [`servidor/esquema.sql`](servidor/esquema.sql) — o domínio. Está comentado
@@ -80,8 +86,8 @@ npm run curadoria   # a camada editorial escrita à mão
 npm run textos      # o texto integral, partido em capítulos
 npm run publicar    # exporta o site estático
 
-npm test            # os 16 testes do login
-npm run contas      # o servidor de contas, na porta 8787
+npm test            # os 21 testes do login
+npm run contas      # o servidor (site + API), na porta 8787
 
 npm --prefix web install && npm --prefix web run dev
 ```

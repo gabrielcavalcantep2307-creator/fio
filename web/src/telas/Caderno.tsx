@@ -1,13 +1,31 @@
 import { useState } from 'react'
 import type { Catalogo } from '../tipos'
 import { anotar, desmarcar, esquecerTudo, exportar, useEstante } from '../lib/estante'
+import * as conta from '../lib/conta'
 
 const CORES = ['importante', 'conceito', 'duvida', 'conexao'] as const
 
 export function Caderno({ catalogo }: { catalogo: Catalogo }) {
   const { marcacoes, progresso } = useEstante()
+  const eu = conta.useConta()
   const [cor, setCor] = useState<(typeof CORES)[number] | null>(null)
   const [editando, setEditando] = useState<string | null>(null)
+  const [apagandoConta, setApagandoConta] = useState(false)
+  const [confirmacao, setConfirmacao] = useState('')
+  const [recado, setRecado] = useState<string | null>(null)
+
+  // Apagar tem que acontecer NOS DOIS LADOS. Só no navegador seria mentira:
+  // a sincronia roda em dois minutos e devolve tudo.
+  async function apagarTudo() {
+    if (!confirm('Apagar marcações, notas e progresso?' + (eu ? ' Isso apaga também no servidor.' : ''))) return
+    try {
+      if (eu) await conta.apagarDados()
+      esquecerTudo()
+      setRecado('Apagado.')
+    } catch (e) {
+      setRecado(e instanceof Error ? e.message : 'não deu')
+    }
+  }
 
   const porId = new Map(catalogo.obras.map(o => [o.id, o]))
   const lista = marcacoes
@@ -81,19 +99,51 @@ export function Caderno({ catalogo }: { catalogo: Catalogo }) {
       <section className="mt-8 pt-8" style={{ borderTop: '1px solid var(--linha)' }}>
         <div className="miudo mb-3">seus dados</div>
         <p className="text-sm max-w-prose leading-relaxed" style={{ color: 'var(--tinta-2)' }}>
-          Tudo isto vive no seu navegador. Não há conta, não há servidor guardando
-          o que você lê. Levar embora ou apagar é decisão sua, e é imediata.
+          {eu
+            ? 'Com a conta aberta, isto também fica no servidor — é o que faz aparecer no outro aparelho. Levar embora ou apagar é decisão sua, e vale nos dois lados.'
+            : 'Sem conta, tudo isto vive só no seu navegador: nenhum servidor guarda o que você lê. Levar embora ou apagar é decisão sua, e é imediato.'}
         </p>
         <div className="flex gap-3 mt-4">
           <button onClick={baixar} className="px-4 py-2 text-sm rounded" style={{ border: '1px solid var(--linha)' }}>
             Baixar tudo (JSON)
           </button>
-          <button
-            onClick={() => { if (confirm('Apagar marcações, notas e progresso deste navegador?')) esquecerTudo() }}
+          <button onClick={apagarTudo}
             className="px-4 py-2 text-sm rounded" style={{ border: '1px solid var(--linha)', color: 'var(--acento)' }}>
             Apagar tudo
           </button>
+          {eu && !apagandoConta && (
+            <button onClick={() => setApagandoConta(true)}
+              className="px-4 py-2 text-sm rounded" style={{ border: '1px solid var(--linha)', color: 'var(--acento)' }}>
+              Apagar minha conta
+            </button>
+          )}
         </div>
+
+        {eu && apagandoConta && (
+          <div className="mt-4 p-4 rounded" style={{ border: '1px solid var(--acento)' }}>
+            <p className="text-sm">
+              Apagar a conta apaga <b>tudo</b>: e-mail, senha, sessões e o que você
+              guardou. Não tem volta. Digite <b>{eu.email}</b> para confirmar.
+            </p>
+            <div className="flex flex-wrap gap-2 mt-3">
+              <input value={confirmacao} onChange={e => setConfirmacao(e.target.value)}
+                placeholder={eu.email} className="px-3 py-2 text-sm rounded outline-none flex-1 min-w-48"
+                style={{ background: 'var(--papel)', border: '1px solid var(--linha)', color: 'var(--tinta)' }} />
+              <button
+                disabled={confirmacao.trim().toLowerCase() !== eu.email}
+                onClick={async () => {
+                  try { await conta.apagarConta(confirmacao); esquecerTudo(); location.hash = '/' }
+                  catch (e) { setRecado(e instanceof Error ? e.message : 'não deu') }
+                }}
+                className="px-4 py-2 text-sm rounded disabled:opacity-40"
+                style={{ background: 'var(--acento)', color: '#fff' }}>Apagar de vez</button>
+              <button onClick={() => { setApagandoConta(false); setConfirmacao('') }}
+                className="px-4 py-2 text-sm rounded" style={{ border: '1px solid var(--linha)' }}>Deixa</button>
+            </div>
+          </div>
+        )}
+
+        {recado && <p className="miudo mt-3">{recado}</p>}
       </section>
     </div>
   )

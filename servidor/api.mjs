@@ -63,18 +63,26 @@ function cors(req, res) {
 
 const SEGURO = process.env.FIO_INSEGURO !== '1' // só desligue em localhost
 
+// `__Host-` não é enfeite: o navegador só aceita gravar um cookie com esse
+// prefixo se ele vier por HTTPS, com `Path=/` e SEM `Domain`. Isso fecha o
+// ataque em que um subdomínio qualquer (ou alguém em HTTP na mesma rede)
+// grava um cookie de sessão que o site principal aceitaria.
+//
+// Em localhost sem HTTPS o prefixo é impossível, então lá o nome é o simples.
+const NOME = SEGURO ? '__Host-fio' : 'fio'
+
 function porCookie(res, token, dias) {
-  const pedacos = [`fio=${token}`, 'Path=/', 'HttpOnly', 'SameSite=Lax', `Max-Age=${dias * 24 * 3600}`]
+  const pedacos = [`${NOME}=${token}`, 'Path=/', 'HttpOnly', 'SameSite=Lax', `Max-Age=${dias * 24 * 3600}`]
   if (SEGURO) pedacos.push('Secure')
   res.setHeader('set-cookie', pedacos.join('; '))
 }
 
 const semCookie = (res) =>
-  res.setHeader('set-cookie', `fio=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0${SEGURO ? '; Secure' : ''}`)
+  res.setHeader('set-cookie', `${NOME}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0${SEGURO ? '; Secure' : ''}`)
 
 const lerCookie = (req) =>
   (req.headers.cookie ?? '').split(';').map(s => s.trim())
-    .find(s => s.startsWith('fio='))?.slice(4) || null
+    .find(s => s.startsWith(`${NOME}=`))?.slice(NOME.length + 1) || null
 
 async function corpo(req) {
   const pedacos = []
@@ -164,6 +172,28 @@ const ROTAS = {
   'POST /api/meus-dados': (req, res, dado) => {
     const pessoa = exigirEntrada(req)
     return contas.guardar(banco, pessoa.id, dado)
+  },
+
+  // ── LGPD: levar embora, e apagar ──
+  //
+  // Sem estas duas rotas, o "apagar tudo" do caderno seria mentira: o
+  // navegador esqueceria, a sincronia rodaria dois minutos depois e o
+  // servidor devolveria tudo.
+  'POST /api/apagar-dados': (req) => {
+    const pessoa = exigirEntrada(req)
+    return contas.apagarGuardado(banco, pessoa.id)
+  },
+
+  'POST /api/apagar-conta': (req, res, dado) => {
+    const pessoa = exigirEntrada(req)
+    // Exige o e-mail digitado. Apagar conta é irreversível, e um clique
+    // sozinho não é consentimento suficiente para o que não volta.
+    if (String(dado.email ?? '').trim().toLowerCase() !== pessoa.email) {
+      throw new Recusa('Digite o e-mail da conta para confirmar.')
+    }
+    contas.apagarConta(banco, pessoa.id)
+    semCookie(res)
+    return { ok: true }
   },
 
   // ── administração ──

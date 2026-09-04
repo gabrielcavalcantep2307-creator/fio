@@ -92,7 +92,18 @@ export async function entrar(banco, { email, senha }, ctx = {}) {
 // Sessão
 // ─────────────────────────────────────────────────────────────
 
+const TETO_DE_SESSOES = 12
+
 export function abrirSessao(banco, leitorId, ctx = {}) {
+  // Teto de sessões por conta. Sem ele, cada login deixa uma linha para trás
+  // e a tabela cresce para sempre — e quem tiver a senha pode abrir milhares
+  // de sessões que sobrevivem à troca de aparelho. Doze cobre celular,
+  // computador e navegador anônimo com folga; acima disso, a mais velha sai.
+  banco.prepare(
+    `DELETE FROM sessao WHERE leitor_id = ? AND id NOT IN (
+       SELECT id FROM sessao WHERE leitor_id = ? ORDER BY visto_em DESC LIMIT ?)`,
+  ).run(leitorId, leitorId, TETO_DE_SESSOES - 1)
+
   const token = sortearToken()
   banco.prepare(
     `INSERT INTO sessao (leitor_id, token_hash, expira_em, agente, ip_dica)
@@ -216,6 +227,11 @@ export function lerGuardado(banco, leitorId) {
 }
 
 export function guardar(banco, leitorId, { itens }) {
+  // Freio mesmo para quem já entrou: uma conta comprometida não pode virar
+  // uma torneira de escrita no disco da máquina.
+  if (!freio(banco, 'guardar', String(leitorId)).passa) {
+    throw new Recusa('Sincronizando rápido demais. Tente daqui a pouco.', 429)
+  }
   if (!Array.isArray(itens)) throw new Recusa('Formato inesperado.')
   if (itens.length > 500) throw new Recusa('Muitos registros de uma vez.')
 
@@ -247,6 +263,28 @@ export function guardar(banco, leitorId, { itens }) {
   } catch (e) { banco.exec('ROLLBACK'); throw e }
 
   return lerGuardado(banco, leitorId)
+}
+
+/**
+ * Apaga o que o leitor guardou — no servidor.
+ *
+ * Isto NÃO é um detalhe de LGPD: sem ele, "apagar tudo" no navegador é uma
+ * mentira. O aparelho esquece, a sincronia roda dois minutos depois, o
+ * servidor devolve tudo, e o que a pessoa apagou volta. Apagar tem que
+ * acontecer nos dois lados, e é o servidor que manda.
+ */
+export const apagarGuardado = (banco, leitorId) =>
+  ({ apagados: banco.prepare('DELETE FROM guardado WHERE leitor_id = ?').run(leitorId).changes })
+
+/**
+ * Apaga a conta inteira. As sessões, o que foi guardado e o convite usado
+ * caem junto por cascata — o que sobra é a linha do convite, sem dono.
+ *
+ * Apagar aqui é apagar mesmo: nada de `desativado = 1` disfarçado de exclusão.
+ */
+export function apagarConta(banco, leitorId) {
+  banco.prepare('DELETE FROM leitor WHERE id = ?').run(leitorId)
+  return { ok: true }
 }
 
 // ─────────────────────────────────────────────────────────────
