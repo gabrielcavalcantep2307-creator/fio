@@ -1,0 +1,1 @@
+{"root":["./src/app.tsx","./src/main.tsx","./src/tipos.ts","./src/vite-env.d.ts","./src/lib/dados.ts","./src/lib/estante.ts","./src/lib/formato.ts","./src/lib/realce.ts","./src/telas/acervo.tsx","./src/telas/caderno.tsx","./src/telas/inicio.tsx","./src/telas/leitor.tsx","./src/telas/obra.tsx"],"version":"5.9.3"}

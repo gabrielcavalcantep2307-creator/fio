@@ -1,0 +1,132 @@
+@import 'tailwindcss';
+
+/* ─────────────────────────────────────────────────────────────
+   O tema é uma variável só: [data-tema] na raiz.
+   Três papéis, e nenhum deles é "branco puro sobre preto puro" —
+   contraste demais cansa em leitura longa.
+   ───────────────────────────────────────────────────────────── */
+
+:root,
+[data-tema='claro'] {
+  --papel: #fbf9f5;
+  --papel-2: #f2eee6;
+  --tinta: #1c1815;
+  --tinta-2: #6b6157;
+  --linha: #e0d9cd;
+  --acento: #7a2e2e;
+  --realce: #b08d57;
+}
+
+[data-tema='sepia'] {
+  --papel: #f4ecd8;
+  --papel-2: #ebe0c6;
+  --tinta: #3b2f22;
+  --tinta-2: #7a6849;
+  --linha: #ddd0b0;
+  --acento: #7a3b1e;
+  --realce: #9c7a3c;
+}
+
+[data-tema='noturno'] {
+  --papel: #14120f;
+  --papel-2: #1d1a16;
+  --tinta: #e6ded2;
+  --tinta-2: #9a9086;
+  --linha: #2e2924;
+  --acento: #c96a5c;
+  --realce: #c9a227;
+}
+
+html { color-scheme: light; }
+[data-tema='noturno'] { color-scheme: dark; }
+
+body {
+  margin: 0;
+  background: var(--papel);
+  color: var(--tinta);
+  font-family: Inter, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior: none;
+}
+
+::selection { background: color-mix(in srgb, var(--realce) 35%, transparent); }
+
+/* ─────────────────────────────────────────────────────────────
+   A página do livro.
+   Medida de 62–70 caracteres, que é onde o olho não se perde ao
+   voltar para a linha seguinte. Tudo escala a partir de --corpo.
+   ───────────────────────────────────────────────────────────── */
+
+.pagina {
+  font-family: Literata, Georgia, 'Times New Roman', serif;
+  font-size: var(--corpo, 1.18rem);
+  line-height: var(--entrelinha, 1.72);
+  color: var(--tinta);
+  hyphens: auto;
+  -webkit-hyphens: auto;
+  text-align: justify;
+  text-wrap: pretty;
+}
+
+.pagina p {
+  margin: 0;
+  text-indent: 1.4em;
+}
+.pagina p + p { margin-top: 0.15em; }
+.pagina p:first-of-type { text-indent: 0; }
+.pagina p:first-of-type::first-letter {
+  font-size: 1.05em;
+}
+
+.pagina h3 {
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 0.78em;
+  font-weight: 500;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--tinta-2);
+  margin: 0 0 1.9em;
+  text-indent: 0;
+}
+
+.pagina blockquote {
+  margin: 1.4em 0;
+  padding-left: 1.2em;
+  border-left: 2px solid var(--linha);
+  color: var(--tinta-2);
+  font-style: italic;
+}
+.pagina blockquote p { text-indent: 0; }
+
+.pagina em { font-style: italic; }
+.pagina strong { font-weight: 600; }
+
+/* As marcações do leitor, por cor e por sentido. */
+mark[data-cor] { background: none; border-radius: 2px; padding: 0.05em 0; }
+mark[data-cor='importante'] { background: color-mix(in srgb, #e8b93a 34%, transparent); }
+mark[data-cor='conceito']   { background: color-mix(in srgb, #4b8fd6 28%, transparent); }
+mark[data-cor='duvida']     { background: color-mix(in srgb, #d9534f 26%, transparent); }
+mark[data-cor='conexao']    { background: color-mix(in srgb, #4a9b6e 28%, transparent); }
+
+/* ─────────────────────────────────────────────────────────────
+   Modo página: colunas do tamanho da tela, e a virada é um
+   translateX. Nada de recarregar, nada de rolar.
+   ───────────────────────────────────────────────────────────── */
+
+.colunas {
+  column-gap: var(--vao, 64px);
+  column-fill: auto;
+  height: 100%;
+  transition: transform 260ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  will-change: transform;
+}
+.colunas > * { break-inside: avoid-column; }
+
+@media (prefers-reduced-motion: reduce) {
+  .colunas { transition: none; }
+}
+
+/* utilitários curtos, para não repetir classe longa em dez lugares */
+.miudo { font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--tinta-2); }
+.card { background: var(--papel-2); border: 1px solid var(--linha); }

@@ -5,8 +5,12 @@ Uma biblioteca que não guarda livros: **liga um livro ao próximo.**
 O nome é provisório — vem da ideia de puxar um fio: você entra por *A Revolução
 dos Bichos* e sai em Hannah Arendt sem ter planejado.
 
-> **Estado:** arquitetura decidida, domínio modelado, ingestão funcionando.
-> 659 obras no catálogo. Ainda não há tela.
+> **Estado:** no ar em <https://gabrielcavalcantep2307-creator.github.io/fio/>.
+> 645 obras no catálogo, **113 para ler inteiras**, com leitor próprio.
+
+**O acervo é só em português.** Traduzido ou original, mas em português — livro
+em inglês não aparece nem no catálogo. É uma decisão do dono do acervo, e ela
+vale antes de qualquer outra.
 
 ---
 
@@ -65,9 +69,17 @@ Precisa só de Node 22+. **Nenhuma dependência** — o SQLite vem no Node
 (`node:sqlite`), com FTS5 e remoção de acento.
 
 ```bash
-node ingestao/gutenberg.mjs    # monta o catálogo (baixa 21 MB na 1ª vez)
+node ingestao/gutenberg.mjs    # o catálogo (baixa 21 MB do Gutenberg na 1ª vez)
+node ingestao/normalizar.mjs   # baixa o texto integral e parte em capítulos
+node ingestao/publicar.mjs     # exporta o site estático para web/public/dados
 node ingestao/conferir.mjs     # a prova executável do que o ACERVO.md afirma
+
+npm --prefix web install && npm --prefix web run dev
 ```
+
+O site é **estático**: o que vai ao ar é JSON gerado pela ingestão mais um
+pacote de 68 KB de JavaScript. Não há servidor, não há conta, e o que você
+marca fica no seu navegador. Quando houver VPS, só a camada de dados muda.
 
 O `conferir.mjs` existe por um motivo: se alguém disser "é só importar o
 Gutenberg e a biblioteca está pronta", esse script mostra, com o banco na mão,
