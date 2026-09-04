@@ -4,11 +4,10 @@ O Fio está no ar em **<https://fiolib.duckdns.org>** — e também em
 `fio.142-93-57-2.sslip.io`, que continua valendo — na mesma máquina do Wallt
 (`142.93.57.2`, 2 GB de RAM, 48 GB de disco).
 
-> **`fiolib.duckdns.org` só responde depois que o DuckDNS apontar para a
-> VPS.** Hoje ele resolve para outro IP: ao criar o domínio, o DuckDNS grava o
-> IP de quem criou. A correção é um clique — pôr `142.93.57.2` no campo e
-> apertar **"atualizar ip"** no painel do DuckDNS. O Caddy já aceita o nome e
-> pede o certificado sozinho no primeiro acesso depois disso.
+> **Sobre o DuckDNS:** ao criar um domínio lá, ele grava o IP de **quem
+> criou** — não o que está escrito no campo. Foi preciso pôr `142.93.57.2` e
+> apertar "atualizar ip" para o nome apontar para a VPS. Depois disso o Caddy
+> pediu o certificado sozinho, no primeiro acesso, sem ninguém mandar.
 
 ```bash
 bash infra/publicar.sh              # o caso de todo dia: só o site

@@ -220,11 +220,17 @@ existisse.
 Para uma biblioteca fechada de amigos, senha forte + convite + freio é
 proporcional. Fica registrado que não há.
 
-### 5. BAIXA · O domínio é de terceiro
+### 5. BAIXA · Os dois domínios são de terceiro
 
-`sslip.io` resolve o IP a partir do nome. Se o serviço sair do ar, o site fica
-inacessível **pelo nome** — o IP continua respondendo. Um domínio próprio
-resolve, e custa pouco.
+`fiolib.duckdns.org` e `fio.142-93-57-2.sslip.io` dependem de dois serviços
+gratuitos. Se um sair do ar, o site fica inacessível **por aquele nome** — daí
+manter os dois, que quebram por motivos diferentes. Um domínio próprio custa
+pouco e tira essa dependência.
+
+Vale notar de onde vem o risco real: o DuckDNS permite **atualizar o IP de um
+domínio com um token na URL**. Quem tiver o token aponta o nome para onde
+quiser — e o Let's Encrypt emitiria certificado para o novo dono. O token vale
+tanto quanto uma senha.
 
 ### 6. BAIXA · Ninguém avisa quando cai
 
