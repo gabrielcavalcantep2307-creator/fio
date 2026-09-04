@@ -57,6 +57,16 @@ CREATE TABLE obra (
   -- o trilho: o que a tela mostra no lugar de "Ler"
   trilho          TEXT NOT NULL DEFAULT 'B' CHECK (trilho IN ('A','B','C')),
 
+  -- Classificação crua, como veio da fonte. Fica guardada para dar para
+  -- reclassificar sem baixar 21 MB de catálogo outra vez.
+  assuntos        TEXT,                    -- Subjects (LCSH), separados por ';'
+  estantes        TEXT,                    -- Bookshelves do Gutenberg
+
+  -- A capa, em duas formas: arquivo nosso em /capas, ou id na Open Library,
+  -- que a serve. Sem nenhuma das duas, o site desenha uma.
+  capa            TEXT,
+  capa_externa    TEXT,
+
   publicada       INTEGER NOT NULL DEFAULT 0,   -- 0 = rascunho, invisível no site
   criado_em       TEXT NOT NULL DEFAULT (datetime('now')),
   atualizado_em   TEXT NOT NULL DEFAULT (datetime('now'))
@@ -371,56 +381,37 @@ CREATE TABLE tentativa (
 );
 CREATE INDEX idx_tentativa ON tentativa(chave, quando);
 
-CREATE TABLE progresso (
-  leitor_id     INTEGER NOT NULL REFERENCES leitor(id) ON DELETE CASCADE,
-  texto_id      INTEGER NOT NULL REFERENCES texto(id) ON DELETE CASCADE,
-  capitulo_ord  INTEGER NOT NULL DEFAULT 1,     -- o número que o spoiler engine lê
-  fracao        REAL NOT NULL DEFAULT 0,        -- 0..1 dentro do capítulo
-  ancora        TEXT,                           -- para voltar ao ponto exato
-  atualizado_em TEXT NOT NULL DEFAULT (datetime('now')),
-  PRIMARY KEY (leitor_id, texto_id)
-);
+-- ═══════════════════════════════════════════════════════════════════
+-- O QUE O LEITOR GUARDOU
+--
+-- Progresso, marcações, notas e estante ficam AQUI, em uma tabela só, como
+-- JSON por registro. Isso é deliberado, e a razão importa:
+--
+-- **A leitura acontece no navegador.** O texto do capítulo já está lá, o
+-- realce é aplicado lá, o progresso é contado lá. O servidor não lê nada —
+-- ele só guarda e devolve, para que o mesmo leitor encontre o que marcou em
+-- outro aparelho.
+--
+-- Quebrar isso em quatro tabelas normalizadas modelaria consultas que
+-- ninguém faz ("todas as marcações amarelas do capítulo 12 de todo mundo").
+-- No dia em que o servidor for quem serve a leitura, essa estrutura passa a
+-- valer a pena — e aí ela se ganha, em vez de ser adivinhada agora.
+--
+-- `mudou_em` é milissegundo do relógio de quem escreveu. A junção entre
+-- aparelhos é "quem escreveu por último vence", por registro — não pelo
+-- conjunto. Duas marcações feitas em dois celulares diferentes sobrevivem
+-- às duas.
+-- ═══════════════════════════════════════════════════════════════════
 
-CREATE TABLE sessao_leitura (
-  id        INTEGER PRIMARY KEY,
+CREATE TABLE guardado (
   leitor_id INTEGER NOT NULL REFERENCES leitor(id) ON DELETE CASCADE,
-  texto_id  INTEGER NOT NULL REFERENCES texto(id) ON DELETE CASCADE,
-  inicio    TEXT NOT NULL,
-  fim       TEXT,
-  palavras  INTEGER NOT NULL DEFAULT 0
+  tipo      TEXT NOT NULL CHECK (tipo IN ('progresso','marcacao','estante','prefs')),
+  chave     TEXT NOT NULL,               -- id da obra, ou id da marcação
+  valor     TEXT,                        -- JSON; NULL = apagado neste aparelho
+  mudou_em  INTEGER NOT NULL,            -- Date.now() de quem escreveu
+  PRIMARY KEY (leitor_id, tipo, chave)
 );
-
-CREATE TABLE estante (
-  leitor_id INTEGER NOT NULL REFERENCES leitor(id) ON DELETE CASCADE,
-  obra_id   INTEGER NOT NULL REFERENCES obra(id) ON DELETE CASCADE,
-  estado    TEXT NOT NULL CHECK (estado IN ('quero_ler','lendo','concluido','abandonado')),
-  nota      INTEGER CHECK (nota BETWEEN 1 AND 5),
-  mudou_em  TEXT NOT NULL DEFAULT (datetime('now')),
-  PRIMARY KEY (leitor_id, obra_id)
-);
-
-CREATE TABLE marcacao (
-  id           INTEGER PRIMARY KEY,
-  leitor_id    INTEGER NOT NULL REFERENCES leitor(id) ON DELETE CASCADE,
-  capitulo_id  INTEGER NOT NULL REFERENCES capitulo(id) ON DELETE CASCADE,
-  inicio       INTEGER NOT NULL,                -- deslocamento no texto do capítulo
-  fim          INTEGER NOT NULL,
-  trecho       TEXT NOT NULL,
-  cor          TEXT NOT NULL DEFAULT 'importante'
-               CHECK (cor IN ('importante','conceito','duvida','conexao')),
-  criado_em    TEXT NOT NULL DEFAULT (datetime('now'))
-);
-CREATE INDEX idx_marc_leitor ON marcacao(leitor_id, capitulo_id);
-
-CREATE TABLE nota (
-  id          INTEGER PRIMARY KEY,
-  leitor_id   INTEGER NOT NULL REFERENCES leitor(id) ON DELETE CASCADE,
-  obra_id     INTEGER REFERENCES obra(id) ON DELETE CASCADE,
-  marcacao_id INTEGER REFERENCES marcacao(id) ON DELETE CASCADE,
-  corpo       TEXT NOT NULL,
-  etiquetas   TEXT,                             -- JSON
-  criado_em   TEXT NOT NULL DEFAULT (datetime('now'))
-);
+CREATE INDEX idx_guardado_leitor ON guardado(leitor_id, mudou_em);
 
 -- ═══════════════════════════════════════════════════════════════════
 -- PERFIL E RECOMENDAÇÃO — com o "porquê" gravado junto

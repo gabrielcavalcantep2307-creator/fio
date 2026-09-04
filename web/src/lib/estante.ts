@@ -141,3 +141,57 @@ export function esquecerTudo() {
 }
 
 export const exportar = () => JSON.stringify(estado, null, 2)
+
+// ─────────────────────────────────────────────────────────────
+// Sincronia com o servidor
+//
+// A forma que viaja é uma lista de registros `{tipo, chave, valor, mudouEm}`.
+// Junção por registro, "quem escreveu por último vence" — dois aparelhos que
+// marcaram trechos diferentes ficam com os dois.
+//
+// Isto é uma TRADUÇÃO, não um segundo modelo: o formato local continua sendo
+// o que a tela usa, e a lista só existe na hora de conversar.
+// ─────────────────────────────────────────────────────────────
+
+export type Item = { tipo: string; chave: string; valor: unknown; mudouEm: number }
+
+export function paraSincronia(): Item[] {
+  const itens: Item[] = []
+  for (const [obraId, p] of Object.entries(estado.progresso)) {
+    itens.push({ tipo: 'progresso', chave: obraId, valor: p, mudouEm: p.mudouEm })
+  }
+  for (const m of estado.marcacoes) {
+    itens.push({ tipo: 'marcacao', chave: m.id, valor: m, mudouEm: m.mudouEm })
+  }
+  for (const [obraId, v] of Object.entries(estado.estado)) {
+    // o estado da estante não guarda relógio próprio; usa o do progresso, ou
+    // o começo dos tempos — o servidor decide pelo maior
+    itens.push({ tipo: 'estante', chave: obraId, valor: v, mudouEm: estado.progresso[Number(obraId)]?.mudouEm ?? 1 })
+  }
+  return itens
+}
+
+export function aplicarSincronia(itens: Item[]) {
+  mudar(e => {
+    const progresso = { ...e.progresso }
+    const marcacoes = new Map(e.marcacoes.map(m => [m.id, m]))
+    const estadoObras = { ...e.estado }
+
+    for (const it of itens) {
+      if (it.tipo === 'progresso') {
+        const atual = progresso[Number(it.chave)]
+        if (!atual || (it.valor as Progresso).mudouEm > atual.mudouEm) {
+          progresso[Number(it.chave)] = it.valor as Progresso
+        }
+      } else if (it.tipo === 'marcacao') {
+        const atual = marcacoes.get(it.chave)
+        if (!atual || (it.valor as Marcacao).mudouEm > atual.mudouEm) {
+          marcacoes.set(it.chave, it.valor as Marcacao)
+        }
+      } else if (it.tipo === 'estante') {
+        estadoObras[Number(it.chave)] = it.valor as Estante['estado'][number]
+      }
+    }
+    return { ...e, progresso, marcacoes: [...marcacoes.values()], estado: estadoObras }
+  })
+}

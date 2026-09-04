@@ -66,8 +66,6 @@ if (process.argv.includes('--limpar')) {
 const banco = abrir()
 mkdirSync(PASTA, { recursive: true })
 
-try { banco.exec('ALTER TABLE obra ADD COLUMN capa TEXT') } catch { /* já existe */ }
-
 const fila = banco.prepare(
   `SELECT o.id, t.fonte_id, o.titulo FROM obra o
      JOIN texto t ON t.obra_id = o.id

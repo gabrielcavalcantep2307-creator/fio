@@ -4,6 +4,7 @@ import { useEstante } from '../lib/estante'
 import { duracao } from '../lib/formato'
 import { Capa } from '../componentes/Capa'
 import { Prateleira } from '../componentes/Prateleira'
+import { Descobrir } from '../componentes/Descobrir'
 
 // A home tem uma pergunta só: **o que eu leio agora?**
 //
@@ -50,7 +51,14 @@ export function Inicio({ catalogo }: { catalogo: Catalogo }) {
     .sort((a, b) => b.p.mudouEm - a.p.mudouEm)
 
   const legiveis = catalogo.obras.filter(o => o.trilho === 'A')
-  const destaque = legiveis.find(o => o.titulo.startsWith('Dom Casmurro')) ?? legiveis[0]
+
+  // O destaque gira entre as obras que TÊM ficha escrita — as únicas que
+  // conseguem sustentar um destaque, porque têm o que dizer. Gira por dia, e
+  // não a cada carga: quem abre o site duas vezes na mesma tarde encontra a
+  // mesma coisa, e quem volta amanhã encontra outra.
+  const curadas = legiveis.filter(o => o.chamada)
+  const dia = Math.floor(Date.now() / 86400000)
+  const destaque = curadas.length ? curadas[dia % curadas.length] : legiveis[0]
 
   const numaTarde = legiveis
     .filter(o => o.minutos && o.minutos >= 45 && o.minutos <= 200 && o.id !== destaque?.id)
@@ -62,7 +70,7 @@ export function Inicio({ catalogo }: { catalogo: Catalogo }) {
 
   return (
     <div className="flex flex-col gap-12">
-      {destaque && <Destaque obra={destaque} />}
+      {destaque && <Destaque obra={destaque} quantas={curadas.length} />}
 
       {lendo.length > 0 && (
         <Prateleira
@@ -71,6 +79,8 @@ export function Inicio({ catalogo }: { catalogo: Catalogo }) {
           obras={lendo.slice(0, 12).map(x => x.obra)}
         />
       )}
+
+      <Descobrir catalogo={catalogo} />
 
       <Prateleira
         titulo="Cabe numa tarde"
@@ -105,7 +115,7 @@ export function Inicio({ catalogo }: { catalogo: Catalogo }) {
   )
 }
 
-function Destaque({ obra }: { obra: ObraResumo }) {
+function Destaque({ obra, quantas }: { obra: ObraResumo; quantas: number }) {
   return (
     <section
       className="rounded-xl overflow-hidden"
@@ -120,7 +130,9 @@ function Destaque({ obra }: { obra: ObraResumo }) {
         </a>
 
         <div className="flex flex-col justify-center">
-          <div className="miudo">para começar</div>
+          <div className="miudo">
+            para começar{quantas > 1 && <span className="opacity-60"> · muda todo dia</span>}
+          </div>
           <h1 className="text-3xl sm:text-[2.6rem] leading-[1.08] mt-3" style={{ fontFamily: 'Literata, serif' }}>
             {obra.titulo}
           </h1>

@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react'
 import type { Catalogo, Livro } from './tipos'
 import * as dados from './lib/dados'
 import * as conta from './lib/conta'
-import { preferir, useEstante } from './lib/estante'
+import { aplicarSincronia, paraSincronia, preferir, useEstante } from './lib/estante'
+import { Busca, useAtalhoDeBusca } from './componentes/Busca'
 import { Inicio } from './telas/Inicio'
 import { Estante } from './telas/Estante'
 import { Obra } from './telas/Obra'
@@ -29,10 +30,32 @@ export default function App() {
   const [catalogo, setCatalogo] = useState<Catalogo | null>(null)
   const [livro, setLivro] = useState<Livro | null>(null)
   const [erro, setErro] = useState<string | null>(null)
+  const [buscando, setBuscando] = useState(false)
+  const eu = conta.useConta()
 
   useEffect(() => { document.documentElement.dataset.tema = prefs.tema }, [prefs.tema])
   useEffect(() => { dados.catalogo().then(setCatalogo).catch(e => setErro(e.message)) }, [])
   useEffect(() => { conta.verificar() }, [])
+  useAtalhoDeBusca(() => setBuscando(true))
+
+  // Sincronia: sobe o que este navegador tem, recebe a junção de volta.
+  //
+  // Roda ao entrar e a cada dois minutos. Não é tempo real de propósito —
+  // ninguém lê o mesmo livro em dois aparelhos ao mesmo tempo, e um pedido a
+  // cada marcação seria barulho para resolver um problema que não existe.
+  useEffect(() => {
+    if (!eu) return
+    let vivo = true
+    const juntar = async () => {
+      try {
+        const { itens } = await conta.subirGuardado(paraSincronia())
+        if (vivo) aplicarSincronia(itens)
+      } catch { /* sem rede: o que está no navegador continua valendo */ }
+    }
+    juntar()
+    const relogio = setInterval(juntar, 120000)
+    return () => { vivo = false; clearInterval(relogio) }
+  }, [eu])
 
   const casaLer = rota.match(/^\/ler\/(\d+)/)
   useEffect(() => {
@@ -56,7 +79,7 @@ export default function App() {
 
   return (
     <div className="min-h-dvh flex flex-col">
-      <Cabecalho rota={rota} />
+      <Cabecalho rota={rota} abrirBusca={() => setBuscando(true)} />
       <main className="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-8 py-8 sm:py-10">
         {casaObra ? <Obra id={Number(casaObra[1])} catalogo={catalogo} />
           : casaAutor ? <Autor id={Number(casaAutor[1])} catalogo={catalogo} />
@@ -67,6 +90,7 @@ export default function App() {
           : <Inicio catalogo={catalogo} />}
       </main>
       <Rodape catalogo={catalogo} />
+      {buscando && <Busca catalogo={catalogo} fechar={() => setBuscando(false)} />}
     </div>
   )
 }
@@ -87,7 +111,7 @@ function TelaTema({ nome, catalogo }: { nome: string; catalogo: Catalogo }) {
   )
 }
 
-function Cabecalho({ rota }: { rota: string }) {
+function Cabecalho({ rota, abrirBusca }: { rota: string; abrirBusca: () => void }) {
   const eu = conta.useConta()
   const { prefs } = useEstante()
   const itens = [['/estante', 'estante'], ['/caderno', 'caderno']] as const
@@ -99,7 +123,13 @@ function Cabecalho({ rota }: { rota: string }) {
         <a href="#/" className="font-medium tracking-tight text-lg shrink-0" style={{ fontFamily: 'Literata, serif' }}>
           Fio
         </a>
-        <nav className="flex gap-5 ml-auto items-center">
+        <nav className="flex gap-4 sm:gap-5 ml-auto items-center">
+          <button onClick={abrirBusca} className="miudo hover:opacity-70 flex items-center gap-1.5"
+            title="Buscar ( / )">
+            buscar
+            <kbd className="hidden sm:inline px-1.5 py-0.5 rounded text-[0.6rem] not-italic"
+              style={{ border: '1px solid var(--linha)' }}>/</kbd>
+          </button>
           {itens.map(([r, nome]) => (
             <a key={r} href={`#${r}`} className="miudo hover:opacity-70"
               style={{ color: rota.startsWith(r) ? 'var(--acento)' : undefined }}>{nome}</a>

@@ -65,12 +65,6 @@ const banco = abrir()
 const csv = lerCSV(readFileSync(join(RAIZ, 'dados', 'pg_catalog.csv'), 'utf8'))
 const porGutenberg = new Map(csv.map(r => [r['Text#'], r]))
 
-// as colunas cruas ficam guardadas: dá para refazer a classificação sem
-// baixar 21 MB de novo
-for (const col of ['assuntos', 'estantes']) {
-  try { banco.exec(`ALTER TABLE obra ADD COLUMN ${col} TEXT`) } catch { /* já existe */ }
-}
-
 const poeTema = banco.prepare('INSERT OR IGNORE INTO tema (nome, resumo) VALUES (?,?)')
 const achaTema = banco.prepare('SELECT id FROM tema WHERE nome = ?')
 for (const [nome] of TAXONOMIA) poeTema.run(nome, RESUMOS[nome] ?? null)

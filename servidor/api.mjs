@@ -1,41 +1,53 @@
-// O servidor de contas.
+// O servidor do Fio: serve o site E as contas, no mesmo processo.
 //
 //   node servidor/api.mjs
 //
-// Ele NÃO serve o site: o site é estático e mora no GitHub Pages (ou em
-// qualquer lugar). Este processo cuida só do que exige um servidor — conta,
-// sessão, senha e a sincronia do que o leitor marcou.
+// **Por que juntos.** A alternativa era site num lugar e API em outro. Isso
+// obriga a CORS, e obriga o cookie de sessão a atravessar origens — que é
+// exatamente o que `SameSite` foi feito para impedir. Servindo os dois da
+// mesma origem, o cookie funciona sem exceção nenhuma, o CSRF fica trancado
+// pelo próprio navegador, e some uma classe inteira de bug de configuração.
 //
-// Variáveis (veja .env.exemplo):
-//   FIO_PORTA        padrão 8787
-//   FIO_ORIGENS      lista separada por vírgula que pode chamar esta API
-//   FIO_SITE         endereço do site, para montar o link de troca de senha
-//   FIO_EMAIL_*      como mandar e-mail (sem isso, o link sai no log)
+// O Caddy fica na frente cuidando do TLS e da compressão. Este processo não
+// precisa saber que ele existe.
+//
+// Variáveis: veja .env.exemplo
 
 import { createServer } from 'node:http'
-import { abrir } from './banco/base.mjs'
+import { createReadStream, existsSync, statSync } from 'node:fs'
+import { join, normalize, extname } from 'node:path'
+import { abrir, RAIZ } from './banco/base.mjs'
 import * as contas from './contas.mjs'
 import { Recusa } from './contas.mjs'
 import { enviar } from './email.mjs'
 
 const PORTA = Number(process.env.FIO_PORTA || 8787)
-const SITE = process.env.FIO_SITE || 'http://localhost:5181'
-const ORIGENS = (process.env.FIO_ORIGENS || SITE).split(',').map(s => s.trim()).filter(Boolean)
+const SITE = process.env.FIO_SITE || `http://localhost:${PORTA}`
+const ESTATICO = process.env.FIO_ESTATICO || join(RAIZ, 'web', 'dist')
+
+// Só é preciso quando o site NÃO vem deste processo (desenvolvimento, com o
+// Vite na 5181). Em produção fica vazia, e aí nenhuma origem de fora entra.
+const ORIGENS = (process.env.FIO_ORIGENS || '').split(',').map(s => s.trim()).filter(Boolean)
 
 const banco = abrir()
 
 // ─────────────────────────────────────────────────────────────
-// CORS e CSRF, que são a mesma conversa
+// CSRF
 //
-// O cookie de sessão é SameSite=Lax: um site qualquer não consegue fazer o
-// navegador mandá-lo num POST. Sobre isso, duas travas:
+// Mesma origem + `SameSite=Lax` já impede que outro site faça o navegador
+// mandar o cookie num POST. Sobre isso, duas travas a mais:
 //
-//   1. lista de origens — só quem está nela recebe permissão de ler a
-//      resposta E de mandar cookie (`credentials`).
-//   2. cabeçalho `x-fio` obrigatório em toda escrita — um formulário HTML
-//      comum não consegue mandar cabeçalho personalizado sem antes passar
-//      pelo pedido de permissão, que a trava 1 recusa.
+//   1. cabeçalho `x-fio` obrigatório em toda escrita — um <form> comum não
+//      consegue mandar cabeçalho personalizado sem antes pedir permissão;
+//   2. quando vier `Origin`, ela tem que ser a nossa (ou estar na lista).
 // ─────────────────────────────────────────────────────────────
+
+function origemOk(req) {
+  const origem = req.headers.origin
+  if (!origem) return true // pedido de mesma origem costuma vir sem Origin
+  if (ORIGENS.includes(origem)) return true
+  try { return new URL(origem).host === req.headers.host } catch { return false }
+}
 
 function cors(req, res) {
   const origem = req.headers.origin
@@ -43,20 +55,16 @@ function cors(req, res) {
     res.setHeader('access-control-allow-origin', origem)
     res.setHeader('access-control-allow-credentials', 'true')
     res.setHeader('vary', 'origin')
+    res.setHeader('access-control-allow-methods', 'GET,POST,OPTIONS')
+    res.setHeader('access-control-allow-headers', 'content-type,x-fio')
+    res.setHeader('access-control-max-age', '600')
   }
-  res.setHeader('access-control-allow-methods', 'GET,POST,OPTIONS')
-  res.setHeader('access-control-allow-headers', 'content-type,x-fio')
-  res.setHeader('access-control-max-age', '600')
-  return !origem || ORIGENS.includes(origem)
 }
 
 const SEGURO = process.env.FIO_INSEGURO !== '1' // só desligue em localhost
 
 function porCookie(res, token, dias) {
-  const pedacos = [
-    `fio=${token}`, 'Path=/', 'HttpOnly', 'SameSite=Lax',
-    `Max-Age=${dias * 24 * 3600}`,
-  ]
+  const pedacos = [`fio=${token}`, 'Path=/', 'HttpOnly', 'SameSite=Lax', `Max-Age=${dias * 24 * 3600}`]
   if (SEGURO) pedacos.push('Secure')
   res.setHeader('set-cookie', pedacos.join('; '))
 }
@@ -82,43 +90,50 @@ async function corpo(req) {
 }
 
 const responder = (res, status, dado) => {
-  res.writeHead(status, { 'content-type': 'application/json; charset=utf-8' })
+  res.writeHead(status, {
+    'content-type': 'application/json; charset=utf-8',
+    'cache-control': 'no-store',
+  })
   res.end(JSON.stringify(dado))
 }
 
 const ipDe = (req) =>
   (req.headers['x-forwarded-for'] ?? '').split(',')[0].trim() || req.socket.remoteAddress
 
+const exigirEntrada = (req) => {
+  const pessoa = contas.deQuemE(banco, lerCookie(req))
+  if (!pessoa) throw new Recusa('Não está entrado.', 401)
+  return pessoa
+}
+
+// ─────────────────────────────────────────────────────────────
+// As rotas
 // ─────────────────────────────────────────────────────────────
 
 const ROTAS = {
-  'GET /saude': () => ({ ok: true }),
+  'GET /api/saude': () => ({ ok: true, versao: 1 }),
 
-  'GET /eu': (req) => {
-    const pessoa = contas.deQuemE(banco, lerCookie(req))
-    if (!pessoa) throw new Recusa('Não está entrado.', 401)
-    return { pessoa }
-  },
+  'GET /api/eu': (req) => ({ pessoa: exigirEntrada(req) }),
 
-  'POST /criar': async (req, res, dado, ctx) => {
+  'POST /api/criar': async (req, res, dado, ctx) => {
     const { pessoa, sessao } = await contas.criar(banco, dado, ctx)
     porCookie(res, sessao.token, sessao.dias)
     return { pessoa }
   },
 
-  'POST /entrar': async (req, res, dado, ctx) => {
+  'POST /api/entrar': async (req, res, dado, ctx) => {
     const { pessoa, sessao } = await contas.entrar(banco, dado, ctx)
     porCookie(res, sessao.token, sessao.dias)
     return { pessoa }
   },
 
-  'POST /sair': (req, res) => {
+  'POST /api/sair': (req, res) => {
     contas.sair(banco, lerCookie(req))
     semCookie(res)
     return { ok: true }
   },
 
-  'POST /esqueci': async (req, res, dado, ctx) => {
+  'POST /api/esqueci': async (req, res, dado, ctx) => {
     const { aviso } = contas.pedirTroca(banco, dado, ctx)
     if (aviso) {
       const link = `${SITE}/#/trocar-senha?t=${encodeURIComponent(aviso.token)}`
@@ -134,70 +149,128 @@ const ROTAS = {
     return { ok: true }
   },
 
-  'POST /trocar-senha': async (req, res, dado) => {
+  'POST /api/trocar-senha': async (req, res, dado) => {
     await contas.trocarSenha(banco, dado)
     semCookie(res)
     return { ok: true }
   },
 
   // ── o que o leitor guardou, entre aparelhos ──
-  'GET /meus-dados': (req) => {
-    const pessoa = contas.deQuemE(banco, lerCookie(req))
-    if (!pessoa) throw new Recusa('Não está entrado.', 401)
-    return {
-      progresso: banco.prepare(
-        'SELECT texto_id, capitulo_ord, fracao, atualizado_em FROM progresso WHERE leitor_id = ?',
-      ).all(pessoa.id),
-      marcacoes: banco.prepare(
-        `SELECT m.id, m.capitulo_id, m.inicio, m.fim, m.trecho, m.cor, n.corpo nota
-           FROM marcacao m LEFT JOIN nota n ON n.marcacao_id = m.id
-          WHERE m.leitor_id = ?`,
-      ).all(pessoa.id),
-      estante: banco.prepare(
-        'SELECT obra_id, estado, nota, mudou_em FROM estante WHERE leitor_id = ?',
-      ).all(pessoa.id),
-    }
+  'GET /api/meus-dados': (req) => {
+    const pessoa = exigirEntrada(req)
+    return contas.lerGuardado(banco, pessoa.id)
   },
 
-  // ── administração: convites ──
-  'POST /convite': (req, res, dado) => {
-    const pessoa = contas.deQuemE(banco, lerCookie(req))
-    if (!pessoa || pessoa.papel !== 'admin') throw new Recusa('Não pode.', 403)
+  'POST /api/meus-dados': (req, res, dado) => {
+    const pessoa = exigirEntrada(req)
+    return contas.guardar(banco, pessoa.id, dado)
+  },
+
+  // ── administração ──
+  'POST /api/convite': (req, res, dado) => {
+    const pessoa = exigirEntrada(req)
+    if (pessoa.papel !== 'admin') throw new Recusa('Não pode.', 403)
     return contas.criarConvite(banco, { criadoPor: pessoa.id, nota: dado.nota })
   },
 }
 
+// ─────────────────────────────────────────────────────────────
+// O site estático
+//
+// Um servidor de arquivos de trinta linhas, e a única linha que importa é a
+// que resolve o caminho e confere se ele continua dentro da pasta. Sem ela,
+// `GET /../../etc/passwd` funciona.
+// ─────────────────────────────────────────────────────────────
+
+const TIPOS = {
+  '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8',
+  '.css': 'text/css; charset=utf-8', '.json': 'application/json; charset=utf-8',
+  '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.png': 'image/png',
+  '.svg': 'image/svg+xml', '.webp': 'image/webp', '.ico': 'image/x-icon',
+  '.woff2': 'font/woff2', '.txt': 'text/plain; charset=utf-8',
+}
+
+function servirArquivo(req, res, caminho) {
+  // `/ativos/index-a1b2.js` tem o resumo do conteúdo no nome: mudou o
+  // conteúdo, muda o nome. Pode ficar no cache para sempre.
+  // `index.html` NÃO pode: é ele que aponta para os nomes novos.
+  const eterno = caminho.includes('/ativos/') || caminho.startsWith('/capas/')
+  const arquivo = join(ESTATICO, normalize(caminho).replace(/^(\.\.[/\\])+/, ''))
+
+  if (!arquivo.startsWith(ESTATICO)) { res.writeHead(403); return res.end() }
+  if (!existsSync(arquivo) || !statSync(arquivo).isFile()) return null
+
+  const info = statSync(arquivo)
+  const etiqueta = `"${info.size.toString(36)}-${info.mtimeMs.toString(36)}"`
+  if (req.headers['if-none-match'] === etiqueta) { res.writeHead(304); return res.end() }
+
+  res.writeHead(200, {
+    'content-type': TIPOS[extname(arquivo).toLowerCase()] ?? 'application/octet-stream',
+    'content-length': info.size,
+    'cache-control': eterno ? 'public, max-age=31536000, immutable' : 'no-cache',
+    etag: etiqueta,
+  })
+  createReadStream(arquivo).pipe(res)
+  return true
+}
+
+// ─────────────────────────────────────────────────────────────
+
 const servidor = createServer(async (req, res) => {
-  const origemOk = cors(req, res)
+  cors(req, res)
   if (req.method === 'OPTIONS') { res.writeHead(204); return res.end() }
 
-  const caminho = new URL(req.url, 'http://x').pathname.replace(/\/+$/, '') || '/'
-  const chave = `${req.method} ${caminho}`
-  const rota = ROTAS[chave]
+  let caminho
+  try { caminho = decodeURIComponent(new URL(req.url, 'http://x').pathname) }
+  catch { res.writeHead(400); return res.end() }
 
-  try {
-    if (!rota) throw new Recusa('Não existe.', 404)
-    if (!origemOk) throw new Recusa('Origem não autorizada.', 403)
-
-    // A trava do CSRF: escrita exige o cabeçalho que só código nosso manda.
-    if (req.method === 'POST' && req.headers['x-fio'] !== '1') {
-      throw new Recusa('Pedido sem identificação.', 403)
+  // ── API ──
+  if (caminho.startsWith('/api/')) {
+    const chave = `${req.method} ${caminho.replace(/\/+$/, '')}`
+    const rota = ROTAS[chave]
+    try {
+      if (!rota) throw new Recusa('Não existe.', 404)
+      if (!origemOk(req)) throw new Recusa('Origem não autorizada.', 403)
+      if (req.method === 'POST' && req.headers['x-fio'] !== '1') {
+        throw new Recusa('Pedido sem identificação.', 403)
+      }
+      const dado = req.method === 'POST' ? await corpo(req) : {}
+      const ctx = { ip: ipDe(req), agente: req.headers['user-agent'] }
+      return responder(res, 200, await rota(req, res, dado, ctx))
+    } catch (e) {
+      if (e instanceof Recusa) return responder(res, e.status, { erro: e.message })
+      // Nunca devolva a mensagem interna: ela conta como o sistema é por dentro.
+      console.error(`[fio] ${chave}`, e)
+      return responder(res, 500, { erro: 'Deu alguma coisa errada aqui. Tente de novo.' })
     }
-
-    const dado = req.method === 'POST' ? await corpo(req) : {}
-    const ctx = { ip: ipDe(req), agente: req.headers['user-agent'] }
-    responder(res, 200, await rota(req, res, dado, ctx))
-  } catch (e) {
-    if (e instanceof Recusa) return responder(res, e.status, { erro: e.message })
-    // Nunca devolva a mensagem interna: ela conta como o sistema é por dentro.
-    console.error(`[fio] ${chave}`, e)
-    responder(res, 500, { erro: 'Deu alguma coisa errada aqui. Tente de novo.' })
   }
+
+  // ── site ──
+  if (req.method !== 'GET' && req.method !== 'HEAD') { res.writeHead(405); return res.end() }
+  try {
+    if (servirArquivo(req, res, caminho)) return
+    // rota do app: devolve o index e deixa o navegador resolver
+    if (servirArquivo(req, res, '/index.html')) return
+  } catch (e) {
+    console.error('[fio] estático', e)
+  }
+  res.writeHead(404, { 'content-type': 'text/plain; charset=utf-8' })
+  res.end('não achei')
 })
 
 servidor.listen(PORTA, () => {
-  console.log(`fio/contas na porta ${PORTA}`)
+  console.log(`fio na porta ${PORTA}`)
   console.log(`  site ..... ${SITE}`)
-  console.log(`  origens .. ${ORIGENS.join(', ')}`)
+  console.log(`  estático . ${ESTATICO}${existsSync(ESTATICO) ? '' : '  (não existe — rode o build)'}`)
+  if (ORIGENS.length) console.log(`  origens .. ${ORIGENS.join(', ')}`)
   if (!SEGURO) console.log('  ATENÇÃO: cookie sem Secure (FIO_INSEGURO=1). Só em localhost.')
 })
+
+// Encerrar direito importa: o SQLite em WAL precisa fechar para o checkpoint.
+for (const sinal of ['SIGTERM', 'SIGINT']) {
+  process.on(sinal, () => {
+    console.log(`\n[fio] ${sinal}, encerrando`)
+    servidor.close(() => process.exit(0))
+    setTimeout(() => process.exit(0), 5000).unref()
+  })
+}

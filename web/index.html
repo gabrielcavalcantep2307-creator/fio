@@ -6,9 +6,12 @@
     <title>Fio — biblioteca</title>
     <meta name="description" content="Uma biblioteca em português que liga um livro ao próximo." />
     <meta name="theme-color" content="#12100e" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,300..700&family=Inter:wght@400..600&display=swap" rel="stylesheet" />
+    <!-- As fontes são nossas, servidas daqui. Não é purismo: fonte de fora é
+         um terceiro no caminho de toda visita, é uma requisição a mais antes
+         do primeiro texto aparecer, e é o que obriga a abrir a política de
+         segurança para um domínio que não controlamos. -->
+    <link rel="preload" as="font" type="font/woff2" href="./fontes/literata-latin.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="./fontes/inter-latin.woff2" crossorigin />
   </head>
   <body>
     <div id="raiz"></div>

@@ -1,0 +1,26 @@
+# Os testes, a cada push. A publicação NÃO é automática de propósito: quem
+# publica é `infra/publicar.sh`, rodado por gente, porque a mesma VPS serve o
+# Wallt e um push errado não pode derrubar uma sala no meio de uma partida.
+
+name: Testes
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  conferir:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Tipos
+        working-directory: web
+        run: npm ci && npx tsc -b
+
+      - name: Login
+        run: node --test servidor/testes.mjs

@@ -2,17 +2,21 @@ import { useSyncExternalStore } from 'react'
 
 // O cliente de contas.
 //
-// O site é estático e o servidor de contas é outro processo (servidor/). Este
-// arquivo é a única coisa que sabe disso: se `VITE_API` não estiver definida,
-// tudo aqui responde "sem servidor" e o site continua funcionando inteiro,
-// só sem conta. Ler não depende de ter conta.
+// O site e a API vêm da MESMA origem: quem serve os dois é o mesmo processo
+// (servidor/api.mjs). Por isso `/api` basta — sem CORS, sem endereço
+// configurável, sem cookie atravessando domínio.
 //
 // Nada de token no localStorage: a sessão é um cookie HttpOnly que o
-// JavaScript não enxerga, e por isso um XSS não a rouba. O preço é
-// `credentials: 'include'` em toda chamada.
+// JavaScript não enxerga, e por isso um XSS não a rouba.
+//
+// Se não houver servidor (o site aberto direto de um arquivo, ou uma cópia
+// estática em outro lugar), tudo aqui responde "sem servidor" e o site
+// continua inteiro — só sem conta. **Ler não depende de ter conta.**
 
-export const API: string | undefined = import.meta.env.VITE_API || undefined
-export const temServidor = () => !!API
+export const API: string = import.meta.env.VITE_API || '/api'
+
+let servidorVivo: boolean | null = null
+export const temServidor = () => servidorVivo !== false
 
 export type Pessoa = { id: number; nome: string; email: string; papel: 'leitor' | 'editor' | 'admin' }
 
@@ -30,7 +34,6 @@ export function useConta() {
 }
 
 async function chamar<T>(rota: string, corpo?: unknown, metodo = 'POST'): Promise<T> {
-  if (!API) throw new Error('O servidor de contas ainda não está no ar.')
   const r = await fetch(API + rota, {
     method: corpo === undefined && metodo === 'POST' ? 'GET' : metodo,
     credentials: 'include',
@@ -49,14 +52,27 @@ async function chamar<T>(rota: string, corpo?: unknown, metodo = 'POST'): Promis
 }
 
 export async function verificar() {
-  if (!API || carregado) return quem
+  if (carregado) return quem
   carregado = true
   try {
-    quem = (await chamar<{ pessoa: Pessoa }>('/eu', undefined, 'GET')).pessoa
-  } catch { quem = null }
+    const r = await fetch(API + '/saude')
+    servidorVivo = r.ok
+  } catch { servidorVivo = false }
+
+  if (servidorVivo) {
+    try { quem = (await chamar<{ pessoa: Pessoa }>('/eu', undefined, 'GET')).pessoa }
+    catch { quem = null }
+  }
   avisar()
   return quem
 }
+
+// ── sincronia: o que este navegador guardou, e o que o servidor tem ──
+
+export type Item = { tipo: string; chave: string; valor: unknown; mudouEm: number }
+
+export const baixarGuardado = () => chamar<{ itens: Item[] }>('/meus-dados', undefined, 'GET')
+export const subirGuardado = (itens: Item[]) => chamar<{ itens: Item[] }>('/meus-dados', { itens })
 
 export async function entrar(email: string, senha: string) {
   quem = (await chamar<{ pessoa: Pessoa }>('/entrar', { email, senha })).pessoa

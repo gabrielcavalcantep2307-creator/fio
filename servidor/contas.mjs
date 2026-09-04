@@ -191,6 +191,65 @@ export async function trocarSenha(banco, { token, senha }) {
 }
 
 // ─────────────────────────────────────────────────────────────
+// O que o leitor guardou, entre aparelhos
+//
+// A junção é "quem escreveu por último vence", **por registro**. Não é o
+// conjunto que vence: duas marcações feitas em dois celulares diferentes
+// sobrevivem às duas, porque cada uma é uma linha com o seu próprio relógio.
+//
+// Apagar também é uma escrita: vem com `valor: null` e um relógio novo. Sem
+// isso, apagar num aparelho seria desfeito pela sincronia do outro — que é o
+// bug clássico de quem trata ausência como "ainda não sei".
+// ─────────────────────────────────────────────────────────────
+
+const TIPOS = new Set(['progresso', 'marcacao', 'estante', 'prefs'])
+const TETO_DE_REGISTROS = 5000
+const TETO_DE_VALOR = 8 * 1024
+
+export function lerGuardado(banco, leitorId) {
+  const linhas = banco.prepare(
+    'SELECT tipo, chave, valor, mudou_em FROM guardado WHERE leitor_id = ? AND valor IS NOT NULL',
+  ).all(leitorId)
+  return {
+    itens: linhas.map(l => ({ tipo: l.tipo, chave: l.chave, valor: JSON.parse(l.valor), mudouEm: l.mudou_em })),
+  }
+}
+
+export function guardar(banco, leitorId, { itens }) {
+  if (!Array.isArray(itens)) throw new Recusa('Formato inesperado.')
+  if (itens.length > 500) throw new Recusa('Muitos registros de uma vez.')
+
+  const { n } = banco.prepare('SELECT COUNT(*) n FROM guardado WHERE leitor_id = ?').get(leitorId)
+  const grava = banco.prepare(
+    `INSERT INTO guardado (leitor_id, tipo, chave, valor, mudou_em) VALUES (?,?,?,?,?)
+     ON CONFLICT (leitor_id, tipo, chave) DO UPDATE
+       SET valor = excluded.valor, mudou_em = excluded.mudou_em
+       WHERE excluded.mudou_em > guardado.mudou_em`)
+
+  let novos = n
+  banco.exec('BEGIN')
+  try {
+    for (const item of itens) {
+      if (!TIPOS.has(item?.tipo) || typeof item.chave !== 'string' || item.chave.length > 120) continue
+      const quando = Number(item.mudouEm)
+      if (!Number.isFinite(quando) || quando <= 0) continue
+
+      const valor = item.valor == null ? null : JSON.stringify(item.valor)
+      if (valor && valor.length > TETO_DE_VALOR) continue
+      // O teto existe para que uma conta não consiga encher o disco da
+      // máquina. Apagar sempre passa; só criar registro novo é barrado.
+      if (valor && novos >= TETO_DE_REGISTROS) continue
+
+      grava.run(leitorId, item.tipo, item.chave, valor, Math.min(quando, Date.now() + 60000))
+      novos++
+    }
+    banco.exec('COMMIT')
+  } catch (e) { banco.exec('ROLLBACK'); throw e }
+
+  return lerGuardado(banco, leitorId)
+}
+
+// ─────────────────────────────────────────────────────────────
 // Convites
 // ─────────────────────────────────────────────────────────────
 

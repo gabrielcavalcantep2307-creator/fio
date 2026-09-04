@@ -1,5 +1,36 @@
 @import 'tailwindcss';
 
+/* As fontes, servidas por nós. `swap` deixa o texto aparecer na fonte de
+   sistema enquanto a nossa carrega — ninguém espera olhando página em branco. */
+@font-face {
+  font-family: Literata;
+  src: url('/fontes/literata-latin.woff2') format('woff2');
+  font-weight: 300 700;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+2000-206F, U+2122, U+2191, U+2193, U+2212, U+2215;
+}
+@font-face {
+  font-family: Literata;
+  src: url('/fontes/literata-latin-ext.woff2') format('woff2');
+  font-weight: 300 700;
+  font-display: swap;
+  unicode-range: U+0100-02BA, U+1E00-1EFF, U+2020, U+20A0-20AB, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: Inter;
+  src: url('/fontes/inter-latin.woff2') format('woff2');
+  font-weight: 400 600;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+2000-206F, U+2122, U+2191, U+2193, U+2212, U+2215;
+}
+@font-face {
+  font-family: Inter;
+  src: url('/fontes/inter-latin-ext.woff2') format('woff2');
+  font-weight: 400 600;
+  font-display: swap;
+  unicode-range: U+0100-02BA, U+1E00-1EFF, U+2020, U+20A0-20AB, U+2C60-2C7F, U+A720-A7FF;
+}
+
 /* ─────────────────────────────────────────────────────────────
    O tema é uma variável só: [data-tema] na raiz.
    Três papéis, e nenhum deles é "branco puro sobre preto puro" —

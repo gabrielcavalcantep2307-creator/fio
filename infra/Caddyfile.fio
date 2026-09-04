@@ -1,0 +1,35 @@
+# O bloco do Fio, para entrar no Caddyfile que já serve o Wallt.
+#
+# Um domínio novo, e não um caminho dentro do domínio do Wallt: cookie de
+# sessão, política de segurança e cache são todos por origem, e misturar dois
+# aplicativos numa origem só é herdar os problemas de configuração dos dois.
+#
+# `sslip.io` devolve o IP que está no nome — `fio.142-93-57-2.sslip.io`
+# resolve para 142.93.57.2 sem cadastrar DNS em lugar nenhum. Trocar por um
+# domínio de verdade depois é mexer nesta linha e recarregar.
+
+fio.142-93-57-2.sslip.io {
+	encode zstd gzip
+
+	# Tudo — site e API — vem do mesmo processo. É por isso que o cookie
+	# funciona sem exceção: para o navegador, é uma origem só.
+	reverse_proxy 127.0.0.1:8787
+
+	header {
+		# O site não carrega script de fora. A única coisa externa são as
+		# capas da Open Library, e ela está nomeada em vez de um curinga em
+		# `img-src`: se um dia o site tentar buscar imagem de outro lugar,
+		# quebra na cara em vez de passar batido.
+		#
+		# `style-src` precisa de 'unsafe-inline' porque os temas são
+		# aplicados por variável em atributo `style`. É uma folga conhecida,
+		# e ela não permite executar código.
+		Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://covers.openlibrary.org; font-src 'self'; connect-src 'self'; form-action 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'"
+		Strict-Transport-Security "max-age=63072000; includeSubDomains"
+		Referrer-Policy "no-referrer"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Permissions-Policy "camera=(), microphone=(), geolocation=(), interest-cohort=()"
+		-Server
+	}
+}

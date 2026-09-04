@@ -61,9 +61,6 @@ async function buscar(autor) {
 // ─────────────────────────────────────────────────────────────
 
 const banco = abrir()
-for (const [col, tipo] of [['capa_externa', 'TEXT'], ['assuntos', 'TEXT'], ['estantes', 'TEXT'], ['capa', 'TEXT']]) {
-  try { banco.exec(`ALTER TABLE obra ADD COLUMN ${col} ${tipo}`) } catch { /* já existe */ }
-}
 
 const sql = {
   achaPessoa: banco.prepare('SELECT id FROM pessoa WHERE nome = ?'),

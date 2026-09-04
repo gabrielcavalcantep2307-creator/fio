@@ -1,0 +1,48 @@
+# O Fio na VPS.
+#
+# Um serviço só. O Caddy que já roda para o Wallt fica na frente e cuida do
+# TLS — não subimos um segundo servidor web para brigar pelas portas 80 e 443.
+#
+# Antes de subir: copie `.env.exemplo` para `.env` e preencha.
+
+services:
+  fio:
+    build:
+      context: ..
+      dockerfile: infra/Dockerfile
+    restart: unless-stopped
+    # Só no localhost. A porta NÃO é exposta para a internet: quem fala com
+    # ela é o Caddy, do mesmo host. Publicar em 0.0.0.0 seria abrir o servidor
+    # sem TLS ao lado do que tem TLS, e alguém acharia.
+    ports:
+      - '127.0.0.1:8787:8787'
+    # Teto de memória. A VPS tem 2 GB e o Wallt divide ela conosco: um
+    # processo que estoure tem que morrer sozinho, não levar o LiveKit junto.
+    mem_limit: 320m
+    environment:
+      FIO_PORTA: 8787
+      FIO_SITE: ${FIO_SITE}
+      FIO_BANCO: /dados/catalogo.db
+      FIO_ESTATICO: /site
+      FIO_JURISDICAO: ${FIO_JURISDICAO:-BR}
+      # Vazio = só a própria origem. É o certo em produção.
+      FIO_ORIGENS: ${FIO_ORIGENS:-}
+      # E-mail: sem chave, o link de trocar senha sai no log em vez de ser
+      # enviado. É o estado normal até alguém contratar o envio.
+      FIO_EMAIL_SERVICO: ${FIO_EMAIL_SERVICO:-resend}
+      FIO_EMAIL_CHAVE: ${FIO_EMAIL_CHAVE:-}
+      FIO_EMAIL_DE: ${FIO_EMAIL_DE:-}
+    volumes:
+      # O banco: catálogo, contas e sessões. É o único estado que importa.
+      - dados:/dados
+      # O site construído. Só leitura — o servidor nunca escreve aqui.
+      - /opt/fio/site:/site:ro
+    healthcheck:
+      test: ['CMD', 'node', '-e', "fetch('http://127.0.0.1:8787/api/saude').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  dados:
