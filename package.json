@@ -5,6 +5,14 @@
   "engines": { "node": ">=22" },
   "scripts": {
     "acervo": "node ingestao/gutenberg.mjs",
-    "conferir": "node ingestao/conferir.mjs"
+    "temas": "node ingestao/temas.mjs",
+    "capas": "node ingestao/capas.mjs",
+    "autores": "node ingestao/autores.mjs",
+    "curadoria": "node ingestao/curadoria.mjs",
+    "textos": "node ingestao/normalizar.mjs",
+    "publicar": "node ingestao/publicar.mjs",
+    "conferir": "node ingestao/conferir.mjs",
+    "contas": "node servidor/api.mjs",
+    "test": "node --test servidor/testes.mjs"
   }
 }

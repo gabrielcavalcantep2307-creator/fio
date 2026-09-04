@@ -1,13 +1,19 @@
 // Transforma o banco no site estático.
 //
-// O GitHub Pages não roda servidor: o que sobe é JSON pronto. Um arquivo
-// magro com o catálogo inteiro (a busca roda no navegador, instantânea) e um
-// arquivo por livro, com todos os capítulos dentro — baixa uma vez, e virar
-// página nunca mais toca a rede.
+// Três formatos, e a razão de cada um:
+//
+//   catalogo.json     magro, carregado uma vez. É o que a busca, os filtros e
+//                     as prateleiras usam — tudo acontece no navegador, sem
+//                     ida ao servidor.
+//   fichas/{id}.json  a página da obra: onde encontrar, assuntos, sumário.
+//   livros/{id}.json  o texto inteiro, só para o que dá para ler aqui.
+//
+// Separar ficha de livro é o que permite ter 2 mil obras no catálogo sem
+// obrigar ninguém a baixar 30 MB para ver uma capa.
 //
 //   node ingestao/publicar.mjs
 
-import { writeFileSync, mkdirSync, rmSync } from 'node:fs'
+import { writeFileSync, mkdirSync, rmSync, existsSync } from 'node:fs'
 import { join } from 'node:path'
 import { abrir, fechar, RAIZ } from '../servidor/banco/base.mjs'
 
@@ -15,16 +21,17 @@ const SAIDA = join(RAIZ, 'web', 'public', 'dados')
 const CASA = process.env.FIO_JURISDICAO || 'BR'
 
 const banco = abrir()
-rmSync(SAIDA, { recursive: true, force: true })
-mkdirSync(join(SAIDA, 'livros'), { recursive: true })
+for (const pasta of ['livros', 'fichas']) {
+  rmSync(join(SAIDA, pasta), { recursive: true, force: true })
+  mkdirSync(join(SAIDA, pasta), { recursive: true })
+}
 
 // Só entra no site o que é em português. Decisão do dono do acervo, e ela
-// vale antes de qualquer outra: um livro em inglês não aparece nem no catálogo.
-const EM_PORTUGUES = "o.idioma_original = 'pt'"
-
+// vale antes de qualquer outra.
 const obras = banco.prepare(`
-  SELECT o.id, o.titulo, o.titulo_pt, o.ano, o.trilho, o.nivel, o.paginas, o.minutos_leitura,
-         p.id autor_id, p.nome autor,
+  SELECT o.id, o.titulo, o.titulo_pt, o.subtitulo, o.ano, o.trilho, o.nivel,
+         o.paginas, o.minutos_leitura, o.capa, o.capa_externa, o.assuntos, o.olid_work,
+         p.id autor_id, p.nome autor, p.nascimento autor_nasc, p.morte autor_morte,
          t.id texto_id, t.normalizado, t.fonte, t.fonte_url,
          d.estado, d.motivo
     FROM obra o
@@ -32,78 +39,139 @@ const obras = banco.prepare(`
     LEFT JOIN pessoa p ON p.id = op.pessoa_id
     LEFT JOIN texto t ON t.obra_id = o.id AND t.dono_id IS NULL
     LEFT JOIN direito d ON d.texto_id = t.id AND d.jurisdicao = ?
-   WHERE o.publicada = 1 AND ${EM_PORTUGUES}
+   WHERE o.publicada = 1 AND o.idioma_original = 'pt'
    GROUP BY o.id
    ORDER BY o.titulo`).all(CASA)
 
+const temasDe = banco.prepare(
+  `SELECT t.nome, ot.peso FROM obra_tema ot JOIN tema t ON t.id = ot.tema_id
+    WHERE ot.obra_id = ? ORDER BY ot.peso DESC, t.nome`)
 const capsDe = banco.prepare(
   'SELECT ordem, titulo, corpo, palavras FROM capitulo WHERE texto_id = ? ORDER BY ordem')
+// A camada editorial mora em `fragmento`, com o anti-spoiler embutido:
+// `revela_ate = 0` é o que pode aparecer antes de abrir o livro. A página da
+// obra só mostra esses — quem ainda não leu nada não pode levar um spoiler
+// da ficha.
+const editorialDe = banco.prepare(
+  `SELECT tipo, corpo FROM fragmento
+    WHERE obra_id = ? AND revela_ate = 0
+      AND (gerado_por <> 'ia' OR revisado = 1)`)
+const ondeDe = banco.prepare(
+  `SELECT tipo, provedor, rotulo, url FROM disponibilidade
+    WHERE obra_id = ? AND ativo = 1 ORDER BY tipo`)
 
-const limparTitulo = (s) => s.split('\n')[0].replace(/\s+/g, ' ').trim()
+const limpo = (s) => (s ?? '').split('\n')[0].replace(/\s+/g, ' ').trim()
 
 const resumo = []
 let comTexto = 0
 let bytes = 0
 
 for (const o of obras) {
-  // Um livro só ganha botão de leitura se: temos o texto normalizado E o
-  // direito permite servir AQUI. As duas coisas, nunca uma só.
-  const podeLer = o.normalizado === 1 && (o.estado === 'dominio_publico' || o.estado === 'licenca_livre')
+  // Botão de leitura exige as DUAS coisas: temos o texto, e o direito permite
+  // servir aqui. Nunca uma só.
+  const podeLer = o.normalizado === 1
+    && (o.estado === 'dominio_publico' || o.estado === 'licenca_livre')
   const trilho = podeLer ? 'A' : 'B'
+  const temas = temasDe.all(o.id).map(t => t.nome)
+  const editorial = Object.fromEntries(editorialDe.all(o.id).map(f => [f.tipo, f.corpo]))
 
   const linha = {
     id: o.id,
-    titulo: limparTitulo(o.titulo_pt || o.titulo),
+    titulo: limpo(o.titulo_pt || o.titulo),
     autor: o.autor ?? 'autoria não identificada',
     autorId: o.autor_id,
     ano: o.ano,
     trilho,
-    nivel: o.nivel,
-    paginas: o.paginas,
     minutos: o.minutos_leitura,
-    temas: [],
-  }
-  if (!podeLer) {
-    linha.impedimento = o.normalizado !== 1
-      ? 'Ainda não trouxemos o texto desta obra — ela está no catálogo, e o texto entra quando a ingestão passar por ela.'
-      : (o.motivo ?? 'Estado de direito não confirmado para o Brasil.')
+    temas,
+    // a capa: arquivo nosso, ou id na Open Library, ou nada (o site desenha)
+    capa: o.capa ?? null,
+    capaOL: o.capa_externa ?? null,
+    ...(editorial.chamada ? { chamada: editorial.chamada } : {}),
   }
   resumo.push(linha)
 
-  if (!podeLer) continue
-
-  const capitulos = capsDe.all(o.texto_id)
-  if (!capitulos.length) continue
-
-  const arquivo = JSON.stringify({
+  const ficha = {
     ...linha,
-    textoId: o.texto_id,
+    subtitulo: o.subtitulo,
+    paginas: o.paginas,
+    autorNasc: o.autor_nasc,
+    autorMorte: o.autor_morte,
+    assuntos: (o.assuntos ?? '').split(';').map(s => s.trim()).filter(Boolean).slice(0, 10),
+    porque: editorial.porque_existe ?? null,
+    observar: editorial.como_ler ?? null,
+    direito: podeLer ? o.motivo : null,
+    impedimento: podeLer ? null : motivoDoImpedimento(o),
     fonte: o.fonte,
     fonteUrl: o.fonte_url,
-    direito: o.motivo,
-    capitulos,
-  })
-  writeFileSync(join(SAIDA, 'livros', `${o.id}.json`), arquivo)
-  bytes += arquivo.length
-  comTexto++
+    olid: o.olid_work,
+    onde: ondeDe.all(o.id),
+    capitulos: null,
+  }
+
+  if (podeLer) {
+    const capitulos = capsDe.all(o.texto_id)
+    ficha.capitulos = capitulos.map(c => ({ ordem: c.ordem, titulo: c.titulo, palavras: c.palavras }))
+    const livro = JSON.stringify({ ...linha, textoId: o.texto_id, capitulos })
+    writeFileSync(join(SAIDA, 'livros', `${o.id}.json`), livro)
+    bytes += livro.length
+    comTexto++
+  }
+
+  writeFileSync(join(SAIDA, 'fichas', `${o.id}.json`), JSON.stringify(ficha))
 }
 
+function motivoDoImpedimento(o) {
+  if (o.fonte !== 'gutenberg' && !o.texto_id) {
+    return 'Esta obra está protegida por direito autoral — não podemos servir o texto. '
+      + 'A ficha é nossa; o livro se encontra abaixo.'
+  }
+  if (o.normalizado !== 1) {
+    return 'O texto desta obra ainda não foi trazido. Ela está no catálogo, e entra '
+      + 'quando a ingestão passar por ela.'
+  }
+  return o.motivo ?? 'Estado de direito não confirmado para o Brasil.'
+}
+
+// ── prateleiras e autores, já contados: a home não faz conta nenhuma ──
+
+const temas = banco.prepare(`
+  SELECT t.nome, t.resumo, COUNT(*) obras,
+         SUM(CASE WHEN o.trilho = 'A' THEN 1 ELSE 0 END) legiveis
+    FROM tema t
+    JOIN obra_tema ot ON ot.tema_id = t.id
+    JOIN obra o ON o.id = ot.obra_id
+   WHERE o.publicada = 1 AND o.idioma_original = 'pt'
+   GROUP BY t.id HAVING obras >= 3
+   ORDER BY obras DESC`).all()
+
 const autores = banco.prepare(`
-  SELECT p.id, p.nome, p.morte, COUNT(*) obras
+  SELECT p.id, p.nome, p.nascimento, p.morte, COUNT(*) obras
     FROM pessoa p
     JOIN obra_pessoa op ON op.pessoa_id = p.id AND op.papel = 'autor'
     JOIN obra o ON o.id = op.obra_id
-   WHERE o.publicada = 1 AND ${EM_PORTUGUES}
-   GROUP BY p.id
+   WHERE o.publicada = 1 AND o.idioma_original = 'pt'
+   GROUP BY p.id HAVING obras >= 1
    ORDER BY obras DESC`).all()
 
-writeFileSync(
-  join(SAIDA, 'catalogo.json'),
-  JSON.stringify({ geradoEm: new Date().toISOString().slice(0, 10), obras: resumo, autores }),
-)
+// o trilho A no catálogo é o calculado aqui, não o gravado na obra
+const legiveis = resumo.filter(o => o.trilho === 'A').length
+for (const t of temas) {
+  t.legiveis = resumo.filter(o => o.temas.includes(t.nome) && o.trilho === 'A').length
+}
 
+writeFileSync(join(SAIDA, 'catalogo.json'), JSON.stringify({
+  geradoEm: new Date().toISOString().slice(0, 10),
+  obras: resumo, temas, autores,
+}))
+
+const capas = existsSync(join(RAIZ, 'web', 'public', 'capas'))
 console.log(`catálogo ...... ${resumo.length} obras em português`)
-console.log(`com texto ..... ${comTexto} (${(bytes / 1e6).toFixed(1)} MB antes da compressão)`)
+console.log(`para ler ...... ${legiveis}  (${(bytes / 1e6).toFixed(1)} MB de texto)`)
+console.log(`só ficha ...... ${resumo.length - legiveis}`)
+console.log(`com capa ...... ${resumo.filter(o => o.capa || o.capaOL).length}`)
+console.log(`com chamada ... ${resumo.filter(o => o.chamada).length}`)
+console.log(`prateleiras ... ${temas.length}`)
 console.log(`autores ....... ${autores.length}`)
-console.log(`saída ......... web/public/dados/`)
+console.log(`capas locais .. ${capas ? 'sim' : 'não (rode ingestao/capas.mjs)'}`)
 fechar()

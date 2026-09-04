@@ -210,7 +210,7 @@ CREATE TABLE fragmento (
   id          INTEGER PRIMARY KEY,
   obra_id     INTEGER NOT NULL REFERENCES obra(id) ON DELETE CASCADE,
   tipo        TEXT NOT NULL CHECK (tipo IN (
-                'porque_existe','como_ler','observe','pense','conexao',
+                'chamada','porque_existe','como_ler','observe','pense','conexao',
                 'conceito','entidade','evento','pos_leitura','interpretacao')),
   titulo      TEXT,
   corpo       TEXT NOT NULL,
@@ -280,16 +280,96 @@ CREATE TABLE trilha_item (
 -- ═══════════════════════════════════════════════════════════════════
 
 CREATE TABLE leitor (
-  id          INTEGER PRIMARY KEY,
-  email       TEXT UNIQUE,
-  nome        TEXT,
-  jurisdicao  TEXT NOT NULL DEFAULT 'BR',       -- decide o que ele pode ler aqui
-  papel       TEXT NOT NULL DEFAULT 'leitor' CHECK (papel IN ('leitor','editor','admin')),
+  id            INTEGER PRIMARY KEY,
+  email         TEXT NOT NULL UNIQUE COLLATE NOCASE,
+  nome          TEXT NOT NULL,
+
+  -- Senha: scrypt, com sal por pessoa. O hash e o sal ficam separados de
+  -- propósito — e os parâmetros vão junto, porque endurecer o scrypt daqui
+  -- a dois anos não pode invalidar a senha de ninguém: a gente lê os
+  -- parâmetros que estavam valendo quando ela foi criada.
+  senha_hash    BLOB NOT NULL,
+  senha_sal     BLOB NOT NULL,
+  senha_params  TEXT NOT NULL,            -- JSON {N,r,p,tam}
+  senha_mudou   TEXT NOT NULL DEFAULT (datetime('now')),
+
+  jurisdicao    TEXT NOT NULL DEFAULT 'BR',   -- decide o que ele pode ler aqui
+  papel         TEXT NOT NULL DEFAULT 'leitor' CHECK (papel IN ('leitor','editor','admin')),
   nivel_spoiler TEXT NOT NULL DEFAULT 'ate_aqui'
                 CHECK (nivel_spoiler IN ('nenhum','ate_aqui','liberado','completo')),
-  cartoes_ativos INTEGER NOT NULL DEFAULT 1,    -- os "observe/pense" podem ser desligados
-  criado_em   TEXT NOT NULL DEFAULT (datetime('now'))
+  cartoes_ativos INTEGER NOT NULL DEFAULT 1,
+
+  -- login pelo Google, quando existir. A coluna nasce agora para que ligar
+  -- depois não seja uma migração no meio de um banco com gente dentro.
+  google_sub    TEXT UNIQUE,
+
+  criado_em     TEXT NOT NULL DEFAULT (datetime('now')),
+  visto_em      TEXT,
+  desativado    INTEGER NOT NULL DEFAULT 0
 );
+
+-- ═══════════════════════════════════════════════════════════════════
+-- SESSÃO — o que prova quem você é
+--
+-- O que vai no cookie é um segredo aleatório. O que fica no banco é o
+-- RESUMO dele. Quem roubar o banco não consegue entrar como ninguém —
+-- do resumo não se volta para o segredo.
+-- ═══════════════════════════════════════════════════════════════════
+
+CREATE TABLE sessao (
+  id         INTEGER PRIMARY KEY,
+  leitor_id  INTEGER NOT NULL REFERENCES leitor(id) ON DELETE CASCADE,
+  token_hash BLOB NOT NULL UNIQUE,        -- sha256 do token que está no cookie
+  criado_em  TEXT NOT NULL DEFAULT (datetime('now')),
+  visto_em   TEXT NOT NULL DEFAULT (datetime('now')),
+  expira_em  TEXT NOT NULL,
+  agente     TEXT,                        -- para a pessoa reconhecer o aparelho
+  ip_dica    TEXT                         -- só os dois primeiros octetos
+);
+CREATE INDEX idx_sessao_leitor ON sessao(leitor_id);
+CREATE INDEX idx_sessao_expira ON sessao(expira_em);
+
+-- ═══════════════════════════════════════════════════════════════════
+-- CONVITE — a biblioteca é fechada, e isso mora no banco
+-- ═══════════════════════════════════════════════════════════════════
+
+CREATE TABLE convite (
+  id          INTEGER PRIMARY KEY,
+  codigo_hash BLOB NOT NULL UNIQUE,       -- nem o código fica em claro
+  criado_por  INTEGER REFERENCES leitor(id) ON DELETE SET NULL,
+  usado_por   INTEGER REFERENCES leitor(id) ON DELETE SET NULL,
+  criado_em   TEXT NOT NULL DEFAULT (datetime('now')),
+  expira_em   TEXT NOT NULL,
+  usado_em    TEXT,
+  nota        TEXT                        -- "para o Ravi"
+);
+
+-- ═══════════════════════════════════════════════════════════════════
+-- RECUPERAÇÃO DE SENHA — uso único, meia hora, e derruba as sessões
+-- ═══════════════════════════════════════════════════════════════════
+
+CREATE TABLE recuperacao (
+  id         INTEGER PRIMARY KEY,
+  leitor_id  INTEGER NOT NULL REFERENCES leitor(id) ON DELETE CASCADE,
+  token_hash BLOB NOT NULL UNIQUE,
+  criado_em  TEXT NOT NULL DEFAULT (datetime('now')),
+  expira_em  TEXT NOT NULL,
+  usado_em   TEXT
+);
+CREATE INDEX idx_recup_leitor ON recuperacao(leitor_id);
+
+-- ═══════════════════════════════════════════════════════════════════
+-- FREIO — quantas vezes tentaram, e de onde
+--
+-- No banco, e não só na memória: reiniciar o servidor não pode ser o
+-- jeito de zerar o contador de quem está tentando adivinhar senha.
+-- ═══════════════════════════════════════════════════════════════════
+
+CREATE TABLE tentativa (
+  chave    TEXT NOT NULL,                 -- 'entrar:email' ou 'entrar:ip'
+  quando   TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX idx_tentativa ON tentativa(chave, quando);
 
 CREATE TABLE progresso (
   leitor_id     INTEGER NOT NULL REFERENCES leitor(id) ON DELETE CASCADE,

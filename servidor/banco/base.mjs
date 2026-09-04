@@ -27,6 +27,27 @@ export function abrir(caminho = process.env.FIO_BANCO || join(RAIZ, 'dados', 'ca
   return db
 }
 
+/**
+ * Recria uma tabela a partir da definição que está em `esquema.sql`.
+ *
+ * O SQLite não muda um CHECK depois de criada a tabela. Para as tabelas que
+ * guardam conteúdo DERIVADO — que um script refaz do zero — recriar é mais
+ * honesto que carregar migração: a fonte da verdade continua sendo o
+ * esquema.sql, e não uma pilha de ALTERs que ninguém lê.
+ *
+ * NÃO use isto em tabela com dado de gente. Aí é migração de verdade.
+ */
+export function recriarDerivada(banco, tabela) {
+  const esquema = readFileSync(join(RAIZ, 'servidor', 'esquema.sql'), 'utf8')
+  const alvo = new RegExp(String.raw`\b(TABLE|ON)\s+${tabela}\b`, 'i')
+  const criacoes = [...esquema.matchAll(/CREATE (?:VIRTUAL )?TABLE[\s\S]*?;|CREATE INDEX[^;]*;/gi)]
+    .map(m => m[0])
+    .filter(sql => alvo.test(sql))
+  if (!criacoes.length) throw new Error(`não achei ${tabela} no esquema.sql`)
+  banco.exec(`DROP TABLE IF EXISTS ${tabela}`)
+  for (const sql of criacoes) banco.exec(sql)
+}
+
 export function fechar() {
   if (db) { db.close(); db = null }
 }
