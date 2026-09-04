@@ -68,6 +68,13 @@ body {
   text-wrap: pretty;
 }
 
+/* Justificar em tela estreita abre buracos entre as palavras — cabem poucas
+   por linha, e o navegador estica o espaço para fechar a margem. Abaixo de
+   um certo ponto, alinhar à esquerda lê melhor do que ficar bonito. */
+@media (max-width: 520px) {
+  .pagina { text-align: left; }
+}
+
 .pagina p {
   margin: 0;
   text-indent: 1.4em;
