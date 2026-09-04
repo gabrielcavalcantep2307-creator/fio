@@ -79,6 +79,62 @@ const COLECOES = [
       { titulo: 'A república', autor: 'Platão', chamada: 'A pergunta é "o que é justiça". A resposta leva a inventar uma cidade inteira.' },
     ],
   },
+  {
+    nome: 'Filosofia, do começo ao fim',
+    resumo: 'Vinte e cinco séculos em ordem. Cada um responde ao anterior — e é por isso que a ordem importa.',
+    livros: [
+      { titulo: 'A república', autor: 'Platão', chamada: 'A pergunta é "o que é justiça". A resposta leva a inventar uma cidade inteira — e a expulsar os poetas dela.' },
+      { titulo: 'Ética a Nicômaco', autor: 'Aristóteles', chamada: 'Como viver bem não é uma regra: é um hábito que se treina. A ideia mais prática da filosofia antiga.' },
+      { titulo: 'Meditações', autor: 'Marco Aurélio', chamada: 'O diário particular de um imperador romano, escrito só para ele mesmo. Talvez por isso funcione.' },
+      { titulo: 'Cartas a Lucílio', autor: 'Sêneca', chamada: 'Cento e vinte e quatro cartas de um homem riquíssimo explicando por que a riqueza não resolve.' },
+      { titulo: 'Discurso do método', autor: 'René Descartes', chamada: 'Duvidar de tudo até achar o que não dá para duvidar. Sessenta páginas que reiniciaram a filosofia.' },
+      { titulo: 'Ensaios', autor: 'Michel de Montaigne', chamada: 'Inventou o ensaio para responder a uma pergunta: o que eu sei? A resposta, honesta, é "quase nada".' },
+      { titulo: 'Crítica da razão pura', autor: 'Immanuel Kant', chamada: 'O livro mais difícil desta lista, e o divisor de águas: o que a mente pode conhecer, e onde ela para.' },
+      { titulo: 'O mundo como vontade e representação', autor: 'Arthur Schopenhauer', chamada: 'O primeiro filósofo europeu a levar o budismo a sério, e o mais bem-escrito dos alemães.' },
+      { titulo: 'Assim falou Zaratustra', autor: 'Friedrich Nietzsche', chamada: 'Escrito como profecia, e feito para irritar quem procura conforto.' },
+      { titulo: 'Genealogia da moral', autor: 'Friedrich Nietzsche', chamada: 'De onde vieram "bom" e "mau" — e a suspeita de que quem os inventou tinha interesse.' },
+      { titulo: 'O ser e o nada', autor: 'Jean-Paul Sartre', chamada: 'Estamos condenados a ser livres, e a liberdade é mais pesada do que parece.' },
+      { titulo: 'O mito de Sísifo', autor: 'Albert Camus', chamada: 'Se a vida não tem sentido dado, a primeira pergunta séria da filosofia é por que continuar.' },
+      { titulo: 'Investigações filosóficas', autor: 'Ludwig Wittgenstein', chamada: 'Metade dos problemas da filosofia são problemas de linguagem — e ele tinha escrito o livro anterior dizendo o contrário.' },
+      { titulo: 'A condição humana', autor: 'Hannah Arendt', chamada: 'A diferença entre trabalhar, produzir e agir — e por que só a última faz de alguém uma pessoa pública.' },
+      { titulo: 'As palavras e as coisas', autor: 'Michel Foucault', chamada: 'Cada época tem regras invisíveis sobre o que pode ser dito. Este livro procura as nossas.' },
+      { titulo: 'Sociedade do cansaço', autor: 'Byung-Chul Han', chamada: 'A opressão de hoje não vem de fora: é você cobrando de si mesmo, sem parar, achando que é liberdade.' },
+    ],
+  },
+  {
+    nome: 'Top 10 — Política no Brasil',
+    resumo: 'Dez livros para entender por que o país funciona como funciona. Do Império à semana passada.',
+    livros: [
+      { titulo: 'Os donos do poder', autor: 'Raymundo Faoro', chamada: 'A tese de que o Estado brasileiro nunca foi capturado por uma elite: ele sempre foi a elite.' },
+      { titulo: 'Raízes do Brasil', autor: 'Sérgio Buarque de Holanda', chamada: 'De onde vem o "homem cordial" — que não quer dizer gentil, e quase todo mundo entende errado.' },
+      { titulo: 'Casa-grande & senzala', autor: 'Gilberto Freyre', chamada: 'A interpretação do Brasil que mais influenciou o país, e a que mais se discute até hoje.' },
+      { titulo: 'Cidadania no Brasil', autor: 'José Murilo de Carvalho', chamada: 'Aqui os direitos sociais vieram antes dos políticos — e isso explica muita coisa.' },
+      { titulo: 'História concisa do Brasil', autor: 'Boris Fausto', chamada: 'Quinhentos anos em quatrocentas páginas, sem simplificar o que não dá.' },
+      { titulo: 'Brasil: uma biografia', autor: 'Lilia Moritz Schwarcz', chamada: 'A história do país contada por quem se pergunta quem foi deixado de fora dela.' },
+      { titulo: '1808', autor: 'Laurentino Gomes', chamada: 'A corte portuguesa inteira atravessa o Atlântico fugindo de Napoleão. É história, e lê-se como romance.' },
+      { titulo: 'A elite do atraso', autor: 'Jessé Souza', chamada: 'A tese incômoda: a corrupção que o país denuncia é a que aparece, e não a que decide.' },
+      { titulo: 'O que é o Brasil?', autor: 'Darcy Ribeiro', chamada: 'Um antropólogo tentando responder à pergunta mais difícil sobre o próprio país.' },
+      { titulo: 'Como as democracias morrem', autor: 'Steven Levitsky', chamada: 'Democracias não caem mais por golpe militar. Caem devagar, por dentro, e este livro lista os sinais.' },
+    ],
+  },
+  {
+    nome: 'Clássicos que todo mundo gosta',
+    resumo: 'Os que aparecem em toda lista, e continuam aparecendo por um motivo.',
+    livros: [
+      { titulo: 'Crime e castigo', autor: 'Fiódor Dostoiévski', chamada: 'Um estudante mata uma velha para provar uma teoria. As quinhentas páginas seguintes são a teoria desmoronando.' },
+      { titulo: 'Os irmãos Karamázov', autor: 'Fiódor Dostoiévski', chamada: 'Três irmãos, um pai assassinado, e a pergunta se Deus existe — feita por gente de verdade, não por filósofos.' },
+      { titulo: 'Anna Kariênina', autor: 'Liev Tolstói', chamada: 'Começa com a frase mais citada da literatura e termina sem dar razão a ninguém.' },
+      { titulo: 'Guerra e paz', autor: 'Liev Tolstói', chamada: 'Napoleão invade a Rússia, e o livro insiste que grandes homens não fazem história.' },
+      { titulo: 'O pequeno príncipe', autor: 'Antoine de Saint-Exupéry', chamada: 'Escrito para adultos, publicado como infantil, e ninguém nunca corrigiu isso.' },
+      { titulo: 'Orgulho e preconceito', autor: 'Jane Austen', chamada: 'Uma comédia de casamento que é, por baixo, um livro sobre dinheiro e sobre não ter nenhum.' },
+      { titulo: 'O retrato de Dorian Gray', autor: 'Oscar Wilde', chamada: 'Um homem não envelhece; o retrato dele, sim. E o retrato fica cada vez mais honesto.' },
+      { titulo: 'O apanhador no campo de centeio', autor: 'J. D. Salinger', chamada: 'Três dias de um adolescente expulso do colégio, e a voz que inventou toda uma maneira de escrever.' },
+      { titulo: 'O sol é para todos', autor: 'Harper Lee', chamada: 'Um julgamento racista no Alabama, visto por uma menina de oito anos que não entende tudo — e por isso entende.' },
+      { titulo: 'A metamorfose', autor: 'Franz Kafka', chamada: 'Acorda transformado em inseto. A parte assustadora não é essa: é como a família reage.' },
+      { titulo: 'O estrangeiro', autor: 'Albert Camus', chamada: 'É condenado menos pelo crime e mais por não ter chorado no enterro da mãe.' },
+      { titulo: 'O senhor dos anéis', autor: 'J. R. R. Tolkien', chamada: 'Inventou línguas antes de inventar o mundo, e o mundo antes de inventar a história.' },
+    ],
+  },
 ]
 
 const banco = abrir()
@@ -133,14 +189,42 @@ async function buscarOL(parametros) {
  * capa. É o que evita um catálogo em português com metade dos títulos em
  * inglês.
  */
+const sobrenome = (nome) => nome.trim().split(/\s+/).pop().toLowerCase()
+
+/**
+ * O resultado tem que ser DAQUELE autor.
+ *
+ * Sem esta checagem, "O homem em busca de um sentido / Viktor Frankl" voltou
+ * com a capa de um livro chamado *Desenhos Astrais* — a busca frouxa acha
+ * qualquer coisa, e uma capa errada numa estante é pior que capa nenhuma:
+ * quem vê acha que o site não sabe o que tem.
+ */
+const ehDoAutor = (doc, autor) =>
+  (doc.author_name ?? []).some(n => n.toLowerCase().includes(sobrenome(autor)))
+
+/**
+ * Três tentativas, da mais precisa para a mais frouxa — e a checagem de autor
+ * só vale na última.
+ *
+ * As duas primeiras buscam por `title:` E `author:` ao mesmo tempo: se a Open
+ * Library devolveu algo, ela casou os dois campos, e exigir de novo que o
+ * sobrenome apareça em `author_name` só derruba resultado bom — "Maquiavel"
+ * está lá como "Niccolò Machiavelli", "Cixin Liu" como "Liu Cixin".
+ *
+ * A terceira é texto livre, e é ela que traz lixo: foi assim que Viktor
+ * Frankl ganhou a capa de um livro chamado *Desenhos Astrais*. Nela, o autor
+ * tem que bater.
+ */
 async function procurar(titulo, autor) {
-  for (const tentativa of [
-    { title: titulo, author: autor, language: 'por' },
-    { title: titulo, author: autor },
-    { q: `${titulo} ${autor}` },
-  ]) {
-    const [primeiro] = await buscarOL(tentativa)
-    if (primeiro) return primeiro
+  const tentativas = [
+    { params: { title: titulo, author: autor, language: 'por' }, conferir: false },
+    { params: { title: titulo, author: autor }, conferir: false },
+    { params: { q: `${titulo} ${autor}` }, conferir: true },
+  ]
+  for (const { params, conferir } of tentativas) {
+    const achados = await buscarOL(params)
+    const bons = conferir ? achados.filter(d => ehDoAutor(d, autor)) : achados
+    if (bons[0]) return bons[0]
     await pausa()
   }
   return null
@@ -193,7 +277,11 @@ for (const colecao of COLECOES) {
 
     sql.liga.run(obraId, Number(pessoa.id), 'autor')
 
-    // a capa e a chamada valem mesmo para obra que já existia
+    // Título, capa e chamada valem mesmo para obra que já veio da ingestão por
+    // autor. O título da curadoria SEMPRE vence o da Open Library: lá a obra
+    // está pelo nome original, e foi assim que "Cem anos de solidão" entrou no
+    // catálogo como "Cien años de soledad", num site que é só em português.
+    banco.prepare('UPDATE obra SET titulo = ? WHERE id = ?').run(livro.titulo, obraId)
     if (d?.cover_i) banco.prepare('UPDATE obra SET capa_externa = COALESCE(capa_externa, ?) WHERE id = ?')
       .run(String(d.cover_i), obraId)
     sql.limpaFrag.run(obraId)

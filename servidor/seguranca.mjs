@@ -105,11 +105,18 @@ export function normalizarConvite(bruto) {
  */
 export const LIMITES = {
   'entrar': { quantas: 8, minutos: 15 },
-  'criar': { quantas: 5, minutos: 60 },
+  // Criar conta já é limitado pelo convite, que é de uso único: o freio aqui
+  // existe só contra quem varre códigos, não contra quem erra de digitação.
+  // Cinco era pouco — dois enganos e a pessoa ficava trancada uma hora com um
+  // convite VÁLIDO na mão. Doze, e acerto zera o contador.
+  'criar': { quantas: 12, minutos: 60 },
   'esqueci': { quantas: 4, minutos: 60 },
   // A sincronia roda a cada dois minutos por aparelho. 40 numa hora dá folga
   // para três ou quatro aparelhos e ainda assim tranca uma torneira.
   'guardar': { quantas: 40, minutos: 60 },
+  // Abrir livro é gesto comum; o freio aqui só existe para um laço de script
+  // não inventar popularidade.
+  'abrir': { quantas: 120, minutos: 60 },
 }
 
 export function freio(banco, acao, chave) {

@@ -63,7 +63,7 @@ export default function App() {
     const id = Number(casaLer?.[1] ?? 0)
     if (!id) return
     if (livro?.id === id) return
-    dados.livro(id).then(setLivro).catch(() => setLivro(null))
+    dados.livro(id).then(l => { setLivro(l); conta.contarAbertura(id) }).catch(() => setLivro(null))
   }, [casaLer, livro?.id])
 
   if (erro) return <Aviso>Não consegui carregar o acervo: {erro}</Aviso>

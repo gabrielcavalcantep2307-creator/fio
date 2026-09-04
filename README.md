@@ -6,10 +6,10 @@ O nome é provisório — vem da ideia de puxar um fio: você entra por *A Revol
 dos Bichos* e sai em Hannah Arendt sem ter planejado.
 
 > **No ar em <https://fiolib.duckdns.org>**, na mesma VPS do Wallt.
-> **1.537 obras** com capa e categoria, **123 para ler inteiras** num leitor
-> próprio — inclusive a Constituição e nove códigos, que são livres por lei.
-> Contas funcionando: criar (com convite), entrar, recuperar senha, e o que
-> você marca aparece no outro aparelho.
+> **1.488 obras** com capa e categoria, **526 para ler inteiras** num leitor
+> próprio — inclusive a Constituição e nove códigos, livres por lei. Dá para
+> **baixar em EPUB**. Contas funcionando: criar (com convite), entrar,
+> recuperar senha, e o que você marca aparece no outro aparelho.
 
 **O acervo é só em português.** Traduzido ou original, mas em português — livro
 em inglês não aparece nem no catálogo. É uma decisão do dono do acervo, e ela
@@ -58,6 +58,8 @@ A investigação completa, com os números e as fontes, está em
 ## Os documentos
 
 - [`docs/ACERVO.md`](docs/ACERVO.md) — de onde vêm os livros. **Comece aqui.**
+- [`docs/CRESCER.md`](docs/CRESCER.md) — como o acervo cresce daqui, e a
+  brecha grande: traduzir o que já é livre.
 - [`docs/CONTAS.md`](docs/CONTAS.md) — login, senha e sessão, com o motivo de
   cada decisão. É a parte em que um erro não aparece usando.
 - [`docs/VPS.md`](docs/VPS.md) — a máquina, e como publicar sem derrubar o Wallt.
@@ -80,6 +82,7 @@ Precisa só de Node 22+. **Nenhuma dependência** — o SQLite vem no Node
 
 ```bash
 npm run acervo      # o catálogo do Gutenberg (baixa 21 MB na 1ª vez)
+npm run leis        # a legislação brasileira, livre pelo art. 8º da 9.610/98
 npm run temas       # classifica em 31 prateleiras
 npm run capas       # baixa as capas, e descarta as que o Gutenberg inventa
 npm run autores     # os autores que faltavam, pela Open Library

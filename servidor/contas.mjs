@@ -53,6 +53,8 @@ export async function criar(banco, { nome, email, senha, convite }, ctx = {}) {
 
   banco.prepare(`UPDATE convite SET usado_por = ?, usado_em = datetime('now') WHERE id = ?`)
     .run(id, conv.id)
+  // deu certo: o histórico de tentativas daquele IP some
+  perdoar(banco, 'criar', dicaDeIp(ctx.ip) ?? 'sem-ip')
 
   const leitor = banco.prepare('SELECT * FROM leitor WHERE id = ?').get(id)
   return { pessoa: publico(leitor), sessao: abrirSessao(banco, id, ctx) }
@@ -285,6 +287,38 @@ export const apagarGuardado = (banco, leitorId) =>
 export function apagarConta(banco, leitorId) {
   banco.prepare('DELETE FROM leitor WHERE id = ?').run(leitorId)
   return { ok: true }
+}
+
+// ─────────────────────────────────────────────────────────────
+// O que está sendo lido
+//
+// Contagem anônima: a linha guarda a obra e o instante, e mais nada. Não há
+// como voltar dela para uma pessoa — o que é a única forma honesta de ter uma
+// lista de "mais lidos" numa biblioteca fechada, onde qualquer contagem por
+// leitor seria contagem por nome.
+// ─────────────────────────────────────────────────────────────
+
+export function registrarAbertura(banco, obraId, ctx = {}) {
+  // Freio por IP para que um laço de script não invente popularidade. O IP
+  // NÃO é gravado: serve só para contar as tentativas, na tabela de freio,
+  // que se limpa sozinha em 24 h.
+  if (!freio(banco, 'abrir', dicaDeIp(ctx.ip) ?? 'sem-ip').passa) return { ok: true }
+
+  const existe = banco.prepare('SELECT 1 FROM obra WHERE id = ? AND publicada = 1').get(obraId)
+  if (!existe) return { ok: true }
+
+  banco.prepare('INSERT INTO abertura (obra_id) VALUES (?)').run(obraId)
+  // 90 dias bastam para qualquer janela que a gente mostre
+  banco.prepare("DELETE FROM abertura WHERE quando < datetime('now','-90 days')").run()
+  return { ok: true }
+}
+
+export function maisLidos(banco, { dias = 30, quantos = 10 } = {}) {
+  return banco.prepare(
+    `SELECT obra_id, COUNT(*) vezes FROM abertura
+      WHERE quando > datetime('now', ?)
+      GROUP BY obra_id ORDER BY vezes DESC, obra_id LIMIT ?`,
+  ).all(`-${dias} days`, quantos)
 }
 
 // ─────────────────────────────────────────────────────────────

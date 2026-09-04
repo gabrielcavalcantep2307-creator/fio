@@ -458,6 +458,23 @@ CREATE VIRTUAL TABLE busca_capitulo USING fts5(
 );
 
 -- ═══════════════════════════════════════════════════════════════════
+-- O QUE ESTÁ SENDO LIDO
+--
+-- Uma linha por vez que alguém abre um livro. **Sem leitor, sem IP, sem
+-- sessão** — só a obra e o instante. Não dá para reconstruir quem leu o quê,
+-- e é de propósito: para saber o que está em alta não é preciso saber quem.
+--
+-- É o que faz "o mais lido da semana" ser um número medido, e não uma lista
+-- que alguém escreveu dizendo que é.
+-- ═══════════════════════════════════════════════════════════════════
+
+CREATE TABLE abertura (
+  obra_id INTEGER NOT NULL REFERENCES obra(id) ON DELETE CASCADE,
+  quando  TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX idx_abertura ON abertura(quando, obra_id);
+
+-- ═══════════════════════════════════════════════════════════════════
 -- REGISTRO — auditoria do painel e da ingestão
 -- ═══════════════════════════════════════════════════════════════════
 

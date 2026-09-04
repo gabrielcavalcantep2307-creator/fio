@@ -78,6 +78,27 @@ export const subirGuardado = (itens: Item[]) => chamar<{ itens: Item[] }>('/meus
  *  roda dois minutos depois e traz tudo de volta. */
 export const apagarDados = () => chamar<{ apagados: number }>('/apagar-dados', {})
 
+// ── o que está sendo lido ──
+
+export type Popular = { obra_id: number; vezes: number }
+
+export const populares = () => chamar<{ semana: Popular[]; mes: Popular[] }>('/populares', undefined, 'GET')
+
+/**
+ * "Abri este livro."
+ *
+ * Anônimo: o servidor grava a obra e o instante, e mais nada — nem quem, nem
+ * de onde. Falhar aqui não pode atrapalhar a leitura, então engole o erro.
+ */
+export function contarAbertura(obraId: number) {
+  fetch(`${API}/abri/${obraId}`, {
+    method: 'POST', credentials: 'include',
+    headers: { 'content-type': 'application/json', 'x-fio': '1' },
+    body: '{}',
+    keepalive: true,
+  }).catch(() => {})
+}
+
 export async function apagarConta(email: string) {
   await chamar('/apagar-conta', { email })
   quem = null

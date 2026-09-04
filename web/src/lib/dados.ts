@@ -20,9 +20,24 @@ async function pegar<T>(caminho: string): Promise<T> {
 export const catalogo = () => pegar<Catalogo>('catalogo.json')
 export const ficha = (id: number) => pegar<Ficha>(`fichas/${id}.json`)
 
-// Um arquivo por livro, com os capítulos dentro. Baixa uma vez e a leitura
-// inteira fica instantânea — virar página não pede rede.
-export const livro = (id: number) => pegar<Livro>(`livros/${id}.json`)
+/**
+ * O livro inteiro, de uma vez.
+ *
+ * Vem do servidor, e não de um arquivo estático: com 527 obras legíveis o
+ * texto passa de 120 MB, e copiar isso a cada publicação não se sustenta.
+ * Baixa uma vez por livro e a leitura fica instantânea — virar página não
+ * pede rede.
+ */
+export async function livro(id: number): Promise<Livro> {
+  const chave = `livro:${id}`
+  const guardado = memoria.get(chave)
+  if (guardado) return guardado as Livro
+  const r = await fetch(`${import.meta.env.VITE_API || '/api'}/livro/${id}`, { credentials: 'include' })
+  if (!r.ok) throw new Error(`não consegui abrir o livro (${r.status})`)
+  const d = (await r.json()) as Livro
+  memoria.set(chave, d)
+  return d
+}
 
 /** "Revolução" e "revolucao" têm que dar na mesma coisa. */
 export const normal = (s: string) =>

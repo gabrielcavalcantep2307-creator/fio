@@ -294,6 +294,12 @@ function Gaveta({
             <Regua rotulo="largura do texto" valor={prefs.medida} min={24} max={52} passo={1}
               muda={v => preferir({ medida: v })} />
 
+            <a href={`/api/livro/${livro.id}/epub`} download
+              className="block text-center py-2 rounded text-sm"
+              style={{ border: '1px solid var(--linha)', color: 'var(--tinta)' }}>
+              Baixar este livro (EPUB)
+            </a>
+
             <p className="text-xs leading-relaxed" style={{ color: 'var(--tinta-2)' }}>
               Teclado: <b>← →</b> viram a página, <b>f</b> entra no foco,
               <b> s</b> abre o sumário, <b>Esc</b> volta.

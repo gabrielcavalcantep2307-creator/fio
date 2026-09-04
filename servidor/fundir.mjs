@@ -27,6 +27,10 @@ const DO_CATALOGO = [
 const DE_GENTE = [
   'leitor', 'sessao', 'convite', 'recuperacao', 'tentativa',
   'guardado', 'perfil_leitor', 'recomendacao', 'registro',
+  // `abertura` é anônima, mas só existe em produção: é medição de uso, e a
+  // máquina de desenvolvimento não tem nenhuma. Substituí-la apagaria a
+  // contagem de "o mais lido" a cada publicação.
+  'abertura',
 ]
 
 const entrada = process.argv[2]
@@ -40,10 +44,15 @@ if (!entrada || !existsSync(entrada)) {
 const banco = new DatabaseSync(destino)
 banco.exec('PRAGMA journal_mode = WAL')
 
-const antes = Object.fromEntries(DE_GENTE.map(t => {
-  try { return [t, banco.prepare(`SELECT COUNT(*) n FROM ${t}`).get().n] }
-  catch { return [t, 0] } // tabela ainda não existe: banco novo
-}))
+// Contar uma tabela que pode ainda não existir: o banco de produção é mais
+// velho que o esquema, e uma tabela nova só aparece lá depois da migração.
+// Isto é RELATÓRIO — não pode derrubar uma fusão que já foi confirmada.
+const contar = (t) => {
+  try { return banco.prepare(`SELECT COUNT(*) n FROM ${t}`).get().n }
+  catch { return null }
+}
+
+const antes = Object.fromEntries(DE_GENTE.map(t => [t, contar(t)]))
 
 banco.exec(`ATTACH DATABASE '${entrada.replace(/'/g, "''")}' AS entrada`)
 
@@ -96,12 +105,13 @@ if (quebradas.length) {
 banco.exec('DETACH DATABASE entrada')
 banco.exec('PRAGMA wal_checkpoint(TRUNCATE)')
 
-const depois = Object.fromEntries(DE_GENTE.map(t => [t, banco.prepare(`SELECT COUNT(*) n FROM ${t}`).get().n]))
+const depois = Object.fromEntries(DE_GENTE.map(t => [t, contar(t)]))
 const obras = banco.prepare('SELECT COUNT(*) n FROM obra').get().n
 
 console.log(`tabelas de catálogo trocadas . ${copiadas}`)
 console.log(`obras .......................... ${obras}`)
 for (const t of DE_GENTE) {
+  if (depois[t] === null) { console.log(`${t.padEnd(14)}     —  ainda não existe aqui`); continue }
   const igual = antes[t] === depois[t]
   console.log(`${t.padEnd(14)} ${String(depois[t]).padStart(5)}  ${igual ? 'intacta' : `MUDOU (era ${antes[t]})`}`)
 }

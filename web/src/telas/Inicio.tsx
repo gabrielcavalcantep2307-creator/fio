@@ -1,35 +1,51 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import type { Catalogo, ObraResumo } from '../tipos'
 import { useEstante } from '../lib/estante'
+import * as conta from '../lib/conta'
 import { duracao } from '../lib/formato'
 import { Capa } from '../componentes/Capa'
 import { Prateleira } from '../componentes/Prateleira'
+import { Top10 } from '../componentes/Top10'
 import { Descobrir } from '../componentes/Descobrir'
 
 // A home tem uma pergunta só: **o que eu leio agora?**
 //
-// Por isso ela é uma sequência, não um painel: uma obra em destaque com o
-// motivo escrito, o que você deixou aberto, e então prateleiras — cada uma
-// com um critério que dá para explicar em quatro palavras. Nada de "informação
-// solta jogada": se um bloco não responde àquela pergunta, ele não está aqui.
+// Por isso ela é uma sequência, não um painel: a obra em destaque com o motivo
+// escrito, o que você deixou aberto, o que está sendo lido, e então
+// prateleiras — cada uma com um critério que dá para explicar em quatro
+// palavras. Se um bloco não responde àquela pergunta, ele não está aqui.
+//
+// A ordem também não é acaso. **Curadoria antes de filtro:** "Todo mundo está
+// lendo" vem antes de "Romance", porque escolha de gente vale mais que
+// agrupamento de metadado — e é o que separa uma biblioteca de uma planilha.
 
 const PRATELEIRAS: { tema: string; frase: string }[] = [
   { tema: 'Romance', frase: 'histórias longas, gente que muda' },
-  { tema: 'Distopia', frase: 'o mundo organizado de um jeito que assusta' },
   { tema: 'Filosofia', frase: 'as perguntas sem resposta pronta' },
+  { tema: 'Distopia', frase: 'o mundo organizado de um jeito que assusta' },
+  { tema: 'Direito', frase: 'a norma, e o argumento sobre ela' },
   { tema: 'Política e sociedade', frase: 'como o poder se organiza' },
   { tema: 'Contos', frase: 'uma história por noite' },
   { tema: 'História', frase: 'o que aconteceu, por quem estudou' },
   { tema: 'Psicologia', frase: 'por que as pessoas fazem o que fazem' },
-  { tema: 'Direito', frase: 'a norma, e o argumento sobre ela' },
   { tema: 'Mistério e policial', frase: 'alguém escondeu alguma coisa' },
   { tema: 'Ficção científica', frase: 'o futuro para falar do presente' },
   { tema: 'Poesia', frase: 'verso' },
   { tema: 'Biografia e memórias', frase: 'uma vida contada' },
+  { tema: 'Crônica e ensaio', frase: 'texto curto, opinião assumida' },
+  { tema: 'Teatro', frase: 'escrito para ser dito em voz alta' },
 ]
 
 export function Inicio({ catalogo }: { catalogo: Catalogo }) {
   const { progresso, estado } = useEstante()
+  const [populares, setPopulares] = useState<conta.Popular[] | null>(null)
+
+  useEffect(() => {
+    conta.populares()
+      .then(p => setPopulares(p.mes.length >= 3 ? p.mes : []))
+      .catch(() => setPopulares([]))
+  }, [])
+
   const porId = useMemo(() => new Map(catalogo.obras.map(o => [o.id, o])), [catalogo.obras])
   const porTema = useMemo(() => {
     const m = new Map<string, ObraResumo[]>()
@@ -39,8 +55,13 @@ export function Inicio({ catalogo }: { catalogo: Catalogo }) {
         m.get(t)!.push(o)
       }
     }
-    // dentro da prateleira, quem dá para ler vem primeiro
-    for (const lista of m.values()) lista.sort((a, b) => (a.trilho === b.trilho ? 0 : a.trilho === 'A' ? -1 : 1))
+    // dentro da prateleira: o que dá para ler primeiro, e o que tem ficha
+    // escrita antes do que não tem
+    for (const lista of m.values()) {
+      lista.sort((a, b) =>
+        (a.trilho === b.trilho ? 0 : a.trilho === 'A' ? -1 : 1)
+        || ((b.chamada ? 1 : 0) - (a.chamada ? 1 : 0)))
+    }
     return m
   }, [catalogo.obras])
 
@@ -53,23 +74,35 @@ export function Inicio({ catalogo }: { catalogo: Catalogo }) {
   const legiveis = catalogo.obras.filter(o => o.trilho === 'A')
 
   // O destaque gira entre as obras que TÊM ficha escrita — as únicas que
-  // conseguem sustentar um destaque, porque têm o que dizer. Gira por dia, e
-  // não a cada carga: quem abre o site duas vezes na mesma tarde encontra a
-  // mesma coisa, e quem volta amanhã encontra outra.
+  // sustentam um destaque, porque têm o que dizer. Gira por dia, e não a cada
+  // carga: quem abre duas vezes na mesma tarde encontra a mesma coisa.
   const curadas = legiveis.filter(o => o.chamada)
   const dia = Math.floor(Date.now() / 86400000)
   const destaque = curadas.length ? curadas[dia % curadas.length] : legiveis[0]
+
+  const colecao = (nome: string) => {
+    const c = catalogo.colecoes.find(x => x.nome === nome)
+    return c ? c.obras.map(id => porId.get(id)).filter((o): o is ObraResumo => !!o) : []
+  }
+
+  // "O que está sendo lido" é MEDIDO, não escrito: cada abertura de livro
+  // conta uma linha anônima no servidor. Enquanto não houver leitura
+  // suficiente, cai na curadoria — e a tela diz qual dos dois está mostrando.
+  const maisLidos = populares?.length
+    ? populares.map(p => porId.get(p.obra_id)).filter((o): o is ObraResumo => !!o)
+    : colecao('Todo mundo está lendo')
+  const medido = !!populares?.length
 
   const numaTarde = legiveis
     .filter(o => o.minutos && o.minutos >= 45 && o.minutos <= 200 && o.id !== destaque?.id)
     .sort((a, b) => (a.minutos ?? 0) - (b.minutos ?? 0))
     .slice(0, 18)
 
-  const machado = catalogo.autores.find(a => a.nome.includes('Machado de Assis'))
-  const doMachado = machado ? catalogo.obras.filter(o => o.autorId === machado.id) : []
+  const outrasColecoes = catalogo.colecoes.filter(
+    c => c.nome !== 'Todo mundo está lendo' && !c.nome.startsWith('Top 10'))
 
   return (
-    <div className="flex flex-col gap-12">
+    <div className="flex flex-col gap-14">
       {destaque && <Destaque obra={destaque} quantas={curadas.length} />}
 
       {lendo.length > 0 && (
@@ -80,61 +113,68 @@ export function Inicio({ catalogo }: { catalogo: Catalogo }) {
         />
       )}
 
+      <Top10
+        titulo="Top 10 — o que está sendo lido"
+        subtitulo={medido ? 'nos últimos 30 dias' : undefined}
+        nota={medido
+          ? 'contagem anônima: a obra e o instante, nada mais'
+          : 'ainda sem leitura suficiente para medir — por enquanto, curadoria'}
+        obras={maisLidos}
+      />
+
       <Descobrir catalogo={catalogo} />
+
+      <Top10
+        titulo="Top 10 — Política no Brasil"
+        subtitulo="para entender por que o país funciona como funciona"
+        obras={colecao('Top 10 — Política no Brasil')}
+      />
 
       <Prateleira
         titulo="Cabe numa tarde"
         subtitulo="livros inteiros, de uma a três horas"
         obras={numaTarde}
-        verMais="#/estante"
+        verMais="#/estante?d=1a3h&so=ler"
       />
 
-      {/* Coleções vêm ANTES dos temas: escolha de gente na frente de filtro
-          de metadado. É a diferença entre uma biblioteca e uma planilha. */}
-      {catalogo.colecoes.map(c => {
+      {outrasColecoes.map(c => {
         const obras = c.obras.map(id => porId.get(id)).filter((o): o is ObraResumo => !!o)
         if (obras.length < 3) return null
-        return (
-          <Prateleira key={c.nome} titulo={c.nome} subtitulo={c.resumo ?? undefined} obras={obras} />
-        )
+        return <Prateleira key={c.nome} titulo={c.nome} subtitulo={c.resumo ?? undefined} obras={obras} />
       })}
-
-      {doMachado.length > 0 && (
-        <Prateleira
-          titulo="Machado de Assis, inteiro"
-          subtitulo="os romances todos, do primeiro ao último"
-          obras={doMachado}
-          verMais={`#/autor/${machado!.id}`}
-        />
-      )}
 
       {PRATELEIRAS.map(({ tema, frase }) => {
         const obras = porTema.get(tema) ?? []
         if (obras.length < 4) return null
         return (
-          <Prateleira
-            key={tema}
-            titulo={tema}
-            subtitulo={frase}
-            obras={obras.slice(0, 18)}
-            verMais={`#/tema/${encodeURIComponent(tema)}`}
-          />
+          <Prateleira key={tema} titulo={tema} subtitulo={frase} obras={obras.slice(0, 18)}
+            verMais={`#/tema/${encodeURIComponent(tema)}`} />
         )
       })}
+
+      <Numeros catalogo={catalogo} />
     </div>
   )
 }
 
+// ─────────────────────────────────────────────────────────────
+
 function Destaque({ obra, quantas }: { obra: ObraResumo; quantas: number }) {
   return (
     <section
-      className="rounded-xl overflow-hidden"
+      className="rounded-xl overflow-hidden relative"
       style={{ background: 'var(--papel-2)', border: '1px solid var(--linha)' }}
     >
-      <div className="grid sm:grid-cols-[minmax(0,11rem)_1fr] gap-6 sm:gap-8 p-6 sm:p-9">
-        <a href={`#/obra/${obra.id}`} className="block w-32 sm:w-full mx-auto">
+      {/* Um brilho fraco atrás da capa. Não é enfeite: sem ele o bloco é um
+          retângulo chapado, e a página inteira vira uma tabela de retângulos. */}
+      <div aria-hidden className="absolute inset-0 pointer-events-none" style={{
+        background: 'radial-gradient(58% 88% at 13% 42%, color-mix(in srgb, var(--acento) 14%, transparent), transparent 70%)',
+      }} />
+
+      <div className="relative grid sm:grid-cols-[minmax(0,12rem)_1fr] gap-6 sm:gap-10 p-6 sm:p-10">
+        <a href={`#/obra/${obra.id}`} className="block w-36 sm:w-full mx-auto">
           <div className="aspect-[2/3] rounded-[3px] overflow-hidden"
-            style={{ boxShadow: '0 2px 4px rgba(0,0,0,.2), 0 18px 36px -20px rgba(0,0,0,.6)' }}>
+            style={{ boxShadow: '0 2px 6px rgba(0,0,0,.25), 0 26px 50px -24px rgba(0,0,0,.7)' }}>
             <Capa obra={obra} tamanho="grande" />
           </div>
         </a>
@@ -143,7 +183,7 @@ function Destaque({ obra, quantas }: { obra: ObraResumo; quantas: number }) {
           <div className="miudo">
             para começar{quantas > 1 && <span className="opacity-60"> · muda todo dia</span>}
           </div>
-          <h1 className="text-3xl sm:text-[2.6rem] leading-[1.08] mt-3" style={{ fontFamily: 'Literata, serif' }}>
+          <h1 className="text-3xl sm:text-[2.7rem] leading-[1.06] mt-3" style={{ fontFamily: 'Literata, serif' }}>
             {obra.titulo}
           </h1>
           <p className="mt-1.5" style={{ color: 'var(--tinta-2)' }}>{obra.autor}</p>
@@ -169,6 +209,28 @@ function Destaque({ obra, quantas }: { obra: ObraResumo; quantas: number }) {
           </div>
         </div>
       </div>
+    </section>
+  )
+}
+
+/** O pé da home: o que o acervo é, em número, sem discurso. */
+function Numeros({ catalogo }: { catalogo: Catalogo }) {
+  const legiveis = catalogo.obras.filter(o => o.trilho === 'A').length
+  const numeros: [string, string][] = [
+    [String(catalogo.obras.length), 'obras no catálogo'],
+    [String(legiveis), 'para ler inteiras, aqui'],
+    [String(catalogo.temas.length), 'assuntos'],
+    [String(catalogo.autores.length), 'autores'],
+  ]
+  return (
+    <section className="grid grid-cols-2 sm:grid-cols-4 gap-6 py-8"
+      style={{ borderTop: '1px solid var(--linha)' }}>
+      {numeros.map(([n, o]) => (
+        <div key={o}>
+          <div className="text-3xl tabular-nums" style={{ fontFamily: 'Literata, serif' }}>{n}</div>
+          <div className="miudo mt-1">{o}</div>
+        </div>
+      ))}
     </section>
   )
 }

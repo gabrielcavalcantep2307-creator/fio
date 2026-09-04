@@ -92,6 +92,15 @@ export function Obra({ id, catalogo }: { id: number; catalogo: Catalogo }) {
               className="px-5 py-2.5 rounded text-sm" style={{ border: '1px solid var(--linha)' }}>
               {estado[id] === 'quero_ler' ? 'Está na sua lista' : 'Quero ler'}
             </button>
+            {/* Uma biblioteca que só deixa ler dentro dela não é biblioteca, é
+                aluguel. Estas obras são de domínio público: levar embora é o
+                direito que define isso. */}
+            {ficha.trilho === 'A' && (
+              <a href={`/api/livro/${id}/epub`} download
+                className="px-5 py-2.5 rounded text-sm" style={{ border: '1px solid var(--linha)' }}>
+                Baixar (EPUB)
+              </a>
+            )}
           </div>
         </div>
       </header>

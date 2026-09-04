@@ -6,10 +6,12 @@
 //                     as prateleiras usam — tudo acontece no navegador, sem
 //                     ida ao servidor.
 //   fichas/{id}.json  a página da obra: onde encontrar, assuntos, sumário.
-//   livros/{id}.json  o texto inteiro, só para o que dá para ler aqui.
 //
-// Separar ficha de livro é o que permite ter 2 mil obras no catálogo sem
-// obrigar ninguém a baixar 30 MB para ver uma capa.
+// O TEXTO dos livros NÃO sai daqui. Ele já foi arquivo estático, e parou de
+// ser quando o acervo legível passou de 123 para 527 obras: 127 MB de texto
+// num diretório que é copiado inteiro a cada publicação, e versionado no git.
+// Agora o texto vem do banco, por `GET /api/livro/{id}` — o banco já vai para
+// a máquina de qualquer jeito, e o site voltou a caber em poucos megabytes.
 //
 //   node ingestao/publicar.mjs
 
@@ -21,10 +23,9 @@ const SAIDA = join(RAIZ, 'web', 'public', 'dados')
 const CASA = process.env.FIO_JURISDICAO || 'BR'
 
 const banco = abrir()
-for (const pasta of ['livros', 'fichas']) {
-  rmSync(join(SAIDA, pasta), { recursive: true, force: true })
-  mkdirSync(join(SAIDA, pasta), { recursive: true })
-}
+rmSync(join(SAIDA, 'livros'), { recursive: true, force: true }) // não existe mais
+rmSync(join(SAIDA, 'fichas'), { recursive: true, force: true })
+mkdirSync(join(SAIDA, 'fichas'), { recursive: true })
 
 // Só entra no site o que é em português. Decisão do dono do acervo, e ela
 // vale antes de qualquer outra.
@@ -110,11 +111,10 @@ for (const o of obras) {
   }
 
   if (podeLer) {
-    const capitulos = capsDe.all(o.texto_id)
-    ficha.capitulos = capitulos.map(c => ({ ordem: c.ordem, titulo: c.titulo, palavras: c.palavras }))
-    const livro = JSON.stringify({ ...linha, textoId: o.texto_id, capitulos })
-    writeFileSync(join(SAIDA, 'livros', `${o.id}.json`), livro)
-    bytes += livro.length
+    // Só o sumário: o corpo dos capítulos fica no banco.
+    ficha.capitulos = capsDe.all(o.texto_id)
+      .map(c => ({ ordem: c.ordem, titulo: c.titulo, palavras: c.palavras }))
+    bytes += ficha.capitulos.reduce((s, c) => s + c.palavras, 0)
     comTexto++
   }
 
@@ -182,7 +182,7 @@ writeFileSync(join(SAIDA, 'catalogo.json'), JSON.stringify({
 
 const capas = existsSync(join(RAIZ, 'web', 'public', 'capas'))
 console.log(`catálogo ...... ${resumo.length} obras em português`)
-console.log(`para ler ...... ${legiveis}  (${(bytes / 1e6).toFixed(1)} MB de texto)`)
+console.log(`para ler ...... ${legiveis}  (${(bytes / 1e6).toFixed(1)} milhões de palavras, no banco)`)
 console.log(`só ficha ...... ${resumo.length - legiveis}`)
 console.log(`com capa ...... ${resumo.filter(o => o.capa || o.capaOL).length}`)
 console.log(`com chamada ... ${resumo.filter(o => o.chamada).length}`)

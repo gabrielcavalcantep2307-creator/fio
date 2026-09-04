@@ -6,6 +6,9 @@
   "scripts": {
     "acervo": "node ingestao/gutenberg.mjs",
     "temas": "node ingestao/temas.mjs",
+    "leis": "node ingestao/legislacao.mjs",
+    "destaques": "node ingestao/destaques.mjs",
+    "duplicatas": "node ingestao/limpar-duplicatas.mjs",
     "capas": "node ingestao/capas.mjs",
     "autores": "node ingestao/autores.mjs",
     "curadoria": "node ingestao/curadoria.mjs",

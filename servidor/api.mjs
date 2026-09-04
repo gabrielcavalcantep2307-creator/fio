@@ -20,6 +20,7 @@ import { abrir, RAIZ } from './banco/base.mjs'
 import * as contas from './contas.mjs'
 import { Recusa } from './contas.mjs'
 import { enviar } from './email.mjs'
+import { montarEpub, nomeDeArquivo } from './epub.mjs'
 
 const PORTA = Number(process.env.FIO_PORTA || 8787)
 const SITE = process.env.FIO_SITE || `http://localhost:${PORTA}`
@@ -105,6 +106,9 @@ const responder = (res, status, dado) => {
   res.end(JSON.stringify(dado))
 }
 
+/** O título do Gutenberg às vezes traz o subtítulo depois de uma quebra. */
+const primeiraLinha = (s) => String(s ?? '').split(/[\r\n]/)[0].replace(/\s+/g, ' ').trim()
+
 const ipDe = (req) =>
   (req.headers['x-forwarded-for'] ?? '').split(',')[0].trim() || req.socket.remoteAddress
 
@@ -174,6 +178,12 @@ const ROTAS = {
     return contas.guardar(banco, pessoa.id, dado)
   },
 
+  // ── o que está sendo lido, medido e anônimo ──
+  'GET /api/populares': () => ({
+    semana: contas.maisLidos(banco, { dias: 7, quantos: 10 }),
+    mes: contas.maisLidos(banco, { dias: 30, quantos: 10 }),
+  }),
+
   // ── LGPD: levar embora, e apagar ──
   //
   // Sem estas duas rotas, o "apagar tudo" do caderno seria mentira: o
@@ -202,6 +212,108 @@ const ROTAS = {
     if (pessoa.papel !== 'admin') throw new Recusa('Não pode.', 403)
     return contas.criarConvite(banco, { criadoPor: pessoa.id, nota: dado.nota })
   },
+}
+
+// ─────────────────────────────────────────────────────────────
+// Baixar o livro
+//
+// Rota com número no meio, então não cabe no mapa de rotas exatas. Fica aqui,
+// à parte, e responde antes dele.
+//
+// A checagem de direito acontece AQUI de novo, e não confia no que o catálogo
+// disse: `obra.trilho` é rótulo de tela, `direito` é a regra. Servir um
+// arquivo é mais sério que mostrar um botão.
+// ─────────────────────────────────────────────────────────────
+
+const doLivro = banco.prepare(`
+  SELECT o.id, o.titulo, o.titulo_pt, t.id texto_id, t.fonte, t.fonte_url, t.normalizado,
+         d.estado, d.motivo,
+         (SELECT p.nome FROM obra_pessoa op JOIN pessoa p ON p.id = op.pessoa_id
+           WHERE op.obra_id = o.id AND op.papel = 'autor' LIMIT 1) autor
+    FROM obra o
+    JOIN texto t ON t.obra_id = o.id AND t.dono_id IS NULL
+    LEFT JOIN direito d ON d.texto_id = t.id AND d.jurisdicao = ?
+   WHERE o.id = ? AND o.publicada = 1`)
+
+const capitulosDo = banco.prepare(
+  'SELECT ordem, titulo, corpo, palavras FROM capitulo WHERE texto_id = ? ORDER BY ordem')
+
+const paraLeitura = banco.prepare(`
+  SELECT o.id, o.titulo, o.titulo_pt, o.minutos_leitura, o.capa, o.capa_externa, o.trilho,
+         t.id texto_id, d.estado,
+         p.id autor_id, p.nome autor
+    FROM obra o
+    JOIN texto t ON t.obra_id = o.id AND t.dono_id IS NULL
+    LEFT JOIN direito d ON d.texto_id = t.id AND d.jurisdicao = ?
+    LEFT JOIN obra_pessoa op ON op.obra_id = o.id AND op.papel = 'autor'
+    LEFT JOIN pessoa p ON p.id = op.pessoa_id
+   WHERE o.id = ? AND o.publicada = 1 AND t.normalizado = 1
+   GROUP BY o.id`)
+
+/**
+ * O livro inteiro, para o leitor.
+ *
+ * Já foi arquivo estático. Parou de ser quando o acervo legível chegou a 527
+ * obras: 127 MB de texto copiados inteiros a cada publicação e versionados no
+ * git. O banco já vai para a máquina de qualquer jeito.
+ *
+ * O direito é conferido AQUI de novo. `obra.trilho` é rótulo de tela; a regra
+ * é a tabela `direito`.
+ */
+function servirLivro(res, id) {
+  const casa = process.env.FIO_JURISDICAO || 'BR'
+  const o = paraLeitura.get(casa, id)
+  if (!o) throw new Recusa('Não temos o texto desta obra.', 404)
+  if (o.estado !== 'dominio_publico' && o.estado !== 'licenca_livre') {
+    throw new Recusa('Esta obra não pode ser lida aqui.', 403)
+  }
+  const capitulos = capitulosDo.all(o.texto_id)
+  if (!capitulos.length) throw new Recusa('Não temos o texto desta obra.', 404)
+
+  responder(res, 200, {
+    id: o.id,
+    titulo: primeiraLinha(o.titulo_pt || o.titulo),
+    autor: o.autor ?? 'autoria não identificada',
+    autorId: o.autor_id,
+    ano: null,
+    trilho: 'A',
+    minutos: o.minutos_leitura,
+    temas: [],
+    capa: o.capa, capaOL: o.capa_externa,
+    textoId: o.texto_id,
+    capitulos,
+  })
+}
+
+function baixar(req, res, id) {
+  const casa = process.env.FIO_JURISDICAO || 'BR'
+  const o = doLivro.get(casa, id)
+
+  if (!o || o.normalizado !== 1) throw new Recusa('Não temos o texto desta obra.', 404)
+  if (o.estado !== 'dominio_publico' && o.estado !== 'licenca_livre') {
+    throw new Recusa('Esta obra não pode ser distribuída daqui.', 403)
+  }
+
+  const livro = {
+    id: o.id,
+    titulo: primeiraLinha(o.titulo_pt || o.titulo),
+    autor: o.autor ?? 'autoria não identificada',
+    direito: o.motivo,
+    fonteUrl: o.fonte_url,
+    capitulos: capitulosDo.all(o.texto_id),
+  }
+  if (!livro.capitulos.length) throw new Recusa('Não temos o texto desta obra.', 404)
+
+  const epub = montarEpub(livro)
+  res.writeHead(200, {
+    'content-type': 'application/epub+zip',
+    'content-length': epub.length,
+    // `filename*` com UTF-8 para o acento não virar lixo no nome do arquivo
+    'content-disposition': `attachment; filename="${nomeDeArquivo(livro)}"; `
+      + `filename*=UTF-8''${encodeURIComponent(nomeDeArquivo(livro))}`,
+    'cache-control': 'public, max-age=3600',
+  })
+  res.end(epub)
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -253,6 +365,45 @@ const servidor = createServer(async (req, res) => {
   let caminho
   try { caminho = decodeURIComponent(new URL(req.url, 'http://x').pathname) }
   catch { res.writeHead(400); return res.end() }
+
+  // ── "abri este livro": conta anônima, e por isso fica fora do mapa ──
+  const abrindo = caminho.match(/^\/api\/abri\/(\d+)$/)
+  if (abrindo && req.method === 'POST') {
+    try {
+      if (req.headers['x-fio'] !== '1') throw new Recusa('Pedido sem identificação.', 403)
+      return responder(res, 200, contas.registrarAbertura(banco, Number(abrindo[1]), { ip: ipDe(req) }))
+    } catch (e) {
+      const r = e instanceof Recusa ? e : null
+      return responder(res, r?.status ?? 500, { erro: r?.message ?? 'erro' })
+    }
+  }
+
+  // ── o livro: texto para ler, e arquivo para levar ──
+  const pedindoLivro = caminho.match(/^\/api\/livro\/(\d+)$/)
+  if (pedindoLivro) {
+    try {
+      if (req.method !== 'GET') throw new Recusa('Só GET.', 405)
+      // O texto de domínio público não muda; o navegador pode guardar.
+      res.setHeader('cache-control', 'public, max-age=3600')
+      return servirLivro(res, Number(pedindoLivro[1]))
+    } catch (e) {
+      if (e instanceof Recusa) return responder(res, e.status, { erro: e.message })
+      console.error('[fio] livro', e)
+      return responder(res, 500, { erro: 'Não consegui abrir o livro.' })
+    }
+  }
+
+  const baixando = caminho.match(/^\/api\/livro\/(\d+)\/epub$/)
+  if (baixando) {
+    try {
+      if (req.method !== 'GET') throw new Recusa('Só GET.', 405)
+      return baixar(req, res, Number(baixando[1]))
+    } catch (e) {
+      if (e instanceof Recusa) return responder(res, e.status, { erro: e.message })
+      console.error('[fio] epub', e)
+      return responder(res, 500, { erro: 'Não consegui montar o arquivo.' })
+    }
+  }
 
   // ── API ──
   if (caminho.startsWith('/api/')) {
