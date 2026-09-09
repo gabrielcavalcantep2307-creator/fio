@@ -33,13 +33,27 @@ export const QUANTAS = 3
 export const PRECISA_ACERTAR = 3
 
 /**
- * Sugestões, não obrigação.
+ * O CATÁLOGO. Não é sugestão: é a lista de onde as três têm que sair.
  *
  * São perguntas cuja resposta não está no perfil de rede social de ninguém —
  * o defeito clássico da pergunta de segurança é "nome de solteira da sua
  * mãe", que qualquer pessoa descobre. Estas puxam memória, não cadastro.
  *
- * Quem quiser escreve a própria: `pergunta` é texto livre.
+ * ── por que texto livre saiu ──────────────────────────────────
+ *
+ * Antes, `pergunta` era texto livre. A auditoria de 09/09/2026 mostrou o que
+ * isso custava: `perguntasDe` disfarça o e-mail que não existe devolvendo
+ * três perguntas sorteadas DESTA lista, e a lista é pública
+ * (`GET /api/sugestoes`). O disfarce só funciona enquanto tudo o que a rota
+ * devolve puder ter vindo dela.
+ *
+ * Quem escrevia a própria pergunta furava o disfarce sozinho: a resposta
+ * trazia um texto que não está no catálogo, e isso PROVA que a conta existe.
+ * Bastava varrer endereços para montar a lista de quem tem conta aqui.
+ *
+ * Então a escolha passou a ser fechada, e a lista cresceu para vinte e
+ * quatro em troca. Perde-se a pergunta sob medida; ganha-se que o disfarce
+ * volte a ser um disfarce.
  */
 export const SUGESTOES = [
   'Qual foi o primeiro livro que você leu inteiro por vontade própria?',
@@ -52,7 +66,30 @@ export const SUGESTOES = [
   'Em que cidade você estava na virada do ano 2000 — ou do ano em que nasceu?',
   'Qual filme você viu tantas vezes que sabe as falas?',
   'Qual objeto você guarda até hoje sem conseguir explicar por quê?',
+  'Qual foi o primeiro disco ou álbum que você ouviu do começo ao fim?',
+  'Qual era o nome do seu melhor amigo de infância?',
+  'Que lugar da sua cidade você evitava quando era criança, e por quê?',
+  'Qual foi o primeiro dinheiro que você ganhou trabalhando, e no quê?',
+  'Qual cheiro te leva direto para a casa de alguém da sua família?',
+  'Qual foi a primeira viagem que você fez sem os seus pais?',
+  'Que matéria da escola você era bom sem nunca ter estudado?',
+  'Qual foi o primeiro jogo que você terminou até o fim?',
+  'Qual era o apelido do lugar onde a sua turma se encontrava?',
+  'Que presente você recebeu e nunca usou uma vez sequer?',
+  'Qual foi a primeira coisa que você consertou sozinho?',
+  'Que música tocava sem parar no ano em que você terminou a escola?',
+  'Qual professor você reencontraria hoje só para dizer obrigado?',
+  'Qual foi o primeiro livro que você leu duas vezes seguidas?',
 ]
+
+// O catálogo achatado, para conferir se uma pergunta veio de lá. Montado na
+// primeira consulta porque `normalizar` está declarado abaixo — lê-lo aqui
+// em cima estoura na carga do módulo.
+let catalogoAchatado = null
+const doCatalogo = (p) => {
+  catalogoAchatado ??= new Set(SUGESTOES.map(normalizar))
+  return catalogoAchatado.has(normalizar(p))
+}
 
 /**
  * Como a resposta é comparada.
@@ -80,10 +117,20 @@ export function conferirResposta_(r) {
   return null
 }
 
+/**
+ * A pergunta tem que ser uma das do catálogo.
+ *
+ * Não é frescura de validação: é o que faz `perguntasDe` conseguir esconder
+ * quem tem conta aqui. Uma pergunta escrita à mão é impossível de forjar para
+ * um e-mail que não existe, e por isso denuncia todos os que existem.
+ */
 export function conferirPergunta_(p) {
   const t = String(p ?? '').trim()
-  if (t.length < 8) return 'A pergunta precisa de pelo menos 8 letras.'
-  if (t.length > 200) return 'Pergunta longa demais.'
+  if (!t) return 'Escolha uma pergunta da lista.'
+  if (!doCatalogo(t)) {
+    return 'Escolha uma pergunta da lista. Pergunta escrita à mão entregaria '
+      + 'que esta conta existe para quem estivesse varrendo endereços.'
+  }
   return null
 }
 

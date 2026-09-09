@@ -16,6 +16,7 @@ import { join } from 'node:path'
 import { abrir, fechar } from './banco/base.mjs'
 import * as contas from './contas.mjs'
 import { conferirSenha, guardarSenha, ipDoPedido } from './seguranca.mjs'
+import { SUGESTOES, normalizar as achatarPergunta } from './perguntas.mjs'
 
 const pasta = mkdtempSync(join(tmpdir(), 'fio-teste-'))
 let banco
@@ -31,10 +32,13 @@ const novoConvite = () => contas.criarConvite(banco).codigo
 // As perguntas de segurança são obrigatórias no cadastro desde que a
 // recuperação por e-mail saiu. Um conjunto padrão evita repetir isto em
 // vinte chamadas — e os testes que cuidam DAS PERGUNTAS passam o seu.
+// As perguntas saem do CATÁLOGO, e não da imaginação de quem escreve o teste:
+// desde a auditoria de 09/09 pergunta escrita à mão é recusada, porque ela
+// furava o disfarce que esconde quem tem conta aqui.
 const PERGUNTAS = [
-  { pergunta: 'Qual foi o primeiro livro que você leu inteiro?', resposta: 'Dom Casmurro' },
-  { pergunta: 'Qual o nome da rua onde você morava aos dez anos?', resposta: 'Rua das Laranjeiras' },
-  { pergunta: 'Qual apelido só a sua família usava?', resposta: 'Bitu' },
+  { pergunta: SUGESTOES[0], resposta: 'Dom Casmurro' },
+  { pergunta: SUGESTOES[1], resposta: 'Rua das Laranjeiras' },
+  { pergunta: SUGESTOES[2], resposta: 'Bitu' },
 ]
 
 // A porta da casa passou a falhar FECHADA, então criar conta exige convite. A
@@ -223,6 +227,44 @@ test('as perguntas não contam se o e-mail existe', () => {
   // e as fingidas são ESTÁVEIS: um endereço inexistente devolve sempre as
   // mesmas, como uma conta de verdade devolveria
   assert.deepEqual(fantasma.perguntas, denovo.perguntas)
+})
+
+// ACHADO 6 da auditoria de 09/09/2026, e o mais sutil dos seis.
+//
+// `perguntasDe` esconde o e-mail que não existe devolvendo três perguntas
+// sorteadas do catálogo público. O disfarce só funciona enquanto TUDO o que a
+// rota devolve puder ter vindo de lá — e `pergunta` era texto livre. Quem
+// escrevesse a própria pergunta furava o disfarce sozinho: a resposta trazia
+// um texto que não está no catálogo, e isso prova que a conta existe.
+//
+// Contar quantas perguntas voltaram, que era o que se testava, não pega isso.
+test('a rota de recuperar nunca devolve pergunta fora do catálogo', () => {
+  const publico = new Set(SUGESTOES.map(achatarPergunta))
+
+  zerarFreio()
+  const existe = contas.perguntasParaRecuperar(banco, { email: 'gabriel@exemplo.com' })
+  zerarFreio()
+  const fantasma = contas.perguntasParaRecuperar(banco, { email: 'fantasma@exemplo.com' })
+
+  for (const { pergunta } of [...existe.perguntas, ...fantasma.perguntas]) {
+    assert.ok(publico.has(achatarPergunta(pergunta)),
+      `pergunta fora do catálogo entrega que a conta existe: ${pergunta}`)
+  }
+})
+
+test('pergunta escrita à mão é recusada no cadastro', async () => {
+  zerarFreio()
+  await assert.rejects(
+    criarConta({
+      nome: 'Escreveu', email: 'escreveu@exemplo.com', senha: BOA,
+      perguntas: [
+        { pergunta: 'Qual o nome do meu primeiro cachorro?', resposta: 'Rex' },
+        { pergunta: SUGESTOES[1], resposta: 'Rua das Laranjeiras' },
+        { pergunta: SUGESTOES[2], resposta: 'Bitu' },
+      ],
+    }),
+    /Escolha uma pergunta da lista/,
+  )
 })
 
 test('a resposta nunca é guardada em claro', () => {

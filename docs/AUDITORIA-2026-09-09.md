@@ -4,8 +4,7 @@ A anterior é [`AUDITORIA.md`](AUDITORIA.md), de 04/09. Esta olhou o que mudou
 depois dela — e o que mudou foi muito, porque quase tudo que entrou no
 servidor desde então entrou **sem passar pelo git**.
 
-Cinco achados. Cinco corrigidos, com teste. Um sexto está aberto e depende de
-uma decisão, não de código.
+Seis achados, seis corrigidos, com teste.
 
 ---
 
@@ -104,7 +103,7 @@ convite no dia do vencimento aparecia vencido com horas de vida pela frente.
 
 ---
 
-## 6. As perguntas de segurança entregam quem escreveu a própria — ABERTO
+## 6. As perguntas de segurança entregavam quem escreveu a própria — corrigido
 
 `perguntasDe()` tem um disfarce cuidadoso: para um e-mail que não existe, ela
 sorteia três perguntas do catálogo público de sugestões, de um jeito estável e
@@ -115,14 +114,28 @@ O disfarce funciona — **enquanto a conta usar as sugestões**. `pergunta` é
 texto livre, e quem escreveu a própria devolve uma pergunta que não está em
 `GET /api/sugestoes`. Isso prova que a conta existe.
 
-**Não corrigido, de propósito.** As saídas são todas ruins: proibir pergunta
-própria tira uma capacidade que foi construída de caso pensado, e sortear as
-perguntas dos outros membros vaza texto que eles escreveram, o que é pior.
+**Conserto.** A escolha passou a ser fechada: as três perguntas têm que sair
+do catálogo público, e o catálogo cresceu de 10 para 24 em troca. Com isso
+tudo o que a rota devolve pode ter vindo de lá, exista a conta ou não, e o
+disfarce volta a ser um disfarce.
 
-O que se fez foi tirar a escala do problema: com o teto por IP do achado 3, a
-varredura que transformaria isso em lista de endereços passa a esbarrar em 40
-por hora. Para uma biblioteca de convite, com a porta fechada, é uma troca
-aceitável — mas ela é uma escolha, e fica registrada como escolha.
+Perde-se a pergunta sob medida. É o preço, e ele é pequeno perto do que se
+comprava com ela: uma lista de quem tem conta aqui, montada por qualquer um,
+só varrendo endereços.
+
+A regra vale nos dois caminhos, porque os dois passam por
+`prepararConjunto()`: no cadastro e na troca de perguntas de quem já está
+dentro.
+
+O teste que faltava não era "quantas perguntas voltaram" — esse já existia e
+passava. É `a rota de recuperar nunca devolve pergunta fora do catálogo`, que
+compara o TEXTO do que a rota devolve contra a lista pública, para conta que
+existe e para conta que não existe.
+
+**Uma pendência de dados:** a conta que já está em produção foi criada quando
+texto livre era permitido. Se as perguntas dela forem escritas à mão, ela
+continua identificável até serem trocadas por três do catálogo, em
+`/api/minhas-perguntas`.
 
 ---
 
