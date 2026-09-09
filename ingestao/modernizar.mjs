@@ -39,6 +39,8 @@
 // mexe: deixar "cousa" no lugar é um livro um pouco mais difícil, e trocar
 // errado é um livro que mente.
 
+import { readFileSync } from 'node:fs'
+
 // ─────────────────────────────────────────────────────────────
 // 1. O s longo, que é defeito de digitalização e não de língua
 //
@@ -107,6 +109,23 @@ const LISTA = {
   emquanto: 'enquanto', comsigo: 'consigo', tambem: 'também',
   ninguem: 'ninguém', alguem: 'alguém', armazem: 'armazém',
   refem: 'refém', vintem: 'vintém', parabens: 'parabéns',
+
+  // O que o léxico deduzido não alcança: casos em que só falta acento E a
+  // forma antiga é MUITO mais comum que a moderna no acervo. A proporção que
+  // protege "aos" de virar "aós" derruba estes junto, e num acervo feito de
+  // textos do século XIX eles são muitos. Aqui vão os frequentes, conferidos
+  // um a um.
+  seculos: 'séculos', canones: 'cânones', obsequios: 'obséquios',
+  obsequio: 'obséquio', continuo: 'contínuo', continua: 'contínua',
+  arvore: 'árvore', arvores: 'árvores', pagina: 'página', paginas: 'páginas',
+  epoca: 'época', epocas: 'épocas', duvida: 'dúvida', duvidas: 'dúvidas',
+  possivel: 'possível', impossivel: 'impossível', terrivel: 'terrível',
+  horrivel: 'horrível', agradavel: 'agradável', amavel: 'amável',
+  miseria: 'miséria', materia: 'matéria', misterio: 'mistério',
+  ceo: 'céu', ceos: 'céus', chapeo: 'chapéu', pae: 'pai', maes: 'mães',
+  irmao: 'irmão', irmaos: 'irmãos', coração: 'coração',
+  cabeça: 'cabeça', magestade: 'majestade', hospede: 'hóspede',
+  orgão: 'órgão', orgãos: 'órgãos', util: 'útil', inutil: 'inútil',
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -153,15 +172,44 @@ function comAMesmaCaixa(original, nova) {
   return nova
 }
 
-// Montada uma vez. `\p{L}` porque `\b` do JavaScript é ASCII e não reconhece
-// "ç" nem vogal acentuada como letra — sem isto, "attenção" escapa.
-let deLista = null
+// ─────────────────────────────────────────────────────────────
+// O léxico deduzido, que é o que faz a lista escrita à mão caber num arquivo
+//
+// `ingestao/montar-lexico.mjs` deduz milhares de pares comparando as palavras
+// do acervo contra um dicionário do português de hoje: a palavra que não
+// existe mais é candidata, e a transformação certa é a que produz palavra que
+// existe. É assim que "seculos" acha o acento de "séculos" sem ninguém
+// escrever uma regra de acentuação.
+//
+// Ele entra DEPOIS da lista escrita à mão, que continua tendo a última
+// palavra: aquela foi conferida uma a uma e esta foi deduzida.
+//
+// Se o arquivo não existir, o modernizador funciona igual, só alcança menos.
+// ─────────────────────────────────────────────────────────────
+const ARQUIVO_LEXICO = new URL('./lexico-antigo.json', import.meta.url)
+
+let TABELA = null
+function tabela() {
+  if (TABELA) return TABELA
+  let deduzido = {}
+  try { deduzido = JSON.parse(readFileSync(ARQUIVO_LEXICO, 'utf8')) } catch { /* ainda não foi montado */ }
+  TABELA = { ...deduzido, ...LISTA }
+  for (const k of Object.keys(TABELA)) if (k.endsWith('_')) delete TABELA[k]
+  return TABELA
+}
+
+// `\p{L}` porque `\b` do JavaScript é ASCII e não reconhece "ç" nem vogal
+// acentuada como letra — sem isto, "attenção" escapa.
+//
+// Com milhares de entradas, uma alternância gigante numa expressão regular
+// fica lenta e chega a estourar o limite do motor. Então a busca é por
+// palavra: parte o texto em palavras e consulta a tabela, que é O(1).
+const PALAVRA = /\p{L}[\p{L}'-]*/gu
+
 function pelaLista(t) {
-  deLista ??= new RegExp(
-    `(?<![\\p{L}])(${Object.keys(LISTA).filter((k) => !k.endsWith('_')).join('|')})(?![\\p{L}])`,
-    'giu')
-  return t.replace(deLista, (achado) => {
-    const nova = LISTA[achado.toLowerCase()]
+  const tab = tabela()
+  return t.replace(PALAVRA, (achado) => {
+    const nova = tab[achado.toLowerCase()]
     return nova ? comAMesmaCaixa(achado, nova) : achado
   })
 }
