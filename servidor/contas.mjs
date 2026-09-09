@@ -5,7 +5,8 @@
 
 import {
   guardarSenha, conferirSenha, gastarTempoAtoa, sortearToken, resumo,
-  sortearConvite, normalizarConvite, freio, perdoar, conferirEmail, conferirSenha_, dicaDeIp,
+  sortearConvite, normalizarConvite, freio, perdoar, freioDuplo, perdoarDuplo,
+  conferirEmail, conferirSenha_, dicaDeIp,
 } from './seguranca.mjs'
 import {
   prepararConjunto, gravarConjunto, perguntasDe, conferirConjunto, fingirTrabalho,
@@ -13,7 +14,11 @@ import {
 } from './perguntas.mjs'
 
 const DIAS_DE_SESSAO = 30
-const DIAS_DE_CONVITE = 14
+// Sessenta dias, e não catorze. Um convite aqui não é link de confirmação de
+// cadastro: é um código que o dono manda para um amigo e que o amigo usa
+// quando lembrar. Catorze dias venciam antes de a pessoa entrar, e o custo de
+// um convite parado é zero — ele continua de uso único.
+const DIAS_DE_CONVITE = 60
 
 /** Erro que PODE ser mostrado ao usuário. Qualquer outro vira "deu ruim". */
 export class Recusa extends Error {
@@ -35,7 +40,19 @@ const publico = (l) => ({ id: l.id, nome: l.nome, email: l.email, papel: l.papel
 // pessoa achar que gastou o convite dela.
 // ─────────────────────────────────────────────────────────────
 
-export const portaAberta = () => process.env.FIO_CONVITE !== 'obrigatorio'
+/**
+ * A porta da casa, e para que lado ela falha.
+ *
+ * Era `!== 'obrigatorio'`: sem variável nenhuma no ambiente, ABERTA. E a
+ * variável não estava no `docker-compose.yml`, então a biblioteca "para mim e
+ * meus amigos" aceitou cadastro de qualquer um da internet desde que subiu —
+ * `/api/saude` anunciava `convite: "opcional"` para quem quisesse conferir.
+ *
+ * Agora falha fechada: só abre se alguém disser `FIO_CONVITE=aberto`, de
+ * propósito e por escrito. Esquecer a configuração passa a trancar a porta em
+ * vez de escancarar.
+ */
+export const portaAberta = () => process.env.FIO_CONVITE === 'aberto'
 
 export async function criar(banco, { nome, email, senha, convite, perguntas }, ctx = {}) {
   const emLimite = freio(banco, 'criar', dicaDeIp(ctx.ip) ?? 'sem-ip')
@@ -106,11 +123,13 @@ export async function criar(banco, { nome, email, senha, convite, perguntas }, c
 export async function entrar(banco, { email, senha }, ctx = {}) {
   const limpo = conferirEmail(email) ?? 'nao-existe@invalido'
 
-  // Duas contas: uma protege esta conta, outra protege todas.
-  for (const chave of [limpo, dicaDeIp(ctx.ip) ?? 'sem-ip']) {
-    if (!freio(banco, 'entrar', chave).passa) {
-      throw new Recusa('Muitas tentativas. Espere alguns minutos.', 429)
-    }
+  // Duas contas: uma protege esta conta, outra protege todas. Elas tinham o
+  // MESMO teto — oito em quinze minutos — e o balde do IP guarda `187.45.x.x`,
+  // que é um pedaço de operadora inteiro. Dois amigos no mesmo celular erravam
+  // a senha quatro vezes cada e trancavam a casa. Agora o teto do IP é o de
+  // `LIMITES_IP`, folgado para gente e apertado para varredura.
+  if (!freioDuplo(banco, 'entrar', limpo, ctx.ip).passa) {
+    throw new Recusa('Muitas tentativas. Espere alguns minutos.', 429)
   }
 
   const l = banco.prepare('SELECT * FROM leitor WHERE email = ? AND desativado = 0').get(limpo)
@@ -124,7 +143,7 @@ export async function entrar(banco, { email, senha }, ctx = {}) {
     throw new Recusa('E-mail ou senha não conferem.', 401)
   }
 
-  perdoar(banco, 'entrar', limpo)
+  perdoarDuplo(banco, 'entrar', limpo, ctx.ip)
   banco.prepare(`UPDATE leitor SET visto_em = datetime('now') WHERE id = ?`).run(l.id)
   return { pessoa: publico(l), sessao: abrirSessao(banco, l.id, ctx) }
 }
@@ -210,8 +229,10 @@ export const perguntasSugeridas = () => ({ sugestoes: SUGESTOES, quantas: QUANTA
  */
 export function perguntasParaRecuperar(banco, { email }, ctx = {}) {
   const limpo = conferirEmail(email)
-  const chave = limpo ?? dicaDeIp(ctx.ip) ?? 'sem-ip'
-  if (!freio(banco, 'esqueci', chave).passa) {
+  // `email ?? ip` era OU um OU outro, e ataque nenhum manda e-mail malformado:
+  // na prática só o balde do e-mail contava, e varrer mil endereços de uma
+  // máquina só não esbarrava em nada. Agora os dois valem.
+  if (!freioDuplo(banco, 'esqueci', limpo, ctx.ip).passa) {
     throw new Recusa('Muitas tentativas. Espere um pouco.', 429)
   }
   if (!limpo) throw new Recusa('Esse e-mail não parece válido.')
@@ -233,8 +254,10 @@ export function perguntasParaRecuperar(banco, { email }, ctx = {}) {
  */
 export async function recuperarComRespostas(banco, { email, respostas, senha }, ctx = {}) {
   const limpo = conferirEmail(email)
-  const chave = limpo ?? dicaDeIp(ctx.ip) ?? 'sem-ip'
-  if (!freio(banco, 'responder', chave).passa) {
+  // A porta de verdade, e a que mais precisava do teto por IP: cinco chutes
+  // por e-mail por hora seguram quem insiste numa conta, e não seguravam quem
+  // chuta cinco vezes em cada uma de duzentas contas na mesma hora.
+  if (!freioDuplo(banco, 'responder', limpo, ctx.ip).passa) {
     throw new Recusa('Muitas tentativas. Espere um pouco antes de tentar de novo.', 429)
   }
   const problema = conferirSenha_(senha)
@@ -260,7 +283,7 @@ export async function recuperarComRespostas(banco, { email, respostas, senha }, 
             senha_mudou = datetime('now') WHERE id = ?`,
   ).run(s.hash, s.sal, s.params, l.id)
 
-  perdoar(banco, 'responder', limpo)
+  perdoarDuplo(banco, 'responder', limpo, ctx.ip)
 
   // Trocar a senha derruba todas as sessões. Se a conta foi invadida, é isso
   // que expulsa o invasor — e é o motivo de a pessoa ter trocado.

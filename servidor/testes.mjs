@@ -15,7 +15,7 @@ import { join } from 'node:path'
 
 import { abrir, fechar } from './banco/base.mjs'
 import * as contas from './contas.mjs'
-import { conferirSenha, guardarSenha } from './seguranca.mjs'
+import { conferirSenha, guardarSenha, ipDoPedido } from './seguranca.mjs'
 
 const pasta = mkdtempSync(join(tmpdir(), 'fio-teste-'))
 let banco
@@ -37,7 +37,16 @@ const PERGUNTAS = [
   { pergunta: 'Qual apelido só a sua família usava?', resposta: 'Bitu' },
 ]
 
-const criarConta = (dados, ctx) => contas.criar(banco, { perguntas: PERGUNTAS, ...dados }, ctx)
+// A porta da casa passou a falhar FECHADA, então criar conta exige convite. A
+// maioria destes testes não é sobre convite nenhum — é sobre senha, sessão,
+// avaliação — e não deve carregar um `novoConvite()` em cada chamada. Quem
+// não falar no assunto ganha um convite válido; quem QUISER testar a porta
+// passa `convite: null` de propósito, e aí a recusa é o resultado esperado.
+const criarConta = (dados, ctx) => contas.criar(banco, {
+  perguntas: PERGUNTAS,
+  ...('convite' in dados ? {} : { convite: novoConvite() }),
+  ...dados,
+}, ctx)
 
 // ─────────────────────────────────────────────────────────────
 
@@ -56,16 +65,20 @@ test('a mesma senha gera hashes diferentes para pessoas diferentes', async () =>
   assert.notEqual(a.hash.toString('hex'), b.hash.toString('hex'))
 })
 
-test('a porta aberta deixa criar sem convite', async () => {
+// A porta agora falha FECHADA. Antes, `portaAberta()` era
+// `FIO_CONVITE !== 'obrigatorio'`: sem variável no ambiente ela abria, e como
+// a variável não estava no docker-compose.yml a instalação de produção passou
+// dias aceitando cadastro de qualquer um. Este teste é o que impede a volta.
+test('sem configuração nenhuma a porta está fechada', async () => {
   zerarFreio()
-  const { pessoa } = await criarConta({ nome: 'Primeira', email: 'primeira@exemplo.com', senha: BOA })
-  assert.equal(pessoa.email, 'primeira@exemplo.com')
-  // a primeira conta da casa administra: sem isto, uma instalação nova não
-  // teria ninguém que pudesse convidar ou revisar ficha nenhuma
-  assert.equal(pessoa.papel, 'admin')
+  assert.equal(contas.portaAberta(), false)
+  await assert.rejects(
+    criarConta({ nome: 'Ninguém', email: 'sem-convite@exemplo.com', senha: BOA, convite: null }),
+    /Convite inválido/,
+  )
 })
 
-test('convite errado é recusado mesmo com a porta aberta', async () => {
+test('convite errado é recusado', async () => {
   zerarFreio()
   // aceitar em silêncio faria a pessoa achar que gastou o convite dela
   await assert.rejects(
@@ -74,17 +87,18 @@ test('convite errado é recusado mesmo com a porta aberta', async () => {
   )
 })
 
-test('FIO_CONVITE=obrigatorio fecha a porta de novo', async () => {
+test('FIO_CONVITE=aberto abre a porta, e a primeira conta administra', async () => {
   zerarFreio()
-  process.env.FIO_CONVITE = 'obrigatorio'
+  process.env.FIO_CONVITE = 'aberto'
   try {
-    assert.equal(contas.portaAberta(), false)
-    await assert.rejects(
-      criarConta({ nome: 'Ninguém', email: 'fechada@y.com', senha: BOA }),
-      /Convite inválido/,
-    )
+    assert.equal(contas.portaAberta(), true)
+    const { pessoa } = await criarConta({ nome: 'Primeira', email: 'primeira@exemplo.com', senha: BOA, convite: null })
+    assert.equal(pessoa.email, 'primeira@exemplo.com')
+    // a primeira conta da casa administra: sem isto, uma instalação nova não
+    // teria ninguém que pudesse convidar ou revisar ficha nenhuma
+    assert.equal(pessoa.papel, 'admin')
   } finally { delete process.env.FIO_CONVITE }
-  assert.equal(contas.portaAberta(), true)
+  assert.equal(contas.portaAberta(), false)
 })
 
 test('com convite se cria, e o convite não serve duas vezes', async () => {
@@ -238,6 +252,61 @@ test('o freio segura a força bruta', async () => {
     if (erro.status === 429) { barrou = true; break }
   }
   assert.ok(barrou, 'depois de algumas tentativas tem que barrar')
+})
+
+// ─────────────────────────────────────────────────────────────
+// Auditoria de 09/09/2026 — três achados, três testes
+// ─────────────────────────────────────────────────────────────
+
+// ACHADO 1. `ipDe` lia o PRIMEIRO item do X-Forwarded-For. O Caddy acrescenta
+// o IP real ao que chegou em vez de substituir, então quem mandasse o
+// cabeçalho de fora escolhia o próprio "IP" — e escolher IP novo a cada
+// pedido é passar por todo freio que conta por IP.
+test('o X-Forwarded-For de fora não escolhe o IP do pedido', () => {
+  // um proxy só: o valor que ele pôs é o último, e é o que vale
+  assert.equal(ipDoPedido('203.0.113.7', '127.0.0.1'), '203.0.113.7')
+
+  // o atacante mandou 1.2.3.4; o Caddy anexou o IP de verdade atrás
+  assert.equal(ipDoPedido('1.2.3.4, 203.0.113.7', '127.0.0.1'), '203.0.113.7')
+
+  // e uma cadeia inteira forjada não muda nada: o fim continua sendo nosso
+  assert.equal(ipDoPedido('9.9.9.9, 8.8.8.8, 203.0.113.7', '127.0.0.1'), '203.0.113.7')
+
+  // sem cabeçalho nenhum, o soquete
+  assert.equal(ipDoPedido(undefined, '10.0.0.9'), '10.0.0.9')
+  assert.equal(ipDoPedido('', '10.0.0.9'), '10.0.0.9')
+})
+
+// ACHADO 2. `esqueci` e `responder` freavam por `email ?? ip` — OU um OU
+// outro. Como ataque nenhum manda e-mail malformado, só o balde do e-mail
+// contava: cinco chutes por conta por hora, e nada impedia cinco chutes em
+// cada uma de duzentas contas na mesma hora, da mesma máquina.
+test('a varredura de muitas contas de um IP só esbarra no teto do IP', async () => {
+  zerarFreio()
+  const ctx = { ip: '198.51.100.4' }
+  let barrou = 0
+  // trinta e cinco endereços diferentes, um chute em cada: nenhum estoura o
+  // balde do próprio e-mail, e o do IP tem que estourar
+  for (let i = 0; i < 35; i++) {
+    const erro = await contas.recuperarComRespostas(banco, {
+      email: `alvo${i}@exemplo.com`, senha: BOA, respostas: [],
+    }, ctx).catch(e => e)
+    if (erro.status === 429) barrou++
+  }
+  assert.ok(barrou > 0, 'varrer contas de um IP só tem que barrar')
+})
+
+test('o teto do IP não tranca quem só errou a própria senha', async () => {
+  zerarFreio()
+  // o balde do e-mail é 8 em 15 minutos e o do IP é 60: sete enganos seguidos
+  // do mesmo aparelho continuam cabendo, e a oitava tentativa é a certa
+  for (let i = 0; i < 7; i++) {
+    await contas.entrar(banco,
+      { email: 'gabriel@exemplo.com', senha: `engano ${i}` }, { ip: '198.51.100.9' }).catch(() => {})
+  }
+  const { pessoa } = await contas.entrar(banco,
+    { email: 'gabriel@exemplo.com', senha: 'bentinho e o seminario' }, { ip: '198.51.100.9' })
+  assert.equal(pessoa.email, 'gabriel@exemplo.com')
 })
 
 test('entrar certo limpa o contador de tentativas', async () => {

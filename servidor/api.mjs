@@ -22,6 +22,7 @@ import { Recusa } from './contas.mjs'
 import { montarEpub, nomeDeArquivo } from './epub.mjs'
 import { ondeComecaOLivro } from './folha-de-rosto.mjs'
 import { criarBuscaNoTexto } from './busca-no-texto.mjs'
+import { ipDoPedido } from './seguranca.mjs'
 
 const PORTA = Number(process.env.FIO_PORTA || 8787)
 const SITE = process.env.FIO_SITE || `http://localhost:${PORTA}`
@@ -111,8 +112,7 @@ const responder = (res, status, dado) => {
 /** O título do Gutenberg às vezes traz o subtítulo depois de uma quebra. */
 const primeiraLinha = (s) => String(s ?? '').split(/[\r\n]/)[0].replace(/\s+/g, ' ').trim()
 
-const ipDe = (req) =>
-  (req.headers['x-forwarded-for'] ?? '').split(',')[0].trim() || req.socket.remoteAddress
+const ipDe = (req) => ipDoPedido(req.headers['x-forwarded-for'], req.socket.remoteAddress)
 
 const exigirEntrada = (req) => {
   const pessoa = contas.deQuemE(banco, lerCookie(req))

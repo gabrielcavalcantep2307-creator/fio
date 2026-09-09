@@ -134,6 +134,53 @@ export const LIMITES = {
   'abrir': { quantas: 120, minutos: 60 },
 }
 
+/**
+ * O teto por IP, que é o que a doutrina acima prometia e o código não fazia.
+ *
+ * As chamadas usavam `email ?? ip` — OU um OU outro. Como todo ataque de
+ * verdade traz um e-mail bem formado, o ramo do IP nunca rodava: quem tivesse
+ * uma senha vazada podia testá-la em mil endereços de uma máquina só, oito
+ * vezes em cada, sem nunca esbarrar em freio nenhum.
+ *
+ * Os números são generosos de propósito. `dicaDeIp` guarda só `187.45.x.x`,
+ * para não ter IP inteiro no banco, e nesse tamanho um balde é um pedaço de
+ * operadora — apertar aqui trancaria vizinho de quem errou a senha. O que
+ * estes tetos impedem é a VARREDURA: uma máquina tentando muitas contas.
+ */
+export const LIMITES_IP = {
+  'entrar': { quantas: 60, minutos: 15 },
+  'esqueci': { quantas: 40, minutos: 60 },
+  'responder': { quantas: 30, minutos: 60 },
+}
+
+/**
+ * Os dois freios, na ordem que importa.
+ *
+ * O do IP primeiro: se a máquina já estourou, nem se registra tentativa no
+ * balde do e-mail — senão a varredura tranca as contas alheias de brinde, que
+ * é negação de serviço de graça para o atacante.
+ */
+export function freioDuplo(banco, acao, email, ip) {
+  const dica = dicaDeIp(ip) ?? 'sem-ip'
+  const limiteIp = LIMITES_IP[acao]
+  if (limiteIp) {
+    const alvo = `${acao}@ip:${dica}`
+    const { n } = banco.prepare(
+      `SELECT COUNT(*) n FROM tentativa WHERE chave = ? AND quando > datetime('now', ?)`,
+    ).get(alvo, `-${limiteIp.minutos} minutes`)
+    if (n >= limiteIp.quantas) return { passa: false, esperar: limiteIp.minutos }
+    banco.prepare('INSERT INTO tentativa (chave) VALUES (?)').run(alvo)
+  }
+  return freio(banco, acao, email ?? dica)
+}
+
+/** Deu certo: limpa o balde do e-mail E o do IP daquela ação. */
+export function perdoarDuplo(banco, acao, email, ip) {
+  perdoar(banco, acao, email ?? (dicaDeIp(ip) ?? 'sem-ip'))
+  banco.prepare('DELETE FROM tentativa WHERE chave = ?')
+    .run(`${acao}@ip:${dicaDeIp(ip) ?? 'sem-ip'}`)
+}
+
 export function freio(banco, acao, chave) {
   const limite = LIMITES[acao]
   if (!limite) return { passa: true }
@@ -182,6 +229,24 @@ export function conferirSenha_(senha) {
 }
 
 /** Guarda só o começo do IP: dá para frear, não dá para rastrear ninguém. */
+/**
+ * O IP de quem pediu, e por que é o ÚLTIMO da lista e não o primeiro.
+ *
+ * O Caddy ACRESCENTA o IP do cliente ao `X-Forwarded-For` que chegou, em vez
+ * de substituir. Quem manda `X-Forwarded-For: 1.2.3.4` de fora faz o cabeçalho
+ * chegar aqui como `1.2.3.4, <ip de verdade>` — e ler o PRIMEIRO, que era o
+ * que se fazia, é ler o que o atacante escreveu. Com isso todo freio por IP
+ * saía de graça: bastava sortear um valor novo a cada pedido.
+ *
+ * O último item é o que o nosso proxy pôs, e é o único em que se pode
+ * confiar. Vale enquanto houver UM proxy na frente; entrando outro, esta
+ * conta muda junto.
+ */
+export function ipDoPedido(cabecalho, doSoquete) {
+  const cadeia = String(cabecalho ?? '').split(',').map(s => s.trim()).filter(Boolean)
+  return cadeia.at(-1) || doSoquete
+}
+
 export function dicaDeIp(ip) {
   if (!ip) return null
   const v4 = ip.match(/(\d+)\.(\d+)\./)
