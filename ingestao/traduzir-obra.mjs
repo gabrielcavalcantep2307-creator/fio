@@ -47,7 +47,7 @@ const UA = 'fio/0.1 (biblioteca em portugues; contato: toksr12@gmail.com)'
 // Quantos parágrafos em voo ao mesmo tempo. O serviço é gratuito e é de uma
 // fundação: quatro é o suficiente para um livro sair numa tarde e é pouco o
 // bastante para não parecer ataque.
-const EM_PARALELO = 4
+const EM_PARALELO = 10
 
 const arg = (nome, padrao = null) => {
   const i = process.argv.indexOf(`--${nome}`)
