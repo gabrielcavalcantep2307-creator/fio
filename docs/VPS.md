@@ -10,6 +10,10 @@ O Fio está no ar em **<https://fiolib.duckdns.org>** — e também em
 > pediu o certificado sozinho, no primeiro acesso, sem ninguém mandar.
 
 ```bash
+bash infra/publicar-so-servidor.sh  # HOJE, o único que se pode rodar
+
+# Os quatro abaixo estão TRANCADOS, e por um bom motivo — leia a seção
+# "Por que publicar.sh recusa" mais abaixo antes de forçar qualquer um.
 bash infra/publicar.sh              # o caso de todo dia: só o site
 bash infra/publicar.sh --servidor   # quando servidor/ mudou
 bash infra/publicar.sh --catalogo   # quando a ingestão rodou
@@ -240,3 +244,44 @@ Ficam em `/opt/fio/infra/.env`, com permissão `600`.
 - **Backup fora da máquina.** Hoje ele fica no mesmo disco que o banco, o que
   cobre "apaguei sem querer" e não cobre "a VPS morreu".
 - **Domínio de verdade.** `sslip.io` funciona e é feio.
+
+---
+
+## Por que `publicar.sh` recusa (09/09/2026)
+
+**As quatro variantes publicam o site.** Inclusive `--servidor` e
+`--catalogo`: a construção e o envio do site vêm ANTES do passo do servidor,
+e não estão dentro de nenhum `if`. A linha que importa é esta:
+
+```
+enviar -C web/dist . | remoto "rm -rf $CASA/site/* && tar xzf - -C $CASA/site"
+```
+
+Ela apaga `/opt/fio/site` e põe no lugar um build feito a partir de `web/`.
+
+**E `web/src` aqui é a interface VELHA.** O site que está no ar tem tela de
+perguntas de segurança, busca dentro dos livros e resenhas. O fonte daquela
+versão nunca foi commitado, o deploy levava só o `dist`, e não há sourcemap.
+O bundle minificado na VPS é a única cópia que existe dela.
+
+Então rodar qualquer variante hoje troca a interface nova pela antiga, sem
+aviso e sem volta. O script passa a recusar por isso, e
+`infra/publicar-so-servidor.sh` existe para mexer no servidor sem encostar na
+pasta do site.
+
+`FORCAR_SITE=1` passa por cima da trava. Só use no dia em que `web/src` tiver
+sido reescrito até alcançar o que está no ar — e, mesmo assim, guarde antes
+uma cópia do que está lá:
+
+```bash
+ssh -i ~/.ssh/picord-deploy root@142.93.57.2 'cp -r /opt/fio/site /opt/fio/site.antes'
+```
+
+Dois defeitos que estavam no caminho e foram consertados junto:
+
+- `npm --prefix web exec tsc -- -b` troca de pacote, não de diretório. O tsc
+  rodava com a raiz como cwd, `-b` não achava o `tsconfig.json` e morria com
+  TS5083. Sendo a primeira linha com `set -e` ligada, `publicar.sh` estava
+  quebrado inteiro.
+- `infra/backup.sh` apontava para `/opt/fio/docker-compose.yml`, e o compose
+  mora em `/opt/fio/infra/`. A pasta de backups estava vazia.

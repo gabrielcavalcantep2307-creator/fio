@@ -34,7 +34,13 @@ TUDO=${1:-}
 [[ "${1:-}" == "--catalogo" ]] && CATALOGO=1
 
 echo "==> Conferindo tipos e testes"
-npm --prefix web exec tsc -- -b
+# `npm --prefix web exec` troca de PACOTE, e não de diretório: o tsc rodava
+# com a raiz do projeto como cwd, `-b` procurava tsconfig.json aqui e morria
+# com TS5083. Como isto é a PRIMEIRA linha do script e `set -e` está ligado,
+# `publicar.sh` estava quebrado inteiro — nenhuma das variantes chegava a
+# publicar coisa nenhuma. O subshell entra em web/ e não deixa o `cd` vazar
+# para os comandos seguintes, que é como o site já foi apagado uma vez.
+( cd web && npx tsc -b )
 node --test servidor/testes.mjs > /dev/null
 
 # ─────────────────────────────────────────────────────────────
