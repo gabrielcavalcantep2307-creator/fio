@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(bash infra/publicar-so-servidor.sh)",
+      "Bash(curl -s https://fiolib.duckdns.org/api/saude)",
+      "Bash(node --test servidor/testes.mjs)",
+      "Bash(node servidor/convite.mjs:*)"
+    ]
+  }
+}
