@@ -27,11 +27,6 @@ services:
       FIO_JURISDICAO: ${FIO_JURISDICAO:-BR}
       # Vazio = só a própria origem. É o certo em produção.
       FIO_ORIGENS: ${FIO_ORIGENS:-}
-      # E-mail: sem chave, o link de trocar senha sai no log em vez de ser
-      # enviado. É o estado normal até alguém contratar o envio.
-      FIO_EMAIL_SERVICO: ${FIO_EMAIL_SERVICO:-resend}
-      FIO_EMAIL_CHAVE: ${FIO_EMAIL_CHAVE:-}
-      FIO_EMAIL_DE: ${FIO_EMAIL_DE:-}
     volumes:
       # O banco: catálogo, contas e sessões. É o único estado que importa.
       - dados:/dados

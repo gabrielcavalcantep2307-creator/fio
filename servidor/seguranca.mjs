@@ -110,10 +110,25 @@ export const LIMITES = {
   // Cinco era pouco — dois enganos e a pessoa ficava trancada uma hora com um
   // convite VÁLIDO na mão. Doze, e acerto zera o contador.
   'criar': { quantas: 12, minutos: 60 },
+  // Trocar a senha sabendo a antiga seria um jeito de chutar a senha atual
+  // sem passar pelo freio de "entrar". Fecha essa porta.
+  'senha': { quantas: 6, minutos: 60 },
+  // Ver as perguntas de segurança de um e-mail é barato e não revela nada
+  // (a rota responde com perguntas mesmo para endereço que não existe), mas
+  // um laço que varra a base gera ruído: quatro por hora basta para quem
+  // realmente esqueceu a senha.
   'esqueci': { quantas: 4, minutos: 60 },
+  // RESPONDER é a porta de verdade, e é a mais frágil do sistema: três
+  // perguntas de memória são chutáveis, e o que impede o chute não é a
+  // dificuldade da pergunta — é este número. Cinco tentativas por hora torna
+  // a força bruta inviável mesmo contra respostas curtas e previsíveis.
+  'responder': { quantas: 5, minutos: 60 },
   // A sincronia roda a cada dois minutos por aparelho. 40 numa hora dá folga
   // para três ou quatro aparelhos e ainda assim tranca uma torneira.
   'guardar': { quantas: 40, minutos: 60 },
+  // Avaliar é escrever no que todo mundo lê. Trinta por hora cobre uma
+  // maratona de organizar a estante e não cobre um robô.
+  'avaliar': { quantas: 30, minutos: 60 },
   // Abrir livro é gesto comum; o freio aqui só existe para um laço de script
   // não inventar popularidade.
   'abrir': { quantas: 120, minutos: 60 },

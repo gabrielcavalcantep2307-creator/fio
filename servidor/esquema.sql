@@ -108,6 +108,27 @@ CREATE TABLE texto (
   -- mais ninguém. Toda consulta de leitura filtra por isto.
   dono_id      INTEGER REFERENCES leitor(id) ON DELETE CASCADE,
 
+  -- Quando o texto é uma TRADUÇÃO NOSSA. A obra original é livre; a tradução
+  -- é obra nova e o direito dela é de quem traduziu (Lei 9.610/98, art. 7º,
+  -- XI c/c art. 11) — ou seja, nosso. O que esta coluna guarda é a única
+  -- coisa que o leitor precisa saber para confiar no que está lendo:
+  --   'automatica'  saiu de um modelo de linguagem e ninguém conferiu
+  --   'humana'      alguém leu inteiro contra o original e assinou
+  --   NULL          não é tradução nossa (é o original, ou veio de fora)
+  -- Ela existe como COLUNA, e não como combinado, porque o rótulo tem que
+  -- aparecer na tela mesmo no dia em que ninguém lembrar de pôr.
+  revisao      TEXT CHECK (revisao IN ('automatica','humana')),
+  base_texto_id INTEGER REFERENCES texto(id) ON DELETE SET NULL,
+
+  -- O que o leitor precisa saber ANTES de estranhar o texto: uma frase sobre
+  -- esta edição, não sobre a obra. Nasceu do "s" longo — o ſ das impressões
+  -- anteriores ao século XIX, que todo scanner lê como "f" e que faz "se
+  -- assentou" chegar à tela como "fe affentou". Não dá para consertar sem
+  -- estragar as palavras que têm "f" de verdade, então avisa-se. Fica no
+  -- TEXTO e não na obra porque é defeito daquela digitalização: outra edição
+  -- da mesma obra não tem o problema.
+  aviso        TEXT,
+
   normalizado  INTEGER NOT NULL DEFAULT 0,      -- já virou capítulos?
   palavras     INTEGER,
   criado_em    TEXT NOT NULL DEFAULT (datetime('now'))
@@ -369,6 +390,33 @@ CREATE TABLE recuperacao (
 CREATE INDEX idx_recup_leitor ON recuperacao(leitor_id);
 
 -- ═══════════════════════════════════════════════════════════════════
+-- PERGUNTA DE SEGURANÇA — a recuperação que não depende de e-mail
+--
+-- O link por e-mail amarra a conta a uma caixa de mensagens que não é
+-- nossa: quem perde o e-mail perde a conta, e quem tem o e-mail invadido
+-- perde a conta junto. Aqui a chave é o que a pessoa SABE.
+--
+-- A resposta é tratada como senha: scrypt, sal por resposta, comparação em
+-- tempo constante. Um vazamento deste banco não entrega o nome do primeiro
+-- cachorro de ninguém. E ela é normalizada ANTES do hash — sem acento, sem
+-- pontuação, minúscula — porque a pergunta existe para o dono passar, não
+-- para ele ser reprovado por acentuação três anos depois.
+-- ═══════════════════════════════════════════════════════════════════
+
+CREATE TABLE pergunta (
+  id              INTEGER PRIMARY KEY,
+  leitor_id       INTEGER NOT NULL REFERENCES leitor(id) ON DELETE CASCADE,
+  ordem           INTEGER NOT NULL,
+  pergunta        TEXT NOT NULL,
+  resposta_hash   BLOB NOT NULL,
+  resposta_sal    BLOB NOT NULL,
+  resposta_params TEXT NOT NULL,
+  criado_em       TEXT NOT NULL DEFAULT (datetime('now')),
+  UNIQUE (leitor_id, ordem)
+);
+CREATE INDEX idx_pergunta_leitor ON pergunta(leitor_id);
+
+-- ═══════════════════════════════════════════════════════════════════
 -- FREIO — quantas vezes tentaram, e de onde
 --
 -- No banco, e não só na memória: reiniciar o servidor não pode ser o
@@ -412,6 +460,38 @@ CREATE TABLE guardado (
   PRIMARY KEY (leitor_id, tipo, chave)
 );
 CREATE INDEX idx_guardado_leitor ON guardado(leitor_id, mudou_em);
+
+-- ═══════════════════════════════════════════════════════════════════
+-- AVALIAÇÃO — a nota e a resenha de quem leu
+--
+-- Uma biblioteca que só mostra o que os editores acham dos livros é um
+-- catálogo. O que faz dela um lugar é o que os leitores dizem uns aos
+-- outros — e é por isso que isto é uma tabela, e não um campo de texto
+-- livre pendurado na obra.
+--
+-- Uma linha por (obra, leitor): a pessoa tem UMA nota e UMA resenha por
+-- obra, e reescrevê-las é atualizar, não empilhar. Assim "a média" é uma
+-- conta honesta, e ninguém vota dez vezes no mesmo livro.
+--
+-- A resenha é pública e assinada com o nome de quem escreveu; a nota
+-- entra na média. Apagar a conta leva as duas junto (ON DELETE CASCADE),
+-- porque resenha órfã com nome de gente é dado pessoal sem dono.
+-- ═══════════════════════════════════════════════════════════════════
+
+CREATE TABLE avaliacao (
+  obra_id   INTEGER NOT NULL REFERENCES obra(id) ON DELETE CASCADE,
+  leitor_id INTEGER NOT NULL REFERENCES leitor(id) ON DELETE CASCADE,
+  nota      INTEGER CHECK (nota BETWEEN 1 AND 5),
+  resenha   TEXT,
+  -- Marca o que o leitor achou, para a resenha poder avisar antes de contar
+  -- o fim. É o mesmo motor do anti-spoiler do resto do site.
+  revela    INTEGER NOT NULL DEFAULT 0,
+  criado_em TEXT NOT NULL DEFAULT (datetime('now')),
+  mudou_em  TEXT NOT NULL DEFAULT (datetime('now')),
+  PRIMARY KEY (obra_id, leitor_id)
+);
+CREATE INDEX idx_avaliacao_obra ON avaliacao(obra_id);
+CREATE INDEX idx_avaliacao_leitor ON avaliacao(leitor_id);
 
 -- ═══════════════════════════════════════════════════════════════════
 -- PERFIL E RECOMENDAÇÃO — com o "porquê" gravado junto
