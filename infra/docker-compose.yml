@@ -25,13 +25,12 @@ services:
       FIO_BANCO: /dados/catalogo.db
       FIO_ESTATICO: /site
       FIO_JURISDICAO: ${FIO_JURISDICAO:-BR}
+      # A porta da casa. Sem esta linha o servidor tranca sozinho, que é o
+      # certo: esta biblioteca é para o dono e os amigos dele, e entra quem
+      # tem convite. Ponha 'aberto' só se um dia a decisão mudar.
+      FIO_CONVITE: ${FIO_CONVITE:-obrigatorio}
       # Vazio = só a própria origem. É o certo em produção.
       FIO_ORIGENS: ${FIO_ORIGENS:-}
-      # E-mail: sem chave, o link de trocar senha sai no log em vez de ser
-      # enviado. É o estado normal até alguém contratar o envio.
-      FIO_EMAIL_SERVICO: ${FIO_EMAIL_SERVICO:-resend}
-      FIO_EMAIL_CHAVE: ${FIO_EMAIL_CHAVE:-}
-      FIO_EMAIL_DE: ${FIO_EMAIL_DE:-}
     volumes:
       # O banco: catálogo, contas e sessões. É o único estado que importa.
       - dados:/dados

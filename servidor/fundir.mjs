@@ -103,6 +103,28 @@ if (quebradas.length) {
 }
 
 banco.exec('DETACH DATABASE entrada')
+
+// ─────────────────────────────────────────────────────────────
+// O índice, se ele não veio junto
+//
+// A cópia pode chegar sem os índices de busca (`copia.mjs --sem-busca`),
+// porque eles são 58% do arquivo e são DERIVADOS: 1 GB de rede para mandar o
+// que esta máquina refaz em minutos. Se chegou vazio, refaz-se aqui.
+//
+// A verificação é por contagem, e não por bandeira: se um dia alguém publicar
+// com o índice junto, este bloco não faz nada. O banco decide, e não o
+// comando que alguém digitou lá.
+// ─────────────────────────────────────────────────────────────
+const capitulos = banco.prepare('SELECT COUNT(*) n FROM capitulo').get().n
+const indexados = banco.prepare('SELECT COUNT(*) n FROM busca_capitulo').get().n
+let refeito = 0
+if (capitulos && indexados < capitulos) {
+  console.log(`índice de busca vazio (${indexados}/${capitulos}); refazendo`)
+  const { reindexarCapitulos, reindexarObras } = await import('./reindexar.mjs')
+  reindexarObras(banco)
+  refeito = reindexarCapitulos(banco)
+}
+
 banco.exec('PRAGMA wal_checkpoint(TRUNCATE)')
 
 const depois = Object.fromEntries(DE_GENTE.map(t => [t, contar(t)]))
@@ -110,6 +132,7 @@ const obras = banco.prepare('SELECT COUNT(*) n FROM obra').get().n
 
 console.log(`tabelas de catálogo trocadas . ${copiadas}`)
 console.log(`obras .......................... ${obras}`)
+if (refeito) console.log(`índice de busca refeito ....... ${refeito} capítulos`)
 for (const t of DE_GENTE) {
   if (depois[t] === null) { console.log(`${t.padEnd(14)}     —  ainda não existe aqui`); continue }
   const igual = antes[t] === depois[t]

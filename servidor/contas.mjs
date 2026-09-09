@@ -5,12 +5,20 @@
 
 import {
   guardarSenha, conferirSenha, gastarTempoAtoa, sortearToken, resumo,
-  sortearConvite, normalizarConvite, freio, perdoar, conferirEmail, conferirSenha_, dicaDeIp,
+  sortearConvite, normalizarConvite, freio, perdoar, freioDuplo, perdoarDuplo,
+  conferirEmail, conferirSenha_, dicaDeIp,
 } from './seguranca.mjs'
+import {
+  prepararConjunto, gravarConjunto, perguntasDe, conferirConjunto, fingirTrabalho,
+  SUGESTOES, QUANTAS,
+} from './perguntas.mjs'
 
 const DIAS_DE_SESSAO = 30
-const MINUTOS_DE_RECUPERACAO = 30
-const DIAS_DE_CONVITE = 14
+// Sessenta dias, e não catorze. Um convite aqui não é link de confirmação de
+// cadastro: é um código que o dono manda para um amigo e que o amigo usa
+// quando lembrar. Catorze dias venciam antes de a pessoa entrar, e o custo de
+// um convite parado é zero — ele continua de uso único.
+const DIAS_DE_CONVITE = 60
 
 /** Erro que PODE ser mostrado ao usuário. Qualquer outro vira "deu ruim". */
 export class Recusa extends Error {
@@ -20,10 +28,33 @@ export class Recusa extends Error {
 const publico = (l) => ({ id: l.id, nome: l.nome, email: l.email, papel: l.papel })
 
 // ─────────────────────────────────────────────────────────────
-// Criar conta — só com convite
+// Criar conta
+//
+// A porta era fechada: sem convite, sem conta. O dono do acervo abriu — e a
+// abertura é uma DECISÃO DE OPERAÇÃO, não uma linha apagada do código:
+// `FIO_CONVITE=obrigatorio` fecha tudo de novo sem tocar em nada aqui.
+//
+// O convite continua existindo e continua sendo consumido quando vem. Quem
+// tem um código na mão não recebe silêncio: código errado é recusado mesmo
+// com a porta aberta — aceitar caladamente um convite inválido faria a
+// pessoa achar que gastou o convite dela.
 // ─────────────────────────────────────────────────────────────
 
-export async function criar(banco, { nome, email, senha, convite }, ctx = {}) {
+/**
+ * A porta da casa, e para que lado ela falha.
+ *
+ * Era `!== 'obrigatorio'`: sem variável nenhuma no ambiente, ABERTA. E a
+ * variável não estava no `docker-compose.yml`, então a biblioteca "para mim e
+ * meus amigos" aceitou cadastro de qualquer um da internet desde que subiu —
+ * `/api/saude` anunciava `convite: "opcional"` para quem quisesse conferir.
+ *
+ * Agora falha fechada: só abre se alguém disser `FIO_CONVITE=aberto`, de
+ * propósito e por escrito. Esquecer a configuração passa a trancar a porta em
+ * vez de escancarar.
+ */
+export const portaAberta = () => process.env.FIO_CONVITE === 'aberto'
+
+export async function criar(banco, { nome, email, senha, convite, perguntas }, ctx = {}) {
   const emLimite = freio(banco, 'criar', dicaDeIp(ctx.ip) ?? 'sem-ip')
   if (!emLimite.passa) throw new Recusa('Muitas tentativas. Tente daqui a pouco.', 429)
 
@@ -34,15 +65,28 @@ export async function criar(banco, { nome, email, senha, convite }, ctx = {}) {
   const nomeLimpo = String(nome ?? '').trim().slice(0, 80)
   if (nomeLimpo.length < 2) throw new Recusa('Diga como quer ser chamado.')
 
-  const conv = banco.prepare(
-    `SELECT id FROM convite
-      WHERE codigo_hash = ? AND usado_em IS NULL AND expira_em > datetime('now')`,
-  ).get(resumo(normalizarConvite(convite)))
-  if (!conv) throw new Recusa('Convite inválido, já usado ou vencido.')
+  // As perguntas de segurança são OBRIGATÓRIAS, e são conferidas antes de a
+  // conta existir. Sem elas não há recuperação nenhuma — não há link de
+  // e-mail para cair de volta — e uma conta sem recuperação é uma conta que
+  // se perde na primeira senha esquecida.
+  const conjunto = await prepararConjunto(perguntas)
+  if (conjunto.erro) throw new Recusa(conjunto.erro)
+
+  const codigo = normalizarConvite(convite)
+  let conv = null
+  if (codigo) {
+    conv = banco.prepare(
+      `SELECT id FROM convite
+        WHERE codigo_hash = ? AND usado_em IS NULL AND expira_em > datetime('now')`,
+    ).get(resumo(codigo))
+    if (!conv) throw new Recusa('Convite inválido, já usado ou vencido.')
+  } else if (!portaAberta()) {
+    throw new Recusa('Convite inválido, já usado ou vencido.')
+  }
 
   if (banco.prepare('SELECT 1 FROM leitor WHERE email = ?').get(limpo)) {
-    // Aqui dá para contar: quem tem o convite já é de casa, e a alternativa
-    // é a pessoa não entender por que não consegue criar a conta.
+    // Aqui dá para contar: quem cria conta já sabe o próprio e-mail, e a
+    // alternativa é a pessoa não entender por que não consegue entrar.
     throw new Recusa('Já existe conta com esse e-mail. Tente entrar.')
   }
 
@@ -51,14 +95,26 @@ export async function criar(banco, { nome, email, senha, convite }, ctx = {}) {
     `INSERT INTO leitor (email, nome, senha_hash, senha_sal, senha_params) VALUES (?,?,?,?,?)`,
   ).run(limpo, nomeLimpo, s.hash, s.sal, s.params).lastInsertRowid)
 
-  banco.prepare(`UPDATE convite SET usado_por = ?, usado_em = datetime('now') WHERE id = ?`)
-    .run(id, conv.id)
+  gravarConjunto(banco, id, conjunto.prontas)
+
+  // A primeira conta da casa é a administradora. Sem isto, uma instalação
+  // nova não tem ninguém que possa convidar ou revisar, e a única saída seria
+  // mexer no banco por fora.
+  if (banco.prepare('SELECT COUNT(*) q FROM leitor').get().q === 1) {
+    banco.prepare("UPDATE leitor SET papel = 'admin' WHERE id = ?").run(id)
+  }
+
+  if (conv) {
+    banco.prepare(`UPDATE convite SET usado_por = ?, usado_em = datetime('now') WHERE id = ?`)
+      .run(id, conv.id)
+  }
   // deu certo: o histórico de tentativas daquele IP some
   perdoar(banco, 'criar', dicaDeIp(ctx.ip) ?? 'sem-ip')
 
   const leitor = banco.prepare('SELECT * FROM leitor WHERE id = ?').get(id)
   return { pessoa: publico(leitor), sessao: abrirSessao(banco, id, ctx) }
 }
+
 
 // ─────────────────────────────────────────────────────────────
 // Entrar
@@ -67,11 +123,13 @@ export async function criar(banco, { nome, email, senha, convite }, ctx = {}) {
 export async function entrar(banco, { email, senha }, ctx = {}) {
   const limpo = conferirEmail(email) ?? 'nao-existe@invalido'
 
-  // Duas contas: uma protege esta conta, outra protege todas.
-  for (const chave of [limpo, dicaDeIp(ctx.ip) ?? 'sem-ip']) {
-    if (!freio(banco, 'entrar', chave).passa) {
-      throw new Recusa('Muitas tentativas. Espere alguns minutos.', 429)
-    }
+  // Duas contas: uma protege esta conta, outra protege todas. Elas tinham o
+  // MESMO teto — oito em quinze minutos — e o balde do IP guarda `187.45.x.x`,
+  // que é um pedaço de operadora inteiro. Dois amigos no mesmo celular erravam
+  // a senha quatro vezes cada e trancavam a casa. Agora o teto do IP é o de
+  // `LIMITES_IP`, folgado para gente e apertado para varredura.
+  if (!freioDuplo(banco, 'entrar', limpo, ctx.ip).passa) {
+    throw new Recusa('Muitas tentativas. Espere alguns minutos.', 429)
   }
 
   const l = banco.prepare('SELECT * FROM leitor WHERE email = ? AND desativado = 0').get(limpo)
@@ -85,7 +143,7 @@ export async function entrar(banco, { email, senha }, ctx = {}) {
     throw new Recusa('E-mail ou senha não conferem.', 401)
   }
 
-  perdoar(banco, 'entrar', limpo)
+  perdoarDuplo(banco, 'entrar', limpo, ctx.ip)
   banco.prepare(`UPDATE leitor SET visto_em = datetime('now') WHERE id = ?`).run(l.id)
   return { pessoa: publico(l), sessao: abrirSessao(banco, l.id, ctx) }
 }
@@ -147,6 +205,10 @@ export const sairDeTudo = (banco, leitorId) =>
 
 const limparVencidos = (banco) => {
   banco.prepare(`DELETE FROM sessao WHERE expira_em < datetime('now')`).run()
+  // A tabela  é do tempo do link por e-mail. A limpeza fica:
+  // instalações antigas ainda têm linhas lá, e apagar a tabela obrigaria a
+  // uma migração destrutiva sem ganho nenhum — ela simplesmente para de
+  // receber linhas novas.
   banco.prepare(`DELETE FROM recuperacao WHERE expira_em < datetime('now', '-1 day')`).run()
 }
 
@@ -154,54 +216,233 @@ const limparVencidos = (banco) => {
 // Esqueci a senha
 // ─────────────────────────────────────────────────────────────
 
+/** As sugestões e quantas a conta guarda, para a tela de cadastro montar. */
+export const perguntasSugeridas = () => ({ sugestoes: SUGESTOES, quantas: QUANTAS })
+
 /**
- * Devolve SEMPRE a mesma coisa, exista o e-mail ou não. Se a resposta
- * diferenciasse, este endereço viraria uma máquina de descobrir quem tem
- * conta aqui.
+ * Passo 1: quais são as perguntas deste e-mail.
+ *
+ * Responde SEMPRE com três perguntas, exista a conta ou não — ver o comentário
+ * em perguntas.mjs. Devolver "não existe" para um endereço e três perguntas
+ * para outro transformaria esta rota numa máquina de descobrir quem tem conta
+ * aqui, que é o vazamento que o resto deste módulo evita com cuidado.
  */
-export function pedirTroca(banco, { email }, ctx = {}) {
+export function perguntasParaRecuperar(banco, { email }, ctx = {}) {
   const limpo = conferirEmail(email)
-  const chave = limpo ?? dicaDeIp(ctx.ip) ?? 'sem-ip'
-  if (!freio(banco, 'esqueci', chave).passa) {
+  // `email ?? ip` era OU um OU outro, e ataque nenhum manda e-mail malformado:
+  // na prática só o balde do e-mail contava, e varrer mil endereços de uma
+  // máquina só não esbarrava em nada. Agora os dois valem.
+  if (!freioDuplo(banco, 'esqueci', limpo, ctx.ip).passa) {
     throw new Recusa('Muitas tentativas. Espere um pouco.', 429)
   }
-  if (!limpo) return { aviso: null }
-
-  const l = banco.prepare('SELECT id, nome FROM leitor WHERE email = ? AND desativado = 0').get(limpo)
-  if (!l) return { aviso: null }
-
-  const token = sortearToken()
-  banco.prepare(
-    `INSERT INTO recuperacao (leitor_id, token_hash, expira_em)
-     VALUES (?,?, datetime('now', ?))`,
-  ).run(l.id, resumo(token), `+${MINUTOS_DE_RECUPERACAO} minutes`)
-
-  // quem chama decide como manda; aqui só se produz o que precisa ser mandado
-  return { aviso: { email: limpo, nome: l.nome, token, minutos: MINUTOS_DE_RECUPERACAO } }
+  if (!limpo) throw new Recusa('Esse e-mail não parece válido.')
+  return perguntasDe(banco, limpo)
 }
 
-export async function trocarSenha(banco, { token, senha }) {
+/**
+ * Passo 2: as respostas, e a senha nova junto.
+ *
+ * Tudo de uma vez, de propósito. O caminho em duas etapas — confere as
+ * respostas, devolve um token, troca a senha com o token — precisaria guardar
+ * um "pode trocar" em algum lugar, e esse algum lugar vira o novo alvo. Aqui
+ * não existe estado intermediário: ou as respostas vieram certas no mesmo
+ * pedido, ou nada acontece.
+ *
+ * O freio é o de sempre e é o que importa: três perguntas de memória são
+ * adivinháveis por força bruta, e o que impede a força bruta é o limite de
+ * tentativas, não a dificuldade da pergunta.
+ */
+export async function recuperarComRespostas(banco, { email, respostas, senha }, ctx = {}) {
+  const limpo = conferirEmail(email)
+  // A porta de verdade, e a que mais precisava do teto por IP: cinco chutes
+  // por e-mail por hora seguram quem insiste numa conta, e não seguravam quem
+  // chuta cinco vezes em cada uma de duzentas contas na mesma hora.
+  if (!freioDuplo(banco, 'responder', limpo, ctx.ip).passa) {
+    throw new Recusa('Muitas tentativas. Espere um pouco antes de tentar de novo.', 429)
+  }
   const problema = conferirSenha_(senha)
   if (problema) throw new Recusa(problema)
 
-  const r = banco.prepare(
-    `SELECT id, leitor_id FROM recuperacao
-      WHERE token_hash = ? AND usado_em IS NULL AND expira_em > datetime('now')`,
-  ).get(resumo(String(token ?? '')))
-  if (!r) throw new Recusa('Esse link já foi usado ou venceu. Peça outro.', 400)
+  const l = limpo
+    ? banco.prepare('SELECT id FROM leitor WHERE email = ? AND desativado = 0').get(limpo)
+    : null
+
+  // O mesmo tempo, exista a conta ou não.
+  if (!l) {
+    await fingirTrabalho()
+    throw new Recusa('As respostas não conferem.', 401)
+  }
+
+  if (!(await conferirConjunto(banco, l.id, respostas))) {
+    throw new Recusa('As respostas não conferem.', 401)
+  }
 
   const s = await guardarSenha(senha)
   banco.prepare(
     `UPDATE leitor SET senha_hash = ?, senha_sal = ?, senha_params = ?,
             senha_mudou = datetime('now') WHERE id = ?`,
-  ).run(s.hash, s.sal, s.params, r.leitor_id)
-  banco.prepare(`UPDATE recuperacao SET usado_em = datetime('now') WHERE id = ?`).run(r.id)
+  ).run(s.hash, s.sal, s.params, l.id)
+
+  perdoarDuplo(banco, 'responder', limpo, ctx.ip)
 
   // Trocar a senha derruba todas as sessões. Se a conta foi invadida, é isso
   // que expulsa o invasor — e é o motivo de a pessoa ter trocado.
-  sairDeTudo(banco, r.leitor_id)
+  sairDeTudo(banco, l.id)
   return { ok: true }
 }
+
+/**
+ * Trocar as próprias perguntas, estando dentro e sabendo a senha.
+ *
+ * Exige a senha atual pelo mesmo motivo que trocar de senha exige: um
+ * computador deixado aberto não pode virar dono da conta — e trocar as
+ * perguntas é justamente como alguém tomaria a conta para sempre.
+ */
+export async function trocarMinhasPerguntas(banco, leitorId, { atual, perguntas }, ctx = {}) {
+  if (!freio(banco, 'senha', String(leitorId)).passa) {
+    throw new Recusa('Muitas tentativas. Espere um pouco.', 429)
+  }
+  const l = banco.prepare('SELECT * FROM leitor WHERE id = ? AND desativado = 0').get(leitorId)
+  if (!l) throw new Recusa('Conta não encontrada.', 404)
+  if (!(await conferirSenha(atual ?? '', l.senha_hash, l.senha_sal, l.senha_params))) {
+    throw new Recusa('A senha atual não confere.', 401)
+  }
+
+  const conjunto = await prepararConjunto(perguntas)
+  if (conjunto.erro) throw new Recusa(conjunto.erro)
+
+  gravarConjunto(banco, leitorId, conjunto.prontas)
+  perdoar(banco, 'senha', String(leitorId))
+  return { ok: true }
+}
+
+/** Quais perguntas eu escolhi — o texto delas, nunca as respostas. */
+export const minhasPerguntas = (banco, leitorId) =>
+  banco.prepare('SELECT ordem, pergunta FROM pergunta WHERE leitor_id = ? ORDER BY ordem')
+    .all(leitorId)
+
+// ─────────────────────────────────────────────────────────────
+// A conta por dentro: nome, senha e aparelhos
+//
+// Estas existem porque uma conta que só serve para entrar não é conta, é
+// catraca. Quem tem conta precisa poder trocar a senha sabendo a antiga (sem
+// depender de e-mail), ver de que aparelhos ela está aberta, e fechar todos
+// de uma vez no dia em que perder o celular.
+// ─────────────────────────────────────────────────────────────
+
+/**
+ * Trocar a senha estando dentro. Exige a senha atual: um computador deixado
+ * aberto no laboratório da facul não pode virar dono da conta.
+ *
+ * Como no "esqueci", trocar derruba TODAS as sessões — inclusive a de quem
+ * está trocando. É o que expulsa quem não deveria estar lá, e é justamente o
+ * motivo de alguém trocar a senha. Por isso devolvemos uma sessão nova: quem
+ * trocou continua dentro, e todo o resto cai.
+ */
+export async function trocarMinhaSenha(banco, leitorId, { atual, nova }, ctx = {}) {
+  if (!freio(banco, 'senha', String(leitorId)).passa) {
+    throw new Recusa('Muitas tentativas. Espere alguns minutos.', 429)
+  }
+  const problema = conferirSenha_(nova)
+  if (problema) throw new Recusa(problema)
+
+  const l = banco.prepare('SELECT * FROM leitor WHERE id = ?').get(leitorId)
+  if (!l) throw new Recusa('Conta não encontrada.', 404)
+  if (!(await conferirSenha(String(atual ?? ''), l.senha_hash, l.senha_sal, l.senha_params))) {
+    throw new Recusa('A senha atual não confere.', 401)
+  }
+  if (String(atual) === String(nova)) throw new Recusa('A senha nova é igual à antiga.')
+
+  const s = await guardarSenha(nova)
+  banco.prepare(
+    `UPDATE leitor SET senha_hash = ?, senha_sal = ?, senha_params = ?,
+            senha_mudou = datetime('now') WHERE id = ?`,
+  ).run(s.hash, s.sal, s.params, leitorId)
+
+  sairDeTudo(banco, leitorId)
+  perdoar(banco, 'senha', String(leitorId))
+  return { pessoa: publico(l), sessao: abrirSessao(banco, leitorId, ctx) }
+}
+
+/** Como a pessoa quer ser chamada. É o único campo de perfil que ela edita. */
+export function mudarNome(banco, leitorId, { nome }) {
+  const limpo = String(nome ?? '').trim().slice(0, 80)
+  if (limpo.length < 2) throw new Recusa('Diga como quer ser chamado.')
+  banco.prepare('UPDATE leitor SET nome = ? WHERE id = ?').run(limpo, leitorId)
+  return { pessoa: publico(banco.prepare('SELECT * FROM leitor WHERE id = ?').get(leitorId)) }
+}
+
+/**
+ * Os aparelhos em que a conta está aberta.
+ *
+ * Devolve a DICA do agente e do IP, nunca o token nem o resumo dele: esta
+ * lista existe para a pessoa reconhecer o próprio celular, não para entregar
+ * a quem invadiu um mapa do que atacar.
+ */
+export function minhasSessoes(banco, leitorId, tokenAtual) {
+  const atual = tokenAtual ? resumo(tokenAtual) : null
+  const linhas = banco.prepare(
+    `SELECT id, token_hash, criado_em, visto_em, expira_em, agente, ip_dica
+       FROM sessao WHERE leitor_id = ? ORDER BY visto_em DESC`,
+  ).all(leitorId)
+  return {
+    sessoes: linhas.map(s => ({
+      id: s.id,
+      aparelho: apelidoDeAgente(s.agente),
+      de: s.ip_dica,
+      desde: s.criado_em,
+      visto: s.visto_em,
+      expira: s.expira_em,
+      esta: atual != null && Buffer.from(s.token_hash).equals(atual),
+    })),
+  }
+}
+
+/** "Sair dos outros aparelhos": mantém este, derruba o resto. */
+export function sairDosOutros(banco, leitorId, tokenAtual) {
+  const s = tokenAtual && banco.prepare(
+    'SELECT id FROM sessao WHERE leitor_id = ? AND token_hash = ?').get(leitorId, resumo(tokenAtual))
+  const fora = s
+    ? banco.prepare('DELETE FROM sessao WHERE leitor_id = ? AND id <> ?').run(leitorId, s.id)
+    : banco.prepare('DELETE FROM sessao WHERE leitor_id = ?').run(leitorId)
+  return { encerradas: fora.changes }
+}
+
+/** Uma etiqueta legível a partir do user-agent. Grosseira de propósito. */
+function apelidoDeAgente(agente) {
+  const a = String(agente ?? '')
+  if (!a) return 'aparelho desconhecido'
+  const sistema = /iPhone|iPad/i.test(a) ? 'iPhone' : /Android/i.test(a) ? 'Android'
+    : /Windows/i.test(a) ? 'Windows' : /Mac OS X|Macintosh/i.test(a) ? 'Mac'
+    : /Linux/i.test(a) ? 'Linux' : 'aparelho'
+  const navegador = /Edg[/]/i.test(a) ? 'Edge' : /OPR[/]/i.test(a) ? 'Opera'
+    : /Chrome[/]/i.test(a) ? 'Chrome' : /Firefox[/]/i.test(a) ? 'Firefox'
+    : /Safari[/]/i.test(a) ? 'Safari' : 'navegador'
+  return `${navegador} no ${sistema}`
+}
+
+/**
+ * Levar tudo embora (LGPD, art. 18, V).
+ *
+ * Sai a conta, o que foi lido, o que foi marcado e as preferências — no mesmo
+ * JSON que o navegador guarda. Nada de sessão e nada de hash de senha:
+ * exportar não pode virar um jeito de vazar credencial.
+ */
+export function exportarTudo(banco, leitorId) {
+  const l = banco.prepare(
+    'SELECT id, email, nome, jurisdicao, papel, criado_em, visto_em FROM leitor WHERE id = ?',
+  ).get(leitorId)
+  if (!l) throw new Recusa('Conta não encontrada.', 404)
+  return {
+    exportadoEm: new Date().toISOString(),
+    conta: l,
+    guardado: lerGuardado(banco, leitorId).itens,
+    avaliacoes: banco.prepare(
+      'SELECT obra_id, nota, resenha, criado_em, mudou_em FROM avaliacao WHERE leitor_id = ?',
+    ).all(leitorId),
+  }
+}
+
 
 // ─────────────────────────────────────────────────────────────
 // O que o leitor guardou, entre aparelhos
@@ -288,6 +529,100 @@ export function apagarConta(banco, leitorId) {
   banco.prepare('DELETE FROM leitor WHERE id = ?').run(leitorId)
   return { ok: true }
 }
+
+// ─────────────────────────────────────────────────────────────
+// Nota e resenha
+//
+// É o que separa um catálogo de uma biblioteca: o que os leitores dizem
+// uns aos outros sobre o que leram.
+//
+// Três decisões que valem estar escritas:
+//
+//   1. UMA por pessoa por obra. Escrever de novo é corrigir a sua, e não
+//      empilhar mais uma — senão a média vira urna sem fiscal.
+//   2. A nota é separada da resenha. Muita gente quer dar cinco estrelas
+//      sem escrever nada, e algumas das melhores resenhas não querem dar
+//      nota. Exigir as duas juntas faz perder as duas.
+//   3. A resenha diz se conta o fim. É o mesmo anti-spoiler do resto do
+//      site: quem ainda não leu vê a resenha fechada, com o aviso, e
+//      escolhe abrir.
+// ─────────────────────────────────────────────────────────────
+
+const TETO_DE_RESENHA = 4000
+
+/** O que a página da obra mostra: a média, quantas notas, e as resenhas. */
+export function avaliacoesDa(banco, obraId, leitorId = null) {
+  const resumo = banco.prepare(
+    'SELECT COUNT(nota) quantas, AVG(nota) media FROM avaliacao WHERE obra_id = ?',
+  ).get(obraId)
+
+  const resenhas = banco.prepare(
+    `SELECT a.leitor_id, a.nota, a.resenha, a.revela, a.mudou_em, l.nome
+       FROM avaliacao a JOIN leitor l ON l.id = a.leitor_id
+      WHERE a.obra_id = ? AND a.resenha IS NOT NULL AND a.resenha <> ''
+      ORDER BY a.mudou_em DESC LIMIT 50`,
+  ).all(obraId)
+
+  const minha = leitorId
+    ? banco.prepare('SELECT nota, resenha, revela FROM avaliacao WHERE obra_id = ? AND leitor_id = ?')
+      .get(obraId, leitorId) ?? null
+    : null
+
+  return {
+    quantas: resumo.quantas ?? 0,
+    // uma casa decimal: mais que isso finge uma precisão que cinco votos
+    // não têm
+    media: resumo.media ? Math.round(resumo.media * 10) / 10 : null,
+    minha,
+    resenhas: resenhas.map(r => ({
+      // o id do leitor NÃO sai daqui: quem escreveu aparece pelo nome, e
+      // ligar nome a número seria entregar de graça um índice de quem leu
+      // o quê
+      quem: r.nome,
+      minha: leitorId != null && r.leitor_id === leitorId,
+      nota: r.nota,
+      texto: r.resenha,
+      revela: r.revela === 1,
+      quando: r.mudou_em,
+    })),
+  }
+}
+
+export function avaliar(banco, leitorId, obraId, { nota, resenha, revela }) {
+  if (!freio(banco, 'avaliar', String(leitorId)).passa) {
+    throw new Recusa('Muitas avaliações seguidas. Espere um pouco.', 429)
+  }
+  if (!banco.prepare('SELECT 1 FROM obra WHERE id = ? AND publicada = 1').get(obraId)) {
+    throw new Recusa('Essa obra não existe.', 404)
+  }
+
+  const n = nota == null || nota === '' ? null : Number(nota)
+  if (n != null && (!Number.isInteger(n) || n < 1 || n > 5)) {
+    throw new Recusa('A nota vai de 1 a 5.')
+  }
+  const texto = String(resenha ?? '').trim().slice(0, TETO_DE_RESENHA) || null
+  if (n == null && !texto) throw new Recusa('Dê uma nota ou escreva alguma coisa.')
+
+  banco.prepare(
+    `INSERT INTO avaliacao (obra_id, leitor_id, nota, resenha, revela)
+     VALUES (?,?,?,?,?)
+     ON CONFLICT (obra_id, leitor_id) DO UPDATE
+       SET nota = excluded.nota, resenha = excluded.resenha,
+           revela = excluded.revela, mudou_em = datetime('now')`,
+  ).run(obraId, leitorId, n, texto, revela ? 1 : 0)
+
+  return avaliacoesDa(banco, obraId, leitorId)
+}
+
+export function desavaliar(banco, leitorId, obraId) {
+  banco.prepare('DELETE FROM avaliacao WHERE obra_id = ? AND leitor_id = ?').run(obraId, leitorId)
+  return avaliacoesDa(banco, obraId, leitorId)
+}
+
+/** As médias de todas as obras, para a publicação do catálogo. */
+export const medias = (banco) => banco.prepare(
+  `SELECT obra_id, COUNT(nota) quantas, ROUND(AVG(nota), 1) media
+     FROM avaliacao WHERE nota IS NOT NULL GROUP BY obra_id`).all()
 
 // ─────────────────────────────────────────────────────────────
 // O que está sendo lido

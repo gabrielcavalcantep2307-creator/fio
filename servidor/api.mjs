@@ -19,8 +19,10 @@ import { join, normalize, extname } from 'node:path'
 import { abrir, RAIZ } from './banco/base.mjs'
 import * as contas from './contas.mjs'
 import { Recusa } from './contas.mjs'
-import { enviar } from './email.mjs'
 import { montarEpub, nomeDeArquivo } from './epub.mjs'
+import { ondeComecaOLivro } from './folha-de-rosto.mjs'
+import { criarBuscaNoTexto } from './busca-no-texto.mjs'
+import { ipDoPedido } from './seguranca.mjs'
 
 const PORTA = Number(process.env.FIO_PORTA || 8787)
 const SITE = process.env.FIO_SITE || `http://localhost:${PORTA}`
@@ -31,6 +33,7 @@ const ESTATICO = process.env.FIO_ESTATICO || join(RAIZ, 'web', 'dist')
 const ORIGENS = (process.env.FIO_ORIGENS || '').split(',').map(s => s.trim()).filter(Boolean)
 
 const banco = abrir()
+const buscarNoTexto = criarBuscaNoTexto(banco)
 
 // ─────────────────────────────────────────────────────────────
 // CSRF
@@ -109,8 +112,7 @@ const responder = (res, status, dado) => {
 /** O título do Gutenberg às vezes traz o subtítulo depois de uma quebra. */
 const primeiraLinha = (s) => String(s ?? '').split(/[\r\n]/)[0].replace(/\s+/g, ' ').trim()
 
-const ipDe = (req) =>
-  (req.headers['x-forwarded-for'] ?? '').split(',')[0].trim() || req.socket.remoteAddress
+const ipDe = (req) => ipDoPedido(req.headers['x-forwarded-for'], req.socket.remoteAddress)
 
 const exigirEntrada = (req) => {
   const pessoa = contas.deQuemE(banco, lerCookie(req))
@@ -123,7 +125,7 @@ const exigirEntrada = (req) => {
 // ─────────────────────────────────────────────────────────────
 
 const ROTAS = {
-  'GET /api/saude': () => ({ ok: true, versao: 1 }),
+  'GET /api/saude': () => ({ ok: true, versao: 1, convite: contas.portaAberta() ? 'opcional' : 'obrigatorio' }),
 
   'GET /api/eu': (req) => ({ pessoa: exigirEntrada(req) }),
 
@@ -145,26 +147,74 @@ const ROTAS = {
     return { ok: true }
   },
 
-  'POST /api/esqueci': async (req, res, dado, ctx) => {
-    const { aviso } = contas.pedirTroca(banco, dado, ctx)
-    if (aviso) {
-      const link = `${SITE}/#/trocar-senha?t=${encodeURIComponent(aviso.token)}`
-      await enviar({
-        para: aviso.email,
-        assunto: 'Trocar a senha do Fio',
-        titulo: `Olá, ${aviso.nome}`,
-        texto: `Alguém pediu para trocar a senha desta conta. Se não foi você, ignore este e-mail — nada muda. O link vale por ${aviso.minutos} minutos e só funciona uma vez.`,
-        botao: { rotulo: 'Escolher outra senha', url: link },
-      })
-    }
-    // A resposta é a mesma exista ou não a conta. É de propósito.
+  // ── esqueci a senha, sem e-mail ──
+  //
+  // O link por e-mail saiu. Ele amarrava a conta a uma caixa de mensagens que
+  // não é nossa: quem perdia o e-mail perdia a conta, e quem tinha o e-mail
+  // invadido perdia a conta junto — o link era a chave mestra.
+  //
+  // No lugar, o que a pessoa SABE. Duas rotas: uma diz quais são as perguntas
+  // daquele endereço, a outra recebe as respostas e a senha nova de uma vez.
+  // Não há passo intermediário e não há token guardado em lugar nenhum — o
+  // "pode trocar" nunca existe como estado, então não há o que roubar.
+
+  'POST /api/perguntas': (req, res, dado, ctx) => contas.perguntasParaRecuperar(banco, dado, ctx),
+
+  'POST /api/responder': async (req, res, dado, ctx) => {
+    await contas.recuperarComRespostas(banco, dado, ctx)
+    semCookie(res)
     return { ok: true }
   },
 
-  'POST /api/trocar-senha': async (req, res, dado) => {
-    await contas.trocarSenha(banco, dado)
-    semCookie(res)
+  /** As sugestões para a tela de cadastro montar a escolha. */
+  'GET /api/sugestoes': () => contas.perguntasSugeridas(),
+
+  // ── a conta por dentro ──
+  //
+  // Trocar a senha derruba todas as sessões, inclusive esta. O servidor
+  // devolve um cookie novo na mesma resposta: quem trocou continua dentro, e
+  // todo o resto cai. Sem isso, trocar a senha deslogaria quem trocou — e a
+  // pessoa concluiria que deu errado.
+  'POST /api/minha-senha': async (req, res, dado, ctx) => {
+    const pessoa = exigirEntrada(req)
+    const { sessao } = await contas.trocarMinhaSenha(banco, pessoa.id, dado, ctx)
+    porCookie(res, sessao.token, sessao.dias)
     return { ok: true }
+  },
+
+  'POST /api/meu-nome': (req, res, dado) => {
+    const pessoa = exigirEntrada(req)
+    return contas.mudarNome(banco, pessoa.id, dado)
+  },
+
+  /** As MINHAS perguntas: o texto delas, nunca as respostas. */
+  'GET /api/minhas-perguntas': (req) => {
+    const pessoa = exigirEntrada(req)
+    return { perguntas: contas.minhasPerguntas(banco, pessoa.id) }
+  },
+
+  // Trocar as perguntas exige a senha atual, pelo mesmo motivo que trocar a
+  // senha exige: trocar as perguntas é justamente como alguém sentado num
+  // computador aberto tomaria a conta para sempre.
+  'POST /api/minhas-perguntas': async (req, res, dado, ctx) => {
+    const pessoa = exigirEntrada(req)
+    return contas.trocarMinhasPerguntas(banco, pessoa.id, dado, ctx)
+  },
+
+  'GET /api/meus-aparelhos': (req) => {
+    const pessoa = exigirEntrada(req)
+    return contas.minhasSessoes(banco, pessoa.id, lerCookie(req))
+  },
+
+  'POST /api/sair-dos-outros': (req) => {
+    const pessoa = exigirEntrada(req)
+    return contas.sairDosOutros(banco, pessoa.id, lerCookie(req))
+  },
+
+  // LGPD, art. 18, V: levar tudo embora, em formato legível.
+  'GET /api/exportar': (req) => {
+    const pessoa = exigirEntrada(req)
+    return contas.exportarTudo(banco, pessoa.id)
   },
 
   // ── o que o leitor guardou, entre aparelhos ──
@@ -178,7 +228,29 @@ const ROTAS = {
     return contas.guardar(banco, pessoa.id, dado)
   },
 
+  // ── nota e resenha ──
+  //
+  // Ler é público: quem chega sem conta vê a média e as resenhas, porque é
+  // isso que ajuda a escolher o livro. Escrever exige conta, porque resenha
+  // sem dono é panfleto.
+
+  'POST /api/avaliar': (req, res, dado) => {
+    const pessoa = exigirEntrada(req)
+    return contas.avaliar(banco, pessoa.id, Number(dado.obra), dado)
+  },
+
+  'POST /api/desavaliar': (req, res, dado) => {
+    const pessoa = exigirEntrada(req)
+    return contas.desavaliar(banco, pessoa.id, Number(dado.obra))
+  },
+
   // ── o que está sendo lido, medido e anônimo ──
+  // Buscar DENTRO dos livros. O índice FTS5 sobre 110 milhões de palavras
+  // existia, populado, e nenhuma rota o consultava — a busca do site só via
+  // título e autor. É a diferença entre catálogo e biblioteca.
+  'GET /api/procurar': (req, res, dado, ctx) =>
+    buscarNoTexto(ctx.busca?.get('q') ?? '', { jurisdicao: process.env.FIO_JURISDICAO || 'BR' }),
+
   'GET /api/populares': () => ({
     semana: contas.maisLidos(banco, { dias: 7, quantos: 10 }),
     mes: contas.maisLidos(banco, { dias: 30, quantos: 10 }),
@@ -225,13 +297,22 @@ const ROTAS = {
 // arquivo é mais sério que mostrar um botão.
 // ─────────────────────────────────────────────────────────────
 
+// Uma obra traduzida por nós tem DOIS textos: a nossa tradução em português
+// e o original de que ela partiu, guardado para conferência. O que se entrega
+// é sempre o português — a subconsulta escolhe, e não o acaso do JOIN.
+const O_TEXTO_QUE_VALE = `t.id = (
+    SELECT id FROM texto WHERE obra_id = o.id AND dono_id IS NULL
+     ORDER BY (idioma = 'pt') DESC, normalizado DESC, id LIMIT 1)`
+
 const doLivro = banco.prepare(`
   SELECT o.id, o.titulo, o.titulo_pt, t.id texto_id, t.fonte, t.fonte_url, t.normalizado,
+         t.revisao, tr.nome tradutor,
          d.estado, d.motivo,
          (SELECT p.nome FROM obra_pessoa op JOIN pessoa p ON p.id = op.pessoa_id
            WHERE op.obra_id = o.id AND op.papel = 'autor' LIMIT 1) autor
     FROM obra o
-    JOIN texto t ON t.obra_id = o.id AND t.dono_id IS NULL
+    JOIN texto t ON ${O_TEXTO_QUE_VALE}
+    LEFT JOIN pessoa tr ON tr.id = t.tradutor_id
     LEFT JOIN direito d ON d.texto_id = t.id AND d.jurisdicao = ?
    WHERE o.id = ? AND o.publicada = 1`)
 
@@ -240,10 +321,11 @@ const capitulosDo = banco.prepare(
 
 const paraLeitura = banco.prepare(`
   SELECT o.id, o.titulo, o.titulo_pt, o.minutos_leitura, o.capa, o.capa_externa, o.trilho,
-         t.id texto_id, d.estado,
+         t.id texto_id, t.revisao, t.aviso, t.fonte_url base_url, tr.nome tradutor, d.estado,
          p.id autor_id, p.nome autor
     FROM obra o
-    JOIN texto t ON t.obra_id = o.id AND t.dono_id IS NULL
+    JOIN texto t ON ${O_TEXTO_QUE_VALE}
+    LEFT JOIN pessoa tr ON tr.id = t.tradutor_id
     LEFT JOIN direito d ON d.texto_id = t.id AND d.jurisdicao = ?
     LEFT JOIN obra_pessoa op ON op.obra_id = o.id AND op.papel = 'autor'
     LEFT JOIN pessoa p ON p.id = op.pessoa_id
@@ -281,6 +363,15 @@ function servirLivro(res, id) {
     temas: [],
     capa: o.capa, capaOL: o.capa_externa,
     textoId: o.texto_id,
+    // Em que capítulo entrar quando não há marca de onde parou. Sem isto o
+    // leitor abre na folha de rosto do editor em 582 obras.
+    comecaEm: ondeComecaOLivro(capitulos),
+    // O defeito DESTA digitalização, dito antes de o leitor estranhar o
+    // texto: hoje é sempre o "s" longo das edições anteriores ao século XIX.
+    aviso: o.aviso ?? null,
+    // O rótulo viaja com o TEXTO, e não como enfeite da ficha: quem abre o
+    // livro direto pelo endereço tem que ver o aviso do mesmo jeito.
+    traducao: o.revisao ? { revisao: o.revisao, tradutor: o.tradutor, original: o.base_url } : null,
     capitulos,
   })
 }
@@ -298,7 +389,11 @@ function baixar(req, res, id) {
     id: o.id,
     titulo: primeiraLinha(o.titulo_pt || o.titulo),
     autor: o.autor ?? 'autoria não identificada',
-    direito: o.motivo,
+    // O arquivo sai da nossa casa e vai viver no aparelho de alguém. O aviso
+    // tem que ir junto, senão daqui a um ano ele é só "um epub que eu tenho".
+    direito: o.revisao === 'automatica'
+      ? `Tradução automática do Fio, sem revisão humana. ${o.motivo ?? ''}`
+      : o.motivo,
     fonteUrl: o.fonte_url,
     capitulos: capitulosDo.all(o.texto_id),
   }
@@ -378,6 +473,18 @@ const servidor = createServer(async (req, res) => {
     }
   }
 
+  // ── as avaliações de uma obra: leitura pública ──
+  const pedindoAvaliacoes = caminho.match(/^\/api\/obra\/(\d+)\/avaliacoes$/)
+  if (pedindoAvaliacoes && req.method === 'GET') {
+    try {
+      const quem = contas.deQuemE(banco, lerCookie(req))
+      return responder(res, 200, contas.avaliacoesDa(banco, Number(pedindoAvaliacoes[1]), quem?.id ?? null))
+    } catch (e) {
+      console.error('[fio] avaliacoes', e)
+      return responder(res, 500, { erro: 'não consegui ler as avaliações' })
+    }
+  }
+
   // ── o livro: texto para ler, e arquivo para levar ──
   const pedindoLivro = caminho.match(/^\/api\/livro\/(\d+)$/)
   if (pedindoLivro) {
@@ -416,7 +523,12 @@ const servidor = createServer(async (req, res) => {
         throw new Recusa('Pedido sem identificação.', 403)
       }
       const dado = req.method === 'POST' ? await corpo(req) : {}
-      const ctx = { ip: ipDe(req), agente: req.headers['user-agent'] }
+      const ctx = {
+        ip: ipDe(req),
+        agente: req.headers['user-agent'],
+        // a parte depois do , para as rotas que recebem parâmetro por GET
+        busca: new URL(req.url, 'http://x').searchParams,
+      }
       return responder(res, 200, await rota(req, res, dado, ctx))
     } catch (e) {
       if (e instanceof Recusa) return responder(res, e.status, { erro: e.message })

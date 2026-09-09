@@ -29,7 +29,12 @@ if (arg === '--listar') {
   for (const c of banco.prepare(
     `SELECT c.id, c.criado_em, c.expira_em, c.usado_em, c.nota, l.email
        FROM convite c LEFT JOIN leitor l ON l.id = c.usado_por ORDER BY c.id`).all()) {
-    const estado = c.usado_em ? `usado por ${c.email}` : c.expira_em < new Date().toISOString() ? 'vencido' : 'aberto'
+    // `expira_em` vem como "2026-09-09 12:00:00" e o ISO do JS traz um "T"
+    // no lugar do espaço. Como " " < "T", todo convite que vence HOJE aparecia
+    // vencido, ainda que faltassem doze horas. Compara-se no mesmo formato.
+    const agora = new Date().toISOString().slice(0, 19).replace('T', ' ')
+    const estado = c.usado_em ? `usado por ${c.email}`
+      : c.expira_em < agora ? 'vencido' : 'aberto'
     console.log(`  ${String(c.id).padStart(3)} ${estado.padEnd(34)} ${c.nota ?? ''}`)
   }
 
@@ -39,6 +44,27 @@ if (arg === '--listar') {
        JOIN leitor l ON l.id = s.leitor_id ORDER BY s.visto_em DESC`).all()) {
     console.log(`  ${s.email.padEnd(28)} ${s.ip_dica ?? '?'}  ${String(s.agente ?? '').slice(0, 40)}`)
   }
+
+} else if (arg === '--revogar') {
+  const id = Number(process.argv[3])
+  if (!id) { console.error('uso: --revogar <id do convite>'); process.exit(1) }
+  // Só convite ainda não usado. Apagar um convite JÁ usado apagaria a única
+  // linha que conta como aquela pessoa entrou nesta biblioteca.
+  const r = banco.prepare('DELETE FROM convite WHERE id = ? AND usado_em IS NULL').run(id)
+  console.log(r.changes ? `convite ${id} cancelado` : `convite ${id} não existe, ou já foi usado`)
+
+} else if (arg === '--varios') {
+  // Convidar quatro amigos numa tarde não devia ser quatro sessões de SSH.
+  const quantos = Math.min(Math.max(Number(process.argv[3]) || 3, 1), 20)
+  console.log('')
+  for (let i = 0; i < quantos; i++) {
+    const { codigo } = criarConvite(banco, { nota: process.argv[4] ?? null })
+    console.log(`  ${codigo}`)
+  }
+  console.log('')
+  console.log(`  ${quantos} convites, uso único cada um.`)
+  console.log('  Esta é a única vez que eles aparecem.')
+  console.log('')
 
 } else if (arg === '--admin') {
   const email = process.argv[3]
