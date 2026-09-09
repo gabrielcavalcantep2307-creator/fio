@@ -267,6 +267,47 @@ test('pergunta escrita à mão é recusada no cadastro', async () => {
   )
 })
 
+// ─────────────────────────────────────────────────────────────
+// Modernizar: o mesmo livro, na língua de hoje
+//
+// Não é tradução de idioma. É "elle disse que o pharmaceutico era attento"
+// virar "ele disse que o farmacêutico era atento". Roda em regra, sem rede e
+// sem custo: um livro inteiro sai em menos de um segundo.
+//
+// 33.715 dos 86.588 capítulos do acervo têm grafia anterior aos acordos.
+// ─────────────────────────────────────────────────────────────
+
+test('a grafia de 1880 vira a de hoje', async () => {
+  const { modernizar } = await import('../ingestao/modernizar.mjs')
+  assert.equal(modernizar('Elle fallou de aquelle anno'), 'Ele falou de aquele ano')
+  assert.equal(modernizar('o pharmaceutico e a sciencia'), 'o farmacêutico e a ciência')
+  assert.equal(modernizar('o director da officina'), 'o diretor da oficina')
+  assert.equal(modernizar("na noite d'este dia"), 'na noite deste dia')
+  assert.equal(modernizar('aſſim mesmo'), 'assim mesmo')
+})
+
+// A regra da consoante dobrada estragava justamente os nomes por onde alguém
+// procuraria o livro: Hobbes virava "Hobes" e Cromwell virava "Cromwel".
+test('nome próprio não passa pela reforma ortográfica', async () => {
+  const { modernizar } = await import('../ingestao/modernizar.mjs')
+  for (const nome of ['Hobbes', 'Cromwell', 'Rossetti', 'Villa-Lobos', 'Rousseau']) {
+    assert.equal(modernizar(nome), nome)
+  }
+})
+
+test('rr e ss continuam dobrados, que é como se escreve hoje', async () => {
+  const { modernizar } = await import('../ingestao/modernizar.mjs')
+  assert.equal(modernizar('o carro passou assim pela terra'), 'o carro passou assim pela terra')
+})
+
+test('a marcação atravessa sem ser tocada', async () => {
+  const { modernizar } = await import('../ingestao/modernizar.mjs')
+  // sem isto, um atributo com "th" ou consoante dobrada viraria outra coisa
+  assert.equal(
+    modernizar('<p class="anno">Elle</p>'),
+    '<p class="anno">Ele</p>')
+})
+
 test('a resposta nunca é guardada em claro', () => {
   const l = banco.prepare('SELECT id FROM leitor WHERE email = ?').get('gabriel@exemplo.com')
   const linhas = banco.prepare('SELECT * FROM pergunta WHERE leitor_id = ?').all(l.id)

@@ -10,9 +10,9 @@
 // carregam, que registram as medições feitas na época.
 //
 // As funções puras abaixo estão cobertas por teste e reproduzem o
-// comportamento antigo. `traduzir()` NÃO está: o endereço do serviço foi
-// escrito de memória e precisa ser conferido contra uma chamada real antes
-// de rodar sobre livro nenhum.
+// comportamento antigo. O endereço do serviço foi escrito de memória na
+// reconstrução, deu 404, e foi CONFERIDO e corrigido em 09/09/2026 contra
+// uma chamada real.
 // ─────────────────────────────────────────────────────────────
 //
 // A escolha do motor é a decisão que faz este projeto caber no bolso: o MinT,
@@ -26,7 +26,10 @@
 // outra. Toda garantia aqui é MECÂNICA — glossário aplicado depois, cabeçalho
 // preparado antes, português de Portugal corrigido no fim.
 
-const SERVICO = 'https://api.wikimedia.org/service/linear/translate'
+// Conferido contra uma chamada real em 09/09/2026: responde
+// {"translation": "...", "model": "nllb200-600M"}. O modelo é o NLLB-200 da
+// Meta, de 600 milhões de parâmetros, servido pela Wikimedia sem chave.
+const SERVICO = 'https://translate.wmcloud.org/api/translate'
 
 /**
  * Não há chave para faltar, então não há por que ele não rodar. Esta função
@@ -235,10 +238,10 @@ export function abrasileirar(texto) {
  * Traduz uma unidade — um parágrafo, um cabeçalho — e devolve já preparada,
  * com glossário e norma brasileira aplicados.
  *
- * O endereço do serviço foi escrito de memória na reconstrução deste arquivo.
- * CONFIRA contra uma chamada real antes de rodar sobre um livro: uma resposta
- * em formato diferente do esperado aqui produz capítulo vazio em silêncio,
- * que é o pior defeito possível numa ingestão.
+ * Uma resposta em formato diferente do esperado aqui produziria capítulo
+ * vazio EM SILÊNCIO, que é o pior defeito possível numa ingestão. Por isso a
+ * conferência abaixo é dura: qualquer coisa que não seja texto com conteúdo
+ * levanta erro, e a ingestão para em vez de gravar nada.
  */
 export async function traduzir(bruto, { de = 'en', para = 'pt', glossario = {} } = {}) {
   const { entrada, refazer } = prepararUnidade(bruto)
