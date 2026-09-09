@@ -47,25 +47,80 @@ const TRADUZ = {
   h1: 'h3', h2: 'h3', h4: 'h3', h5: 'h3', h6: 'h3',
 }
 
+/**
+ * Onde termina esta tag — e por que isto não é uma expressão regular.
+ *
+ * A versão anterior achava o fim com `[^>]*>`, o primeiro `>` depois do nome.
+ * Isso erra dos dois lados:
+ *
+ *   `<img src="x>y" onerror=alert(1)>` termina cedo demais. A tag some pela
+ *   metade e o resto — `onerror=alert(1)` — fica no capítulo como texto.
+ *
+ *   `<p data-mw='{"h":"<poem>x"}' id="mwA">`, que é como o Parsoid do
+ *   Wikisource devolve parágrafo, termina no `>` de dentro do JSON, e o
+ *   miolo do atributo vai parar na página.
+ *
+ * A versão ANTES dessa exigia aspas casadas, e aí uma aspa solta
+ * (`title=a'b`) fazia o casamento falhar inteiro: a tag não era reconhecida,
+ * não era removida, e ia viva para o `dangerouslySetInnerHTML` do leitor.
+ *
+ * O navegador não faz nada disso. A regra do HTML5 é simples e é esta: aspa
+ * só abre valor quando vem logo depois do `=`. Em qualquer outro lugar ela é
+ * um caractere como outro qualquer. Uma varredura de dez linhas faz certo o
+ * que três expressões regulares fizeram errado.
+ */
+function fimDaTag(s, i) {
+  let j = i + 1
+  if (s[j] === '/') j++
+  let nome = ''
+  while (j < s.length && /[a-zA-Z0-9]/.test(s[j])) nome += s[j++]
+
+  while (j < s.length && s[j] !== '>') {
+    if (s[j] !== '=') { j++; continue }
+    j++
+    while (j < s.length && /\s/.test(s[j])) j++
+    const aspa = s[j]
+    if (aspa === '"' || aspa === "'") {
+      j++
+      while (j < s.length && s[j] !== aspa) j++
+      j++ // a aspa que fecha
+    }
+  }
+  return { nome, fim: j }
+}
+
 function limpar(html) {
-  return html
+  const semBloco = html
     // fora tudo que não é conteúdo
     .replace(/<(script|style|table|figure|svg)[\s\S]*?<\/\1>/gi, '')
     .replace(/<!--[\s\S]*?-->/g, '')
-    // <br> e <hr> viram separação de parágrafo, não linha solta
-    .replace(/<hr[^>]*>/gi, '')
-    .replace(/<br\s*\/?>/gi, '<br>')
-    // as tags, uma a uma
-    .replace(/<\/?([a-zA-Z][a-zA-Z0-9]*)\b[^>]*>/g, (todo, tag) => {
-      const t = tag.toLowerCase()
-      const alvo = TRADUZ[t] ?? t
-      if (!PERMITIDAS.has(alvo)) return ''
-      return todo.startsWith('</') ? `</${alvo}>` : `<${alvo}>`
-    })
+
+  let saida = ''
+  for (let i = 0; i < semBloco.length; i++) {
+    const c = semBloco[i]
+    if (c !== '<') { saida += c; continue }
+
+    // `<` que não começa tag é texto — "5 < 6" tem que sobreviver, e virar
+    // entidade em vez de virar começo de marcação na cara do leitor.
+    const depois = semBloco[i + 1] === '/' ? semBloco[i + 2] : semBloco[i + 1]
+    if (!/[a-zA-Z]/.test(depois ?? '')) { saida += '&lt;'; continue }
+
+    const { nome, fim } = fimDaTag(semBloco, i)
+    const fechando = semBloco[i + 1] === '/'
+    const alvo = TRADUZ[nome.toLowerCase()] ?? nome.toLowerCase()
+    if (PERMITIDAS.has(alvo)) saida += fechando ? `</${alvo}>` : `<${alvo}>`
+    i = fim // o laço avança para depois do `>`
+  }
+
+  return saida
     .replace(/\s+/g, ' ')
     .replace(/<p>\s*(<br>\s*)*<\/p>/g, '')
     .trim()
 }
+
+// Exportado porque é controle de segurança, e controle de segurança sem teste
+// é intenção. Quem testa é `servidor/testes.mjs`, que é o que roda no CI.
+export { limpar }
 
 function texto(html) {
   return html.replace(/<[^>]*>/g, ' ').replace(/&[a-z]+;|&#\d+;/gi, ' ').replace(/\s+/g, ' ').trim()
