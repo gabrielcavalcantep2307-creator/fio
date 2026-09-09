@@ -37,6 +37,28 @@ echo "==> Conferindo tipos e testes"
 npm --prefix web exec tsc -- -b
 node --test servidor/testes.mjs > /dev/null
 
+# ─────────────────────────────────────────────────────────────
+# TRAVA: o site em produção é a única cópia da interface nova
+#
+# O que está no ar tem tela de perguntas de segurança, busca dentro dos livros
+# e resenhas. O `web/src` deste repositório não tem — aquele fonte nunca foi
+# commitado, o deploy levava só o `dist`, e não há sourcemap para desfazer.
+#
+# Publicar o site daqui, hoje, apaga a interface nova e põe a velha no lugar.
+# A trava procura no fonte um sinal de que ele já alcançou o que está no ar;
+# enquanto não achar, recusa. Para mexer só no servidor:
+# `bash infra/publicar-so-servidor.sh`.
+# ─────────────────────────────────────────────────────────────
+if ! grep -rqs "minhas-perguntas" web/src && [[ "${FORCAR_SITE:-}" != "1" ]]; then
+  echo "RECUSADO: web/src ainda é a interface velha, sem perguntas de" >&2
+  echo "  segurança, busca no texto nem resenhas. Publicar apagaria a" >&2
+  echo "  interface que está no ar, que é a única cópia que existe dela." >&2
+  echo "" >&2
+  echo "  Para mexer só no servidor:  bash infra/publicar-so-servidor.sh" >&2
+  echo "  Se você REALMENTE quer publicar este fonte:  FORCAR_SITE=1 $0 $*" >&2
+  exit 1
+fi
+
 echo "==> Construindo o site"
 npm --prefix web run build
 
