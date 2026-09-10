@@ -44,10 +44,10 @@ const RAIZ = join(dirname(fileURLToPath(import.meta.url)), '..')
 const PASTA = join(RAIZ, 'dados', 'traducoes')
 const UA = 'fio/0.1 (biblioteca em portugues; contato: toksr12@gmail.com)'
 
-// Quantos parágrafos em voo ao mesmo tempo. O serviço é gratuito e é de uma
-// fundação: quatro é o suficiente para um livro sair numa tarde e é pouco o
-// bastante para não parecer ataque.
-const EM_PARALELO = 10
+// Quantos parágrafos em voo ao mesmo tempo. Era dez, e dez foi demais: o
+// serviço parou de responder no meio do segundo livro do dia. Três, com o
+// freio adaptativo abaixo, é o ritmo que ele aguenta sem reclamar.
+const EM_PARALELO = 3
 
 const arg = (nome, padrao = null) => {
   const i = process.argv.indexOf(`--${nome}`)
@@ -155,12 +155,49 @@ function abrirCaderno(nome) {
 
 // ─────────────────────────────────────────────────────────────
 
-async function comTentativas(fn, quantas = 4) {
+// ─────────────────────────────────────────────────────────────
+// O freio que aprende, e por que ele precisou existir
+//
+// A Revolução dos Bichos saiu em três minutos com dez pedidos em voo. O 1984,
+// logo depois, foi ficando lento e no parágrafo 75 o serviço parou de
+// responder — "fetch failed", sem status, que é como um servidor diz "chega"
+// sem se dar ao trabalho de explicar.
+//
+// A conclusão é simples e é justa: o MinT é de graça, é de uma fundação, e
+// nós despejamos dois livros nele numa tarde. Insistir no mesmo ritmo depois
+// de levar não é persistência, é abuso.
+//
+// Então a espera passa a ser adaptativa. Cada falha aumenta o intervalo entre
+// pedidos para todo mundo, e cada sequência de acertos o devolve devagar. O
+// livro demora mais e sempre termina — e o caderno garante que demorar não
+// custa nada, porque nada do que já saiu é pedido de novo.
+// ─────────────────────────────────────────────────────────────
+
+let esperaEntrePedidos = 120
+const dormir = (ms) => new Promise((r) => setTimeout(r, ms))
+
+function levouNao() {
+  esperaEntrePedidos = Math.min(esperaEntrePedidos * 2, 15_000)
+}
+let seguidas = 0
+function deuCerto() {
+  if (++seguidas >= 20) { seguidas = 0; esperaEntrePedidos = Math.max(esperaEntrePedidos * 0.8, 120) }
+}
+
+async function comTentativas(fn, quantas = 6) {
   let ultimo
   for (let i = 0; i < quantas; i++) {
-    try { return await fn() } catch (e) {
+    try {
+      await dormir(esperaEntrePedidos)
+      const r = await fn()
+      deuCerto()
+      return r
+    } catch (e) {
       ultimo = e
-      await new Promise((r) => setTimeout(r, 1500 * (i + 1)))
+      seguidas = 0
+      levouNao()
+      // espera crescente NESTA unidade, além do freio geral
+      await dormir(2000 * (i + 1) ** 2)
     }
   }
   throw ultimo
