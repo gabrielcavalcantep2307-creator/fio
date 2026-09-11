@@ -308,6 +308,105 @@ test('a marcação atravessa sem ser tocada', async () => {
     '<p class="anno">Ele</p>')
 })
 
+// ─────────────────────────────────────────────────────────────
+// O trilho C: o livro que é SEU
+//
+// A coluna `texto.dono_id` existe no esquema desde o primeiro dia, com índice
+// e um comentário dizendo "toda consulta de leitura filtra por isto" — e
+// nunca tinha sido preenchida por nada. Agora é, e o que estes testes cuidam
+// não é de o livro abrir: é de ele NÃO abrir para mais ninguém.
+// ─────────────────────────────────────────────────────────────
+
+const epubDeTeste = async (titulo, corpoExtra = '') => {
+  const { montarEpub } = await import('./epub.mjs')
+  return montarEpub({
+    id: 1, titulo, autor: 'Autor de Teste', direito: 'teste', fonteUrl: 'x',
+    capitulos: [
+      { ordem: 1, titulo: 'Um', corpo: `<p>${'Texto do primeiro capítulo, comprido o bastante. '.repeat(4)}${corpoExtra}</p>` },
+      { ordem: 2, titulo: 'Dois', corpo: `<p>${'Texto do segundo capítulo, também comprido. '.repeat(4)}</p>` },
+    ],
+  })
+}
+
+test('o livro que eu mando é meu, e some da estante de todo mundo', async () => {
+  const meusLivros = await import('./meus-livros.mjs')
+  const eu = banco.prepare("SELECT id FROM leitor WHERE email = 'gabriel@exemplo.com'").get()
+
+  const guardado = meusLivros.guardar(banco, eu.id, await epubDeTeste('Livro Particular'))
+  assert.ok(guardado.obra)
+  assert.equal(guardado.capitulos, 3)   // folha de rosto + dois capítulos
+
+  // é meu
+  assert.ok(meusLivros.eDoLeitor(banco, guardado.obra, eu.id))
+  assert.ok(meusLivros.meus(banco, eu.id).some((l) => l.id === guardado.obra))
+
+  // NÃO é publicado: é isto que o mantém fora do catálogo do site, que é
+  // gerado com `WHERE publicada = 1`
+  const o = banco.prepare('SELECT publicada, trilho FROM obra WHERE id = ?').get(guardado.obra)
+  assert.equal(o.publicada, 0)
+  assert.equal(o.trilho, 'C')
+
+  // e o texto tem dono, que é o que toda consulta de leitura já filtrava
+  const t = banco.prepare('SELECT dono_id, fonte FROM texto WHERE obra_id = ?').get(guardado.obra)
+  assert.equal(t.dono_id, eu.id)
+  assert.equal(t.fonte, 'leitor')
+})
+
+test('o livro de um não aparece nem abre para o outro', async () => {
+  const meusLivros = await import('./meus-livros.mjs')
+  const eu = banco.prepare("SELECT id FROM leitor WHERE email = 'gabriel@exemplo.com'").get()
+  const guardado = meusLivros.guardar(banco, eu.id, await epubDeTeste('Só Meu'))
+
+  zerarFreio()
+  const outro = await criarConta({ nome: 'Outro', email: 'outro-leitor@exemplo.com', senha: BOA })
+
+  assert.equal(meusLivros.eDoLeitor(banco, guardado.obra, outro.pessoa.id), false)
+  assert.equal(meusLivros.meus(banco, outro.pessoa.id).length, 0)
+  await assert.rejects(
+    async () => meusLivros.apagar(banco, outro.pessoa.id, guardado.obra),
+    /não é seu/,
+  )
+  // e continua de pé para o dono
+  assert.ok(meusLivros.eDoLeitor(banco, guardado.obra, eu.id))
+})
+
+test('mandar o mesmo arquivo duas vezes não cria dois livros', async () => {
+  const meusLivros = await import('./meus-livros.mjs')
+  const eu = banco.prepare("SELECT id FROM leitor WHERE email = 'gabriel@exemplo.com'").get()
+  const bytes = await epubDeTeste('Repetido')
+  const um = meusLivros.guardar(banco, eu.id, bytes)
+  const dois = meusLivros.guardar(banco, eu.id, bytes)
+  assert.equal(dois.obra, um.obra)
+  assert.equal(dois.repetido, true)
+})
+
+// O corpo do capítulo vai para `dangerouslySetInnerHTML`. Um EPUB baixado da
+// internet é tão de fora quanto o Wikisource.
+test('o EPUB do leitor passa pelo mesmo saneador da ingestão', async () => {
+  const meusLivros = await import('./meus-livros.mjs')
+  const eu = banco.prepare("SELECT id FROM leitor WHERE email = 'gabriel@exemplo.com'").get()
+  // a aspa solta no `title` é o caso que a auditoria achou: ela desarmava o
+  // saneador inteiro na versão antiga
+  const veneno = `<img src=x onerror=alert(1) title=a'b><script>alert(2)</script>`
+  const bytes = await epubDeTeste('Com Veneno', veneno)
+
+  const guardado = meusLivros.guardar(banco, eu.id, bytes)
+  const corpos = banco.prepare(
+    'SELECT corpo FROM capitulo WHERE texto_id = (SELECT id FROM texto WHERE obra_id = ?)')
+    .all(guardado.obra).map((c) => c.corpo).join(' ')
+  assert.ok(!/onerror|<script|<img/i.test(corpos), `passou marcação viva: ${corpos.slice(0, 120)}`)
+})
+
+test('tirar o livro da estante leva o texto e os capítulos junto', async () => {
+  const meusLivros = await import('./meus-livros.mjs')
+  const eu = banco.prepare("SELECT id FROM leitor WHERE email = 'gabriel@exemplo.com'").get()
+  const guardado = meusLivros.guardar(banco, eu.id, await epubDeTeste('Para Apagar'))
+
+  meusLivros.apagar(banco, eu.id, guardado.obra)
+  assert.equal(banco.prepare('SELECT 1 FROM obra WHERE id = ?').get(guardado.obra), undefined)
+  assert.equal(banco.prepare('SELECT 1 FROM texto WHERE obra_id = ?').get(guardado.obra), undefined)
+})
+
 test('a resposta nunca é guardada em claro', () => {
   const l = banco.prepare('SELECT id FROM leitor WHERE email = ?').get('gabriel@exemplo.com')
   const linhas = banco.prepare('SELECT * FROM pergunta WHERE leitor_id = ?').all(l.id)

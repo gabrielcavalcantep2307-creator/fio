@@ -23,6 +23,7 @@ import { montarEpub, nomeDeArquivo } from './epub.mjs'
 import { ondeComecaOLivro } from './folha-de-rosto.mjs'
 import { criarBuscaNoTexto } from './busca-no-texto.mjs'
 import { ipDoPedido } from './seguranca.mjs'
+import * as meusLivros from './meus-livros.mjs'
 
 const PORTA = Number(process.env.FIO_PORTA || 8787)
 const SITE = process.env.FIO_SITE || `http://localhost:${PORTA}`
@@ -88,16 +89,29 @@ const lerCookie = (req) =>
   (req.headers.cookie ?? '').split(';').map(s => s.trim())
     .find(s => s.startsWith(`${NOME}=`))?.slice(NOME.length + 1) || null
 
-async function corpo(req) {
+/**
+ * Os bytes crus do pedido, com teto.
+ *
+ * O teto é contado ENQUANTO chega, e não depois: esperar o fim para conferir
+ * o tamanho é deixar quem quiser encher a memória do processo com um pedido
+ * que nunca termina. O `content-length` não serve de trava porque quem manda
+ * escolhe o que escrever nele.
+ */
+async function bytesDoPedido(req, teto) {
   const pedacos = []
   let tamanho = 0
   for await (const p of req) {
     tamanho += p.length
-    if (tamanho > 64 * 1024) throw new Recusa('Pedido grande demais.', 413)
+    if (tamanho > teto) throw new Recusa('Pedido grande demais.', 413)
     pedacos.push(p)
   }
-  if (!pedacos.length) return {}
-  try { return JSON.parse(Buffer.concat(pedacos).toString('utf8')) }
+  return Buffer.concat(pedacos)
+}
+
+async function corpo(req) {
+  const bytes = await bytesDoPedido(req, 64 * 1024)
+  if (!bytes.length) return {}
+  try { return JSON.parse(bytes.toString('utf8')) }
   catch { throw new Recusa('Não entendi o pedido.', 400) }
 }
 
@@ -217,6 +231,12 @@ const ROTAS = {
     return contas.exportarTudo(banco, pessoa.id)
   },
 
+  // ── a estante particular: o trilho C ──
+  'GET /api/meus-livros': (req) => ({ livros: meusLivros.meus(banco, exigirEntrada(req).id) }),
+
+  'POST /api/apagar-meu-livro': (req, res, dado) =>
+    meusLivros.apagar(banco, exigirEntrada(req).id, Number(dado.obra)),
+
   // ── o que o leitor guardou, entre aparelhos ──
   'GET /api/meus-dados': (req) => {
     const pessoa = exigirEntrada(req)
@@ -332,6 +352,22 @@ const paraLeitura = banco.prepare(`
    WHERE o.id = ? AND o.publicada = 1 AND t.normalizado = 1
    GROUP BY o.id`)
 
+// O mesmo, para o livro que é DO leitor. Tudo o que muda é quem escolhe o
+// texto: aqui é `dono_id`, e não a falta dele. Sem `publicada = 1`, porque
+// livro do trilho C nunca é publicado; sem `direito`, porque a biblioteca não
+// afirma nada sobre o arquivo de ninguém.
+const paraLeituraDoDono = banco.prepare(`
+  SELECT o.id, o.titulo, o.titulo_pt, o.minutos_leitura, o.capa, o.capa_externa, o.trilho,
+         t.id texto_id, NULL revisao, NULL aviso, NULL base_url, NULL tradutor,
+         'dominio_publico' estado,
+         p.id autor_id, p.nome autor
+    FROM obra o
+    JOIN texto t ON t.obra_id = o.id AND t.dono_id = ?
+    LEFT JOIN obra_pessoa op ON op.obra_id = o.id AND op.papel = 'autor'
+    LEFT JOIN pessoa p ON p.id = op.pessoa_id
+   WHERE o.id = ?
+   GROUP BY o.id`)
+
 /**
  * O livro inteiro, para o leitor.
  *
@@ -342,11 +378,21 @@ const paraLeitura = banco.prepare(`
  * O direito é conferido AQUI de novo. `obra.trilho` é rótulo de tela; a regra
  * é a tabela `direito`.
  */
-function servirLivro(res, id) {
+function servirLivro(res, id, leitorId = null) {
   const casa = process.env.FIO_JURISDICAO || 'BR'
-  const o = paraLeitura.get(casa, id)
+
+  // ── trilho C primeiro ──
+  //
+  // Se esta obra é um arquivo DESTA pessoa, é o texto dela que se entrega, e
+  // a conferência de direito não se aplica: a biblioteca não afirma nada
+  // sobre o arquivo de ninguém, e nunca o mostra a mais alguém.
+  //
+  // A ordem importa. Consultar o acervo público primeiro e cair no privado
+  // depois daria, para um livro que existe nos dois lugares, a cópia errada.
+  const meu = leitorId ? paraLeituraDoDono.get(leitorId, id) : null
+  const o = meu ?? paraLeitura.get(casa, id)
   if (!o) throw new Recusa('Não temos o texto desta obra.', 404)
-  if (o.estado !== 'dominio_publico' && o.estado !== 'licenca_livre') {
+  if (!meu && o.estado !== 'dominio_publico' && o.estado !== 'licenca_livre') {
     throw new Recusa('Esta obra não pode ser lida aqui.', 403)
   }
   const capitulos = capitulosDo.all(o.texto_id)
@@ -473,6 +519,30 @@ const servidor = createServer(async (req, res) => {
     }
   }
 
+  // ── mandar um livro para a estante particular ──
+  //
+  // Fica fora do mapa de rotas porque o corpo é BINÁRIO e grande, e o mapa
+  // passa tudo por `corpo()`, que lê JSON com teto de 64 KB. Um EPUB tem
+  // megabytes.
+  //
+  // Sem multipart de propósito: o navegador manda o arquivo cru no corpo e o
+  // nome no cabeçalho. Multipart exigiria um analisador de formulário aqui
+  // dentro — mais código, e mais código lendo o que estranho manda.
+  if (caminho === '/api/meu-livro' && req.method === 'POST') {
+    try {
+      if (req.headers['x-fio'] !== '1') throw new Recusa('Pedido sem identificação.', 403)
+      if (!origemOk(req)) throw new Recusa('Origem não confere.', 403)
+      const pessoa = exigirEntrada(req)
+      const bytes = await bytesDoPedido(req, meusLivros.TETO_BYTES)
+      const nomeArquivo = decodeURIComponent(String(req.headers['x-arquivo'] ?? '')).slice(0, 200)
+      return responder(res, 200, meusLivros.guardar(banco, pessoa.id, bytes, { nomeArquivo }))
+    } catch (e) {
+      if (e instanceof Recusa) return responder(res, e.status, { erro: e.message })
+      console.error('[fio] meu-livro', e)
+      return responder(res, 500, { erro: 'Não consegui guardar este livro.' })
+    }
+  }
+
   // ── as avaliações de uma obra: leitura pública ──
   const pedindoAvaliacoes = caminho.match(/^\/api\/obra\/(\d+)\/avaliacoes$/)
   if (pedindoAvaliacoes && req.method === 'GET') {
@@ -490,9 +560,11 @@ const servidor = createServer(async (req, res) => {
   if (pedindoLivro) {
     try {
       if (req.method !== 'GET') throw new Recusa('Só GET.', 405)
-      // O texto de domínio público não muda; o navegador pode guardar.
-      res.setHeader('cache-control', 'public, max-age=3600')
-      return servirLivro(res, Number(pedindoLivro[1]))
+      // O texto de domínio público não muda; o navegador pode guardar. O do
+      // leitor, não: `public` autorizaria um proxy no caminho a guardar o
+      // livro de alguém e servi-lo a outra pessoa.
+      res.setHeader('cache-control', lerCookie(req) ? 'private, no-store' : 'public, max-age=3600')
+      return servirLivro(res, Number(pedindoLivro[1]), contas.deQuemE(banco, lerCookie(req))?.id ?? null)
     } catch (e) {
       if (e instanceof Recusa) return responder(res, e.status, { erro: e.message })
       console.error('[fio] livro', e)
