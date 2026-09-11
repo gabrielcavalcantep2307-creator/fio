@@ -22,10 +22,9 @@ import { Recusa } from './contas.mjs'
 import { montarEpub, nomeDeArquivo } from './epub.mjs'
 import { ondeComecaOLivro } from './folha-de-rosto.mjs'
 import { criarBuscaNoTexto } from './busca-no-texto.mjs'
-import { ipDoPedido } from './seguranca.mjs'
+import { ipDoPedido, freio, dicaDeIp } from './seguranca.mjs'
 import * as meusLivros from './meus-livros.mjs'
 import { conferirUsuario, estaTomado } from './usuario.mjs'
-import { avaliarSenha } from './seguranca.mjs'
 
 const PORTA = Number(process.env.FIO_PORTA || 8787)
 const SITE = process.env.FIO_SITE || `http://localhost:${PORTA}`
@@ -194,6 +193,14 @@ const ROTAS = {
   // O que ela NÃO diz é de quem é o nome, e o freio vale porque varrer nomes
   // para montar lista de quem tem conta continua sendo varredura.
   'GET /api/nome-livre': (req, res, dado, ctx) => {
+    // O FREIO, que na primeira versão eu escrevi no comentário e esqueci no
+    // código. A rota diz que um nome existe — de propósito, porque nome de
+    // usuário é público e aparece embaixo de cada resenha — e sem teto ela
+    // vira exatamente o que o comentário dizia que não podia ser: uma máquina
+    // de montar a lista de quem tem conta aqui, a milhares por minuto.
+    if (!freio(banco, 'nome-livre', dicaDeIp(ipDe(req)) ?? 'sem-ip').passa) {
+      throw new Recusa('Muitas consultas. Espere um pouco.', 429)
+    }
     const u = String(ctx.busca?.get('u') ?? '').trim()
     const problema = conferirUsuario(u)
     if (problema) return { livre: false, motivo: problema }
@@ -202,13 +209,17 @@ const ROTAS = {
       : { livre: true }
   },
 
-  // A força da senha, para a tela dizer antes de a pessoa decidir. Nunca
-  // impede nada aqui: quem impede é `criar`, e só no que já é público por
-  // construção.
-  'POST /api/forca-da-senha': (req, res, dado) => {
-    const r = avaliarSenha(dado.senha, { usuario: dado.usuario ?? '', email: dado.email ?? '' })
-    return r.erro ? { serve: false, motivo: r.erro } : { serve: true, forca: r.forca, recado: r.recado }
-  },
+  // ── NÃO existe rota de "força da senha", e é decisão ──
+  //
+  // Ela existiu por vinte minutos e saiu na releitura. A tela quer dizer "essa
+  // senha é fraca" enquanto a pessoa digita, e a maneira óbvia de fazer isso
+  // é perguntar ao servidor. Só que isso manda a senha pela rede a cada
+  // tecla, e a senha só precisa atravessar UMA vez, no envio.
+  //
+  // A régua é pura — `avaliarSenha`, em `seguranca.mjs` — então ela roda no
+  // navegador sem pedir nada a ninguém. O servidor continua avaliando na hora
+  // de gravar, porque a régua do navegador é aviso e a do servidor é a que
+  // vale; mas o AVISO não é motivo para a senha viajar mais vezes.
 
   // ── a conta por dentro ──
   //

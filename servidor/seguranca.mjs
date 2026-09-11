@@ -132,6 +132,9 @@ export const LIMITES = {
   // Abrir livro é gesto comum; o freio aqui só existe para um laço de script
   // não inventar popularidade.
   'abrir': { quantas: 120, minutos: 60 },
+  // Conferir se um nome está livre é gesto de quem preenche cadastro:
+  // acontece umas dez vezes numa tela, e nunca mil.
+  'nome-livre': { quantas: 60, minutos: 10 },
 }
 
 /**
