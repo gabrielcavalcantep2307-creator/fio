@@ -143,7 +143,11 @@ async function noGutenberg(titulo, autor, morte, idiomaOriginal) {
   const url = b.formats['text/plain; charset=utf-8']
     ?? b.formats['text/plain']
     ?? b.formats['text/html']
-  if (!url || /\.zip$/i.test(url)) return null
+  // Nem todo `.txt` do Gutenberg é o livro. A ficha de *A metamorfose* trouxe
+  // `26298-readme.txt`, que é o aviso de um AUDIOLIVRO: zero palavras de texto
+  // e um índice de faixas. Traduzido, instalado e publicado, viraria um livro
+  // vazio com o nome certo na capa.
+  if (!url || /\.zip$/i.test(url) || /readme|index|-h\.htm|cover/i.test(url)) return null
 
   return {
     fonte: url,

@@ -312,7 +312,25 @@ CREATE TABLE trilha_item (
 
 CREATE TABLE leitor (
   id            INTEGER PRIMARY KEY,
-  email         TEXT NOT NULL UNIQUE COLLATE NOCASE,
+
+  -- Como se entra. O nome de usuário substituiu o e-mail nessa função em
+  -- 11/09/2026, por dois motivos: o e-mail é o mesmo em toda a internet, e
+  -- esta casa não manda e-mail nenhum desde que a recuperação virou pergunta.
+  --
+  -- São DUAS colunas porque unicidade e apresentação são coisas diferentes.
+  -- `usuario` guarda o que a pessoa escreveu, com a caixa que ela escolheu.
+  -- `usuario_chave` guarda o que o nome PARECE — sem caixa, sem acento e sem
+  -- separador — e é essa que é única. Sem isso, `Ga.Briel` conviveria com
+  -- `gabriel` e assinaria resenha com a cara dele. Ver servidor/usuario.mjs.
+  usuario       TEXT NOT NULL,
+  usuario_chave TEXT NOT NULL UNIQUE,
+
+  -- OPCIONAL desde 11/09/2026. Nada aqui depende dele: não há link de
+  -- recuperação e não há aviso. Ele existe para o dia em que entrar com o
+  -- Google ligar as duas contas pelo endereço — e para quem quiser deixar um
+  -- jeito de ser achado. Único quando preenchido; nulo à vontade.
+  email         TEXT UNIQUE COLLATE NOCASE,
+
   nome          TEXT NOT NULL,
 
   -- Senha: scrypt, com sal por pessoa. O hash e o sal ficam separados de

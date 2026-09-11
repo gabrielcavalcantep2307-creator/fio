@@ -12,6 +12,8 @@ import {
   prepararConjunto, gravarConjunto, perguntasDe, conferirConjunto, fingirTrabalho,
   SUGESTOES, QUANTAS,
 } from './perguntas.mjs'
+import { conferirUsuario, chaveDe, estaTomado } from './usuario.mjs'
+import { avaliarSenha } from './seguranca.mjs'
 
 const DIAS_DE_SESSAO = 30
 // Sessenta dias, e não catorze. Um convite aqui não é link de confirmação de
@@ -25,7 +27,7 @@ export class Recusa extends Error {
   constructor(mensagem, status = 400) { super(mensagem); this.status = status }
 }
 
-const publico = (l) => ({ id: l.id, nome: l.nome, email: l.email, papel: l.papel })
+const publico = (l) => ({ id: l.id, usuario: l.usuario, nome: l.nome, email: l.email, papel: l.papel })
 
 // ─────────────────────────────────────────────────────────────
 // Criar conta
@@ -54,16 +56,27 @@ const publico = (l) => ({ id: l.id, nome: l.nome, email: l.email, papel: l.papel
  */
 export const portaAberta = () => process.env.FIO_CONVITE === 'aberto'
 
-export async function criar(banco, { nome, email, senha, convite, perguntas }, ctx = {}) {
+export async function criar(banco, { usuario, nome, email, senha, convite, perguntas }, ctx = {}) {
   const emLimite = freio(banco, 'criar', dicaDeIp(ctx.ip) ?? 'sem-ip')
   if (!emLimite.passa) throw new Recusa('Muitas tentativas. Tente daqui a pouco.', 429)
 
-  const limpo = conferirEmail(email)
-  if (!limpo) throw new Recusa('Esse e-mail não parece válido.')
-  const problema = conferirSenha_(senha)
-  if (problema) throw new Recusa(problema)
-  const nomeLimpo = String(nome ?? '').trim().slice(0, 80)
-  if (nomeLimpo.length < 2) throw new Recusa('Diga como quer ser chamado.')
+  const usuarioLimpo = String(usuario ?? '').trim()
+  const problemaUsuario = conferirUsuario(usuarioLimpo)
+  if (problemaUsuario) throw new Recusa(problemaUsuario)
+
+  // O e-mail virou OPCIONAL. Nada aqui depende dele desde que a recuperação
+  // passou a ser por pergunta: não há link para mandar, não há aviso para
+  // enviar. Ele fica para o dia do login com o Google, e para quem quiser
+  // deixar um jeito de ser achado.
+  const limpo = email ? conferirEmail(email) : null
+  if (email && !limpo) throw new Recusa('Esse e-mail não parece válido.')
+
+  const senhaVale = avaliarSenha(senha, { usuario: usuarioLimpo, email: limpo ?? '' })
+  if (senhaVale.erro) throw new Recusa(senhaVale.erro)
+
+  // O nome de tela é como a pessoa assina; o de usuário é como ela entra.
+  // Quem não quiser inventar dois usa o mesmo, e isso é o padrão.
+  const nomeLimpo = String(nome ?? '').trim().slice(0, 80) || usuarioLimpo
 
   // As perguntas de segurança são OBRIGATÓRIAS, e são conferidas antes de a
   // conta existir. Sem elas não há recuperação nenhuma — não há link de
@@ -84,16 +97,20 @@ export async function criar(banco, { nome, email, senha, convite, perguntas }, c
     throw new Recusa('Convite inválido, já usado ou vencido.')
   }
 
-  if (banco.prepare('SELECT 1 FROM leitor WHERE email = ?').get(limpo)) {
-    // Aqui dá para contar: quem cria conta já sabe o próprio e-mail, e a
-    // alternativa é a pessoa não entender por que não consegue entrar.
+  // A conferência é sobre a CHAVE, e não sobre o texto: `Ga.Briel` e `gabriel`
+  // são o mesmo nome aqui, porque se leem igual. Ver `servidor/usuario.mjs`.
+  if (estaTomado(banco, usuarioLimpo)) {
+    throw new Recusa('Esse nome já está em uso. Escolha outro.')
+  }
+  if (limpo && banco.prepare('SELECT 1 FROM leitor WHERE email = ?').get(limpo)) {
     throw new Recusa('Já existe conta com esse e-mail. Tente entrar.')
   }
 
   const s = await guardarSenha(senha)
   const id = Number(banco.prepare(
-    `INSERT INTO leitor (email, nome, senha_hash, senha_sal, senha_params) VALUES (?,?,?,?,?)`,
-  ).run(limpo, nomeLimpo, s.hash, s.sal, s.params).lastInsertRowid)
+    `INSERT INTO leitor (usuario, usuario_chave, email, nome, senha_hash, senha_sal, senha_params)
+     VALUES (?,?,?,?,?,?,?)`,
+  ).run(usuarioLimpo, chaveDe(usuarioLimpo), limpo, nomeLimpo, s.hash, s.sal, s.params).lastInsertRowid)
 
   gravarConjunto(banco, id, conjunto.prontas)
 
@@ -112,7 +129,13 @@ export async function criar(banco, { nome, email, senha, convite, perguntas }, c
   perdoar(banco, 'criar', dicaDeIp(ctx.ip) ?? 'sem-ip')
 
   const leitor = banco.prepare('SELECT * FROM leitor WHERE id = ?').get(id)
-  return { pessoa: publico(leitor), sessao: abrirSessao(banco, id, ctx) }
+  return {
+    pessoa: publico(leitor),
+    sessao: abrirSessao(banco, id, ctx),
+    // A tela mostra isto DEPOIS de criar, e não como impedimento. Senha fraca
+    // entra; senha fraca em silêncio é que não.
+    senha: { forca: senhaVale.forca, recado: senhaVale.recado },
+  }
 }
 
 
@@ -120,8 +143,52 @@ export async function criar(banco, { nome, email, senha, convite, perguntas }, c
 // Entrar
 // ─────────────────────────────────────────────────────────────
 
-export async function entrar(banco, { email, senha }, ctx = {}) {
-  const limpo = conferirEmail(email) ?? 'nao-existe@invalido'
+/**
+ * Entrar pelo nome de usuário — ou pelo e-mail, para quem tiver.
+ *
+ * Aceitar os dois no MESMO campo é de propósito. A alternativa seria um campo
+ * "usuário ou e-mail", que é feio, ou dois campos, que é pior: quem esquece
+ * qual dos dois cadastrou fica trancado do lado de fora de uma casa que é
+ * dele. Aqui a pessoa escreve o que lembrar.
+ *
+ * Isso não abre porta nenhuma: a resposta de erro é a MESMA nos três casos —
+ * nome que não existe, e-mail que não existe, e senha errada. Quem está
+ * varrendo não aprende se o que ele digitou existe.
+ */
+/**
+ * A chave de conta para o que a pessoa digitou, seja nome ou e-mail.
+ *
+ * A ordem aqui é o defeito que custou meia hora: `chaveDe` tira tudo que não
+ * é letra ou número, então `gabriel@exemplo.com` vira `gabrielexemplocom` —
+ * uma chave perfeitamente NÃO-VAZIA. Perguntar "tem chave?" antes de "é
+ * e-mail?" fazia o ramo do e-mail nunca ser consultado, e quem digitasse o
+ * próprio endereço não existia para o sistema.
+ *
+ * Então o e-mail é testado PRIMEIRO, porque ele é reconhecível por forma: o
+ * que tem arroba e ponto é e-mail, e o resto é nome.
+ *
+ * Devolve string vazia quando não acha, de propósito: quem digitou um e-mail
+ * que não existe cai no MESMO caminho de quem digitou um nome que não existe,
+ * e não num caminho próprio que se reconhece pelo silêncio.
+ */
+function aChave(banco, digitado) {
+  const email = conferirEmail(digitado)
+  if (email) {
+    return banco.prepare('SELECT usuario_chave c FROM leitor WHERE email = ?').get(email)?.c ?? ''
+  }
+  return chaveDe(digitado)
+}
+
+export async function entrar(banco, { usuario, email, senha }, ctx = {}) {
+  // `email` continua aceito no lugar de `usuario` para não quebrar quem já
+  // tem a tela velha aberta no navegador.
+  const digitado = String(usuario ?? email ?? '').trim()
+
+  // O freio conta pela CHAVE DA CONTA, e não pelo que foi digitado. Sem isso,
+  // `Gabriel`, `gabriel`, `ga.briel` e o e-mail teriam quatro baldes de
+  // tentativas para a MESMA conta, e o teto de oito viraria trinta e dois.
+  const chave = aChave(banco, digitado) || chaveDe(digitado)
+  const limpo = chave || 'nao-existe'
 
   // Duas contas: uma protege esta conta, outra protege todas. Elas tinham o
   // MESMO teto — oito em quinze minutos — e o balde do IP guarda `187.45.x.x`,
@@ -132,15 +199,16 @@ export async function entrar(banco, { email, senha }, ctx = {}) {
     throw new Recusa('Muitas tentativas. Espere alguns minutos.', 429)
   }
 
-  const l = banco.prepare('SELECT * FROM leitor WHERE email = ? AND desativado = 0').get(limpo)
+  const l = banco.prepare(
+    'SELECT * FROM leitor WHERE usuario_chave = ? AND desativado = 0').get(chave)
 
   // Sempre gaste o mesmo tempo, exista a conta ou não.
   if (!l) {
     await gastarTempoAtoa()
-    throw new Recusa('E-mail ou senha não conferem.', 401)
+    throw new Recusa('Usuário ou senha não conferem.', 401)
   }
   if (!(await conferirSenha(senha ?? '', l.senha_hash, l.senha_sal, l.senha_params))) {
-    throw new Recusa('E-mail ou senha não conferem.', 401)
+    throw new Recusa('Usuário ou senha não conferem.', 401)
   }
 
   perdoarDuplo(banco, 'entrar', limpo, ctx.ip)
@@ -227,16 +295,21 @@ export const perguntasSugeridas = () => ({ sugestoes: SUGESTOES, quantas: QUANTA
  * para outro transformaria esta rota numa máquina de descobrir quem tem conta
  * aqui, que é o vazamento que o resto deste módulo evita com cuidado.
  */
-export function perguntasParaRecuperar(banco, { email }, ctx = {}) {
-  const limpo = conferirEmail(email)
+export function perguntasParaRecuperar(banco, { usuario, email }, ctx = {}) {
+  // Recuperar é pelo NOME, que é por onde se entra. O e-mail ainda é aceito
+  // aqui porque quem tem conta antiga pode lembrar dele e não do nome.
+  const digitado = String(usuario ?? email ?? '').trim()
+  const limpo = digitado || null
   // `email ?? ip` era OU um OU outro, e ataque nenhum manda e-mail malformado:
   // na prática só o balde do e-mail contava, e varrer mil endereços de uma
   // máquina só não esbarrava em nada. Agora os dois valem.
   if (!freioDuplo(banco, 'esqueci', limpo, ctx.ip).passa) {
     throw new Recusa('Muitas tentativas. Espere um pouco.', 429)
   }
-  if (!limpo) throw new Recusa('Esse e-mail não parece válido.')
-  return perguntasDe(banco, limpo)
+  if (!limpo) throw new Recusa('Diga o seu nome de usuário.')
+  // `aChave` traduz e-mail em nome antes de perguntar, para o disfarce de
+  // conta-que-não-existe ser um só e não dois com comportamentos diferentes.
+  return perguntasDe(banco, aChave(banco, digitado) || chaveDe(digitado))
 }
 
 /**
@@ -252,8 +325,9 @@ export function perguntasParaRecuperar(banco, { email }, ctx = {}) {
  * adivinháveis por força bruta, e o que impede a força bruta é o limite de
  * tentativas, não a dificuldade da pergunta.
  */
-export async function recuperarComRespostas(banco, { email, respostas, senha }, ctx = {}) {
-  const limpo = conferirEmail(email)
+export async function recuperarComRespostas(banco, { usuario, email, respostas, senha }, ctx = {}) {
+  const digitado = String(usuario ?? email ?? '').trim()
+  const limpo = aChave(banco, digitado) || null
   // A porta de verdade, e a que mais precisava do teto por IP: cinco chutes
   // por e-mail por hora seguram quem insiste numa conta, e não seguravam quem
   // chuta cinco vezes em cada uma de duzentas contas na mesma hora.
@@ -264,7 +338,7 @@ export async function recuperarComRespostas(banco, { email, respostas, senha }, 
   if (problema) throw new Recusa(problema)
 
   const l = limpo
-    ? banco.prepare('SELECT id FROM leitor WHERE email = ? AND desativado = 0').get(limpo)
+    ? banco.prepare('SELECT id FROM leitor WHERE usuario_chave = ? AND desativado = 0').get(limpo)
     : null
 
   // O mesmo tempo, exista a conta ou não.

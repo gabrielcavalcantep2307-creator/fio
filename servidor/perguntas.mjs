@@ -200,14 +200,15 @@ export function gravarConjunto(banco, leitorId, prontas) {
  * Isto não engana o usuário sobre o produto: engana quem está varrendo a
  * base atrás de endereços válidos.
  */
-export function perguntasDe(banco, email) {
-  const l = banco.prepare('SELECT id FROM leitor WHERE email = ? AND desativado = 0').get(email)
+export function perguntasDe(banco, chave) {
+  const l = banco.prepare(
+    'SELECT id FROM leitor WHERE usuario_chave = ? AND desativado = 0').get(chave)
   if (l) {
     const ps = banco.prepare(
       'SELECT ordem, pergunta FROM pergunta WHERE leitor_id = ? ORDER BY ordem').all(l.id)
     if (ps.length) return { perguntas: ps.map(p => ({ ordem: p.ordem, pergunta: p.pergunta })) }
   }
-  return { perguntas: fingidas(banco, email) }
+  return { perguntas: fingidas(banco, chave) }
 }
 
 /**
@@ -229,9 +230,9 @@ function segredoDaCasa(banco) {
   return novo
 }
 
-function fingidas(banco, email) {
+function fingidas(banco, chave) {
   const semente = createHash('sha256')
-    .update(`${segredoDaCasa(banco)}:${email}`)
+    .update(`${segredoDaCasa(banco)}:${chave}`)
     .digest()
   const escolhidas = []
   for (let i = 0; escolhidas.length < QUANTAS && i < semente.length; i++) {

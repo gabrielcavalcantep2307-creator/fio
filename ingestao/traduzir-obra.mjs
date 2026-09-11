@@ -324,6 +324,22 @@ async function principal() {
     })),
   }
 
+  // ── a trava do livro vazio ──
+  //
+  // Uma fonte pode responder 200 e não ser livro nenhum. Aconteceu: a ficha de
+  // *A metamorfose* apontava para o README de um AUDIOLIVRO — cabeçalho do
+  // Gutenberg, um aviso e um índice de faixas. Depois de recortar o cabeçalho
+  // sobraram ZERO palavras, e o arquivo seria gravado, instalado e publicado
+  // como um livro vazio com o nome certo na capa.
+  //
+  // Nada disso dá erro em lugar nenhum. Por isso a trava é aqui, antes de
+  // gravar, e ela é grosseira de propósito: nenhum livro tem menos de
+  // quinhentas palavras.
+  const emPortugues = saida.capitulos.reduce((a, c) => a + c.palavras, 0)
+  if (emPortugues < 500) {
+    throw new Error(`saíram só ${emPortugues} palavras — esta fonte não é um livro`)
+  }
+
   const caminho = join(PASTA, `${nome}.json`)
   writeFileSync(caminho, JSON.stringify(saida, null, 1), 'utf8')
   console.log(`\npronto: ${caminho}`)

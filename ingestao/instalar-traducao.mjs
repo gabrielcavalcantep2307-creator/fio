@@ -63,6 +63,14 @@ const AVISO = 'Tradução automática do Fio, sem revisão humana, feita a parti
 
 const palavras = t.capitulos.reduce((a, c) => a + c.palavras, 0)
 
+// A mesma trava do tradutor, repetida aqui de propósito. Este é o último
+// passo antes de o livro aparecer para gente, e um arquivo antigo — gravado
+// antes de a trava existir — passaria batido se a única guarda fosse lá.
+if (palavras < 500) {
+  console.error(`obra ${obraId}: só ${palavras} palavras. Isto não é um livro; não instalo.`)
+  process.exit(1)
+}
+
 db.exec('BEGIN')
 try {
   const textoId = Number(db.prepare(`

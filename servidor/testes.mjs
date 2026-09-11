@@ -48,6 +48,12 @@ const PERGUNTAS = [
 // passa `convite: null` de propósito, e aí a recusa é o resultado esperado.
 const criarConta = (dados, ctx) => contas.criar(banco, {
   perguntas: PERGUNTAS,
+  // O login virou por NOME DE USUÁRIO. Quem não disser um ganha o pedaço do
+  // e-mail antes do arroba, que é o mesmo que a migração faz com as contas
+  // que já existiam.
+  ...(dados.usuario === undefined
+    ? { usuario: String(dados.email ?? 'alguem').split('@')[0].replace(/[^a-zA-Z0-9._-]/g, '') || 'alguem' }
+    : {}),
   ...('convite' in dados ? {} : { convite: novoConvite() }),
   ...dados,
 }, ctx)
@@ -86,7 +92,7 @@ test('convite errado é recusado', async () => {
   zerarFreio()
   // aceitar em silêncio faria a pessoa achar que gastou o convite dela
   await assert.rejects(
-    criarConta({ nome: 'Ninguém', email: 'x@y.com', senha: BOA, convite: 'FIO-XXXX-XXXX' }),
+    criarConta({ nome: 'Ninguém', email: 'convidado@y.com', senha: BOA, convite: 'FIO-XXXX-XXXX' }),
     /Convite inválido/,
   )
 })
@@ -129,30 +135,30 @@ test('senha fraca é recusada', async () => {
 
 test('entra com a senha certa e não entra com a errada', async () => {
   zerarFreio()
-  const ok = await contas.entrar(banco, { email: 'gabriel@exemplo.com', senha: BOA })
+  const ok = await contas.entrar(banco, { usuario: 'gabriel@exemplo.com', senha: BOA })
   assert.equal(ok.pessoa.nome, 'Gabriel')
   assert.ok(ok.sessao.token.length > 20)
 
   zerarFreio()
   await assert.rejects(
-    contas.entrar(banco, { email: 'gabriel@exemplo.com', senha: 'a casa de matacavalo' }),
+    contas.entrar(banco, { usuario: 'gabriel@exemplo.com', senha: 'a casa de matacavalo' }),
     /não conferem/,
   )
 })
 
 test('a resposta é a mesma para e-mail que existe e que não existe', async () => {
   zerarFreio()
-  const a = await contas.entrar(banco, { email: 'gabriel@exemplo.com', senha: 'errada errada' })
+  const a = await contas.entrar(banco, { usuario: 'gabriel@exemplo.com', senha: 'errada errada' })
     .catch(e => e.message)
   zerarFreio()
-  const b = await contas.entrar(banco, { email: 'nao-existe@exemplo.com', senha: 'errada errada' })
+  const b = await contas.entrar(banco, { usuario: 'nao-existe@exemplo.com', senha: 'errada errada' })
     .catch(e => e.message)
   assert.equal(a, b, 'a mensagem não pode dizer se a conta existe')
 })
 
 test('o token da sessão não fica no banco em claro', async () => {
   zerarFreio()
-  const { sessao } = await contas.entrar(banco, { email: 'gabriel@exemplo.com', senha: BOA })
+  const { sessao } = await contas.entrar(banco, { usuario: 'gabriel@exemplo.com', senha: BOA })
   const linhas = banco.prepare('SELECT token_hash FROM sessao').all()
   for (const l of linhas) {
     assert.ok(!Buffer.from(l.token_hash).toString('utf8').includes(sessao.token))
@@ -163,25 +169,25 @@ test('o token da sessão não fica no banco em claro', async () => {
 
 test('sair invalida a sessão', async () => {
   zerarFreio()
-  const { sessao } = await contas.entrar(banco, { email: 'gabriel@exemplo.com', senha: BOA })
+  const { sessao } = await contas.entrar(banco, { usuario: 'gabriel@exemplo.com', senha: BOA })
   contas.sair(banco, sessao.token)
   assert.equal(contas.deQuemE(banco, sessao.token), null)
 })
 
 test('sessão vencida não vale', async () => {
   zerarFreio()
-  const { sessao } = await contas.entrar(banco, { email: 'gabriel@exemplo.com', senha: BOA })
+  const { sessao } = await contas.entrar(banco, { usuario: 'gabriel@exemplo.com', senha: BOA })
   banco.prepare(`UPDATE sessao SET expira_em = datetime('now', '-1 hour')`).run()
   assert.equal(contas.deQuemE(banco, sessao.token), null)
 })
 
 test('recuperar sem e-mail: responder certo troca a senha e derruba as sessões', async () => {
   zerarFreio()
-  const antes = await contas.entrar(banco, { email: 'gabriel@exemplo.com', senha: BOA })
+  const antes = await contas.entrar(banco, { usuario: 'gabriel@exemplo.com', senha: BOA })
   assert.ok(contas.deQuemE(banco, antes.sessao.token))
 
   zerarFreio()
-  const { perguntas } = contas.perguntasParaRecuperar(banco, { email: 'gabriel@exemplo.com' })
+  const { perguntas } = contas.perguntasParaRecuperar(banco, { usuario: 'gabriel' })
   assert.equal(perguntas.length, 3)
   // as perguntas voltam; as respostas, nunca
   assert.ok(!JSON.stringify(perguntas).includes('Casmurro'))
@@ -189,7 +195,7 @@ test('recuperar sem e-mail: responder certo troca a senha e derruba as sessões'
   const NOVA = 'bentinho e o seminario'
   zerarFreio()
   await contas.recuperarComRespostas(banco, {
-    email: 'gabriel@exemplo.com',
+    usuario: 'gabriel@exemplo.com',
     // de propósito com acento e caixa trocados: a resposta é normalizada
     respostas: [{ ordem: 1, resposta: 'dom casmurro' },
                 { ordem: 2, resposta: '  RUA das Laranjeiras ' },
@@ -199,31 +205,31 @@ test('recuperar sem e-mail: responder certo troca a senha e derruba as sessões'
 
   assert.equal(contas.deQuemE(banco, antes.sessao.token), null)
   zerarFreio()
-  assert.ok(await contas.entrar(banco, { email: 'gabriel@exemplo.com', senha: NOVA }))
+  assert.ok(await contas.entrar(banco, { usuario: 'gabriel@exemplo.com', senha: NOVA }))
   zerarFreio()
-  await assert.rejects(contas.entrar(banco, { email: 'gabriel@exemplo.com', senha: BOA }))
+  await assert.rejects(contas.entrar(banco, { usuario: 'gabriel@exemplo.com', senha: BOA }))
 })
 
 test('resposta errada não troca senha nenhuma', async () => {
   zerarFreio()
   await assert.rejects(contas.recuperarComRespostas(banco, {
-    email: 'gabriel@exemplo.com',
+    usuario: 'gabriel@exemplo.com',
     respostas: [{ ordem: 1, resposta: 'errado' }, { ordem: 2, resposta: 'errado' }, { ordem: 3, resposta: 'errado' }],
     senha: 'senha que nao vai valer',
   }), /não conferem/)
   zerarFreio()
-  assert.ok(await contas.entrar(banco, { email: 'gabriel@exemplo.com', senha: 'bentinho e o seminario' }))
+  assert.ok(await contas.entrar(banco, { usuario: 'gabriel@exemplo.com', senha: 'bentinho e o seminario' }))
 })
 
 test('as perguntas não contam se o e-mail existe', () => {
   zerarFreio()
-  const existe = contas.perguntasParaRecuperar(banco, { email: 'gabriel@exemplo.com' })
+  const existe = contas.perguntasParaRecuperar(banco, { usuario: 'gabriel' })
   zerarFreio()
-  const fantasma = contas.perguntasParaRecuperar(banco, { email: 'fantasma@exemplo.com' })
+  const fantasma = contas.perguntasParaRecuperar(banco, { usuario: 'fantasma' })
   // mesma forma e mesma quantidade: quem varre a base não aprende nada
   assert.equal(existe.perguntas.length, fantasma.perguntas.length)
   zerarFreio()
-  const denovo = contas.perguntasParaRecuperar(banco, { email: 'fantasma@exemplo.com' })
+  const denovo = contas.perguntasParaRecuperar(banco, { usuario: 'fantasma' })
   // e as fingidas são ESTÁVEIS: um endereço inexistente devolve sempre as
   // mesmas, como uma conta de verdade devolveria
   assert.deepEqual(fantasma.perguntas, denovo.perguntas)
@@ -242,9 +248,9 @@ test('a rota de recuperar nunca devolve pergunta fora do catálogo', () => {
   const publico = new Set(SUGESTOES.map(achatarPergunta))
 
   zerarFreio()
-  const existe = contas.perguntasParaRecuperar(banco, { email: 'gabriel@exemplo.com' })
+  const existe = contas.perguntasParaRecuperar(banco, { usuario: 'gabriel' })
   zerarFreio()
-  const fantasma = contas.perguntasParaRecuperar(banco, { email: 'fantasma@exemplo.com' })
+  const fantasma = contas.perguntasParaRecuperar(banco, { usuario: 'fantasma' })
 
   for (const { pergunta } of [...existe.perguntas, ...fantasma.perguntas]) {
     assert.ok(publico.has(achatarPergunta(pergunta)),
@@ -407,6 +413,100 @@ test('tirar o livro da estante leva o texto e os capítulos junto', async () => 
   assert.equal(banco.prepare('SELECT 1 FROM texto WHERE obra_id = ?').get(guardado.obra), undefined)
 })
 
+// ─────────────────────────────────────────────────────────────
+// O nome de usuário, e o ataque que ele abre
+//
+// Entrar por e-mail tinha dois defeitos — o endereço é o mesmo em toda a
+// internet, e obriga a ter um. Entrar por NOME resolve os dois e traz um
+// risco novo: numa biblioteca de amigos, o nome é o rosto. Se alguém
+// consegue criar algo que se LÊ como `gabriel`, essa pessoa assina resenha
+// com a cara do dono da casa.
+//
+// Por isso a unicidade é sobre a CHAVE — o nome sem caixa, sem separador e
+// sem acento — e não sobre as letras cruas. Estes testes são sobre isso.
+// ─────────────────────────────────────────────────────────────
+
+test('o nome de usuário tem regra, e a regra explica o porquê', async () => {
+  const { conferirUsuario } = await import('./usuario.mjs')
+
+  assert.equal(conferirUsuario('gabriel'), null)
+  assert.equal(conferirUsuario('ga.bri_el-2'), null)
+  assert.equal(conferirUsuario('Machado99'), null)
+
+  assert.match(conferirUsuario('ab'), /3 letras/)
+  assert.match(conferirUsuario('2gatos'), /começar com uma letra/)
+  assert.match(conferirUsuario('gabriel.'), /não pode terminar/)
+  assert.match(conferirUsuario('ga__briel'), /Não repita/)
+  assert.match(conferirUsuario('admin'), /reservado/)
+  assert.match(conferirUsuario('AdMiN'), /reservado/)     // a reserva é sobre a chave
+  // um nome só de dígitos é barrado antes, por não começar com letra — e a
+  // trava do "só números" continua valendo para `a12345` e semelhantes
+  assert.match(conferirUsuario('12345'), /começar com uma letra/)
+  // acento e alfabeto de fora ficam de fora: é o que impede o nome disfarçado
+  assert.match(conferirUsuario('gabriél'), /sem acento/)
+  assert.match(conferirUsuario('gаbriel'), /sem acento/)  // o "а" aqui é cirílico
+})
+
+test('dois nomes que se leem igual são o mesmo nome', async () => {
+  const { chaveDe } = await import('./usuario.mjs')
+  const mesmo = ['gabriel', 'Gabriel', 'GABRIEL', 'ga.briel', 'ga_briel', 'ga-briel', 'G.a.b.r.i.e.l']
+  for (const n of mesmo) assert.equal(chaveDe(n), 'gabriel', `${n} devia dar a mesma chave`)
+  assert.notEqual(chaveDe('gabriela'), chaveDe('gabriel'))
+})
+
+test('ninguém cria um nome que se lê como o de outro', async () => {
+  zerarFreio()
+  await criarConta({ usuario: 'joaquim', nome: 'Joaquim', email: 'joaquim@exemplo.com', senha: BOA })
+
+  for (const disfarce of ['Joaquim', 'JOAQUIM', 'jo.aquim', 'jo_a_quim', 'j.o.a.q.u.i.m']) {
+    zerarFreio()
+    await assert.rejects(
+      criarConta({ usuario: disfarce, nome: 'Impostor', email: `i${Math.random()}@y.com`, senha: BOA }),
+      /já está em uso/,
+      `${disfarce} não podia passar`,
+    )
+  }
+})
+
+test('entra pelo nome, e também pelo e-mail de quem tiver um', async () => {
+  zerarFreio()
+  await criarConta({ usuario: 'bentinho', nome: 'Bento', email: 'bento@exemplo.com', senha: BOA })
+
+  for (const jeito of ['bentinho', 'Bentinho', 'ben.tinho', 'bento@exemplo.com']) {
+    zerarFreio()
+    const { pessoa } = await contas.entrar(banco, { usuario: jeito, senha: BOA })
+    assert.equal(pessoa.usuario, 'bentinho', `devia entrar com ${jeito}`)
+  }
+})
+
+// O e-mail deixou de ser obrigatório quando a recuperação virou pergunta:
+// não há link para mandar nem aviso para enviar.
+test('dá para ter conta sem e-mail nenhum', async () => {
+  zerarFreio()
+  const { pessoa } = await criarConta({ usuario: 'semzap', nome: 'Sem Zap', email: null, senha: BOA })
+  assert.equal(pessoa.email, null)
+  zerarFreio()
+  const entrou = await contas.entrar(banco, { usuario: 'semzap', senha: BOA })
+  assert.equal(entrou.pessoa.usuario, 'semzap')
+})
+
+// Ele pediu "senha forte ou fraca": o piso desceu para oito e a força passou
+// a ser DITA. O que continua barrado é o que já é público por construção.
+test('senha fraca entra, mas entra avisada', async () => {
+  const { avaliarSenha } = await import('./seguranca.mjs')
+
+  assert.equal(avaliarSenha('girassol').erro, null)
+  assert.equal(avaliarSenha('girassol').forca, 'fraca')
+  assert.equal(avaliarSenha('a casa de matacavalos').forca, 'forte')
+
+  assert.match(avaliarSenha('curta').erro, /8 caracteres/)
+  assert.match(avaliarSenha('12345678').erro, /Só números/)
+  assert.match(avaliarSenha('aaaaaaaaaa').erro, /Poucos caracteres/)
+  assert.match(avaliarSenha('senha123').erro, /mais usadas do mundo/)
+  // a senha não pode ser o nome com que se entra
+  assert.match(avaliarSenha('gabriel123', { usuario: 'gabriel' }).erro, /nome de usuário/)
+})
+
 test('a resposta nunca é guardada em claro', () => {
   const l = banco.prepare('SELECT id FROM leitor WHERE email = ?').get('gabriel@exemplo.com')
   const linhas = banco.prepare('SELECT * FROM pergunta WHERE leitor_id = ?').all(l.id)
@@ -429,8 +529,7 @@ test('o freio segura a força bruta', async () => {
   zerarFreio()
   let barrou = false
   for (let i = 0; i < 12; i++) {
-    const erro = await contas.entrar(banco,
-      { email: 'gabriel@exemplo.com', senha: `chute ${i} errado` }).catch(e => e)
+    const erro = await contas.entrar(banco, { usuario: 'gabriel@exemplo.com', senha: `chute ${i} errado` }).catch(e => e)
     if (erro.status === 429) { barrou = true; break }
   }
   assert.ok(barrou, 'depois de algumas tentativas tem que barrar')
@@ -471,7 +570,7 @@ test('a varredura de muitas contas de um IP só esbarra no teto do IP', async ()
   // balde do próprio e-mail, e o do IP tem que estourar
   for (let i = 0; i < 35; i++) {
     const erro = await contas.recuperarComRespostas(banco, {
-      email: `alvo${i}@exemplo.com`, senha: BOA, respostas: [],
+      usuario: `alvo${i}`, senha: BOA, respostas: [],
     }, ctx).catch(e => e)
     if (erro.status === 429) barrou++
   }
@@ -483,27 +582,25 @@ test('o teto do IP não tranca quem só errou a própria senha', async () => {
   // o balde do e-mail é 8 em 15 minutos e o do IP é 60: sete enganos seguidos
   // do mesmo aparelho continuam cabendo, e a oitava tentativa é a certa
   for (let i = 0; i < 7; i++) {
-    await contas.entrar(banco,
-      { email: 'gabriel@exemplo.com', senha: `engano ${i}` }, { ip: '198.51.100.9' }).catch(() => {})
+    await contas.entrar(banco, { usuario: 'gabriel@exemplo.com', senha: `engano ${i}` }, { ip: '198.51.100.9' }).catch(() => {})
   }
-  const { pessoa } = await contas.entrar(banco,
-    { email: 'gabriel@exemplo.com', senha: 'bentinho e o seminario' }, { ip: '198.51.100.9' })
+  const { pessoa } = await contas.entrar(banco, { usuario: 'gabriel@exemplo.com', senha: 'bentinho e o seminario' }, { ip: '198.51.100.9' })
   assert.equal(pessoa.email, 'gabriel@exemplo.com')
 })
 
 test('entrar certo limpa o contador de tentativas', async () => {
   zerarFreio()
-  await contas.entrar(banco, { email: 'gabriel@exemplo.com', senha: 'errada de novo' }).catch(() => {})
-  await contas.entrar(banco, { email: 'gabriel@exemplo.com', senha: 'bentinho e o seminario' })
+  await contas.entrar(banco, { usuario: 'gabriel@exemplo.com', senha: 'errada de novo' }).catch(() => {})
+  await contas.entrar(banco, { usuario: 'gabriel@exemplo.com', senha: 'bentinho e o seminario' })
   const { n } = banco.prepare(
-    `SELECT COUNT(*) n FROM tentativa WHERE chave = 'entrar:gabriel@exemplo.com'`).get()
+    `SELECT COUNT(*) n FROM tentativa WHERE chave = 'entrar:gabriel'`).get()
   assert.equal(n, 0)
 })
 
 test('conta desativada não entra', async () => {
   zerarFreio()
   banco.prepare('UPDATE leitor SET desativado = 1 WHERE email = ?').run('gabriel@exemplo.com')
-  await assert.rejects(contas.entrar(banco, { email: 'gabriel@exemplo.com', senha: 'bentinho e o seminario' }))
+  await assert.rejects(contas.entrar(banco, { usuario: 'gabriel@exemplo.com', senha: 'bentinho e o seminario' }))
   banco.prepare('UPDATE leitor SET desativado = 0 WHERE email = ?').run('gabriel@exemplo.com')
 })
 
@@ -536,7 +633,7 @@ test('apagar a conta apaga sessao e dados junto', async () => {
   assert.equal(banco.prepare('SELECT COUNT(*) n FROM guardado WHERE leitor_id = ?').get(pessoa.id).n, 0)
   assert.equal(banco.prepare('SELECT COUNT(*) n FROM leitor WHERE id = ?').get(pessoa.id).n, 0)
   zerarFreio()
-  await assert.rejects(contas.entrar(banco, { email: 'bia@exemplo.com', senha: BOA }))
+  await assert.rejects(contas.entrar(banco, { usuario: 'bia@exemplo.com', senha: BOA }))
 })
 
 test('as sessoes tem teto — nao crescem para sempre', async () => {
@@ -604,7 +701,7 @@ test('trocar a senha por dentro exige a senha atual', async () => {
   )
   await assert.rejects(
     contas.trocarMinhaSenha(banco, pessoa.id, { atual: BOA, nova: '123' }),
-    /10 caracteres/,
+    /8 caracteres/,
   )
   await assert.rejects(
     contas.trocarMinhaSenha(banco, pessoa.id, { atual: BOA, nova: BOA }),
@@ -627,9 +724,9 @@ test('trocar a senha derruba os outros aparelhos e mantém este', async () => {
   assert.ok(contas.deQuemE(banco, sessao.token), 'quem trocou continua dentro')
 
   zerarFreio()
-  assert.ok(await contas.entrar(banco, { email: 'gil@exemplo.com', senha: NOVA }))
+  assert.ok(await contas.entrar(banco, { usuario: 'gil@exemplo.com', senha: NOVA }))
   zerarFreio()
-  await assert.rejects(contas.entrar(banco, { email: 'gil@exemplo.com', senha: BOA }))
+  await assert.rejects(contas.entrar(banco, { usuario: 'gil@exemplo.com', senha: BOA }))
 })
 
 test('a lista de aparelhos não entrega o token de nenhum deles', async () => {

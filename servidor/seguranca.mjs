@@ -214,19 +214,81 @@ export function conferirEmail(email) {
   return limpo
 }
 
+// As que se descobrem em segundos. A lista é curta de propósito: não é para
+// substituir a régua, é para pegar o punhado que aparece em toda invasão.
+const OBVIAS = new Set([
+  'senha', 'senha123', 'password', '123456', '12345678', '123456789',
+  '1234567890', 'qwerty', 'qwertyui', 'asdfghjk', 'abc123', 'admin123',
+  'iloveyou', 'princesa', 'brasil', 'flamengo', 'corinthians', 'palmeiras',
+  'teamo', 'familia', 'mudar123', 'trocar123', 'letmein', 'senhasenha',
+])
+
+const semAcentoBaixo = (s) => String(s ?? '')
+  .normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
+
 /**
- * A mesma regra do navegador, repetida aqui — porque a do navegador é aviso,
- * e esta é a que vale. Comprimento pesa mais que "um símbolo e um número":
- * uma frase de doze letras resiste mais que "S3nh@!".
+ * A senha serve? E, quando serve, quão bem?
+ *
+ * ── o piso desceu de 10 para 8, e é uma decisão ──
+ *
+ * Dez é número de quem protege banco. Isto é uma biblioteca fechada por
+ * convite, onde o que se perde numa invasão é o que alguém marcou num livro.
+ * Régua alta demais num lugar assim não produz senha forte: produz senha
+ * anotada no papel, e a mesma de sempre com um "1" no fim.
+ *
+ * O que NÃO desceu é a recusa do que já é público por construção — só
+ * dígitos, uma letra repetida, a lista das óbvias, e a senha ser o próprio
+ * nome de usuário. Essas não são senhas fracas; são senhas que já estão na
+ * mão de quem for tentar.
+ *
+ * ── e por isso devolve DUAS coisas ──
+ *
+ * `erro` é o que impede. `forca` é o que a tela mostra, e é o que faz a régua
+ * baixa não virar descuido: a pessoa escolhe uma senha fraca SABENDO que é
+ * fraca, em vez de escolher uma forte por obrigação e esquecê-la na semana
+ * seguinte.
  */
-export function conferirSenha_(senha) {
+export function avaliarSenha(senha, { usuario = '', email = '' } = {}) {
   const s = String(senha ?? '')
-  if (s.length < 10) return 'A senha precisa de pelo menos 10 caracteres.'
-  if (s.length > 200) return 'Senha longa demais.'
-  if (/^\d+$/.test(s)) return 'Só números não serve.'
-  if (new Set(s.toLowerCase()).size < 5) return 'Use mais caracteres diferentes.'
-  return null
+  if (s.length < 8) return { erro: 'A senha precisa de pelo menos 8 caracteres.' }
+  if (s.length > 200) return { erro: 'Senha longa demais.' }
+
+  const nu = semAcentoBaixo(s)
+  if (/^\d+$/.test(s)) return { erro: 'Só números não serve: é o primeiro palpite de qualquer um.' }
+  if (new Set(nu).size < 4) return { erro: 'Poucos caracteres diferentes. Varie um pouco mais.' }
+  if (OBVIAS.has(nu)) return { erro: 'Essa é uma das senhas mais usadas do mundo. Escolha outra.' }
+
+  // A senha não pode ser o nome com que se entra: quem descobre um descobre
+  // os dois de uma vez, e descobrir o nome é trivial.
+  const eu = semAcentoBaixo(usuario).replace(/[^a-z0-9]/g, '')
+  const nuSo = nu.replace(/[^a-z0-9]/g, '')
+  if (eu.length >= 3 && (nuSo.includes(eu) || eu.includes(nuSo))) {
+    return { erro: 'A senha não pode ser o seu nome de usuário.' }
+  }
+  const antesDoArroba = semAcentoBaixo(email).split('@')[0].replace(/[^a-z0-9]/g, '')
+  if (antesDoArroba.length >= 4 && nuSo.includes(antesDoArroba)) {
+    return { erro: 'A senha não pode ser o seu e-mail.' }
+  }
+
+  // A força conta o que de fato custa a quem adivinha: tamanho antes de tudo,
+  // variedade depois. Símbolo obrigatório é teatro — "S3nh@!" tem os quatro
+  // tipos e cai antes de "a casa de matacavalos", que não tem nenhum.
+  const familias = [/[a-z]/, /[A-Z]/, /\d/, /[^a-zA-Z0-9]/].filter((r) => r.test(s)).length
+  const distintos = new Set(s).size
+  const pontos = s.length * 1.6 + familias * 4 + distintos * 1.2 + (/\s/.test(s) ? 6 : 0)
+
+  const forca = pontos >= 46 ? 'forte' : pontos >= 32 ? 'razoavel' : 'fraca'
+  return {
+    erro: null,
+    forca,
+    recado: forca === 'fraca'
+      ? 'Dá para entrar com ela, mas é fraca. Uma frase de quatro palavras resiste muito mais que uma palavra com símbolos.'
+      : forca === 'razoavel' ? 'Serve bem.' : 'Forte.',
+  }
 }
+
+/** A régua, para quem só quer saber se passa. */
+export const conferirSenha_ = (senha, quem) => avaliarSenha(senha, quem).erro
 
 /** Guarda só o começo do IP: dá para frear, não dá para rastrear ninguém. */
 /**

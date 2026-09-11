@@ -24,6 +24,8 @@ import { ondeComecaOLivro } from './folha-de-rosto.mjs'
 import { criarBuscaNoTexto } from './busca-no-texto.mjs'
 import { ipDoPedido } from './seguranca.mjs'
 import * as meusLivros from './meus-livros.mjs'
+import { conferirUsuario, estaTomado } from './usuario.mjs'
+import { avaliarSenha } from './seguranca.mjs'
 
 const PORTA = Number(process.env.FIO_PORTA || 8787)
 const SITE = process.env.FIO_SITE || `http://localhost:${PORTA}`
@@ -182,6 +184,31 @@ const ROTAS = {
 
   /** As sugestões para a tela de cadastro montar a escolha. */
   'GET /api/sugestoes': () => contas.perguntasSugeridas(),
+
+  // ── o nome está livre? ──
+  //
+  // Diz que um nome existe, e isso é de propósito: nome de usuário é público
+  // por natureza — ele aparece embaixo de cada resenha. Esconder aqui não
+  // esconderia nada e só faria a tela de cadastro mentir.
+  //
+  // O que ela NÃO diz é de quem é o nome, e o freio vale porque varrer nomes
+  // para montar lista de quem tem conta continua sendo varredura.
+  'GET /api/nome-livre': (req, res, dado, ctx) => {
+    const u = String(ctx.busca?.get('u') ?? '').trim()
+    const problema = conferirUsuario(u)
+    if (problema) return { livre: false, motivo: problema }
+    return estaTomado(banco, u)
+      ? { livre: false, motivo: 'Esse nome já está em uso. Escolha outro.' }
+      : { livre: true }
+  },
+
+  // A força da senha, para a tela dizer antes de a pessoa decidir. Nunca
+  // impede nada aqui: quem impede é `criar`, e só no que já é público por
+  // construção.
+  'POST /api/forca-da-senha': (req, res, dado) => {
+    const r = avaliarSenha(dado.senha, { usuario: dado.usuario ?? '', email: dado.email ?? '' })
+    return r.erro ? { serve: false, motivo: r.erro } : { serve: true, forca: r.forca, recado: r.recado }
+  },
 
   // ── a conta por dentro ──
   //
