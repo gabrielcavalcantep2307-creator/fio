@@ -55,13 +55,44 @@ const rodar = (args) => new Promise((pronto) => {
   p.on('close', (codigo) => pronto({ codigo, saida }))
 })
 
-// Prateleira primeiro; depois o mais baixado, que é uma boa aposta de que o
-// texto está inteiro e bem digitalizado.
-const fila = [...plano]
-  .sort((a, b) => (b.emTrilha ?? 0) - (a.emTrilha ?? 0))
+const UA = 'fio/0.1 (biblioteca em portugues; contato: toksr12@gmail.com)'
+
+/**
+ * O tamanho de cada fonte, perguntado antes de baixar.
+ *
+ * Um `HEAD` custa milissegundos e responde a única coisa que decide a ordem.
+ * Sem ele a esteira começa pelo que está em prateleira — e *Os Irmãos
+ * Karamázov*, 350 mil palavras e horas de tradução, segura os outros trinta
+ * e cinco atrás de si.
+ */
+async function medir(itens) {
+  const com = []
+  for (const o of itens) {
+    let bytes = Number.MAX_SAFE_INTEGER
+    try {
+      const r = await fetch(o.fonte, { method: 'HEAD', headers: { 'user-agent': UA } })
+      const n = Number(r.headers.get('content-length'))
+      if (r.ok && n > 0) bytes = n
+    } catch { /* sem resposta, vai para o fim da fila */ }
+    com.push({ ...o, bytes })
+  }
+  return com
+}
+
+// ── a ordem: do MENOR para o maior ──
+//
+// Vinte livros curtos prontos hoje valem mais, para quem está esperando, do
+// que um Guerra e Paz a caminho. E livro curto que falha revela o defeito
+// cedo, quando ainda dá para consertar antes de custar uma hora.
+//
+// Prateleira continua pesando, mas como DESEMPATE: dentro de uma faixa de
+// tamanho parecida, o que alguém vai procurar hoje sai antes.
+console.log('medindo as fontes…')
+const fila = (await medir(plano))
+  .sort((a, b) => a.bytes - b.bytes || (b.emTrilha ?? 0) - (a.emTrilha ?? 0))
   .slice(0, quantos)
 
-console.log(`esteira: ${fila.length} obras\n`)
+console.log(`esteira: ${fila.length} obras, do menor para o maior\n`)
 
 const prazo = Date.now() + minutos * 60_000
 const feitos = []
