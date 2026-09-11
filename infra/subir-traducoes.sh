@@ -43,6 +43,18 @@ echo "==> $PRONTOS traduções prontas; enviando"
 remoto "mkdir -p $CASA/entrada/trad"
 scp -i "$CHAVE" dados/traducoes/obra*.json "$MAQUINA:$CASA/entrada/trad/" > /dev/null
 
+# Os scripts vão junto. O container só recebe `servidor/` no deploy normal,
+# então a ingestão precisa ser levada a cada rodada — e levar sempre é melhor
+# que levar uma vez, porque assim o que roda lá é o que está no git aqui.
+echo "==> levando os scripts de ingestão"
+scp -i "$CHAVE" ingestao/instalar-lote.mjs ingestao/instalar-traducao.mjs   ingestao/normalizar.mjs ingestao/publicar.mjs "$MAQUINA:$CASA/entrada/" > /dev/null
+remoto "
+  docker exec infra-fio-1 mkdir -p /app/ingestao
+  for f in instalar-lote.mjs instalar-traducao.mjs normalizar.mjs publicar.mjs; do
+    docker cp $CASA/entrada/\$f infra-fio-1:/app/ingestao/ > /dev/null
+  done
+  docker exec --user root infra-fio-1 chown -R 1717:1717 /app/ingestao"
+
 echo "==> instalando no catálogo"
 remoto "
   docker exec infra-fio-1 mkdir -p /app/dados/traducoes

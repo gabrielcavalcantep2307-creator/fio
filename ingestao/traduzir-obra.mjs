@@ -88,8 +88,31 @@ function soOLivro(bruto) {
   return t.trim()
 }
 
-/** Uma linha que é marca de capítulo, e não uma frase que começa com "Chapter". */
-const MARCA = /^\s*((?:chapter|part|book|capítulo|parte|livro)\s+[ivxlcdm\d]+[.:]?|[ivxlcdm]{1,7}\.?)\s*$/i
+// ─────────────────────────────────────────────────────────────
+// O que é marca de capítulo
+//
+// A primeira versão só via numeral: "Chapter IV", "Parte 2". As *Meditações*
+// de Marco Aurélio saíram num capítulo só de doze, porque o original marca os
+// livros por EXTENSO — "THE FIRST BOOK", "THE SECOND BOOK" — e nenhuma dessas
+// linhas tem número.
+//
+// Errar para menos não dá erro: vira um capítulo gigante, que ainda se lê e
+// estraga o progresso, o anti-spoiler e a sensação de avanço. Errar para mais
+// é pior, então a linha tem que ser CURTA e ser só isso: um cabeçalho solto
+// numa linha, e não uma frase que por acaso começa com "Chapter".
+// ─────────────────────────────────────────────────────────────
+const ORDINAIS = 'first|second|third|fourth|fifth|sixth|seventh|eighth|ninth|tenth'
+  + '|eleventh|twelfth|primeir[oa]|segund[oa]|terceir[oa]|quart[oa]|quint[oa]'
+  + '|sext[oa]|sétim[oa]|setim[oa]|oitav[oa]|non[oa]|décim[oa]|decim[oa]'
+const NOMES = 'chapter|part|book|canto|act|scene|capítulo|capitulo|parte|livro|ato|cena'
+
+const MARCA = new RegExp(
+  String.raw`^\s*(?:`
+  + String.raw`(?:the\s+)?(?:${NOMES})\s+(?:[ivxlcdm\d]+|${ORDINAIS})[.:]?`  // Chapter IV
+  + String.raw`|(?:the\s+|o\s+|a\s+)?(?:${ORDINAIS})\s+(?:${NOMES})[.:]?`      // THE FIRST BOOK
+  + String.raw`|(?:the\s+)?(?:${NOMES})\s+(?:one|two|three|four|five|six|seven|eight|nine|ten)[.:]?`
+  + String.raw`|[ivxlcdm]{1,7}\.?`                                            // IV.
+  + String.raw`)\s*$`, 'i')
 
 /**
  * Parte o livro em capítulos.
