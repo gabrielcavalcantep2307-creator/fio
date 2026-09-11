@@ -1,0 +1,86 @@
+/* A estante particular. Puxa as cores do site para não parecer um enxerto. */
+
+:root {
+  --papel: #faf8f4;
+  --tinta: #22201d;
+  --suave: #6b665e;
+  --linha: #e3ded4;
+  --marca: #7c4a2d;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --papel: #16150f;
+    --tinta: #e8e3d8;
+    --suave: #9b9488;
+    --linha: #2e2b24;
+    --marca: #c98b62;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 0 1.2rem 4rem;
+  background: var(--papel);
+  color: var(--tinta);
+  font: 16px/1.65 Georgia, 'Iowan Old Style', 'Times New Roman', serif;
+}
+body.arrastando { outline: 3px dashed var(--marca); outline-offset: -10px; }
+
+header, main { max-width: 42rem; margin: 0 auto; }
+header { padding: 2rem 0 1.4rem; border-bottom: 1px solid var(--linha); margin-bottom: 1.6rem; }
+h1 { font-size: 1.7rem; margin: .6rem 0 .2rem; }
+.sub, .detalhe, .vazio { color: var(--suave); }
+.sub { margin: 0; font-size: .95rem; }
+.voltar { color: var(--suave); text-decoration: none; font-size: .9rem; }
+.voltar:hover { color: var(--marca); }
+a { color: var(--marca); }
+
+/* mandar */
+.solta {
+  display: block; text-align: center; cursor: pointer;
+  padding: 2rem 1rem; border: 2px dashed var(--linha); border-radius: 10px;
+  transition: border-color .15s, background .15s;
+}
+.solta:hover { border-color: var(--marca); background: color-mix(in srgb, var(--marca) 5%, transparent); }
+.solta strong { display: block; font-size: 1.05rem; }
+.solta span { display: block; margin-top: .3rem; color: var(--suave); font-size: .9rem; }
+
+.recado { margin: .9rem 0 0; padding: .6rem .8rem; border-radius: 7px;
+  background: color-mix(in srgb, var(--marca) 9%, transparent); font-size: .95rem; }
+.recado.ruim { background: color-mix(in srgb, #b3261e 12%, transparent); }
+
+/* estante */
+#lista { list-style: none; padding: 0; margin: 1.8rem 0 0; }
+#lista li { display: flex; align-items: center; gap: .8rem;
+  padding: .85rem 0; border-bottom: 1px solid var(--linha); }
+#lista li.vazio { display: block; padding: 1.6rem 0; font-style: italic; }
+
+.abrir { flex: 1; text-align: left; background: none; border: 0; padding: 0;
+  cursor: pointer; color: inherit; font: inherit; }
+.abrir strong { display: block; font-size: 1.05rem; }
+.abrir:hover strong { color: var(--marca); }
+.detalhe { display: block; font-size: .85rem; margin-top: .15rem; }
+
+.tirar { background: none; border: 1px solid var(--linha); border-radius: 6px;
+  color: var(--suave); cursor: pointer; padding: .25rem .6rem;
+  font: inherit; font-size: .85rem; }
+.tirar:hover { border-color: #b3261e; color: #b3261e; }
+
+/* leitor */
+.barra { position: sticky; top: 0; z-index: 2; display: flex; align-items: center;
+  gap: .8rem; flex-wrap: wrap; padding: .7rem 0; margin-bottom: 1.4rem;
+  background: var(--papel); border-bottom: 1px solid var(--linha);
+  font-size: .85rem; color: var(--suave); }
+.barra button { background: none; border: 1px solid var(--linha); border-radius: 6px;
+  padding: .3rem .7rem; cursor: pointer; color: inherit; font: inherit; font-size: .85rem; }
+.barra button:hover:not(:disabled) { border-color: var(--marca); color: var(--marca); }
+.barra button:disabled { opacity: .35; cursor: default; }
+#ondeEstou { flex: 1; }
+.passos { display: flex; gap: .4rem; }
+
+#texto { font-size: 1.12rem; }
+#texto p { margin: 0 0 1.1rem; text-align: justify; hyphens: auto; }
+#texto h1, #texto h2, #texto h3 { font-size: 1.2rem; margin: 2rem 0 1rem; }
+#texto em { font-style: italic; }

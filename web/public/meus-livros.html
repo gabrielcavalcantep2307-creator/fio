@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Meus livros — Fio</title>
+<!--
+  Uma página à parte, e de propósito.
+
+  O site que está no ar é um bundle que não temos o fonte para reconstruir
+  (ver docs/AUDITORIA-2026-09-09.md). Mexer nele hoje significaria substituí-lo
+  pela versão velha e perder a busca, as resenhas e as perguntas de segurança.
+
+  Então a estante particular chega por fora: HTML e JavaScript soltos, na
+  mesma origem, usando a mesma sessão e a mesma API. Quando o fonte do site
+  for reescrito, isto vira uma tela de lá e este arquivo some.
+
+  Sem script embutido: a política de segurança do Caddy é `script-src 'self'`,
+  e ela vale.
+-->
+<link rel="stylesheet" href="/meus-livros.css">
+</head>
+<body>
+  <header>
+    <a class="voltar" href="/">← a biblioteca</a>
+    <h1>Meus livros</h1>
+    <p class="sub">O que é seu, só seu. Ninguém mais vê esta estante.</p>
+  </header>
+
+  <main>
+    <section id="entrar" hidden>
+      <p>Você precisa <a href="/">entrar</a> para ter uma estante.</p>
+    </section>
+
+    <section id="mandar" hidden>
+      <label class="solta" for="arquivo">
+        <strong>Escolher um EPUB</strong>
+        <span>ou arraste o arquivo aqui — até 40 MB</span>
+        <input type="file" id="arquivo" accept=".epub,application/epub+zip" hidden>
+      </label>
+      <p id="recado" class="recado" hidden></p>
+    </section>
+
+    <section id="estante" hidden>
+      <ul id="lista"></ul>
+    </section>
+
+    <section id="leitor" hidden>
+      <nav class="barra">
+        <button type="button" id="fechar">← estante</button>
+        <span id="ondeEstou"></span>
+        <span class="passos">
+          <button type="button" id="antes">anterior</button>
+          <button type="button" id="depois">próximo</button>
+        </span>
+      </nav>
+      <article id="texto"></article>
+    </section>
+  </main>
+
+  <script type="module" src="/meus-livros.js"></script>
+</body>
+</html>
