@@ -19,7 +19,14 @@ import { writeFileSync, mkdirSync, rmSync, existsSync } from 'node:fs'
 import { join } from 'node:path'
 import { abrir, fechar, RAIZ } from '../servidor/banco/base.mjs'
 
-const SAIDA = join(RAIZ, 'web', 'public', 'dados')
+// Para onde vai. O padrão continua sendo a pasta do site em desenvolvimento;
+// `--saida` existe porque este script também roda DENTRO do container, contra
+// o banco de produção, para republicar o catálogo sem reconstruir o site.
+const ondeSai = (() => {
+  const i = process.argv.indexOf('--saida')
+  return i > 0 && process.argv[i + 1] ? process.argv[i + 1] : null
+})()
+const SAIDA = ondeSai ?? join(RAIZ, 'web', 'public', 'dados')
 const CASA = process.env.FIO_JURISDICAO || 'BR'
 
 const banco = abrir()
@@ -27,8 +34,23 @@ rmSync(join(SAIDA, 'livros'), { recursive: true, force: true }) // não existe m
 rmSync(join(SAIDA, 'fichas'), { recursive: true, force: true })
 mkdirSync(join(SAIDA, 'fichas'), { recursive: true })
 
-// Só entra no site o que é em português. Decisão do dono do acervo, e ela
-// vale antes de qualquer outra.
+// ─────────────────────────────────────────────────────────────
+// O FILTRO QUE FOI EMBORA, e por que ele estava errado
+//
+// Aqui dizia `o.idioma_original = 'pt'`, com o comentário "só entra no site o
+// que é em português". A regra do dono é essa mesma, e o filtro a traduzia
+// errado: `idioma_original` é a língua em que o AUTOR escreveu, e não a
+// língua do texto que nós servimos.
+//
+// Com ele, todo livro que NÓS traduzimos ficaria de fora do site: 1984 e A
+// Revolução dos Bichos têm `idioma_original = 'en'` e estão em português no
+// nosso banco. O catálogo que está no ar inclui os dois, então a versão que
+// rodou de verdade já não tinha este filtro — o que sobrou aqui foi a versão
+// velha, que teria apagado do site os 36 livros da esteira.
+//
+// A regra continua valendo, e quem a aplica é a ingestão, que só traz texto
+// em português. Aqui entra tudo que está publicado.
+// ─────────────────────────────────────────────────────────────
 const obras = banco.prepare(`
   SELECT o.id, o.titulo, o.titulo_pt, o.subtitulo, o.ano, o.trilho, o.nivel,
          o.paginas, o.minutos_leitura, o.capa, o.capa_externa, o.assuntos, o.olid_work,
@@ -40,7 +62,7 @@ const obras = banco.prepare(`
     LEFT JOIN pessoa p ON p.id = op.pessoa_id
     LEFT JOIN texto t ON t.obra_id = o.id AND t.dono_id IS NULL
     LEFT JOIN direito d ON d.texto_id = t.id AND d.jurisdicao = ?
-   WHERE o.publicada = 1 AND o.idioma_original = 'pt'
+   WHERE o.publicada = 1
    GROUP BY o.id
    ORDER BY o.titulo`).all(CASA)
 
@@ -141,7 +163,7 @@ const temas = banco.prepare(`
     FROM tema t
     JOIN obra_tema ot ON ot.tema_id = t.id
     JOIN obra o ON o.id = ot.obra_id
-   WHERE o.publicada = 1 AND o.idioma_original = 'pt'
+   WHERE o.publicada = 1
    GROUP BY t.id HAVING obras >= 3
    ORDER BY obras DESC`).all()
 
@@ -150,7 +172,7 @@ const autores = banco.prepare(`
     FROM pessoa p
     JOIN obra_pessoa op ON op.pessoa_id = p.id AND op.papel = 'autor'
     JOIN obra o ON o.id = op.obra_id
-   WHERE o.publicada = 1 AND o.idioma_original = 'pt'
+   WHERE o.publicada = 1
    GROUP BY p.id HAVING obras >= 1
    ORDER BY obras DESC`).all()
 
