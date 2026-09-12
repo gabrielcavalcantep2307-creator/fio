@@ -55,6 +55,22 @@ remoto "
   done
   docker exec --user root infra-fio-1 chown -R 1717:1717 /app/ingestao"
 
+# ── esperar o banco ficar livre ──
+#
+# `reindexar.mjs` refaz o índice de 86 mil capítulos numa escrita só, e
+# enquanto ela roda ninguém mais escreve. Numa rodada de 12/09 o reindexar da
+# rodada ANTERIOR ainda estava de pé, e os seis livros falharam em sequência
+# com "database is locked" — que é um erro perfeitamente correto e
+# perfeitamente inútil se ninguém disser de onde vem.
+echo "==> esperando o banco ficar livre"
+remoto "
+  esperou=0
+  while docker exec infra-fio-1 ps -o args 2>/dev/null | grep -q reindexar; do
+    esperou=\$((esperou + 15)); sleep 15
+    if [ \$esperou -gt 900 ]; then echo '    ainda reindexando depois de 15 min; seguindo assim mesmo'; break; fi
+  done
+  echo \"    livre (esperou \${esperou}s)\""
+
 echo "==> instalando no catálogo"
 remoto "
   docker exec infra-fio-1 mkdir -p /app/dados/traducoes

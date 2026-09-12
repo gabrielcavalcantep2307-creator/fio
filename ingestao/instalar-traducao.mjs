@@ -25,7 +25,17 @@ import { readFileSync } from 'node:fs'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { DatabaseSync } from 'node:sqlite'
-import { limpar } from './normalizar.mjs'
+// De `sanear.mjs` DIRETO, e nunca por `normalizar.mjs`.
+//
+// `ingestao/normalizar.mjs` é um script, e não um módulo: importá-lo EXECUTA
+// a ingestão. Ele abre o banco, procura o que falta normalizar e começa a
+// escrever — e aí o instalador, que precisa escrever também, leva
+// "database is locked" e o livro não entra.
+//
+// Custou cinco livros de seis nesta rodada, e o erro que aparecia no relatório
+// era "Node.js v22.23.2", porque o resumo pegava a última linha da saída em
+// vez da mensagem.
+import { limpar } from '../servidor/sanear.mjs'
 
 const RAIZ = join(dirname(fileURLToPath(import.meta.url)), '..')
 const arg = (n, p = null) => {

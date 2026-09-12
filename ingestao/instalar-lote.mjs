@@ -62,8 +62,16 @@ for (const f of arquivos) {
     console.log(`  obra ${String(obra).padStart(5)}  ${linha.trim()}`)
     postas++
   } else {
-    const erro = saida.trim().split('\n').at(-1) ?? 'sem mensagem'
-    console.log(`  obra ${String(obra).padStart(5)}  FALHOU: ${erro.slice(0, 90)}`)
+    // A ÚLTIMA linha da saída de um processo que morreu é "Node.js v22.x", e
+    // não o que deu errado. O relatório de 11/09 disse "FALHOU: Node.js
+    // v22.23.2" cinco vezes seguidas, o que não ajuda ninguém a consertar
+    // nada — e escondeu por uma hora que a causa era o banco travado.
+    //
+    // A mensagem de verdade é a primeira linha que começa com um nome de
+    // erro. Sem ela, vale a primeira linha não vazia.
+    const linhas = saida.split('\n').map((l) => l.trim()).filter(Boolean)
+    const erro = linhas.find((l) => /^\w*Error\b|^Erro\b/.test(l)) ?? linhas[0] ?? 'sem mensagem'
+    console.log(`  obra ${String(obra).padStart(5)}  FALHOU: ${erro.slice(0, 110)}`)
     falhas.push({ obra, erro })
   }
 }
