@@ -44,11 +44,23 @@ const arg = (n, p = null) => {
 
 const quantos = Number(arg('quantos', 999))
 const minutos = Number(arg('minutos', 600))
+
+// ── `--subir`: a esteira publica sozinha ──
+//
+// De quantos em quantos livros ela para e manda para a VPS. Não é a cada um,
+// e o motivo é o `reindexar`: ele refaz o índice dos 86 mil capítulos numa
+// escrita só e leva uns cinco minutos, independentemente de terem entrado um
+// livro ou dez. Subir a cada livro gastaria mais tempo reindexando do que
+// traduzindo.
+//
+// Cinco é o número em que o custo do índice se dilui e o leitor ainda vê
+// coisa nova aparecendo no mesmo dia.
+const subirACada = process.argv.includes('--subir') ? Number(arg('lote', 5)) : 0
 const plano = JSON.parse(readFileSync(join(PASTA, 'esteira.json'), 'utf8')).plano
 
 /** Roda um comando e devolve o que ele disse, sem deixar ninguém sem saída. */
-const rodar = (args) => new Promise((pronto) => {
-  const p = spawn(process.execPath, args, { cwd: RAIZ })
+const rodar = (args, programa = process.execPath, argsDele = null) => new Promise((pronto) => {
+  const p = spawn(programa, argsDele ?? args, { cwd: RAIZ })
   let saida = ''
   p.stdout.on('data', (d) => { saida += d })
   p.stderr.on('data', (d) => { saida += d })
@@ -87,6 +99,31 @@ async function medir(itens) {
 //
 // Prateleira continua pesando, mas como DESEMPATE: dentro de uma faixa de
 // tamanho parecida, o que alguém vai procurar hoje sai antes.
+
+/**
+ * Manda para a VPS o que já saiu.
+ *
+ * `subir-traducoes.sh` é idempotente: ele leva tudo que está na pasta, e
+ * instalar de novo a mesma obra apaga a anterior antes de gravar. Então não
+ * importa que os livros das rodadas passadas subam junto — só custa alguns
+ * segundos de `scp` e evita ter que lembrar quais já foram.
+ *
+ * Se a subida falhar — e a VPS já caiu no meio de um deploy — a esteira NÃO
+ * para. Traduzir é a parte cara; publicar é um comando que se roda de novo
+ * depois, e perder uma hora de tradução por causa de uma porta fechada seria
+ * o pior negócio possível.
+ */
+async function publicar() {
+  const t0 = Date.now()
+  const { codigo, saida } = await rodar([], 'bash', [join(RAIZ, 'infra', 'subir-traducoes.sh')])
+  const min = Math.round((Date.now() - t0) / 60_000)
+  const linha = saida.split('\n').reverse()
+    .find((l) => /instaladas|prontas|responde/.test(l)) ?? ''
+  console.log(codigo === 0
+    ? `   ↑ publicado em ${min} min — ${linha.trim().slice(0, 70)}\n`
+    : `   ↑ a subida falhou (${linha.trim().slice(0, 70)}); a esteira segue\n`)
+}
+
 console.log('medindo as fontes…')
 const fila = (await medir(plano))
   .sort((a, b) => a.bytes - b.bytes || (b.emTrilha ?? 0) - (a.emTrilha ?? 0))
@@ -97,6 +134,7 @@ console.log(`esteira: ${fila.length} obras, do menor para o maior\n`)
 const prazo = Date.now() + minutos * 60_000
 const feitos = []
 const falhas = []
+let novos = 0
 
 for (const [i, o] of fila.entries()) {
   if (Date.now() > prazo) { console.log('\n(prazo desta rodada acabou; o resto fica para a próxima)'); break }
@@ -119,11 +157,30 @@ for (const [i, o] of fila.entries()) {
     const palavras = t.capitulos.reduce((a, c) => a + c.palavras, 0)
     console.log(`   pronto: ${t.capitulos.length} capítulos, ${palavras} palavras, ${min} min\n`)
     feitos.push({ ...o, capitulos: t.capitulos.length, palavras })
+
+    // Publica de lote em lote, para o livro aparecer no site enquanto a
+    // esteira ainda anda. `novos` conta só o que saiu NESTA rodada: as que já
+    // estavam traduzidas de antes não disparam subida, senão a primeira volta
+    // do laço publicaria tudo de novo sem ter produzido nada.
+    novos++
+    if (subirACada && novos % subirACada === 0) await publicar()
   } else {
-    const ultima = saida.trim().split('\n').at(-1) ?? 'sem mensagem'
-    console.log(`   FALHOU (${min} min): ${ultima.slice(0, 140)}\n`)
-    falhas.push({ obra: o.obra, titulo: o.titulo, fonte: o.fonte, erro: ultima.slice(0, 300) })
+    // A primeira linha que parece erro, e não a última linha da saída — que
+    // num processo que morreu é sempre "Node.js v22.x" e não diz nada. Esse
+    // engano escondeu por uma hora que o banco estava travado.
+    const linhas = saida.split('\n').map((l) => l.trim()).filter(Boolean)
+    const erro = linhas.find((l) => /^\w*Error\b|^Erro\b|palavras — esta fonte/.test(l))
+      ?? linhas.at(-1) ?? 'sem mensagem'
+    console.log(`   FALHOU (${min} min): ${erro.slice(0, 140)}\n`)
+    falhas.push({ obra: o.obra, titulo: o.titulo, fonte: o.fonte, erro: erro.slice(0, 300) })
   }
+}
+
+// A última subida, para o que sobrou do lote não ficar esperando a próxima
+// rodada. Se `novos` for zero, não há o que publicar.
+if (subirACada && novos % subirACada !== 0 && novos > 0) {
+  console.log('── última subida ──')
+  await publicar()
 }
 
 const relatorio = join(PASTA, 'esteira-relatorio.json')
