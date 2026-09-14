@@ -17,6 +17,8 @@ import { abrir, fechar } from './banco/base.mjs'
 import * as contas from './contas.mjs'
 import { conferirSenha, guardarSenha, ipDoPedido } from './seguranca.mjs'
 import { SUGESTOES, normalizar as achatarPergunta } from './perguntas.mjs'
+import { criarBuscaNoTexto, comoConsulta } from './busca-no-texto.mjs'
+import { reindexarCapitulos } from './reindexar.mjs'
 
 const pasta = mkdtempSync(join(tmpdir(), 'fio-teste-'))
 let banco
@@ -271,6 +273,69 @@ test('pergunta escrita à mão é recusada no cadastro', async () => {
     }),
     /Escolha uma pergunta da lista/,
   )
+})
+
+// ─────────────────────────────────────────────────────────────
+// Buscar dentro dos livros
+//
+// A rota é pública e é a mais cara do servidor. A busca foi reescrita em dois
+// passos — índice primeiro, resolução depois — para não travar o processo numa
+// palavra comum. Estes testes cuidam do que não pode mudar com a reescrita:
+// acha o que existe, mostra o trecho com a marca, e NUNCA devolve obra que o
+// direito não deixa ler aqui.
+// ─────────────────────────────────────────────────────────────
+
+
+const semearLivro = (obraId, { titulo, autor, corpo, estado = 'dominio_publico' }) => {
+  banco.prepare('INSERT INTO obra (id, titulo, publicada) VALUES (?,?,1)').run(obraId, titulo)
+  const pid = Number(banco.prepare('INSERT INTO pessoa (nome, nome_ordem) VALUES (?,?)').run(autor, autor).lastInsertRowid)
+  banco.prepare("INSERT INTO obra_pessoa (obra_id, pessoa_id, papel) VALUES (?,?,'autor')").run(obraId, pid)
+  const tid = Number(banco.prepare(
+    "INSERT INTO texto (obra_id, idioma, fonte, normalizado, palavras) VALUES (?, 'pt', 'gutenberg', 1, 100)")
+    .run(obraId).lastInsertRowid)
+  banco.prepare('INSERT INTO capitulo (texto_id, ordem, titulo, corpo, palavras) VALUES (?,1,?,?,100)')
+    .run(tid, 'Capítulo I', corpo)
+  banco.prepare("INSERT INTO direito (texto_id, jurisdicao, estado, motivo) VALUES (?, 'BR', ?, 'teste')")
+    .run(tid, estado)
+}
+
+test('a busca acha o livro pelo texto e devolve o trecho marcado', () => {
+  semearLivro(9101, {
+    titulo: 'A Cidade e as Serras', autor: 'Eça de Queirós',
+    corpo: '<p>Jacinto morava num palácio cheio de máquinas e de aparelhos elétricos.</p>',
+  })
+  semearLivro(9102, {
+    titulo: 'Outro Livro', autor: 'Outro Autor',
+    corpo: '<p>Nada a ver com o assunto procurado nesta frase.</p>',
+  })
+  reindexarCapitulos(banco)
+
+  const buscar = criarBuscaNoTexto(banco)
+  const r = buscar('palácio')
+  assert.equal(r.achados.length, 1, 'só um livro tem "palácio"')
+  assert.equal(r.achados[0].obra, 9101)
+  assert.match(r.achados[0].trecho, /<mark>/, 'o trecho vem com o termo marcado')
+})
+
+test('a busca NÃO devolve obra que o direito não deixa ler', () => {
+  semearLivro(9103, {
+    titulo: 'Livro Protegido', autor: 'Autor Vivo',
+    corpo: '<p>Uma palavra rara: berkelium, que só aparece aqui.</p>',
+    estado: 'protegido',
+  })
+  reindexarCapitulos(banco)
+
+  const buscar = criarBuscaNoTexto(banco)
+  assert.equal(buscar('berkelium').achados.length, 0,
+    'achar o trecho e não poder abrir o livro é pior que não achar')
+})
+
+test('a consulta limpa os operadores do FTS antes de chegar ao índice', () => {
+  // um usuário digitando dois-pontos ou aspa solta não pode produzir erro de
+  // SQL nem consulta cara — vira termo literal
+  assert.equal(comoConsulta('direito: propriedade'), '"direito" AND "propriedade"')
+  assert.equal(comoConsulta('  '), null)
+  assert.equal(comoConsulta('"uma frase inteira"'), '"uma frase inteira"')
 })
 
 // ─────────────────────────────────────────────────────────────

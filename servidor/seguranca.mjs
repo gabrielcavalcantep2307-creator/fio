@@ -135,6 +135,12 @@ export const LIMITES = {
   // Conferir se um nome está livre é gesto de quem preenche cadastro:
   // acontece umas dez vezes numa tela, e nunca mil.
   'nome-livre': { quantas: 60, minutos: 10 },
+  // Buscar dentro dos livros é a rota mais cara do servidor: ela lê o índice
+  // de 110 milhões de palavras. Já foi barateada para não travar o processo,
+  // mas continua a mais pesada, e é pública. Trinta por minuto é uma pessoa
+  // procurando à vontade; mais que isso é um laço, e um laço na rota mais cara
+  // é exatamente o que não pode passar sem teto.
+  'procurar': { quantas: 30, minutos: 1 },
 }
 
 /**

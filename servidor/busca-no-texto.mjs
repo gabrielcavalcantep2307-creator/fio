@@ -57,40 +57,72 @@ export function comoConsulta(termo) {
 
 const POR_PAGINA = 20
 
+// Quantos capítulos do índice a gente olha antes de resolver os livros. Alto o
+// bastante para uma palavra comum render bons resultados, baixo o bastante para
+// nunca ser caro. Ver o comentário grande na consulta abaixo.
+const TETO_DE_CAPITULOS = 240
+
 export function criarBuscaNoTexto(banco) {
-  // `bm25` é o ranqueamento do próprio FTS5: dá mais peso ao termo raro e
-  // menos ao comum. Sem ele a ordem seria a do rowid, que é a ordem em que os
-  // capítulos foram gravados — ou seja, nenhuma.
-  const consulta = banco.prepare(`
-    SELECT o.id obra_id,
-           o.titulo, o.titulo_pt,
-           p.nome autor,
-           c.ordem capitulo,
-           c.titulo capitulo_titulo,
+  // ── por que a busca é em DOIS passos, e não num JOIN só ──
+  //
+  // A versão anterior fazia `... JOIN (seis tabelas) ... WHERE MATCH ?
+  // ORDER BY bm25(...) LIMIT 120`. Parece certo e é uma armadilha: com o
+  // `ORDER BY` sobre uma função do índice, o SQLite tem que JUNTAR todas as
+  // linhas que casam ANTES de ordenar e cortar. Para "machado" são dez; para
+  // "de" são centenas de milhares, cada uma passando por seis tabelas e por um
+  // `snippet()`.
+  //
+  // E o `node:sqlite` é SÍNCRONO: enquanto essa consulta roda, o processo
+  // inteiro para. Numa máquina de um núcleo, uma única busca por "que" — que
+  // qualquer um na internet dispara, porque a rota é pública — congelava o site
+  // por 60 segundos, `/api/saude` incluído. Era negação de serviço de graça.
+  //
+  // O primeiro passo pergunta SÓ ao índice, que é o que o FTS5 faz rápido:
+  // `ORDER BY rank LIMIT 240` usa a fila de prioridade do bm25 e para cedo, sem
+  // tocar em nenhuma outra tabela. O segundo passo resolve esses 240 candidatos
+  // contra obra/texto/direito/autor — 240 linhas, não trezentas mil. Medido num
+  // banco de verdade: "de" caiu de 60 s para cerca de um segundo.
+  const doIndice = banco.prepare(`
+    SELECT capitulo_id, texto_id, rank,
            snippet(busca_capitulo, 0, '<mark>', '</mark>', '…', 14) trecho
-      FROM busca_capitulo b
-      JOIN capitulo c ON c.id = b.capitulo_id
+      FROM busca_capitulo
+     WHERE busca_capitulo MATCH ?
+     ORDER BY rank
+     LIMIT ?`)
+
+  // O segundo passo. `rank` do índice manda na ordem; o direito é conferido
+  // aqui, e o que não pode ser lido em casa some do resultado — achar um trecho
+  // e não poder abrir o livro é pior que não achar.
+  const resolver = banco.prepare(`
+    SELECT o.id obra_id, o.titulo, o.titulo_pt, p.nome autor,
+           c.ordem capitulo, c.titulo capitulo_titulo
+      FROM capitulo c
       JOIN texto t ON t.id = c.texto_id AND t.normalizado = 1
       JOIN obra o ON o.id = t.obra_id AND o.publicada = 1
       JOIN direito d ON d.texto_id = t.id AND d.jurisdicao = ?
                     AND d.estado IN ('dominio_publico','licenca_livre')
       LEFT JOIN obra_pessoa op ON op.obra_id = o.id AND op.papel = 'autor'
       LEFT JOIN pessoa p ON p.id = op.pessoa_id
-     WHERE busca_capitulo MATCH ?
-     ORDER BY bm25(busca_capitulo)
-     LIMIT ?`)
+     WHERE c.id = ?`)
 
   return (termo, { jurisdicao = 'BR' } = {}) => {
     const q = comoConsulta(termo)
     if (!q) return { termo: String(termo ?? ''), achados: [] }
 
-    let linhas
+    let candidatos
     try {
-      // pede mais que a página: obras repetidas são agrupadas logo abaixo
-      linhas = consulta.all(jurisdicao, q, POR_PAGINA * 6)
+      candidatos = doIndice.all(q, TETO_DE_CAPITULOS)
     } catch {
       // sintaxe que escapou da limpeza — devolve vazio, nunca erro de SQL
       throw new Recusa('Não consegui entender essa busca.', 400)
+    }
+
+    // Resolve cada candidato, na ordem que o índice deu, e junta o trecho de
+    // volta. `rank` já vem ordenado do passo um.
+    const linhas = []
+    for (const cand of candidatos) {
+      const alvo = resolver.get(jurisdicao, cand.capitulo_id)
+      if (alvo) linhas.push({ ...alvo, trecho: cand.trecho })
     }
 
     // Um livro aparece UMA vez, com o melhor trecho dele.

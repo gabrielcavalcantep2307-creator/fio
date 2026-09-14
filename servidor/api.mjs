@@ -306,8 +306,15 @@ const ROTAS = {
   // Buscar DENTRO dos livros. O índice FTS5 sobre 110 milhões de palavras
   // existia, populado, e nenhuma rota o consultava — a busca do site só via
   // título e autor. É a diferença entre catálogo e biblioteca.
-  'GET /api/procurar': (req, res, dado, ctx) =>
-    buscarNoTexto(ctx.busca?.get('q') ?? '', { jurisdicao: process.env.FIO_JURISDICAO || 'BR' }),
+  // Rota pública e cara: freio por faixa de IP. Sem ele, um laço na busca é a
+  // maneira mais barata de derrubar o site — ver o comentário em
+  // `busca-no-texto.mjs`.
+  'GET /api/procurar': (req, res, dado, ctx) => {
+    if (!freio(banco, 'procurar', dicaDeIp(ipDe(req)) ?? 'sem-ip').passa) {
+      throw new Recusa('Muitas buscas seguidas. Espere um instante.', 429)
+    }
+    return buscarNoTexto(ctx.busca?.get('q') ?? '', { jurisdicao: process.env.FIO_JURISDICAO || 'BR' })
+  },
 
   'GET /api/populares': () => ({
     semana: contas.maisLidos(banco, { dias: 7, quantos: 10 }),
