@@ -44,10 +44,11 @@ const RAIZ = join(dirname(fileURLToPath(import.meta.url)), '..')
 const PASTA = join(RAIZ, 'dados', 'traducoes')
 const UA = 'fio/0.1 (biblioteca em portugues; contato: toksr12@gmail.com)'
 
-// Quantos parágrafos em voo ao mesmo tempo. Era dez, e dez foi demais: o
-// serviço parou de responder no meio do segundo livro do dia. Três, com o
-// freio adaptativo abaixo, é o ritmo que ele aguenta sem reclamar.
-const EM_PARALELO = 3
+// Quantos parágrafos em voo ao mesmo tempo. Era três — conservador demais. O
+// MinT aguentou dez numa rajada; oito é o ponto em que ganha velocidade e
+// ainda deixa margem, e o freio adaptativo abaixo recua sozinho se ele
+// reclamar. Dá para ajustar por FIO_PARALELO sem mexer no código.
+const EM_PARALELO = Number(process.env.FIO_PARALELO || 8)
 
 const arg = (nome, padrao = null) => {
   const i = process.argv.indexOf(`--${nome}`)
@@ -295,6 +296,23 @@ async function emPedacos(bruto, { de, glossario }) {
   }
 }
 
+// ─────────────────────────────────────────────────────────────
+// A VELOCIDADE vem do paralelismo, e não de juntar parágrafos
+//
+// Tentou-se juntar vários parágrafos num pedido só, separados por um marcador
+// " @@@ " que o MinT devolveria intacto. Em texto limpo ele devolve; em livro
+// de verdade, não — a cada trinta parágrafos ele engole um marcador perto de
+// um asterisco de quebra de cena, de um verso ou de um título sem ponto final.
+// Um marcador comido é um parágrafo colado no do lado, que é pior que um
+// parágrafo no original. Medido na Alice: nove de cada doze lotes desalinhavam.
+//
+// O que É confiável é o pedido de um parágrafo só — esse sempre volta certo.
+// Então a velocidade vem de mandar MUITOS ao mesmo tempo: o MinT aguentou dez
+// em paralelo numa rajada, e o freio adaptativo recua sozinho se ele reclamar.
+// Seis a oito em voo é várias vezes o ritmo dos três antigos, sem nenhum risco
+// de desalinhar.
+// ─────────────────────────────────────────────────────────────
+
 async function traduzirTudo(unidades, { de, glossario }, caderno, aoAndar) {
   const saida = new Array(unidades.length)
   const falhou = []
@@ -315,11 +333,6 @@ async function traduzirTudo(unidades, { de, glossario }, caderno, aoAndar) {
           saida[i] = t
         } catch (e) {
           // ── um parágrafo não derruba o livro ──
-          //
-          // Era o que acontecia: seis tentativas falhavam, o erro subia, e o
-          // livro inteiro morria. Três morreram assim — dois Otelos e o
-          // Schopenhauer — cada um depois de quatro minutos de trabalho que
-          // foram para o lixo.
           //
           // Um livro com um parágrafo no original é MUITO melhor que nenhum
           // livro. O original fica no lugar, a falha é contada, e no fim se
