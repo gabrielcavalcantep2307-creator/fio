@@ -1,0 +1,12 @@
+# Scripts de shell SEMPRE com quebra de linha Unix (LF), nunca CRLF.
+#
+# Isto nao e estilo: `backup.sh` roda no cron da VPS, em bash de Linux, e um
+# `\r` no fim de cada linha faz o bash reclamar "$'\r': command not found" e
+# "set: pipefail: invalid option name" — o backup inteiro morre na segunda
+# linha. O arquivo foi commitado de uma maquina Windows com CRLF, e o backup
+# que "existia" nunca teria rodado. Esta regra impede que volte a acontecer.
+*.sh text eol=lf
+
+# O mesmo para o que mais roda com /usr/bin/env: sem extensao previsivel, mas
+# estes sao os que existem.
+Dockerfile text eol=lf
