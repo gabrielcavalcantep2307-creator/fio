@@ -247,10 +247,24 @@ export async function traduzir(bruto, { de = 'en', para = 'pt', glossario = {} }
   const { entrada, refazer } = prepararUnidade(bruto)
   if (!entrada.trim()) return bruto
 
+  // Fonte já em português: não há o que traduzir. Mandar pt→pt ao MinT gasta
+  // o serviço de uma fundação para receber de volta o que se mandou — quando
+  // não volta pior. O Hamlet do plano é assim: o Gutenberg 25667 já é uma
+  // tradução portuguesa em domínio público, e são 218 mil bytes de pedido à
+  // toa. O que ainda vale é o glossário e a norma brasileira, que são nossos
+  // e não dependem de tradutor nenhum.
+  if (de === para) return refazer(abrasileirar(aplicarGlossario(entrada, glossario)))
+
   const r = await fetch(`${SERVICO}/${de}/${para}`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({ text: entrada }),
+    // Sem isto, um pedido que o serviço aceita e depois abandona fica pendurado
+    // para sempre: o `fetch` do Node não tem prazo nenhum por conta própria.
+    // Em 14/09/2026 a esteira passou 1h34 parada num pedido assim, gastando
+    // 4 segundos de processador em uma hora e meia — parada, não trabalhando.
+    // Um parágrafo leva segundos; um minuto já é sinal de que não vem.
+    signal: AbortSignal.timeout(60_000),
   })
   if (!r.ok) throw new Error(`MinT devolveu ${r.status} para "${entrada.slice(0, 40)}"`)
 

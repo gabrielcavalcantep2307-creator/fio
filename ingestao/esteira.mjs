@@ -82,7 +82,11 @@ async function medir(itens) {
   for (const o of itens) {
     let bytes = Number.MAX_SAFE_INTEGER
     try {
-      const r = await fetch(o.fonte, { method: 'HEAD', headers: { 'user-agent': UA } })
+      // Com prazo: são 36 pedidos em fila, e um servidor calado bastaria para
+      // a esteira nunca chegar a traduzir o primeiro livro.
+      const r = await fetch(o.fonte, {
+        method: 'HEAD', headers: { 'user-agent': UA }, signal: AbortSignal.timeout(15_000),
+      })
       const n = Number(r.headers.get('content-length'))
       if (r.ok && n > 0) bytes = n
     } catch { /* sem resposta, vai para o fim da fila */ }

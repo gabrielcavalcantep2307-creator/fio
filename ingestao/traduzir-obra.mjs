@@ -321,6 +321,46 @@ async function traduzirTudo(unidades, { de, glossario }, caderno, aoAndar) {
 
 const escapar = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 
+/**
+ * Baixa a fonte, com prazo e com recomeço.
+ *
+ * O `fetch` do Node não desiste sozinho. Se o servidor aceita a conexão e
+ * depois não fala mais nada — o que Gutenberg faz quando está sobrecarregado
+ * — a espera é eterna, e "eterna" aqui não é figura: em 14/09/2026 a esteira
+ * ficou 1h34 parada em Othello sem gastar 5 segundos de processador. Ninguém
+ * consegue distinguir isso de "está traduzindo um livro grande", e é por isso
+ * que custa caro: o defeito não parece defeito.
+ *
+ * Três minutos é folgado para um .txt de Gutenberg, e três tentativas com
+ * espera crescente cobrem a queda passageira sem insistir com quem caiu.
+ */
+async function baixarFonte(fonte, tentativas = 3) {
+  let ultimo
+  for (let i = 0; i < tentativas; i++) {
+    if (i) {
+      const espera = 5_000 * 2 ** (i - 1)
+      console.log(`   (${ultimo}; tentando de novo em ${espera / 1000}s)`)
+      await dormir(espera)
+    }
+    try {
+      const r = await fetch(fonte, {
+        headers: { 'user-agent': UA },
+        signal: AbortSignal.timeout(180_000),
+      })
+      if (!r.ok) throw new Error(`a fonte respondeu ${r.status}`)
+      return await r.text()
+    } catch (e) {
+      // `TimeoutError` é o que o AbortSignal levanta, e a mensagem dele sozinha
+      // ("The operation was aborted due to timeout") não diz de quem se
+      // esperava. Trocada por uma que diz.
+      ultimo = e.name === 'TimeoutError'
+        ? 'a fonte aceitou a conexão e não respondeu em 3 min'
+        : e.message
+    }
+  }
+  throw new Error(`não deu para baixar a fonte: ${ultimo}`)
+}
+
 async function principal() {
   const fonte = arg('fonte')
   const de = arg('de', 'en')
@@ -335,9 +375,7 @@ async function principal() {
   console.log(`motor: ${motor.nome}, custo ${motor.custo}`)
 
   console.log(`baixando ${fonte}`)
-  const r = await fetch(fonte, { headers: { 'user-agent': UA } })
-  if (!r.ok) throw new Error(`a fonte respondeu ${r.status}`)
-  const bruto = await r.text()
+  const bruto = await baixarFonte(fonte)
 
   const livro = soOLivro(bruto)
   const capitulos = emCapitulos(livro)
