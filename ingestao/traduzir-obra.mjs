@@ -227,8 +227,37 @@ async function comTentativas(fn, quantas = 6) {
 }
 
 /** Traduz uma lista de unidades, em paralelo limitado, aproveitando o caderno. */
+/**
+ * Traduz uma unidade — e, se ela for grande demais para o serviço, em partes.
+ *
+ * O MinT devolveu 413 num parágrafo do Schopenhauer. 413 é "payload too
+ * large": não é falha de rede, não é freio, é o texto não caber. Repetir seis
+ * vezes o mesmo parágrafo grande demais é repetir seis vezes a mesma recusa.
+ *
+ * Então quando ele recusa por tamanho, o parágrafo é partido em frases e
+ * remontado. Parágrafo de filosofia alemã tem períodos de duzentas palavras,
+ * e é exatamente onde isso acontece.
+ */
+async function emPedacos(bruto, { de, glossario }) {
+  try {
+    return await traduzir(bruto, { de, para: 'pt', glossario })
+  } catch (e) {
+    if (!/413/.test(e.message) || bruto.length < 600) throw e
+
+    // corta no ponto final seguido de espaço, que é o fim de frase que não
+    // erra em abreviação de uma letra só
+    const frases = bruto.split(/(?<=[.!?])\s+(?=[A-ZÀ-Þ"«])/)
+    if (frases.length < 2) throw e
+
+    const partes = []
+    for (const f of frases) partes.push(await traduzir(f, { de, para: 'pt', glossario }))
+    return partes.join(' ')
+  }
+}
+
 async function traduzirTudo(unidades, { de, glossario }, caderno, aoAndar) {
   const saida = new Array(unidades.length)
+  const falhou = []
   let proxima = 0
   let prontas = 0
 
@@ -240,15 +269,51 @@ async function traduzirTudo(unidades, { de, glossario }, caderno, aoAndar) {
 
       if (caderno.feito.has(k)) saida[i] = caderno.feito.get(k)
       else {
-        const t = await comTentativas(() => traduzir(bruto, { de, para: 'pt', glossario }))
-        caderno.guardar(k, t)
-        saida[i] = t
+        try {
+          const t = await comTentativas(() => emPedacos(bruto, { de, glossario }))
+          caderno.guardar(k, t)
+          saida[i] = t
+        } catch (e) {
+          // ── um parágrafo não derruba o livro ──
+          //
+          // Era o que acontecia: seis tentativas falhavam, o erro subia, e o
+          // livro inteiro morria. Três morreram assim — dois Otelos e o
+          // Schopenhauer — cada um depois de quatro minutos de trabalho que
+          // foram para o lixo.
+          //
+          // Um livro com um parágrafo no original é MUITO melhor que nenhum
+          // livro. O original fica no lugar, a falha é contada, e no fim se
+          // decide se foram poucas demais para importar ou muitas demais para
+          // aceitar. O caderno não guarda a falha, então rodar de novo tenta
+          // outra vez — e o serviço que recusou hoje costuma aceitar amanhã.
+          falhou.push({ i, porque: e.message })
+          saida[i] = bruto
+        }
       }
       aoAndar(++prontas, unidades.length)
     }
   }
 
   await Promise.all(Array.from({ length: EM_PARALELO }, trabalhador))
+
+  // ── quantas falhas ainda são poucas ──
+  //
+  // Um parágrafo no original em vinte mil é um tropeço que ninguém nota.
+  // Um em cada vinte é um livro meio traduzido se passando por traduzido, e
+  // isso o rótulo de "tradução automática" não cobre: ele avisa sobre a
+  // QUALIDADE da tradução, não sobre metade do texto não ter sido traduzida.
+  //
+  // Dois por cento é onde eu ponho a linha. Abaixo disso entra com o aviso;
+  // acima, o livro não sai, e rodar de novo aproveita tudo que já saiu.
+  const proporcao = falhou.length / Math.max(unidades.length, 1)
+  if (proporcao > 0.02) {
+    throw new Error(
+      `${falhou.length} de ${unidades.length} parágrafos não traduziram `
+      + `(${(proporcao * 100).toFixed(1)}%). O primeiro: ${falhou[0]?.porque ?? '?'}`)
+  }
+  if (falhou.length) {
+    console.log(`\n  ${falhou.length} parágrafo(s) ficaram no original; rodar de novo tenta outra vez`)
+  }
   return saida
 }
 
