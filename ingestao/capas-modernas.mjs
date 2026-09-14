@@ -75,6 +75,22 @@ const EM_INGLES = {
   'admirável mundo novo': 'Brave New World', 'senhor dos anéis': 'The Lord of the Rings',
   'pequeno príncipe': 'The Little Prince', 'ensaios': 'Essays Montaigne',
   'arte da guerra': 'The Art of War', 'ética a nicômaco': 'Nicomachean Ethics',
+  // segunda leva de gênero
+  'senhor da guerra de marte': 'The Warlord of Mars', 'primeiros homens na lua': 'The First Men in the Moon',
+  'ilha do doutor moreau': 'The Island of Doctor Moreau', 'da terra à lua': 'From the Earth to the Moon',
+  'ilha misteriosa': 'The Mysterious Island', 'mundo perdido': 'The Lost World',
+  'planolândia': 'Flatland', 'daqui a cem anos': 'Looking Backward',
+  'raça que há de vir': 'The Coming Race', 'terra maravilhosa de oz': 'The Marvelous Land of Oz',
+  'phantastes': 'Phantastes', 'princesa e o goblin': 'The Princess and the Goblin',
+  'floresta do fim do mundo': 'The Wood Beyond the World', 'cinco crianças': 'Five Children and It',
+  'castelo de otranto': 'The Castle of Otranto', 'volta do parafuso': 'The Turn of the Screw',
+  'carmilla': 'Carmilla', 'grande deus pã': 'The Great God Pan',
+  'fantasma da ópera': 'The Phantom of the Opera', 'cavaleiro sem cabeça': 'The Legend of Sleepy Hollow',
+  'ivanhoé': 'Ivanhoe', 'vinte anos depois': 'Twenty Years After',
+  'máscara de ferro': 'The Man in the Iron Mask', 'prisioneiro de zenda': 'The Prisoner of Zenda',
+  'pimpinela escarlate': 'The Scarlet Pimpernel', 'minas do rei salomão': "King Solomon's Mines",
+  'aventuras de robin hood': 'The Merry Adventures of Robin Hood', 'presa branca': 'White Fang',
+  'capitão blood': 'Captain Blood', 'beowulf': 'Beowulf', 'cantar de rolando': 'The Song of Roland',
 }
 
 const sobrenome = (nome) => String(nome).trim().split(/\s+/).pop().toLowerCase()
