@@ -30,7 +30,7 @@
 // um Guerra e Paz a caminho — e porque livro curto que falha revela o defeito
 // cedo, quando ainda dá para consertar antes dos grandes.
 
-import { spawn } from 'node:child_process'
+import { spawn, spawnSync } from 'node:child_process'
 import { readFileSync, existsSync, writeFileSync } from 'node:fs'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -58,14 +58,49 @@ const minutos = Number(arg('minutos', 600))
 const subirACada = process.argv.includes('--subir') ? Number(arg('lote', 5)) : 0
 const plano = JSON.parse(readFileSync(join(PASTA, 'esteira.json'), 'utf8')).plano
 
-/** Roda um comando e devolve o que ele disse, sem deixar ninguém sem saída. */
+/**
+ * Roda um comando e devolve o que ele disse, sem deixar ninguém sem saída.
+ *
+ * O `error` ali embaixo não é zelo: sem ele a esteira MORRE. Um ChildProcess
+ * que não consegue nem nascer — programa que não está no PATH — emite `error`
+ * e nunca emite `close`, e um `error` sem ouvinte no Node é exceção não
+ * tratada, que derruba o processo inteiro.
+ *
+ * Foi o que aconteceu em 14/09/2026. A esteira foi solta pelo `Start-Process`
+ * do PowerShell, que não herda o PATH do Git Bash; na hora de publicar, o
+ * `spawn('bash', ...)` deu ENOENT e levou junto a esteira e a fila de 25
+ * livros. O comentário de `publicar()` prometia que uma subida falha não para
+ * nada — e a promessa valia só para as falhas que chegavam a ter código de
+ * saída.
+ */
 const rodar = (args, programa = process.execPath, argsDele = null) => new Promise((pronto) => {
   const p = spawn(programa, argsDele ?? args, { cwd: RAIZ })
   let saida = ''
   p.stdout.on('data', (d) => { saida += d })
   p.stderr.on('data', (d) => { saida += d })
+  p.on('error', (e) => pronto({ codigo: -1, saida: `${saida}\nErro: não deu para rodar "${programa}": ${e.message}` }))
   p.on('close', (codigo) => pronto({ codigo, saida }))
 })
+
+/**
+ * Onde está o bash, quando quem soltou a esteira não sabia que precisava dele.
+ *
+ * `subir-traducoes.sh` é um script de shell, e no Windows o shell que o roda é
+ * o do Git. Ele está no PATH de quem abre o Git Bash e não está no PATH de
+ * quem abre o PowerShell — e a esteira pode ser solta dos dois.
+ */
+function acharBash() {
+  const candidatos = process.platform === 'win32'
+    ? ['bash', 'C:/Program Files/Git/bin/bash.exe', 'C:/Program Files (x86)/Git/bin/bash.exe',
+      join(process.env.LOCALAPPDATA ?? '', 'Programs/Git/bin/bash.exe')]
+    : ['bash', '/bin/bash', '/usr/bin/bash']
+  for (const c of candidatos) {
+    if (c === 'bash') {
+      if (spawnSync(c, ['-c', 'exit 0']).status === 0) return c
+    } else if (existsSync(c)) return c
+  }
+  return null
+}
 
 const UA = 'fio/0.1 (biblioteca em portugues; contato: toksr12@gmail.com)'
 
@@ -119,7 +154,13 @@ async function medir(itens) {
  */
 async function publicar() {
   const t0 = Date.now()
-  const { codigo, saida } = await rodar([], 'bash', [join(RAIZ, 'infra', 'subir-traducoes.sh')])
+  const bash = acharBash()
+  if (!bash) {
+    console.log('   ! nao achei o bash; a subida fica para depois, a esteira segue')
+    console.log('     traduzir continua funcionando; publique com: bash infra/subir-traducoes.sh\n')
+    return
+  }
+  const { codigo, saida } = await rodar([], bash, [join(RAIZ, 'infra', 'subir-traducoes.sh')])
   const min = Math.round((Date.now() - t0) / 60_000)
   const linha = saida.split('\n').reverse()
     .find((l) => /instaladas|prontas|responde/.test(l)) ?? ''

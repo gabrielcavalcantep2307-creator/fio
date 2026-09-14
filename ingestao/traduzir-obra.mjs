@@ -64,7 +64,7 @@ const arg = (nome, padrao = null) => {
  * Cada casa marca o começo do próprio jeito, e errar aqui não dá erro: dá um
  * "capítulo 1" que é a licença do Projeto Gutenberg, traduzida com esmero.
  */
-function soOLivro(bruto) {
+export function soOLivro(bruto) {
   let t = bruto.replace(/\r\n/g, '\n')
 
   const inicios = [
@@ -106,13 +106,53 @@ const ORDINAIS = 'first|second|third|fourth|fifth|sixth|seventh|eighth|ninth|ten
   + '|sext[oa]|sétim[oa]|setim[oa]|oitav[oa]|non[oa]|décim[oa]|decim[oa]'
 const NOMES = 'chapter|part|book|canto|act|scene|capítulo|capitulo|parte|livro|ato|cena'
 
+// As três formas que trazem o NOME da divisão junto. Separadas do numeral
+// romano pelado porque só elas podem receber um título colado — ver abaixo.
+const COM_NOME = String.raw`(?:the\s+)?(?:${NOMES})\s+(?:[ivxlcdm\d]+|${ORDINAIS})` // Chapter IV
+  + String.raw`|(?:the\s+|o\s+|a\s+)?(?:${ORDINAIS})\s+(?:${NOMES})`                 // THE FIRST BOOK
+  + String.raw`|(?:the\s+)?(?:${NOMES})\s+(?:one|two|three|four|five|six|seven|eight|nine|ten)`
+
 const MARCA = new RegExp(
-  String.raw`^\s*(?:`
-  + String.raw`(?:the\s+)?(?:${NOMES})\s+(?:[ivxlcdm\d]+|${ORDINAIS})[.:]?`  // Chapter IV
-  + String.raw`|(?:the\s+|o\s+|a\s+)?(?:${ORDINAIS})\s+(?:${NOMES})[.:]?`      // THE FIRST BOOK
-  + String.raw`|(?:the\s+)?(?:${NOMES})\s+(?:one|two|three|four|five|six|seven|eight|nine|ten)[.:]?`
+  String.raw`^\s*(?:(?:${COM_NOME})[.:]?`
   + String.raw`|[ivxlcdm]{1,7}\.?`                                            // IV.
   + String.raw`)\s*$`, 'i')
+
+// ── o cabeçalho com o título colado ──
+//
+// "FIRST BOOK. THE WORLD AS IDEA." O `MARCA` acima exige que a linha ACABE no
+// marcador, e por isso as quatro divisões de *O Mundo como Vontade e
+// Representação* passaram despercebidas: o livro saiu num capítulo só de
+// 182.241 palavras, que é uma parede, não um texto que alguém lê.
+//
+// O numeral romano pelado fica de fora desta forma de propósito. "IV." sozinho
+// numa linha é marca de capítulo; "IV. and then he left the room" é uma frase
+// que começa com um numeral, e não há como separar as duas sem a regra de que
+// ali a linha termina.
+const MARCA_COM_TITULO = new RegExp(String.raw`^\s*(?:${COM_NOME})\s*[.:—–-]\s*\S`, 'i')
+
+// ── o numeral romano com título, que só vale em MAIÚSCULA ──
+//
+// "I. A SCANDAL IN BOHEMIA". É assim que o Gutenberg marca os doze contos de
+// *As Aventuras de Sherlock Holmes*, e sem esta forma eles saem em 5 pedaços
+// com um de 92.615 palavras — metade do livro num capítulo só.
+//
+// O perigo é o parágrafo que começa com numeral: "IV. and then he left the
+// room". A caixa desfaz o empate. Um cabeçalho de conto grita; uma frase no
+// meio da narrativa, não. Nenhuma frase corrida de um romance vem inteira em
+// maiúscula, e é só por isso que esta forma pode existir.
+const ROMANO_COM_TITULO = /^\s*[ivxlcdm]{1,7}\.\s+(\S.*)$/i
+
+// Um título de capítulo é uma linha curta e solta. Este teto é o que separa um
+// cabeçalho de um parágrafo que por acaso começa com "Chapter", e é ele que
+// deixa as formas com título serem generosas sem ficarem perigosas.
+const ehMarca = (l) => {
+  const t = l.trim()
+  if (!t || t.length > 70) return false
+  if (MARCA.test(t) || MARCA_COM_TITULO.test(t)) return true
+
+  const romano = t.match(ROMANO_COM_TITULO)
+  return Boolean(romano) && romano[1] === romano[1].toUpperCase() && /\p{Lu}/u.test(romano[1])
+}
 
 /**
  * Parte o livro em capítulos.
@@ -121,10 +161,10 @@ const MARCA = new RegExp(
  * melhor um texto inteiro que se lê do que dez pedaços cortados no lugar
  * errado por um palpite.
  */
-function emCapitulos(texto) {
+export function emCapitulos(texto) {
   const linhas = texto.split('\n')
   const marcas = []
-  linhas.forEach((l, i) => { if (MARCA.test(l)) marcas.push(i) })
+  linhas.forEach((l, i) => { if (ehMarca(l)) marcas.push(i) })
 
   if (marcas.length < 2) return [{ titulo: null, bruto: texto }]
 
@@ -451,4 +491,16 @@ async function principal() {
   console.log(`  node ingestao/instalar-traducao.mjs --arquivo ${nome} --obra <id>`)
 }
 
-principal().catch((e) => { console.error('\n' + e.message); process.exit(1) })
+// ── só roda quando CHAMADO, e não quando importado ──
+//
+// Sem esta guarda, `import('./traduzir-obra.mjs')` traduz um livro. Foi o que
+// aconteceu com `normalizar.mjs` em 11/09: importá-lo disparava a ingestão
+// inteira, que travava o banco, e o erro que aparecia lá na frente era
+// "database is locked" — verdadeiro, e a uma hora de distância da causa.
+//
+// Com ela, o divisor de capítulos pode ser importado por um teste sem que nada
+// aconteça — que é o que torna possível conferir uma mudança no `MARCA` contra
+// vinte livros de verdade antes de soltá-la na esteira.
+if (process.argv[1]?.endsWith('traduzir-obra.mjs')) {
+  principal().catch((e) => { console.error('\n' + e.message); process.exit(1) })
+}
