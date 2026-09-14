@@ -55,12 +55,22 @@ const obras = banco.prepare(`
   SELECT o.id, o.titulo, o.titulo_pt, o.subtitulo, o.ano, o.trilho, o.nivel,
          o.paginas, o.minutos_leitura, o.capa, o.capa_externa, o.assuntos, o.olid_work,
          p.id autor_id, p.nome autor, p.nascimento autor_nasc, p.morte autor_morte,
-         t.id texto_id, t.normalizado, t.fonte, t.fonte_url,
+         t.id texto_id, t.normalizado, t.idioma, t.fonte, t.fonte_url,
          d.estado, d.motivo
     FROM obra o
     LEFT JOIN obra_pessoa op ON op.obra_id = o.id AND op.papel = 'autor'
     LEFT JOIN pessoa p ON p.id = op.pessoa_id
-    LEFT JOIN texto t ON t.obra_id = o.id AND t.dono_id IS NULL
+    -- O MESMO texto que a API vai servir, e não um qualquer.
+    --
+    -- Aqui dizia só "t.obra_id = o.id AND t.dono_id IS NULL", com GROUP BY o.id
+    -- por cima. Numa obra com dois textos — a nossa tradução e o original de
+    -- que ela partiu — isso deixa o SQLite escolher qual sobrevive ao GROUP BY.
+    -- A API não deixa: ela tem esta mesma subconsulta, que põe o português na
+    -- frente. Catálogo e servidor escolhendo por critérios diferentes é a
+    -- receita de uma ficha que descreve um texto e um botão que entrega outro.
+    LEFT JOIN texto t ON t.id = (
+      SELECT id FROM texto WHERE obra_id = o.id AND dono_id IS NULL
+       ORDER BY (idioma = 'pt') DESC, normalizado DESC, id LIMIT 1)
     LEFT JOIN direito d ON d.texto_id = t.id AND d.jurisdicao = ?
    WHERE o.publicada = 1
    GROUP BY o.id
@@ -85,14 +95,37 @@ const ondeDe = banco.prepare(
 
 const limpo = (s) => (s ?? '').split('\n')[0].replace(/\s+/g, ' ').trim()
 
+// Aqui em cima, e não junto de `motivoDoImpedimento` lá embaixo, que é quem a
+// usa: `function` é içada, `const` não. Declarada depois do laço, ela existe
+// mas ainda não está inicializada quando a primeira obra impedida passa — e o
+// erro que sai, "Cannot access before initialization", não parece de ordem.
+const NOME_DA_LINGUA = {
+  es: 'espanhol', en: 'inglês', fr: 'francês', de: 'alemão',
+  it: 'italiano', la: 'latim', zh: 'chinês',
+}
+
 const resumo = []
 let comTexto = 0
 let bytes = 0
 
 for (const o of obras) {
-  // Botão de leitura exige as DUAS coisas: temos o texto, e o direito permite
-  // servir aqui. Nunca uma só.
+  // Botão de leitura exige TRÊS coisas: temos o texto, ele está em português,
+  // e o direito permite servir aqui. Nunca duas só.
+  //
+  // ── por que o idioma entrou nesta conta ──
+  //
+  // Em 14/09/2026 havia 19 obras em trilho A cujo texto não era português:
+  // seis volumes das "Memorias del general O'Leary", um "Tratado teórico
+  // práctico de homeopatía", a correspondência do Lamartine em francês. Todas
+  // marcadas `pt` no banco por engano da ingestão, todas com botão de ler, e
+  // todas abrindo em espanhol ou francês na cara de quem clicasse.
+  //
+  // O rótulo já foi corrigido no banco por `conferir-idioma.mjs`. Isto aqui é
+  // o que impede a coisa de voltar: a prateleira portuguesa passa a perguntar
+  // a língua em vez de supor. Elas não somem do acervo — caem para trilho B,
+  // que é a ficha honesta: o livro existe, e não é aqui que se lê em português.
   const podeLer = o.normalizado === 1
+    && o.idioma === 'pt'
     && (o.estado === 'dominio_publico' || o.estado === 'licenca_livre')
   const trilho = podeLer ? 'A' : 'B'
   const temas = temasDe.all(o.id).map(t => t.nome)
@@ -151,6 +184,17 @@ function motivoDoImpedimento(o) {
   if (o.normalizado !== 1) {
     return 'O texto desta obra ainda não foi trazido. Ela está no catálogo, e entra '
       + 'quando a ingestão passar por ela.'
+  }
+  // Este caso é novo, e sem ele a obra cairia no motivo de direito lá embaixo —
+  // que diria "estado de direito não confirmado" sobre um livro do século XIX
+  // em domínio público. Nada a ver: o impedimento é a língua, e o leitor tem
+  // direito de saber qual é, porque para quem lê espanhol isso não é
+  // impedimento nenhum — é só clicar na fonte.
+  if (o.idioma && o.idioma !== 'pt') {
+    const nome = NOME_DA_LINGUA[o.idioma] ?? o.idioma
+    return `O texto que temos desta obra está em ${nome}, e esta é uma biblioteca `
+      + 'em português. Ela fica no catálogo, e entra para leitura no dia em que '
+      + 'houver uma tradução — nossa ou em domínio público. A fonte está abaixo.'
   }
   return o.motivo ?? 'Estado de direito não confirmado para o Brasil.'
 }
