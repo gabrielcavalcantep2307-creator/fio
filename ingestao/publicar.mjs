@@ -230,8 +230,31 @@ const colecoes = banco.prepare(`
 const itensDe = banco.prepare(
   'SELECT obra_id, porque FROM trilha_item WHERE trilha_id = ? ORDER BY ordem')
 const publicadas = new Set(resumo.map(o => o.id))
+const legivel = new Set(resumo.filter(o => o.trilho === 'A').map(o => o.id))
+
+// ── `nossa`, e por que ela some da tela quando falta ──
+//
+// O site separa em duas as coleções: as PRATELEIRAS (Machado, Eça, os contos —
+// coisa que se lê aqui) e a vitrine "O que ainda não podemos servir" (os
+// famosos que têm dono). Quem decide de que lado cada coleção fica é esta
+// bandeira, `nossa`. A versão reconstruída deste arquivo parou de emiti-la, e
+// sem ela o site não sabia quais coleções eram prateleiras — as boas sumiam da
+// home, e sobrava a impressão de "só livro velho".
+//
+// A regra é o conteúdo, não um rótulo à mão: coleção em que a MAIORIA já dá
+// para ler é prateleira; o resto é vitrine do que falta.
+//
+// E a graduação: um livro da vitrine que passou a ser legível — porque nós o
+// traduzimos — SAI da vitrine. Ele não é mais exemplo do que não podemos
+// servir; agora é acervo, e continua achável na busca e na prateleira do tema.
+// Deixá-lo na vitrine é dizer "não temos" embaixo de um botão "ler", que é a
+// confusão que o dono viu: Crime e Castigo e A Revolução dos Bichos listados
+// como indisponíveis, legíveis o tempo todo.
 for (const c of colecoes) {
-  c.obras = itensDe.all(c.id).map(i => i.obra_id).filter(id => publicadas.has(id))
+  const ids = itensDe.all(c.id).map(i => i.obra_id).filter(id => publicadas.has(id))
+  const quantosLegiveis = ids.filter(id => legivel.has(id)).length
+  c.nossa = quantosLegiveis > ids.length / 2
+  c.obras = c.nossa ? ids : ids.filter(id => !legivel.has(id))
   delete c.id
 }
 
