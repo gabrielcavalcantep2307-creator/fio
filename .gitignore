@@ -1,8 +1,8 @@
-﻿node_modules/
+node_modules/
 web/dist/
 .env
 
-# o banco e o CSV de 21 MB sÃ£o derivados: rodar a ingestao os refaz
+# o banco e o CSV de 21 MB são derivados: rodar a ingestao os refaz
 /dados/
 *.db
 *.db-wal
