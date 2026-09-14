@@ -106,3 +106,10 @@ for id in $(ls dados/traducoes/obra*.json | sed 's/[^0-9]//g' | head -5); do
   CODIGO=$(curl -s -o /dev/null -w '%{http_code}' "https://fiolib.duckdns.org/api/livro/$id")
   echo "    obra $id -> HTTP $CODIGO"
 done
+
+# Sai com zero de propósito. Com `set -e`, o código de saída do script é o do
+# ÚLTIMO comando — aqui um laço de `curl` de conferência — e um 404 numa
+# conferência fazia a esteira anunciar "a subida falhou" depois de instalar
+# oito livros com sucesso. Quem diz se deu certo é o relatório acima, não o
+# último curl.
+exit 0
