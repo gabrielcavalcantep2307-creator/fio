@@ -1,0 +1,194 @@
+/* A central. Escuro por padrão, porque é uma tela de plantão: quem abre isto
+   costuma abrir de noite, e um fundo branco às duas da manhã é agressão. */
+
+:root {
+  --fundo: #0f1115;
+  --papel: #171a21;
+  --papel2: #1d212a;
+  --borda: #2a2f3a;
+  --letra: #d8dce4;
+  --fraca: #8b93a3;
+  --tenue: #5c6474;
+  --bem: #4ade80;
+  --atencao: #fbbf24;
+  --grave: #f87171;
+  --info: #60a5fa;
+  --fonte: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono: ui-monospace, "Cascadia Mono", "SF Mono", Consolas, monospace;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-tema="escuro"]) {
+    --fundo: #f6f7f9; --papel: #fff; --papel2: #f0f2f5; --borda: #dfe3ea;
+    --letra: #1b1f27; --fraca: #5b6373; --tenue: #8b93a3;
+    --bem: #16a34a; --atencao: #b45309; --grave: #dc2626; --info: #2563eb;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--fundo);
+  color: var(--letra);
+  font: 14px/1.55 var(--fonte);
+}
+
+/* ── o topo ── */
+
+.topo {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding: 14px 22px;
+  background: var(--papel);
+  border-bottom: 1px solid var(--borda);
+  position: sticky; top: 0; z-index: 10;
+}
+.titulo { display: flex; align-items: baseline; gap: 14px; }
+.topo h1 { margin: 0; font-size: 17px; letter-spacing: .3px; }
+.onde { margin: 0; color: var(--fraca); font: 12px/1.4 var(--mono); }
+.acoes-topo { display: flex; align-items: center; gap: 12px; }
+.idade { color: var(--tenue); font-size: 12px; }
+
+.botao {
+  background: var(--papel2); color: var(--letra);
+  border: 1px solid var(--borda); border-radius: 7px;
+  padding: 7px 13px; font: inherit; font-size: 13px; cursor: pointer;
+}
+.botao:hover { border-color: var(--fraca); }
+.botao.perigo { border-color: var(--grave); color: var(--grave); }
+.botao[disabled] { opacity: .5; cursor: progress; }
+
+.aviso {
+  margin: 0; padding: 10px 22px;
+  background: color-mix(in srgb, var(--atencao) 16%, var(--fundo));
+  border-bottom: 1px solid var(--borda);
+  color: var(--atencao); font-size: 13px;
+}
+
+/* ── as abas ── */
+
+.abas {
+  display: flex; gap: 2px; padding: 0 14px; overflow-x: auto;
+  background: var(--papel); border-bottom: 1px solid var(--borda);
+}
+.abas button {
+  background: none; border: none; border-bottom: 2px solid transparent;
+  color: var(--fraca); font: inherit; font-size: 13px;
+  padding: 9px 13px; cursor: pointer; white-space: nowrap;
+}
+.abas button:hover { color: var(--letra); }
+.abas button[aria-selected="true"] { color: var(--letra); border-bottom-color: var(--info); }
+.abas .conta {
+  display: inline-block; margin-left: 6px; padding: 0 6px;
+  border-radius: 9px; font-size: 11px; background: var(--grave); color: #fff;
+}
+
+main { padding: 20px 22px 60px; max-width: 1180px; }
+.carregando { color: var(--fraca); }
+
+/* ── seções e cartões ── */
+
+section { margin-bottom: 34px; }
+section > h2 { margin: 0 0 4px; font-size: 15px; }
+
+/* A explicação fica SEMPRE visível, e não atrás de um "?" que ninguém clica.
+   O pedido era entender o que se está fazendo; explicação escondida não
+   ensina ninguém, só limpa a tela. */
+section > .explica {
+  margin: 0 0 14px; color: var(--fraca); font-size: 13px; max-width: 76ch;
+}
+
+.grade { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(215px, 1fr)); }
+
+.cartao {
+  background: var(--papel); border: 1px solid var(--borda);
+  border-left: 3px solid var(--borda);
+  border-radius: 9px; padding: 12px 14px;
+}
+.cartao.bem { border-left-color: var(--bem); }
+.cartao.atencao { border-left-color: var(--atencao); }
+.cartao.grave { border-left-color: var(--grave); }
+
+.cartao .rotulo { color: var(--fraca); font-size: 12px; text-transform: uppercase; letter-spacing: .5px; }
+.cartao .valor { font-size: 22px; font-weight: 600; margin: 3px 0 2px; font-variant-numeric: tabular-nums; }
+.cartao .valor.pequeno { font-size: 15px; font-weight: 500; }
+.cartao .nota { color: var(--tenue); font-size: 12px; }
+
+.barra { height: 5px; border-radius: 3px; background: var(--papel2); margin: 7px 0 5px; overflow: hidden; }
+.barra > i { display: block; height: 100%; background: var(--info); }
+.barra.atencao > i { background: var(--atencao); }
+.barra.grave > i { background: var(--grave); }
+
+/* ── tabelas ── */
+
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--borda); }
+th { color: var(--fraca); font-weight: 500; font-size: 12px; text-transform: uppercase; letter-spacing: .4px; }
+td.num { text-align: right; font-variant-numeric: tabular-nums; font-family: var(--mono); }
+tbody tr:hover { background: var(--papel); }
+.rolar { overflow-x: auto; border: 1px solid var(--borda); border-radius: 9px; background: var(--papel); }
+
+.selo { padding: 1px 7px; border-radius: 10px; font-size: 11px; border: 1px solid; }
+.selo.bem { color: var(--bem); border-color: var(--bem); }
+.selo.atencao { color: var(--atencao); border-color: var(--atencao); }
+.selo.grave { color: var(--grave); border-color: var(--grave); }
+.selo.neutro { color: var(--fraca); border-color: var(--borda); }
+
+code, .mono { font-family: var(--mono); font-size: 12px; }
+
+/* ── os alertas ── */
+
+.alerta {
+  display: flex; gap: 12px; align-items: flex-start;
+  background: var(--papel); border: 1px solid var(--borda);
+  border-left: 3px solid var(--borda);
+  border-radius: 9px; padding: 12px 15px; margin-bottom: 9px;
+}
+.alerta.grave { border-left-color: var(--grave); }
+.alerta.atencao { border-left-color: var(--atencao); }
+.alerta.info { border-left-color: var(--info); }
+.alerta .quadro { flex: 1; }
+.alerta h3 { margin: 0 0 3px; font-size: 14px; }
+.alerta p { margin: 0 0 4px; color: var(--fraca); font-size: 13px; max-width: 82ch; }
+.alerta .oquefazer { color: var(--letra); font-size: 13px; }
+.alerta .oquefazer b { color: var(--info); font-weight: 600; }
+
+.tudobem { color: var(--bem); padding: 14px 0; }
+
+/* ── ações ── */
+
+.acao {
+  background: var(--papel); border: 1px solid var(--borda); border-radius: 9px;
+  padding: 13px 15px; margin-bottom: 10px;
+  display: flex; gap: 14px; align-items: flex-start; justify-content: space-between;
+}
+.acao .quadro { flex: 1; }
+.acao h3 { margin: 0 0 3px; font-size: 14px; }
+.acao p { margin: 0; color: var(--fraca); font-size: 13px; max-width: 78ch; }
+.acao .meta { color: var(--tenue); font-size: 12px; margin-top: 4px; }
+
+.saida {
+  margin-top: 10px; padding: 11px 13px; border-radius: 8px;
+  background: var(--fundo); border: 1px solid var(--borda);
+  font: 12px/1.5 var(--mono); white-space: pre-wrap; word-break: break-word;
+  max-height: 380px; overflow: auto;
+}
+
+/* ── a confirmação ── */
+
+.confirmar {
+  border: 1px solid var(--borda); border-radius: 12px;
+  background: var(--papel); color: var(--letra);
+  max-width: 560px; padding: 22px;
+}
+.confirmar::backdrop { background: rgba(0, 0, 0, .6); }
+.confirmar h2 { margin: 0 0 14px; font-size: 16px; }
+.confirmar dl { margin: 0 0 18px; }
+.confirmar dt { color: var(--fraca); font-size: 12px; text-transform: uppercase; letter-spacing: .4px; margin-top: 11px; }
+.confirmar dd { margin: 3px 0 0; font-size: 13px; }
+.conf-botoes { display: flex; gap: 9px; justify-content: flex-end; }
+
+.commit { display: flex; gap: 11px; padding: 6px 0; border-bottom: 1px solid var(--borda); font-size: 13px; }
+.commit .hash { font-family: var(--mono); color: var(--info); }
+.commit .quando { color: var(--tenue); white-space: nowrap; }
+.commit .assunto { flex: 1; }
