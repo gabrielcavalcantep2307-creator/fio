@@ -232,29 +232,34 @@ const itensDe = banco.prepare(
 const publicadas = new Set(resumo.map(o => o.id))
 const legivel = new Set(resumo.filter(o => o.trilho === 'A').map(o => o.id))
 
-// ── `nossa`, e por que ela some da tela quando falta ──
+// ── `nossa`: prateleira de leitura, ou vitrine do que falta ──
 //
-// O site separa em duas as coleções: as PRATELEIRAS (Machado, Eça, os contos —
-// coisa que se lê aqui) e a vitrine "O que ainda não podemos servir" (os
-// famosos que têm dono). Quem decide de que lado cada coleção fica é esta
-// bandeira, `nossa`. A versão reconstruída deste arquivo parou de emiti-la, e
-// sem ela o site não sabia quais coleções eram prateleiras — as boas sumiam da
-// home, e sobrava a impressão de "só livro velho".
+// O site separa as coleções em duas: as PRATELEIRAS (Machado, Eça, ficção
+// científica — coisa que se lê aqui) e a vitrine "O que ainda não podemos
+// servir" (Sapiens, Duna — protegidos, que têm dono). `nossa` é a bandeira que
+// decide o lado. A versão reconstruída deste arquivo parou de emiti-la, e sem
+// ela as prateleiras boas sumiam da home.
 //
-// A regra é o conteúdo, não um rótulo à mão: coleção em que a MAIORIA já dá
-// para ler é prateleira; o resto é vitrine do que falta.
+// A regra: uma coleção com PELO MENOS UM livro legível é prateleira. Basta um,
+// e não a maioria — senão as prateleiras de gênero que estamos traduzindo
+// ficavam presas na vitrine até metade estar pronta, e os primeiros traduzidos
+// não apareciam em lugar nenhum.
 //
-// E a graduação: um livro da vitrine que passou a ser legível — porque nós o
-// traduzimos — SAI da vitrine. Ele não é mais exemplo do que não podemos
-// servir; agora é acervo, e continua achável na busca e na prateleira do tema.
-// Deixá-lo na vitrine é dizer "não temos" embaixo de um botão "ler", que é a
-// confusão que o dono viu: Crime e Castigo e A Revolução dos Bichos listados
-// como indisponíveis, legíveis o tempo todo.
+// E os livros FICAM na coleção, todos — não há mais "graduação" que removia o
+// legível. Removê-lo deixava o livro órfão: o Alice traduzido saía da vitrine
+// de fantasia e não tinha prateleira de leitura para onde ir, porque a
+// prateleira só viraria "nossa" com a maioria pronta. Agora a coleção mostra
+// tudo: o traduzido com "ler", o que falta com "a caminho", lado a lado, e ela
+// enche à vista conforme a esteira anda. O cartão de cada livro já diz o
+// estado dele; a bandeira só decide o TÍTULO da seção.
+//
+// A vitrine sobra para as coleções com ZERO legível — os protegidos, que
+// nunca vamos traduzir. Aí o título "o que ainda não podemos servir" é a
+// verdade inteira, sem nenhum botão de ler embaixo dele.
 for (const c of colecoes) {
   const ids = itensDe.all(c.id).map(i => i.obra_id).filter(id => publicadas.has(id))
-  const quantosLegiveis = ids.filter(id => legivel.has(id)).length
-  c.nossa = quantosLegiveis > ids.length / 2
-  c.obras = c.nossa ? ids : ids.filter(id => !legivel.has(id))
+  c.nossa = ids.some(id => legivel.has(id))
+  c.obras = ids
   delete c.id
 }
 
