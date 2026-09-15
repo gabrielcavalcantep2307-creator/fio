@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Painel — Fio</title>
+<style>
+  :root{
+    --fundo:#f7f5f0; --papel:#fff; --tinta:#1c1a17; --tinta2:#6b655c;
+    --linha:#e6e1d8; --acento:#3a5a40; --alerta:#9a3b2e; --dourado:#8a6d3b;
+    color-scheme:light;
+  }
+  @media (prefers-color-scheme:dark){:root{
+    --fundo:#14140f; --papel:#1c1b16; --tinta:#ece7db; --tinta2:#a49d8e;
+    --linha:#2c2a22; --acento:#7fa06a; --alerta:#e0846f; --dourado:#c9a86a;
+  }}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--fundo);color:var(--tinta);
+    font:15px/1.5 ui-serif,Georgia,"Times New Roman",serif}
+  header{padding:20px 24px;border-bottom:1px solid var(--linha);display:flex;
+    align-items:baseline;gap:14px;flex-wrap:wrap}
+  h1{margin:0;font-size:20px;letter-spacing:.3px}
+  .quem{color:var(--tinta2);font-size:13px}
+  main{max-width:1000px;margin:0 auto;padding:22px 24px 80px}
+  section{margin-bottom:34px}
+  h2{font-size:15px;margin:0 0 12px;color:var(--tinta2);text-transform:uppercase;letter-spacing:.6px;font-family:ui-sans-serif,system-ui,sans-serif}
+  .cartoes{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+  .cartao{background:var(--papel);border:1px solid var(--linha);border-radius:10px;padding:14px 16px}
+  .cartao .n{font-size:26px;font-weight:600;font-variant-numeric:tabular-nums;font-family:ui-sans-serif,system-ui,sans-serif}
+  .cartao .r{color:var(--tinta2);font-size:12px;margin-top:2px}
+  table{width:100%;border-collapse:collapse;font-size:14px;background:var(--papel);
+    border:1px solid var(--linha);border-radius:10px;overflow:hidden}
+  th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--linha)}
+  th{font-family:ui-sans-serif,system-ui,sans-serif;font-size:12px;color:var(--tinta2);text-transform:uppercase;letter-spacing:.4px}
+  tr:last-child td{border-bottom:none}
+  .selo{font-size:11px;padding:1px 8px;border-radius:20px;border:1px solid var(--linha);
+    font-family:ui-sans-serif,system-ui,sans-serif;white-space:nowrap}
+  .selo.espera{color:var(--dourado);border-color:var(--dourado)}
+  .selo.na_esteira{color:var(--acento);border-color:var(--acento)}
+  .selo.pronto{color:var(--acento);border-color:var(--acento);background:color-mix(in srgb,var(--acento) 12%,transparent)}
+  .selo.erro{color:var(--alerta);border-color:var(--alerta)}
+  form.add{background:var(--papel);border:1px solid var(--linha);border-radius:10px;padding:16px}
+  .campos{display:grid;gap:10px;grid-template-columns:2fr 2fr 1fr 1fr;align-items:end}
+  label{display:block;font-size:12px;color:var(--tinta2);margin-bottom:3px;font-family:ui-sans-serif,system-ui,sans-serif}
+  input,textarea{width:100%;padding:8px 10px;border:1px solid var(--linha);border-radius:7px;
+    background:var(--fundo);color:var(--tinta);font:inherit;font-size:14px}
+  textarea{min-height:88px;font-family:ui-monospace,Consolas,monospace;font-size:13px}
+  button{background:var(--acento);color:#fff;border:none;border-radius:7px;padding:9px 16px;
+    font:inherit;font-size:14px;cursor:pointer;font-family:ui-sans-serif,system-ui,sans-serif}
+  button.fraco{background:none;color:var(--tinta2);border:1px solid var(--linha)}
+  button:disabled{opacity:.5;cursor:progress}
+  .aba{display:flex;gap:8px;margin:14px 0}
+  .aba button{background:none;color:var(--tinta2);border:1px solid var(--linha)}
+  .aba button[aria-selected=true]{background:var(--papel);color:var(--tinta);border-color:var(--acento)}
+  .ajuda{color:var(--tinta2);font-size:13px;max-width:70ch}
+  .recado{padding:10px 14px;border-radius:8px;margin:12px 0;font-size:14px}
+  .recado.bom{background:color-mix(in srgb,var(--acento) 14%,transparent);color:var(--acento)}
+  .recado.ruim{background:color-mix(in srgb,var(--alerta) 14%,transparent);color:var(--alerta)}
+  .mono{font-family:ui-monospace,Consolas,monospace;font-size:12px}
+  .vazio{color:var(--tinta2);padding:20px;text-align:center}
+  a{color:var(--acento)}
+  @media(max-width:640px){.campos{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Painel do Fio</h1>
+  <span class="quem" id="quem"></span>
+  <span style="margin-left:auto"><a href="/">← voltar ao site</a></span>
+</header>
+<main id="main">
+  <p class="ajuda" id="carregando">Conferindo o acesso…</p>
+</main>
+<script src="/admin.js"></script>
+</body>
+</html>

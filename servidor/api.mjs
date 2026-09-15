@@ -135,6 +135,27 @@ const exigirEntrada = (req) => {
   return pessoa
 }
 
+// O painel é do dono. Toda rota dele passa por aqui, e a checagem é do PAPEL
+// gravado no banco, lido na hora — não de um cookie que diga "sou admin". Quem
+// não é admin recebe o MESMO 404 de uma rota que não existe: um leitor comum
+// não deve nem descobrir que o painel existe.
+const exigirAdmin = (req) => {
+  const pessoa = exigirEntrada(req)
+  if (pessoa.papel !== 'admin') throw new Recusa('Não existe.', 404)
+  return pessoa
+}
+
+// A fonte que a esteira vai buscar depois. Só Gutenberg, e só o .txt: a esteira
+// baixa este endereço sem ninguém olhar, então aceitar qualquer URL seria
+// deixar o painel apontar a máquina do dono para onde um atacante quisesse.
+function fonteDeGutenberg({ gutenberg, fonte }) {
+  const id = String(gutenberg ?? '').trim()
+  if (/^\d+$/.test(id)) return `https://www.gutenberg.org/ebooks/${id}.txt.utf-8`
+  const url = String(fonte ?? '').trim()
+  if (/^https:\/\/www\.gutenberg\.org\/[\w./-]+$/.test(url) && url.length < 300) return url
+  return null
+}
+
 // ─────────────────────────────────────────────────────────────
 // As rotas
 // ─────────────────────────────────────────────────────────────
@@ -348,6 +369,100 @@ const ROTAS = {
     const pessoa = exigirEntrada(req)
     if (pessoa.papel !== 'admin') throw new Recusa('Não pode.', 403)
     return contas.criarConvite(banco, { criadoPor: pessoa.id, nota: dado.nota })
+  },
+
+  // ── o painel ──
+  //
+  // Um retrato do acervo e da fila, para o dono. Só leitura, e só admin. Não
+  // roda comando nenhum na máquina: o painel MOSTRA e ENFILEIRA, e quem traduz
+  // e publica é a esteira, na máquina do dono. Um painel que só lê e enfileira
+  // é o que se pode deixar atrás de um login sem virar arma.
+  'GET /api/painel': (req) => {
+    exigirAdmin(req)
+    const um = (sql, ...a) => banco.prepare(sql).get(...a)
+    const contarFila = banco.prepare('SELECT estado, COUNT(*) n FROM fila_traducao GROUP BY estado').all()
+    const fila = Object.fromEntries(contarFila.map((l) => [l.estado, l.n]))
+    return {
+      acervo: {
+        obras: um('SELECT COUNT(*) n FROM obra WHERE publicada = 1').n,
+        legiveis: um(`SELECT COUNT(*) n FROM obra o WHERE o.publicada = 1 AND EXISTS (
+            SELECT 1 FROM texto t WHERE t.obra_id = o.id AND t.idioma = 'pt' AND t.normalizado = 1
+              AND EXISTS (SELECT 1 FROM capitulo c WHERE c.texto_id = t.id))`).n,
+        nossas: um("SELECT COUNT(*) n FROM texto WHERE fonte = 'fio_traducao'").n,
+        capitulos: um('SELECT COUNT(*) n FROM capitulo').n,
+        palavras: um('SELECT COALESCE(SUM(palavras),0) n FROM capitulo').n,
+        autores: um('SELECT COUNT(*) n FROM pessoa').n,
+      },
+      leitores: {
+        contas: um('SELECT COUNT(*) n FROM leitor WHERE desativado = 0').n,
+        sessoes: um("SELECT COUNT(*) n FROM sessao WHERE expira_em > datetime('now')").n,
+      },
+      fila: {
+        espera: fila.espera ?? 0, na_esteira: fila.na_esteira ?? 0,
+        pronto: fila.pronto ?? 0, erro: fila.erro ?? 0,
+      },
+      // O que subiu por último: as traduções nossas mais recentes.
+      recentes: banco.prepare(`
+        SELECT o.id, COALESCE(o.titulo_pt, o.titulo) titulo, t.criado_em,
+               (SELECT p.nome FROM obra_pessoa op JOIN pessoa p ON p.id = op.pessoa_id
+                 WHERE op.obra_id = o.id AND op.papel = 'autor' LIMIT 1) autor
+          FROM texto t JOIN obra o ON o.id = t.obra_id
+         WHERE t.fonte = 'fio_traducao'
+         ORDER BY t.criado_em DESC LIMIT 15`).all(),
+    }
+  },
+
+  'GET /api/fila': (req) => {
+    exigirAdmin(req)
+    return {
+      itens: banco.prepare(`
+        SELECT f.id, f.titulo, f.autor, f.morte, f.fonte, f.idioma, f.estado, f.nota,
+               f.obra_id, f.criado_em
+          FROM fila_traducao f ORDER BY
+            CASE f.estado WHEN 'erro' THEN 0 WHEN 'na_esteira' THEN 1 WHEN 'espera' THEN 2 ELSE 3 END,
+            f.criado_em DESC LIMIT 500`).all(),
+    }
+  },
+
+  // Enfileira livros. Formato padrão, um por linha ou em lote:
+  //   { livros: [{ titulo, autor, morte?, gutenberg | fonte, idioma? }] }
+  'POST /api/fila': (req, res, dado) => {
+    const pessoa = exigirAdmin(req)
+    const livros = Array.isArray(dado.livros) ? dado.livros : []
+    if (!livros.length) throw new Recusa('Mande ao menos um livro.')
+    if (livros.length > 200) throw new Recusa('Muitos de uma vez; até 200 por envio.')
+
+    const poe = banco.prepare(`
+      INSERT INTO fila_traducao (titulo, autor, morte, fonte, idioma, pedido_por)
+      VALUES (?,?,?,?,?,?)`)
+    const jaTem = banco.prepare('SELECT 1 FROM fila_traducao WHERE fonte = ? AND estado <> ?')
+    const aceitos = [], recusados = []
+    banco.exec('BEGIN')
+    try {
+      for (const l of livros) {
+        const titulo = String(l.titulo ?? '').trim().slice(0, 300)
+        const autor = String(l.autor ?? '').trim().slice(0, 200)
+        const idioma = String(l.idioma ?? 'en').trim().toLowerCase().slice(0, 5) || 'en'
+        const morte = Number.isInteger(Number(l.morte)) ? Number(l.morte) : null
+        const fonte = fonteDeGutenberg(l)
+        if (!titulo || !autor) { recusados.push({ l, porque: 'título e autor são obrigatórios' }); continue }
+        if (!fonte) { recusados.push({ l, porque: 'fonte precisa ser um id ou URL .txt do Gutenberg' }); continue }
+        if (jaTem.get(fonte, 'pronto')) { recusados.push({ l, porque: 'já está na fila' }); continue }
+        poe.run(titulo, autor, morte, fonte, idioma, pessoa.id)
+        aceitos.push(titulo)
+      }
+      banco.exec('COMMIT')
+    } catch (e) { banco.exec('ROLLBACK'); throw e }
+    return { aceitos: aceitos.length, recusados }
+  },
+
+  'POST /api/fila/remover': (req, res, dado) => {
+    exigirAdmin(req)
+    // Só o que ainda não entrou na esteira. Tirar da fila algo que já está
+    // sendo traduzido não pararia a tradução — só confundiria os dois lados.
+    const r = banco.prepare("DELETE FROM fila_traducao WHERE id = ? AND estado IN ('espera','erro')")
+      .run(Number(dado.id))
+    return { removidos: r.changes }
   },
 }
 

@@ -358,6 +358,34 @@ CREATE TABLE leitor (
 );
 
 -- ═══════════════════════════════════════════════════════════════════
+-- FILA DE TRADUÇÃO — o que o painel de administração enfileira
+--
+-- O painel (só admin) escreve aqui os livros que quer traduzir. A esteira, que
+-- roda na máquina do dono, puxa esta fila por SSH e traduz. É a ponte entre um
+-- painel na web e um processo local: a fila no banco é o recado que fica entre
+-- os dois.
+--
+-- `fonte` é a URL .txt do Project Gutenberg — validada na entrada, porque é o
+-- endereço que a esteira vai buscar depois, e endereço que se busca sem olhar
+-- é a porta por onde entra o que não devia.
+CREATE TABLE IF NOT EXISTS fila_traducao (
+  id         INTEGER PRIMARY KEY,
+  titulo     TEXT NOT NULL,
+  autor      TEXT NOT NULL,
+  morte      INTEGER,
+  fonte      TEXT NOT NULL,
+  idioma     TEXT NOT NULL DEFAULT 'en',
+  estado     TEXT NOT NULL DEFAULT 'espera'
+             CHECK (estado IN ('espera','na_esteira','pronto','erro')),
+  obra_id    INTEGER REFERENCES obra(id),
+  nota       TEXT,
+  pedido_por INTEGER REFERENCES leitor(id),
+  criado_em  TEXT NOT NULL DEFAULT (datetime('now')),
+  mexido_em  TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_fila_estado ON fila_traducao(estado, criado_em);
+
+-- ═══════════════════════════════════════════════════════════════════
 -- SESSÃO — o que prova quem você é
 --
 -- O que vai no cookie é um segredo aleatório. O que fica no banco é o
