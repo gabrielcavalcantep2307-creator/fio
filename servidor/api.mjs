@@ -25,6 +25,7 @@ import { criarBuscaNoTexto } from './busca-no-texto.mjs'
 import { ipDoPedido, freio, dicaDeIp } from './seguranca.mjs'
 import * as meusLivros from './meus-livros.mjs'
 import { conferirUsuario, estaTomado } from './usuario.mjs'
+import * as ajustes from './ajustes.mjs'
 
 const PORTA = Number(process.env.FIO_PORTA || 8787)
 const SITE = process.env.FIO_SITE || `http://localhost:${PORTA}`
@@ -161,7 +162,7 @@ function fonteDeGutenberg({ gutenberg, fonte }) {
 // ─────────────────────────────────────────────────────────────
 
 const ROTAS = {
-  'GET /api/saude': () => ({ ok: true, versao: 1, convite: contas.portaAberta() ? 'opcional' : 'obrigatorio' }),
+  'GET /api/saude': () => ({ ok: true, versao: 1, convite: ajustes.cadastroAberto(banco) ? 'opcional' : 'obrigatorio' }),
 
   'GET /api/eu': (req) => ({ pessoa: exigirEntrada(req) }),
 
@@ -464,6 +465,45 @@ const ROTAS = {
       .run(Number(dado.id))
     return { removidos: r.changes }
   },
+
+  // ── a central de ajustes ──
+  //
+  // As poucas chaves que o dono muda pelo painel. Só leitura e escrita de uma
+  // lista fechada (ver `ajustes.mjs`): o painel não escreve chave livre, senão
+  // escreveria por cima do segredo da casa, que mora na mesma tabela.
+  'GET /api/ajustes': (req) => {
+    exigirAdmin(req)
+    return {
+      cadastro_aberto: ajustes.ler(banco, 'cadastro_aberto') === 'sim',
+      portao_ativo: ajustes.ler(banco, 'portao_ativo') === 'sim',
+      portao_paginas: ajustes.portaoPaginas(banco),
+      portao_paginas_padrao: ajustes.paginasPadrao(banco),
+      // contexto, só leitura: vem do ambiente, não se muda por aqui.
+      esteira_paralelo: Number(process.env.FIO_PARALELO || 8),
+      jurisdicao: process.env.FIO_JURISDICAO || 'BR',
+    }
+  },
+
+  'POST /api/ajustes': (req, res, dado) => {
+    exigirAdmin(req)
+    const mudou = {}
+    if (dado.cadastro_aberto !== undefined) {
+      ajustes.escrever(banco, 'cadastro_aberto', dado.cadastro_aberto ? 'sim' : 'nao')
+      mudou.cadastro_aberto = !!dado.cadastro_aberto
+    }
+    if (dado.portao_ativo !== undefined) {
+      ajustes.escrever(banco, 'portao_ativo', dado.portao_ativo ? 'sim' : 'nao')
+      mudou.portao_ativo = !!dado.portao_ativo
+    }
+    if (dado.portao_paginas !== undefined) {
+      // vazio/0 = voltar ao padrão calculado; guardamos nada e o cálculo assume.
+      const n = Math.round(Number(dado.portao_paginas) || 0)
+      if (n > 0) ajustes.escrever(banco, 'portao_paginas', String(Math.min(100000, n)))
+      else banco.prepare("DELETE FROM ajuste WHERE chave = 'portao_paginas'").run()
+      mudou.portao_paginas = ajustes.portaoPaginas(banco)
+    }
+    return { ok: true, mudou }
+  },
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -538,7 +578,28 @@ const paraLeituraDoDono = banco.prepare(`
  * O direito é conferido AQUI de novo. `obra.trilho` é rótulo de tela; a regra
  * é a tabela `direito`.
  */
-function servirLivro(res, id, leitorId = null) {
+// O muro do portão: quando o anônimo esgota as páginas de graça, o livro sai
+// com UM capítulo no lugar do texto — o convite para criar conta. É um livro
+// de verdade para o leitor (a tela não precisa saber de portão nenhum), e o
+// texto some porque quem não entrou não recebe o texto.
+function muroDeConta(o, g) {
+  const corpo = [
+    `Você já leu por aqui cerca de ${g.lidas} páginas — o tanto que a biblioteca abre sem conta, mais ou menos cinco livros.`,
+    `Para continuar deste ponto, crie uma conta. É de graça, leva um minuto, e passa a guardar o seu progresso, as suas marcações e as suas notas entre todos os seus aparelhos.`,
+    `Toque em “entrar”, no alto da página, e depois em “criar conta”. Se você já tem conta, é só entrar — e o livro abre na mesma hora, onde você parou.`,
+  ].join('\n\n')
+  return {
+    id: o.id,
+    titulo: primeiraLinha(o.titulo_pt || o.titulo),
+    autor: o.autor ?? 'autoria não identificada',
+    autorId: o.autor_id, ano: null, trilho: 'A', minutos: 0, temas: [],
+    capa: o.capa, capaOL: o.capa_externa, textoId: 0, comecaEm: 0,
+    aviso: null, traducao: null, portao: true,
+    capitulos: [{ ordem: 1, titulo: 'Crie uma conta para continuar lendo', corpo, palavras: 0 }],
+  }
+}
+
+function servirLivro(res, id, leitorId = null, dica = null) {
   const casa = process.env.FIO_JURISDICAO || 'BR'
 
   // ── trilho C primeiro ──
@@ -557,6 +618,14 @@ function servirLivro(res, id, leitorId = null) {
   }
   const capitulos = capitulosDo.all(o.texto_id)
   if (!capitulos.length) throw new Recusa('Não temos o texto desta obra.', 404)
+
+  // O portão: quem lê sem conta tem um teto de páginas. O livro que estoura o
+  // teto ainda sai inteiro; o próximo é que vira convite para entrar. Vale só
+  // para o acervo da casa — nunca para o livro que é do próprio leitor (meu).
+  if (!leitorId && !meu) {
+    const g = ajustes.podeLerAnon(banco, dica ?? 'sem-ip', o.id, capitulos)
+    if (!g.pode) { res.setHeader('cache-control', 'no-store'); return responder(res, 200, muroDeConta(o, g)) }
+  }
 
   responder(res, 200, {
     id: o.id,
@@ -723,8 +792,9 @@ const servidor = createServer(async (req, res) => {
       // O texto de domínio público não muda; o navegador pode guardar. O do
       // leitor, não: `public` autorizaria um proxy no caminho a guardar o
       // livro de alguém e servi-lo a outra pessoa.
-      res.setHeader('cache-control', lerCookie(req) ? 'private, no-store' : 'public, max-age=3600')
-      return servirLivro(res, Number(pedindoLivro[1]), contas.deQuemE(banco, lerCookie(req))?.id ?? null)
+      const quemLe = contas.deQuemE(banco, lerCookie(req))?.id ?? null
+      res.setHeader('cache-control', quemLe ? 'private, no-store' : 'public, max-age=3600')
+      return servirLivro(res, Number(pedindoLivro[1]), quemLe, dicaDeIp(ipDe(req)))
     } catch (e) {
       if (e instanceof Recusa) return responder(res, e.status, { erro: e.message })
       console.error('[fio] livro', e)

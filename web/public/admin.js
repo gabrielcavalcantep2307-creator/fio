@@ -34,33 +34,82 @@ const main = document.getElementById('main')
 async function iniciar() {
   let eu
   try { eu = (await pedir('/eu')).pessoa } catch { eu = null }
-  if (!eu) {
-    main.replaceChildren(el('p', { class: 'ajuda' },
-      'Você precisa entrar. ', el('a', { href: '/' }, 'Entrar no site'),
-      ' com a conta de administração, e voltar a esta página.'))
-    return
-  }
+  if (!eu) { telaEntrar(); return }
   if (eu.papel !== 'admin') {
     main.replaceChildren(el('p', { class: 'ajuda' },
-      'Esta conta não tem acesso ao painel. Entre com a conta de administração.'))
+      'Esta conta não tem acesso ao painel. Entre com a conta de administração.',
+      ' ', el('button', { class: 'fraco', onclick: async () => { try { await pedir('/sair', {}) } catch {} ; telaEntrar() } }, 'trocar de conta')))
     return
   }
   document.getElementById('quem').textContent = `entrado como ${eu.usuario}`
   await desenhar()
 }
 
+// O painel entra por si só: uma conta de administração digita aqui e não
+// depende da tela de login do site. O backend aceita nome de usuário OU e-mail
+// no mesmo campo — quem cuida da casa escreve o que lembrar.
+function telaEntrar() {
+  document.getElementById('quem').textContent = ''
+  const ident = el('input', { placeholder: 'curador', autocomplete: 'username' })
+  const senha = el('input', { type: 'password', placeholder: 'sua senha', autocomplete: 'current-password' })
+  const aviso = el('p', { class: 'recado ruim', style: 'display:none' })
+  const form = el('form', { class: 'add', style: 'max-width:360px',
+    onsubmit: async (ev) => {
+      ev.preventDefault()
+      aviso.style.display = 'none'
+      const b = ev.submitter; b.disabled = true
+      try {
+        await pedir('/entrar', { email: ident.value.trim(), senha: senha.value })
+        await iniciar()
+      } catch (e) {
+        b.disabled = false
+        aviso.textContent = e.message
+        aviso.style.display = ''
+      }
+    } },
+    el('div', {}, el('label', {}, 'usuário ou e-mail'), ident),
+    el('div', { style: 'margin-top:10px' }, el('label', {}, 'senha'), senha),
+    aviso,
+    el('div', { style: 'margin-top:12px' }, el('button', {}, 'Entrar no painel')))
+  main.replaceChildren(
+    el('p', { class: 'ajuda' }, 'Painel de administração. Entre com a conta de curadoria.'),
+    form)
+  ident.focus()
+}
+
 async function desenhar() {
   main.replaceChildren(el('p', { class: 'ajuda' }, 'Carregando o panorama…'))
-  let p, fila
-  try { [p, fila] = await Promise.all([pedir('/painel'), pedir('/fila')]) }
+  let p, fila, aj
+  try { [p, fila, aj] = await Promise.all([pedir('/painel'), pedir('/fila'), pedir('/ajustes')]) }
   catch (e) { main.replaceChildren(recado('ruim', `Não deu para carregar: ${e.message}`)); return }
 
   main.replaceChildren(
-    panorama(p),
-    secaoFila(fila.itens),
-    secaoAdicionar(),
-    recentes(p.recentes),
+    abas([
+      ['panorama', 'Panorama', () => [panorama(p), recentes(p.recentes)]],
+      ['esteira', 'Esteira', () => [secaoFila(fila.itens), secaoAdicionar()]],
+      ['ajustes', 'Configurações', () => [secaoAjustes(aj)]],
+    ]),
   )
+}
+
+// A navegação do painel: três frentes, uma de cada vez. Guarda a escolha em
+// memória para redesenhos não voltarem sempre ao começo.
+let abaAtual = 'panorama'
+function abas(defs) {
+  const barra = el('div', { class: 'aba', style: 'margin:0 0 22px' })
+  const alvo = el('div', {})
+  const pintar = () => {
+    const def = defs.find((d) => d[0] === abaAtual) ?? defs[0]
+    for (const b of barra.children) b.setAttribute('aria-selected', String(b._chave === def[0]))
+    alvo.replaceChildren(...def[2]())
+  }
+  for (const [chave, rotulo] of defs) {
+    const b = el('button', { onclick: () => { abaAtual = chave; pintar() } }, rotulo)
+    b._chave = chave
+    barra.append(b)
+  }
+  pintar()
+  return el('div', {}, barra, alvo)
 }
 
 const recado = (tipo, texto) => el('div', { class: `recado ${tipo}` }, texto)
@@ -186,6 +235,65 @@ function enviarLote(ev) {
 async function remover(id) {
   try { await pedir('/fila/remover', { id }); await desenhar() }
   catch (e) { main.prepend(recado('ruim', e.message)) }
+}
+
+// ── a central de configurações, por seções ──
+function grupo(titulo, descricao, ...filhos) {
+  return el('div', { class: 'grupo' },
+    el('h3', {}, titulo),
+    descricao ? el('p', { class: 'ajuda', style: 'margin:2px 0 12px' }, descricao) : '',
+    ...filhos)
+}
+
+function chave(rotulo, ligado, aoMudar) {
+  const inp = el('input', { type: 'checkbox' })
+  inp.checked = ligado
+  inp.addEventListener('change', () => aoMudar(inp.checked))
+  return el('label', { class: 'liga' }, el('span', {}, rotulo), inp)
+}
+
+function secaoAjustes(a) {
+  const estado = {
+    cadastro_aberto: a.cadastro_aberto,
+    portao_ativo: a.portao_ativo,
+    portao_paginas: a.portao_paginas,
+  }
+  const paginasCampo = el('input', { type: 'number', min: '1', value: String(a.portao_paginas), style: 'max-width:120px' })
+
+  const s = el('section', {}, el('h2', {}, 'Configurações'))
+
+  s.append(grupo('Quem entra',
+    'Com o cadastro aberto, qualquer pessoa cria conta sem precisar de convite. Fechado, só entra quem recebe um código.',
+    chave('Cadastro aberto (sem convite)', estado.cadastro_aberto, (v) => { estado.cadastro_aberto = v })))
+
+  s.append(grupo('Portão de leitura',
+    `Depois de um tanto de páginas, quem lê sem conta é convidado a criar uma. O padrão é a média de páginas de um livro do acervo vezes cinco — hoje, ${num(a.portao_paginas_padrao)} páginas. Deixe em branco (0) para usar o padrão.`,
+    chave('Pedir conta depois do limite', estado.portao_ativo, (v) => { estado.portao_ativo = v }),
+    el('label', { class: 'liga', style: 'margin-top:10px' },
+      el('span', {}, 'Páginas de graça'), paginasCampo)))
+
+  s.append(grupo('Esteira e jurisdição',
+    'Só leitura. Mudam pelo ambiente do servidor, não por aqui.',
+    el('div', { class: 'cartoes' },
+      cartao(a.esteira_paralelo, 'traduções em paralelo'),
+      cartao(a.jurisdicao, 'jurisdição de direito'))))
+
+  const botao = el('button', {}, 'Salvar configurações')
+  const salvar = el('form', { class: 'add', onsubmit: async (ev) => {
+    ev.preventDefault()
+    botao.disabled = true
+    try {
+      await pedir('/ajustes', {
+        cadastro_aberto: estado.cadastro_aberto,
+        portao_ativo: estado.portao_ativo,
+        portao_paginas: Number(paginasCampo.value) || 0,
+      })
+      await desenhar()
+      main.prepend(recado('bom', 'Configurações salvas.'))
+    } catch (e) { botao.disabled = false; main.prepend(recado('ruim', e.message)) }
+  } }, el('div', {}, botao))
+  s.append(salvar)
+  return s
 }
 
 function recentes(lista) {

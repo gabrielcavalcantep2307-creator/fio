@@ -14,6 +14,34 @@ import {
 } from './perguntas.mjs'
 import { conferirUsuario, chaveDe, estaTomado } from './usuario.mjs'
 import { avaliarSenha } from './seguranca.mjs'
+import { cadastroAberto } from './ajustes.mjs'
+
+// ── derivar um nome de usuário quando a tela só mandou e-mail ──
+//
+// De onde tirar o nome: o começo do e-mail, senão o nome de tela, senão nada.
+const baseParaUsuario = (email, nome) =>
+  (email ? email.split('@')[0] : '') || String(nome ?? '') || 'leitor'
+
+// Reduzir ao que `conferirUsuario` aceita: ASCII, começa com letra, 3–24, só
+// letra/número/ponto/hífen/sublinhado, sem pontuação repetida ou nas pontas.
+function limparParaUsuario(bruto) {
+  let s = String(bruto).normalize('NFKD').replace(/[̀-ͯ]/g, '')
+    .toLowerCase().replace(/[^a-z0-9._-]/g, '')
+    .replace(/[._-]{2,}/g, '.').replace(/^[._-]+|[._-]+$/g, '')
+  if (!/^[a-z]/.test(s)) s = 'l' + s
+  s = s.slice(0, 24).replace(/[._-]+$/g, '')
+  return s.length >= 3 ? s : 'leitor'
+}
+
+// O primeiro nome livre a partir da base: `gabriel`, `gabriel2`, `gabriel3`…
+function usuarioLivre(banco, base) {
+  if (!conferirUsuario(base) && !estaTomado(banco, base)) return base
+  for (let i = 2; i < 10000; i++) {
+    const cand = (base.slice(0, 20) + i).slice(0, 24)
+    if (!conferirUsuario(cand) && !estaTomado(banco, cand)) return cand
+  }
+  return 'leitor' + String(Date.now()).slice(-7)
+}
 
 const DIAS_DE_SESSAO = 30
 // Sessenta dias, e não catorze. Um convite aqui não é link de confirmação de
@@ -60,16 +88,29 @@ export async function criar(banco, { usuario, nome, email, senha, convite, pergu
   const emLimite = freio(banco, 'criar', dicaDeIp(ctx.ip) ?? 'sem-ip')
   if (!emLimite.passa) throw new Recusa('Muitas tentativas. Tente daqui a pouco.', 429)
 
-  const usuarioLimpo = String(usuario ?? '').trim()
-  const problemaUsuario = conferirUsuario(usuarioLimpo)
-  if (problemaUsuario) throw new Recusa(problemaUsuario)
+  // O campo do site é "e-mail OU usuário": o que a pessoa digita chega em
+  // `email`. Se tem cara de e-mail, é e-mail; senão, é o nome de usuário — não
+  // é erro, é a outra metade do mesmo campo. O e-mail é OPCIONAL desde que a
+  // recuperação virou pergunta: não há link para mandar.
+  let usuarioLimpo = String(usuario ?? '').trim()
+  let limpo = null
+  if (email) {
+    const talvez = conferirEmail(email)
+    if (talvez) limpo = talvez
+    else if (!usuarioLimpo) usuarioLimpo = String(email).trim()
+    else throw new Recusa('Esse e-mail não parece válido.')
+  }
 
-  // O e-mail virou OPCIONAL. Nada aqui depende dele desde que a recuperação
-  // passou a ser por pergunta: não há link para mandar, não há aviso para
-  // enviar. Ele fica para o dia do login com o Google, e para quem quiser
-  // deixar um jeito de ser achado.
-  const limpo = email ? conferirEmail(email) : null
-  if (email && !limpo) throw new Recusa('Esse e-mail não parece válido.')
+  if (usuarioLimpo) {
+    const problemaUsuario = conferirUsuario(usuarioLimpo)
+    if (problemaUsuario) throw new Recusa(problemaUsuario)
+  } else {
+    // A tela antiga só mandava e-mail e nome de tela, nunca um nome de
+    // usuário. Em vez de trancar o cadastro, derivamos um a partir do e-mail
+    // (ou do nome), válido e livre — pedir dois nomes inventados era o atrito
+    // que a tela pulava, e a conta só precisa de UM jeito de entrar.
+    usuarioLimpo = usuarioLivre(banco, limparParaUsuario(baseParaUsuario(limpo, nome)))
+  }
 
   const senhaVale = avaliarSenha(senha, { usuario: usuarioLimpo, email: limpo ?? '' })
   if (senhaVale.erro) throw new Recusa(senhaVale.erro)
@@ -93,7 +134,7 @@ export async function criar(banco, { usuario, nome, email, senha, convite, pergu
         WHERE codigo_hash = ? AND usado_em IS NULL AND expira_em > datetime('now')`,
     ).get(resumo(codigo))
     if (!conv) throw new Recusa('Convite inválido, já usado ou vencido.')
-  } else if (!portaAberta()) {
+  } else if (!cadastroAberto(banco)) {
     throw new Recusa('Convite inválido, já usado ou vencido.')
   }
 
