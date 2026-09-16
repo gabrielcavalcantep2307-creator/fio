@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quadrinhos e mangá — Fio</title>
+<link rel="icon" type="image/svg+xml" href="/fio.svg">
+<style>
+  @font-face{font-family:Literata;src:url(/fontes/literata-latin.woff2) format('woff2');font-display:swap}
+  @font-face{font-family:Inter;src:url(/fontes/inter-latin.woff2) format('woff2');font-display:swap}
+  :root{--papel:#f8f5ee;--papel2:#efe9dd;--tinta:#1f1b16;--tinta2:#6d655a;--linha:#e1d9ca;--acento:#7a2e2e;color-scheme:light}
+  @media (prefers-color-scheme:dark){:root{--papel:#15130f;--papel2:#1e1b16;--tinta:#ece5d6;--tinta2:#a39a8a;--linha:#2d2922;--acento:#c46a5c}}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--papel);color:var(--tinta);font:15px/1.55 Inter,system-ui,sans-serif}
+  a{color:inherit}
+  header{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--papel) 90%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--linha)}
+  .barra{max-width:1120px;margin:0 auto;padding:0 16px;height:56px;display:flex;align-items:center;gap:16px}
+  .marca{font-family:Literata,Georgia,serif;font-size:20px;text-decoration:none}
+  .barra .onde{color:var(--tinta2);font-size:13px}
+  .barra .volta{margin-left:auto;font-size:13px;color:var(--tinta2);text-decoration:none}
+  main{max-width:1120px;margin:0 auto;padding:30px 16px 90px}
+  h1{font-family:Literata,Georgia,serif;font-weight:500;font-size:clamp(28px,4.5vw,42px);margin:0 0 8px;line-height:1.1}
+  .sub{color:var(--tinta2);margin:0 0 22px;max-width:66ch}
+  .filtros{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 30px}
+  .filtro{border:1px solid var(--linha);background:transparent;color:var(--tinta);font:inherit;font-size:13.5px;padding:6px 14px;border-radius:999px;cursor:pointer}
+  .filtro[aria-pressed=true]{background:var(--acento);border-color:var(--acento);color:#fff}
+  .series{display:grid;gap:26px;grid-template-columns:repeat(auto-fill,minmax(min(100%,470px),1fr))}
+  .serie{display:grid;grid-template-columns:150px 1fr;gap:18px;background:var(--papel2);border:1px solid var(--linha);border-radius:14px;padding:16px;text-decoration:none}
+  .serie img,.cap img{width:100%;border-radius:4px;display:block;object-fit:cover;background:var(--linha);box-shadow:0 10px 24px -14px rgba(0,0,0,.6)}
+  .serie img{aspect-ratio:3/4}
+  .serie h2{font-family:Literata,Georgia,serif;font-weight:500;font-size:22px;margin:2px 0 2px}
+  .aut{color:var(--tinta2);font-size:13px}
+  .selos{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+  .selo{font-size:11.5px;border:1px solid var(--linha);border-radius:999px;padding:1px 9px;color:var(--tinta2)}
+  .resumo{font-size:14px;line-height:1.5;margin:0;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+  .continuar{display:inline-block;margin-top:12px;font-size:13px;color:var(--acento)}
+  .topo{display:grid;grid-template-columns:220px 1fr;gap:28px;margin-bottom:34px}
+  .topo img{width:100%;border-radius:6px;box-shadow:0 20px 40px -20px rgba(0,0,0,.7)}
+  .botao{display:inline-block;background:var(--acento);color:#fff;border:none;border-radius:8px;padding:11px 22px;font:inherit;text-decoration:none;cursor:pointer}
+  .credito{font-size:12.5px;color:var(--tinta2);margin-top:14px;max-width:70ch}
+  .caps{display:grid;gap:22px 14px;grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+  .cap{text-decoration:none;display:block;position:relative}
+  .cap img{aspect-ratio:3/4}
+  .cap .t{font-size:13.5px;line-height:1.3;margin-top:8px}
+  .cap .n{font-size:11.5px;color:var(--tinta2)}
+  .cap .estado{position:absolute;top:8px;left:8px;background:rgba(0,0,0,.72);color:#fff;font-size:11px;border-radius:999px;padding:1px 8px}
+  .cap .barrinha{height:3px;background:var(--linha);border-radius:2px;margin-top:6px;overflow:hidden}
+  .cap .barrinha i{display:block;height:100%;background:var(--acento)}
+  .aviso{background:var(--papel2);border:1px solid var(--linha);border-radius:12px;padding:16px 20px;margin-top:46px;font-size:13.5px;color:var(--tinta2)}
+  @media (max-width:560px){
+    .serie{grid-template-columns:104px 1fr;gap:12px;padding:12px}
+    .serie h2{font-size:18px}
+    .topo{grid-template-columns:1fr}
+    .topo img{max-width:220px}
+    .caps{grid-template-columns:repeat(auto-fill,minmax(120px,1fr))}
+  }
+</style>
+</head>
+<body>
+<header><div class="barra"><a class="marca" href="/#/">Fio</a><span class="onde">quadrinhos e mangá</span><a class="volta" href="/#/">← voltar aos livros</a></div></header>
+<main id="main"><p class="sub">abrindo…</p></main>
+<script src="/quadrinhos.js"></script>
+</body>
+</html>
