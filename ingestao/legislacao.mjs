@@ -122,6 +122,132 @@ const LEIS = [
     observar: 'O art. 18 lista o que você pode exigir de quem tem seus dados. Leia como uma lista de botões que todo site deveria ter.',
     temas: ['Direito', 'Tecnologia e IA'],
   },
+  {
+    url: 'https://www.planalto.gov.br/ccivil_03/leis/l8069compilado.htm',
+    titulo: 'Estatuto da Criança e do Adolescente',
+    ano: 1990,
+    chamada: 'A criança deixou de ser objeto de tutela e virou sujeito de direito — num texto só.',
+    porque: 'O ECA rompeu com o Código de Menores de 1979, que tratava a criança pobre como caso de polícia. A palavra que muda tudo é "sujeito": a criança passa a ter direitos que o Estado deve garantir, e não favores que ele pode conceder. É a lei que criou o conselho tutelar e a medida socioeducativa.',
+    observar: 'Compare como o texto trata a criança "em situação de risco" e o adolescente "em conflito com a lei". A diferença de tom entre as duas partes é o debate brasileiro sobre menoridade inteiro.',
+    temas: ['Direito', 'Política e sociedade'],
+  },
+  {
+    url: 'https://www.planalto.gov.br/ccivil_03/leis/l5172compilado.htm',
+    titulo: 'Código Tributário Nacional',
+    ano: 1966,
+    chamada: 'Quando o Estado pode tirar dinheiro de você, e até onde.',
+    porque: 'De 1966, é anterior à Constituição atual e mesmo assim continua de pé, recebido como lei complementar. Define o que é tributo, quando ele nasce e quando prescreve — a gramática de toda cobrança que o governo faz.',
+    observar: 'Procure a definição de "tributo" no art. 3º. Cada palavra dela foi escolhida para excluir alguma coisa; saber o que ela exclui é meio Direito Tributário.',
+    temas: ['Direito'],
+  },
+  {
+    url: 'https://www.planalto.gov.br/ccivil_03/leis/l9503compilado.htm',
+    titulo: 'Código de Trânsito Brasileiro',
+    ano: 1997,
+    chamada: 'As regras de dividir a rua — e de quem responde quando elas falham.',
+    porque: 'Trocou o Código Nacional de Trânsito de 1966 e trouxe a ideia de que a via é um espaço compartilhado, com o pedestre no topo da prioridade. É a lei que mais gente encosta na vida sem nunca ter lido.',
+    observar: 'Repare em quem o código coloca como responsável pela segurança: não é só o motorista, é também o órgão que cuida da via. Essa divisão de culpa aparece em todo acidente.',
+    temas: ['Direito'],
+  },
+  {
+    url: 'https://www.planalto.gov.br/ccivil_03/leis/l7210compilado.htm',
+    titulo: 'Lei de Execução Penal',
+    ano: 1984,
+    chamada: 'O que acontece depois da condenação — e o que a pena não pode virar.',
+    porque: 'De 1984, ainda sob a ditadura, e mesmo assim uma das leis penais mais avançadas do mundo no papel. Define a pena como caminho de volta, com progressão de regime e direitos do preso. A distância entre o que ela promete e o que o sistema prisional cumpre é o assunto dela.',
+    observar: 'Leia o art. 1º: a execução deve "proporcionar condições para a harmônica integração social". Guarde a frase e compare com qualquer notícia sobre presídio.',
+    temas: ['Direito', 'Investigação e crime'],
+  },
+  {
+    url: 'https://www.planalto.gov.br/ccivil_03/leis/2003/l10.741compilado.htm',
+    titulo: 'Estatuto do Idoso',
+    ano: 2003,
+    chamada: 'Uma idade vira um conjunto de direitos exigíveis.',
+    porque: 'Reuniu num texto só a proteção de quem tem sessenta anos ou mais, de prioridade em fila a crime de abandono. Nasceu da constatação de que a velhice, num país que envelhece rápido, estava desprotegida por leis espalhadas.',
+    observar: 'Note quantos artigos tratam da família, e não do Estado. A lei aposta que o primeiro responsável pelo idoso é quem mora perto — e diz o que acontece quando esse alguém falha.',
+    temas: ['Direito', 'Política e sociedade'],
+  },
+  {
+    url: 'https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2015/lei/l13146.htm',
+    titulo: 'Lei Brasileira de Inclusão da Pessoa com Deficiência',
+    ano: 2015,
+    chamada: 'A deficiência sai do corpo e passa a ser da barreira que o cerca.',
+    porque: 'Também chamada Estatuto da Pessoa com Deficiência, traduziu para o Brasil a Convenção da ONU sobre o tema. A virada é conceitual: a pessoa não é "incapaz", o ambiente é que é inacessível — e a lei manda mudar o ambiente.',
+    observar: 'Procure o conceito de "acessibilidade" e o de "desenho universal". Eles transformam obrigação de tratamento especial em obrigação de projetar para todos desde o começo.',
+    temas: ['Direito', 'Política e sociedade'],
+  },
+  {
+    url: 'https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2014/lei/l12965.htm',
+    titulo: 'Marco Civil da Internet',
+    ano: 2014,
+    chamada: 'A constituição da internet brasileira: o que a rede garante e o que ela não pode fazer.',
+    porque: 'Feito depois de uma consulta pública aberta, fixou neutralidade de rede, proteção à privacidade e a regra de que um site só responde por conteúdo de terceiro depois de ordem judicial. É a base sobre a qual toda discussão de internet no Brasil acontece.',
+    observar: 'O art. 19 é o mais disputado do país hoje: ele decide quando uma plataforma responde pelo que o usuário publica. Leia-o sabendo que o Supremo o revisita.',
+    temas: ['Direito', 'Tecnologia e IA'],
+  },
+  {
+    url: 'https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm',
+    titulo: 'Lei de Acesso à Informação',
+    ano: 2011,
+    chamada: 'O padrão virou o avesso: o dado público é aberto, e o sigilo é que precisa de justificativa.',
+    porque: 'Inverteu a lógica do Estado brasileiro: antes, tudo era fechado até alguém liberar; agora, tudo é aberto até alguém provar que precisa ser sigiloso. É a ferramenta de qualquer pessoa que queira saber o que o governo faz com o dinheiro dela.',
+    observar: 'Veja os prazos de resposta que ela impõe ao poder público. O direito só é real por causa do prazo — sem ele, "vou verificar" seria resposta suficiente.',
+    temas: ['Direito', 'Política e sociedade'],
+  },
+  {
+    url: 'https://www.planalto.gov.br/ccivil_03/_ato2004-2006/2006/lei/l11343.htm',
+    titulo: 'Lei de Drogas',
+    ano: 2006,
+    chamada: 'A mesma substância, dois caminhos: tratamento para quem usa, prisão para quem vende — e a linha tênue entre os dois.',
+    porque: 'Separou o usuário do traficante e tirou a prisão do horizonte de quem só porta para consumo. Mas deixou ao juiz decidir de que lado a pessoa está sem fixar quantidade — e é nessa lacuna que mora a maior crítica à lei.',
+    observar: 'Leia o art. 28 (uso) ao lado do art. 33 (tráfico) e procure o critério que separa um do outro. A ausência de um número exato ali é a discussão inteira.',
+    temas: ['Direito', 'Investigação e crime'],
+  },
+  {
+    url: 'https://www.planalto.gov.br/ccivil_03/leis/l8429compilada.htm',
+    titulo: 'Lei de Improbidade Administrativa',
+    ano: 1992,
+    chamada: 'O que acontece com o agente público que trai a coisa pública sem necessariamente cometer crime.',
+    porque: 'Criou uma responsabilidade própria, entre o crime e a mera falta: enriquecer às custas do cargo, causar prejuízo ao erário ou ferir os princípios da administração. A reforma de 2021 apertou as exigências e é o texto compilado que está aqui.',
+    observar: 'Repare que a lei pune também quem age por vaidade ou desídia, não só por ganância. A categoria "atenta contra os princípios" é a mais aberta — e a mais debatida.',
+    temas: ['Direito', 'Política e sociedade'],
+  },
+  {
+    url: 'https://www.planalto.gov.br/ccivil_03/_ato2019-2022/2021/lei/l14133.htm',
+    titulo: 'Lei de Licitações e Contratos Administrativos',
+    ano: 2021,
+    chamada: 'Como o Estado compra — e por que comprar mal é tão difícil de evitar.',
+    porque: 'Substituiu a Lei 8.666/93 depois de quase trinta anos. Tenta casar duas coisas que puxam para lados opostos: dar velocidade à compra pública e blindá-la contra fraude. Cada artigo é uma aposta sobre onde está o maior risco.',
+    observar: 'Procure as modalidades de licitação e o "diálogo competitivo", que é novo. Ele deixa o Estado conversar com o mercado antes de comprar — algo que a lei antiga tratava como suspeito.',
+    temas: ['Direito'],
+  },
+  {
+    url: 'https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2010/lei/l12288.htm',
+    titulo: 'Estatuto da Igualdade Racial',
+    ano: 2010,
+    chamada: 'O Estado reconhece, por escrito, uma dívida — e lista como pretende pagá-la.',
+    porque: 'Reuniu políticas de promoção da igualdade racial num texto de lei, do direito à saúde da população negra à proteção das religiões de matriz africana. É documento e é declaração: nomeia o racismo como problema estrutural, e não como incidente.',
+    observar: 'Veja como a lei trata a cultura e a terra de quilombo. Boa parte do estatuto é sobre reconhecer o que já existe, e não sobre criar algo novo.',
+    temas: ['Direito', 'Política e sociedade'],
+  },
+  {
+    url: 'https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2012/lei/l12651compilado.htm',
+    titulo: 'Código Florestal',
+    ano: 2012,
+    chamada: 'A regra de quanto da sua terra não é sua para desmatar.',
+    porque: 'Substituiu o código de 1965 numa das votações mais disputadas do Congresso, entre ruralistas e ambientalistas. Define a reserva legal e a área de preservação permanente — quanto de mata cada propriedade precisa manter, e por quê.',
+    observar: 'Procure "área de preservação permanente" e note que ela protege margem de rio, topo de morro e nascente. A lógica não é estética: é que mexer ali derruba o resto.',
+    temas: ['Direito', 'Ciência natural'],
+  },
+  {
+    url: 'https://www.planalto.gov.br/ccivil_03/decreto-lei/del4657compilado.htm',
+    titulo: 'Lei de Introdução às Normas do Direito Brasileiro',
+    ano: 1942,
+    chamada: 'A lei sobre as leis: como uma norma nasce, quando começa a valer e o que fazer quando ela se cala.',
+    porque: 'A LINDB não trata de um assunto, trata de todos: diz o que o juiz faz quando a lei é omissa, desde quando a norma obriga, e como o Brasil aplica lei estrangeira. Uma reforma de 2018 acrescentou artigos sobre a responsabilidade de quem decide na administração pública.',
+    observar: 'O art. 4º manda o juiz decidir por analogia, costume e princípios quando a lei falta. É a prova, dentro da própria lei, de que ela não prevê tudo.',
+    temas: ['Direito'],
+  },
 ]
 
 // ─────────────────────────────────────────────────────────────
@@ -248,6 +374,13 @@ const sql = {
      VALUES (?,'pt','planalto',?,?,'html',1,?)`),
   achaTexto: banco.prepare("SELECT id FROM texto WHERE fonte = 'planalto' AND fonte_id = ?"),
   limpaCap: banco.prepare('DELETE FROM capitulo WHERE texto_id = ?'),
+  // Reprocessar uma lei já existente não pode deixar rastro dobrado: sem estas
+  // três limpezas, rodar de novo duplicava o índice de busca e os cartões da
+  // ficha. Assim `legislacao.mjs` é idempotente sem precisar de um reindex.
+  limpaBuscaCap: banco.prepare('DELETE FROM busca_capitulo WHERE texto_id = ?'),
+  limpaBuscaObra: banco.prepare('DELETE FROM busca_obra WHERE conteudo_obra_id = ?'),
+  limpaFrag: banco.prepare(
+    "DELETE FROM fragmento WHERE obra_id = ? AND tipo IN ('chamada','porque_existe','como_ler')"),
   poeCap: banco.prepare(
     'INSERT INTO capitulo (texto_id, ordem, titulo, corpo, palavras) VALUES (?,?,?,?,?)'),
   poeDireito: banco.prepare(
@@ -270,11 +403,19 @@ const MOTIVO = 'Lei 9.610/98, art. 8º, IV: textos de leis, decretos, regulament
   + 'decisões judiciais e demais atos oficiais NÃO são objeto de proteção como direitos autorais. '
   + 'Livre por definição, em qualquer lugar e para sempre.'
 
+// `FIO_SO_LEI=trecho` processa só as leis cujo título contém o trecho — para
+// reprocessar uma que falhou sem re-baixar o acervo inteiro.
+const FILTRO = process.env.FIO_SO_LEI
+const AFAZER = FILTRO ? LEIS.filter(l => l.titulo.includes(FILTRO)) : LEIS
+
 let feitas = 0, erros = 0
-for (const [k, lei] of LEIS.entries()) {
-  process.stdout.write(`[${k + 1}/${LEIS.length}] ${lei.titulo.padEnd(48)}`)
+for (const [k, lei] of AFAZER.entries()) {
+  process.stdout.write(`[${k + 1}/${AFAZER.length}] ${lei.titulo.padEnd(48)}`)
   try {
-    const r = await fetch(lei.url, { headers: CABECALHOS })
+    // Com teto de tempo: o Planalto às vezes aceita a conexão e não responde,
+    // e um `fetch` sem `signal` fica pendurado para sempre — uma lei travava a
+    // fila inteira, sem erro, sem log. 90s é folgado até para um código grande.
+    const r = await fetch(lei.url, { headers: CABECALHOS, signal: AbortSignal.timeout(90000) })
     if (!r.ok) throw new Error(`HTTP ${r.status}`)
 
     const html = decodificar(Buffer.from(await r.arrayBuffer()))
@@ -301,6 +442,7 @@ for (const [k, lei] of LEIS.entries()) {
     banco.prepare('UPDATE texto SET palavras = ?, normalizado = 1 WHERE id = ?').run(total, textoId)
 
     sql.limpaCap.run(textoId)
+    sql.limpaBuscaCap.run(textoId)
     artigos.forEach((a, i) => {
       const id = Number(sql.poeCap.run(textoId, i + 1, a.titulo, a.corpo, a.palavras).lastInsertRowid)
       sql.indexa.run(texto(a.corpo), id, textoId)
@@ -308,6 +450,8 @@ for (const [k, lei] of LEIS.entries()) {
 
     for (const j of ['BR', 'US', '*']) sql.poeDireito.run(textoId, j, 'dominio_publico', MOTIVO)
 
+    sql.limpaFrag.run(obraId)
+    sql.limpaBuscaObra.run(obraId)
     sql.poeFrag.run(obraId, 'chamada', null, lei.chamada, 'fato')
     sql.poeFrag.run(obraId, 'porque_existe', 'Por que este texto existe', lei.porque, 'fato')
     sql.poeFrag.run(obraId, 'como_ler', 'O que observar', lei.observar, 'interpretacao')
