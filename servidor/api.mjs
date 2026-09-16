@@ -27,6 +27,7 @@ import * as meusLivros from './meus-livros.mjs'
 import { conferirUsuario, estaTomado } from './usuario.mjs'
 import * as ajustes from './ajustes.mjs'
 import * as gosto from './gosto.mjs'
+import * as mangas from './mangas.mjs'
 
 const PORTA = Number(process.env.FIO_PORTA || 8787)
 const SITE = process.env.FIO_SITE || `http://localhost:${PORTA}`
@@ -868,6 +869,31 @@ const servidor = createServer(async (req, res) => {
     } catch (e) {
       console.error('[fio] avaliacoes', e)
       return responder(res, 500, { erro: 'não consegui ler as avaliações' })
+    }
+  }
+
+  // ── mangá, manhwa e manhua modernos: o catálogo de descoberta (servidor/mangas.mjs) ──
+  //
+  // Público, com freio por faixa de IP. A lista e a ficha consultam o AniList
+  // com cache; a capa passa por aqui para o navegador não falar com terceiros.
+  const pedindoMangas = caminho === '/api/mangas' || caminho.match(/^\/api\/mangas\/(\d{1,9})$/)
+  const pedindoCapaManga = caminho.match(/^\/api\/capa-manga\/(medium|large)\/([\w.-]+\.(?:jpe?g|png|webp))$/i)
+  if (pedindoMangas || pedindoCapaManga) {
+    try {
+      if (req.method !== 'GET') throw new Recusa('Só GET.', 405)
+      if (pedindoCapaManga) return await mangas.servirCapa(res, pedindoCapaManga[1], pedindoCapaManga[2])
+      if (!freio(banco, 'mangas', dicaDeIp(ipDe(req)) ?? 'sem-ip').passa) {
+        throw new Recusa('Muitas buscas seguidas. Espere um instante.', 429)
+      }
+      const valor = pedindoMangas === true
+        ? await mangas.listar(new URL(req.url, 'http://x').searchParams)
+        : await mangas.detalhe(Number(pedindoMangas[1]))
+      res.setHeader('cache-control', 'public, max-age=600')
+      return responder(res, 200, valor)
+    } catch (e) {
+      if (e instanceof Recusa || e instanceof mangas.ErroManga) return responder(res, e.status, { erro: e.message })
+      console.error('[fio] mangas', e)
+      return responder(res, 500, { erro: 'O catálogo de mangás não respondeu.' })
     }
   }
 

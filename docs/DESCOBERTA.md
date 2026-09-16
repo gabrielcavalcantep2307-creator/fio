@@ -46,6 +46,7 @@ Huxley, Hesse, Borges, Clarice, Guimarães Rosa, Kelsen, Hart, Dworkin têm dono
 | — | Tirar "O que ainda não podemos servir" | **feito** |
 | — | Link do painel no site, só para admin | **feito** |
 | — | Central de notificações e perfil de gosto | **feito (16/09)** — avisos "já dá para ler", "continue", semana e boas-vindas |
+| — | Catálogo grande de mangá, manhwa e manhua modernos, com filtros | **feito (16/09)** — aba Descobrir (AniList na hora), filtros de tipo, cor, gênero, status, ordem e "oficial em português"; ficha com onde ler oficialmente. Hospedar/ler dentro do Fio continua só o livre |
 | — | Mangá e quadrinhos, colorido e P&B, com leitura própria | **feito (16/09)** — 34 séries legais (Pepper&Carrot, Hokusai, yōkai, Bordalo, Edo); leitor com rolagem, página, dupla e sentido mangá. Manhwa: nenhuma fonte legal encontrada |
 
 ## Livros na esteira para as seções

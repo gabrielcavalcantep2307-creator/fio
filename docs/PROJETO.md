@@ -19,7 +19,8 @@ nos outros arquivos de `docs/` (índice no fim).
 | Leis oficiais completas | **25** (Constituição, códigos, estatutos) |
 | Obras com capa | **1.921** — 1.405 locais (711 desenhadas por tema, 25 de lei), 516 da Open Library |
 | Seções de descoberta na home | **17** curadas + 4 mantidas + "A lei, na íntegra" |
-| Quadrinhos e mangá | **34 séries, 157 volumes, 4.710 páginas** (download em andamento na VPS) |
+| Quadrinhos e mangá para ler aqui | **34 séries, 157 volumes, 4.672 páginas** |
+| Mangá, manhwa e manhua para descobrir | **milhares** (AniList, consultado na hora), com onde ler oficialmente |
 | Contas | 2 (ambas admin) · cadastro **aberto** · portão de leitura **ligado** |
 
 ## 2. A regra que vem antes de tudo
@@ -116,7 +117,9 @@ tem o direito conferido na hora:
 | **Bordalo Pinheiro** (4 vol., português, caricatura) | domínio público (autor morreu em 1905) |
 | **+30 álbuns do Japão de Edo** (Hiroshige, Utamaro, Kōrin, Morikuni…) | domínio público, Smithsonian |
 
-Ficaram de fora: **mangá e manhwa comerciais** (têm dono duas vezes, o autor e a
+**Mangá, manhwa e manhua modernos — o catálogo de descoberta** (`servidor/mangas.mjs`, aba *Descobrir* e prateleira "Mangá e manhwa em alta" na home). Não hospedamos essas obras: o Fio consulta o **AniList na hora**, com cache de 30 min e teto de 25 chamadas por minuto (os termos da API proíbem coletar e guardar o catálogo). Filtros: tipo (mangá, manhwa, manhua), cor (tag *Full Color*), gênero, status, ordem e "só com versão oficial em português". A ficha lista **onde ler oficialmente**, com as plataformas em português primeiro (MANGA Plus, Comikey…), e os títulos parecidos. As capas passam pelo nosso proxy (`/api/capa-manga/...`), que só aceita o CDN de capas do AniList. Ecchi e adulto ficam fora, e há freio de 90 buscas por minuto por faixa de IP.
+
+Ficaram de fora da leitura dentro do Fio: **mangá e manhwa comerciais** (têm dono duas vezes, o autor e a
 editora da tradução) e o "manhwa traduzido PT-BR" do Internet Archive, que é scan
 pirata.
 

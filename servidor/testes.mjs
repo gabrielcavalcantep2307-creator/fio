@@ -1283,3 +1283,44 @@ test('aviso de "já dá para ler" vai só para quem tinha o livro na lista, e um
   assert.equal(deAna.length, 1, 'duplicou ou não avisou')
   assert.equal(deBeto.length, 0, 'aviso de uma conta foi parar em outra')
 })
+
+// ─────────────────────────────────────────────────────────────
+// Catálogo de mangás (16/09/2026): o que o leitor manda nunca entra cru na
+// consulta ao AniList, e o proxy de capa não vira porta para buscar qualquer
+// endereço. Sem rede: só as funções puras.
+// ─────────────────────────────────────────────────────────────
+
+import * as mangas from './mangas.mjs'
+
+test('mangás: filtro hostil vira padrão seguro, e texto de busca é saneado', () => {
+  const f = mangas.filtros(new URLSearchParams('tipo=DROP&genero=Hentai&ordem=x&status=y&cor=z&pagina=-5&q=<img src=x onerror=1>'))
+  assert.deepEqual(f.variaveis.country, null)
+  assert.equal(f.variaveis.genre, null, 'gênero fora da lista entrou')
+  assert.deepEqual(f.variaveis.sort, ['SEARCH_MATCH', 'POPULARITY_DESC'])
+  assert.equal(f.pagina, 1)
+  assert.ok(!/[<>=]/.test(f.variaveis.search), 'busca manteve caractere de marcação')
+})
+
+test('mangás: o proxy de capa só aceita o caminho de capa do CDN do AniList', () => {
+  assert.equal(mangas.capaLocal('https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/bx1-abc.jpg'), '/api/capa-manga/large/bx1-abc.jpg')
+  for (const ruim of ['https://evil.example/x.jpg', 'http://s4.anilist.co/file/anilistcdn/media/manga/cover/large/a.jpg',
+    'https://s4.anilist.co/file/anilistcdn/media/manga/cover/large/../../etc.jpg', 'https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/a.jpg']) {
+    assert.equal(mangas.capaLocal(ruim), null, ruim)
+  }
+})
+
+test('mangás: tipo, cor, sentido e "oficial em português" saem certos da ficha', () => {
+  const m = mangas.mapear({
+    id: 1, title: { english: 'Dandadan' }, format: 'MANGA', countryOfOrigin: 'JP', status: 'RELEASING',
+    genres: ['Action', 'Hentai'], tags: [{ name: 'Full Color', rank: 90 }],
+    externalLinks: [
+      { site: 'Twitter', url: 'https://x.com/a', language: 'Japanese' },
+      { site: 'MANGA Plus', url: 'https://mangaplus.shueisha.co.jp/titles/1', language: 'Portuguese' },
+      { site: 'Falso', url: 'javascript:alert(1)', language: 'Portuguese' },
+    ],
+  })
+  assert.equal(m.tipo, 'mangá'); assert.equal(m.sentido, 'rtl'); assert.equal(m.colorido, true)
+  assert.deepEqual(m.generos, ['Ação'], 'gênero adulto ou sem tradução apareceu')
+  assert.equal(m.emPortugues, true)
+  assert.deepEqual(m.ondeLer.map((l) => l.site), ['MANGA Plus'], 'rede social ou link não-https entrou')
+})

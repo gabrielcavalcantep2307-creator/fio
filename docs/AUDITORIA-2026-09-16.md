@@ -46,3 +46,12 @@ do código novo e dos scripts de deploy, e verificação das telas no navegador.
 - **Progresso de quadrinhos só no navegador:** não sincroniza entre aparelhos.
 - **Cache de `/api/livro` para anônimo:** o cabeçalho `public, max-age` é sobrescrito por `no-store` em `responder()`. É desempenho, não segurança.
 - **Cadastro aberto:** decisão do dono (15/09), exigida pelo portão de leitura. Um clique no painel fecha.
+
+## Adendo — catálogo de mangás (16/09, tarde)
+
+- **Consulta ao AniList:** variável enviada como null vira filtro "campo vazio" e zerava a lista. A consulta agora é montada só com os filtros escolhidos.
+- **Entrada do leitor:** tipo, cor, gênero, status e ordem só de listas fechadas; busca saneada e cortada em 60 caracteres; página limitada a 200 (teste).
+- **Proxy de capas:** só aceita `/file/anilistcdn/media/manga/cover/(medium|large)/<arquivo>` do CDN do AniList, sem seguir redirecionamento, só `image/jpeg|png|webp`, até 2 MB, com cache em memória de até 40 MB. Caminho estranho → 404 (teste e sonda no ar).
+- **Links "onde ler":** só https, sem redes sociais (teste com `javascript:` e Twitter).
+- **Abuso:** freio de 90/min por faixa de IP; teto global de 25 chamadas/min ao AniList, servindo o cache antigo quando o teto estoura. POST na rota → 405.
+- **Termos do AniList:** uso não comercial; nada do catálogo é guardado em disco; crédito na página e em cada ficha.

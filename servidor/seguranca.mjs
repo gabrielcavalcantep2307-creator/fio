@@ -141,6 +141,10 @@ export const LIMITES = {
   // procurando à vontade; mais que isso é um laço, e um laço na rota mais cara
   // é exatamente o que não pode passar sem teto.
   'procurar': { quantas: 30, minutos: 1 },
+  // O catálogo de mangás consulta o AniList, que tem teto próprio para o
+  // servidor inteiro: sem freio por pessoa, um laço num filtro gastaria o teto
+  // de todo mundo. Noventa por minuto cobre folhear filtros à vontade.
+  'mangas': { quantas: 90, minutos: 1 },
 }
 
 /**
