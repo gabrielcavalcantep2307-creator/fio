@@ -1170,3 +1170,116 @@ test('o acento não faz o termo escapar', async () => {
   assert.equal(abrasileirar('A imagem no ecrã'), 'A imagem na tela')
   assert.equal(abrasileirar('Pegou o comboio'), 'Pegou o trem')
 })
+
+// ─────────────────────────────────────────────────────────────
+// Gosto, recomendação e avisos (16/09/2026)
+//
+// O que importa provar: recomendar nunca devolve o que a pessoa já tem nas
+// mãos, o que ela LÊ passa a mandar mais do que o que ela DISSE, o
+// questionário só aceita escolha de lista, e o aviso de um leitor nunca vai
+// parar na conta de outro.
+// ─────────────────────────────────────────────────────────────
+
+import * as gosto from './gosto.mjs'
+
+// Um teste anterior fecha o banco compartilhado; estes reabrem o mesmo arquivo.
+const bd = () => abrir(join(pasta, 'teste.db'))
+
+const obraFalsa = (id, titulo, autorId, autor, temas, extra = {}) =>
+  ({ id, titulo, autor, autorId, temas, trilho: 'A', minutos: 200, capa: null, capaOL: null, ...extra })
+
+function catalogoFalso() {
+  return {
+    obras: [
+      obraFalsa(1, 'Crime e Castigo', 10, 'Fiódor Dostoiévski', ['Romance', 'Psicologia']),
+      obraFalsa(2, 'O Processo', 20, 'Franz Kafka', ['Romance']),
+      obraFalsa(3, 'Os Irmãos Karamázov', 10, 'Fiódor Dostoiévski', ['Romance', 'Filosofia']),
+      obraFalsa(4, 'Vinte Mil Léguas', 30, 'Júlio Verne', ['Aventura']),
+      obraFalsa(5, 'Uma Princesa de Marte', 40, 'Edgar Rice Burroughs', ['Aventura']),
+      obraFalsa(6, 'Livro de Receitas', 50, 'Alguém', ['Culinária']),
+    ],
+    colecoes: [
+      { nome: 'O homem contra ele mesmo', obras: [1, 2, 3], nossa: true },
+      { nome: 'Entrar em outro mundo', obras: [4, 5], nossa: true },
+    ],
+  }
+}
+const fichasFalsas = { 1: { conexoes: [{ id: 2 }], tags: ['culpa'] }, 2: { tags: ['culpa'] } }
+const indiceFalso = () => gosto.montarIndice(catalogoFalso(), (id) => fichasFalsas[id] ?? null)
+const sinaisVazios = (extra = {}) => ({ progresso: new Map(), estante: new Map(), notas: new Map(), respostas: {}, ...extra })
+
+test('recomendação: quem leu Crime e Castigo recebe o que conversa com ele, e nunca o que já leu', () => {
+  const agora = Date.now()
+  const sinais = sinaisVazios({ progresso: new Map([[1, { capitulo: 3, segundos: 1800, mudouEm: agora }]]) })
+  const r = gosto.recomendar(indiceFalso(), sinais, { agora })
+  const ids = r.obras.map((o) => o.id)
+  assert.ok(!ids.includes(1), 'devolveu o livro que a pessoa já está lendo')
+  assert.ok(ids.includes(2) && ids.includes(3))
+  assert.equal(r.obras[0].motivo, 'porque você leu Crime e Castigo')
+  assert.ok(!ids.includes(6), 'recomendou o que não tem ligação nenhuma')
+})
+
+test('recomendação: o que a pessoa lê pesa mais do que o que ela disse no questionário', () => {
+  const agora = Date.now()
+  const disse = { humores: ['mundo'] }
+  const soDisse = gosto.recomendar(indiceFalso(), sinaisVazios({ respostas: disse }), { agora })
+  assert.ok([4, 5].includes(soDisse.obras[0].id), 'sem leitura, manda o humor escolhido')
+
+  const leituras = new Map([1, 3].map((id) => [id, { segundos: 3600, mudouEm: agora }]))
+  // cinco leituras de verdade de livros de fora do acervo falso ainda contam como leitura
+  for (const id of [101, 102, 103, 104, 105]) leituras.set(id, { segundos: 3600, mudouEm: agora })
+  const leu = gosto.recomendar(indiceFalso(), sinaisVazios({ respostas: disse, progresso: leituras }), { agora })
+  assert.equal(leu.obras[0].id, 2, 'a leitura real não passou na frente do questionário')
+  assert.equal(leu.resumo, 'pelo que você anda lendo')
+})
+
+test('recomendação: sem sinal nenhum, não inventa', () => {
+  const r = gosto.recomendar(indiceFalso(), sinaisVazios())
+  assert.equal(r.obras.length, 0)
+  assert.equal(r.semSinais, true)
+})
+
+test('o questionário só aceita escolha das listas fechadas', () => {
+  const r = gosto.limparRespostas({
+    humores: ['pensar', '<img src=x onerror=alert(1)>', 'pensar'],
+    autores: ['Kafka', 'Autor Inventado'],
+    favoritos: [1096, 999999, '1097'],
+    tempo: 'para sempre',
+    evitar: ['Poesia', 'Tudo'],
+  })
+  assert.deepEqual(r, { humores: ['pensar'], autores: ['Kafka'], favoritos: [1096, 1097], tempo: 'tanto', evitar: ['Poesia'] })
+})
+
+function leitorDeTeste(usuario) {
+  return Number(bd().prepare(`INSERT INTO leitor (usuario, usuario_chave, nome, senha_hash, senha_sal, senha_params)
+    VALUES (?, ?, ?, x'00', x'00', '{}')`).run(usuario, usuario, usuario).lastInsertRowid)
+}
+
+test('conta nova recebe o questionário; conta antiga não é interrompida', () => {
+  gosto.garantirTabelas(bd())
+  const antiga = leitorDeTeste('antigaconta')
+  const nova = leitorDeTeste('novaconta')
+  gosto.marcarContaNova(bd(), nova)
+  assert.equal(gosto.lerSinais(bd(), antiga).pedido, false)
+  assert.equal(gosto.lerSinais(bd(), nova).pedido, true)
+})
+
+test('aviso de "já dá para ler" vai só para quem tinha o livro na lista, e uma vez só', () => {
+  gosto.garantirTabelas(bd())
+  const ana = leitorDeTeste('anaaviso'), beto = leitorDeTeste('betoaviso')
+  const obra = Number(bd().prepare(`INSERT INTO obra (titulo, trilho, publicada) VALUES ('Livro Que Chegou', 'A', 1)`).run().lastInsertRowid)
+  const agora = Date.now()
+  bd().prepare(`INSERT INTO guardado (leitor_id, tipo, chave, valor, mudou_em) VALUES (?, 'estante', ?, '"quero_ler"', ?)`)
+    .run(ana, String(obra), agora - 10 * 86400000)
+  bd().prepare(`INSERT INTO texto (obra_id, idioma, fonte, normalizado, criado_em) VALUES (?, 'pt', 'fio_traducao', 1, datetime('now'))`).run(obra)
+
+  const indice = gosto.montarIndice({ obras: [obraFalsa(obra, 'Livro Que Chegou', 1, 'X', [])], colecoes: [] })
+  gosto.gerarAvisos(bd(), ana, indice, { agora })
+  gosto.gerarAvisos(bd(), beto, indice, { agora })
+  gosto.gerarAvisos(bd(), ana, indice, { agora: agora + 10 * 60000 }) // passou o intervalo: gera de novo
+
+  const deAna = bd().prepare(`SELECT chave FROM aviso WHERE leitor_id = ? AND tipo = 'pronto'`).all(ana)
+  const deBeto = bd().prepare(`SELECT chave FROM aviso WHERE leitor_id = ?`).all(beto)
+  assert.equal(deAna.length, 1, 'duplicou ou não avisou')
+  assert.equal(deBeto.length, 0, 'aviso de uma conta foi parar em outra')
+})

@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Para você — Fio</title>
+<link rel="icon" type="image/svg+xml" href="/fio.svg">
+<style>
+  @font-face{font-family:Literata;src:url(/fontes/literata-latin.woff2) format('woff2');font-display:swap}
+  @font-face{font-family:Inter;src:url(/fontes/inter-latin.woff2) format('woff2');font-display:swap}
+  :root{--papel:#f8f5ee;--papel2:#efe9dd;--tinta:#1f1b16;--tinta2:#6d655a;--linha:#e1d9ca;--acento:#7a2e2e;color-scheme:light}
+  @media (prefers-color-scheme:dark){:root{--papel:#15130f;--papel2:#1e1b16;--tinta:#ece5d6;--tinta2:#a39a8a;--linha:#2d2922;--acento:#c46a5c}}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--papel);color:var(--tinta);font:15px/1.55 Inter,system-ui,sans-serif}
+  a{color:inherit}
+  header{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--papel) 90%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--linha)}
+  .barra{max-width:1080px;margin:0 auto;padding:0 16px;height:56px;display:flex;align-items:center;gap:18px}
+  .marca{font-family:Literata,Georgia,serif;font-size:20px;text-decoration:none}
+  nav{display:flex;gap:4px;margin-left:auto;flex-wrap:wrap}
+  nav button{background:none;border:1px solid transparent;color:var(--tinta2);font:inherit;font-size:13px;padding:6px 12px;border-radius:999px;cursor:pointer}
+  nav button[aria-selected=true]{border-color:var(--linha);color:var(--tinta);background:var(--papel2)}
+  .conta{font-size:13px;color:var(--tinta2)}
+  main{max-width:1080px;margin:0 auto;padding:28px 16px 90px}
+  h1{font-family:Literata,Georgia,serif;font-weight:500;font-size:clamp(26px,4vw,38px);margin:0 0 6px;line-height:1.15}
+  .sub{color:var(--tinta2);margin:0 0 26px;max-width:62ch}
+  .grade{display:grid;gap:22px 16px;grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+  .livro{text-decoration:none;display:block}
+  .capa{aspect-ratio:2/3;border-radius:3px;overflow:hidden;box-shadow:0 1px 2px rgba(0,0,0,.18),0 10px 22px -14px rgba(0,0,0,.55);background:var(--papel2);position:relative;transition:transform .2s}
+  .livro:hover .capa{transform:translateY(-3px)}
+  .capa img{width:100%;height:100%;object-fit:cover;display:block}
+  .desenhada{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:14px;text-align:center;font-family:Literata,Georgia,serif;font-size:14px;line-height:1.3}
+  .tit{font-family:Literata,Georgia,serif;font-size:14px;line-height:1.3;margin-top:9px}
+  .aut{font-size:12px;color:var(--tinta2);margin-top:2px}
+  .motivo{font-size:12px;color:var(--acento);margin-top:5px;line-height:1.35}
+  .cartao{background:var(--papel2);border:1px solid var(--linha);border-radius:12px;padding:20px 22px;margin-bottom:14px}
+  .passo{margin:0 0 30px}
+  .passo h2{font-family:Literata,Georgia,serif;font-weight:500;font-size:20px;margin:0 0 4px}
+  .passo p{color:var(--tinta2);margin:0 0 14px;font-size:14px}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{border:1px solid var(--linha);background:transparent;color:var(--tinta);font:inherit;font-size:14px;padding:7px 14px;border-radius:999px;cursor:pointer}
+  .chip[aria-pressed=true]{background:var(--acento);border-color:var(--acento);color:#fff}
+  .escolha{cursor:pointer;border:none;background:none;padding:0;text-align:left;font:inherit;color:inherit}
+  .escolha .capa{outline:3px solid transparent;outline-offset:3px}
+  .escolha[aria-pressed=true] .capa{outline-color:var(--acento)}
+  .escolha[aria-pressed=true] .tit::before{content:'✓ ';color:var(--acento)}
+  .botao{background:var(--acento);color:#fff;border:none;border-radius:8px;padding:12px 22px;font:inherit;font-size:15px;cursor:pointer}
+  .botao:disabled{opacity:.5}
+  .fraco{background:none;border:1px solid var(--linha);color:var(--tinta);border-radius:8px;padding:8px 14px;font:inherit;font-size:13px;cursor:pointer}
+  .aviso{display:flex;gap:14px;align-items:flex-start;padding:16px 18px;border:1px solid var(--linha);border-radius:10px;margin-bottom:10px;background:var(--papel);text-decoration:none;cursor:pointer}
+  .aviso.novo{background:var(--papel2);border-color:color-mix(in srgb,var(--acento) 45%,var(--linha))}
+  .aviso .ponto{width:8px;height:8px;border-radius:50%;margin-top:8px;flex:none;background:transparent}
+  .aviso.novo .ponto{background:var(--acento)}
+  .aviso b{font-family:Literata,Georgia,serif;font-weight:500;font-size:16px;display:block}
+  .aviso span{color:var(--tinta2);font-size:13.5px}
+  .aviso time{display:block;color:var(--tinta2);font-size:11.5px;margin-top:4px}
+  .contagem{background:var(--acento);color:#fff;border-radius:999px;padding:0 6px;font-size:11px;margin-left:5px}
+  .vazio{color:var(--tinta2);padding:28px 0}
+  .recado{padding:12px 16px;border-radius:8px;margin-bottom:18px;background:color-mix(in srgb,var(--acento) 12%,transparent);color:var(--acento)}
+  @media (max-width:560px){
+    .barra{gap:10px}
+    .conta{display:none}
+    nav{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+    nav button{white-space:nowrap;padding:6px 10px}
+    .grade{grid-template-columns:repeat(auto-fill,minmax(128px,1fr))}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="barra">
+    <a class="marca" href="/#/">Fio</a>
+    <nav id="abas" hidden>
+      <button data-aba="recs">Para você</button>
+      <button data-aba="avisos">Avisos<span id="contagem"></span></button>
+      <button data-aba="gosto">Meu gosto</button>
+    </nav>
+    <span class="conta" id="conta"></span>
+  </div>
+</header>
+<main id="main"><p class="vazio">abrindo…</p></main>
+<script src="/central.js"></script>
+</body>
+</html>

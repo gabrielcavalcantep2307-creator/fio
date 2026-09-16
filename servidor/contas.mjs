@@ -15,6 +15,7 @@ import {
 import { conferirUsuario, chaveDe, estaTomado } from './usuario.mjs'
 import { avaliarSenha } from './seguranca.mjs'
 import { cadastroAberto } from './ajustes.mjs'
+import { marcarContaNova } from './gosto.mjs'
 
 // ── derivar um nome de usuário quando a tela só mandou e-mail ──
 //
@@ -154,6 +155,10 @@ export async function criar(banco, { usuario, nome, email, senha, convite, pergu
   ).run(usuarioLimpo, chaveDe(usuarioLimpo), limpo, nomeLimpo, s.hash, s.sal, s.params).lastInsertRowid)
 
   gravarConjunto(banco, id, conjunto.prontas)
+
+  // Conta nova recebe o questionário de gosto; as antigas nunca passaram
+  // por aqui, e por isso não são interrompidas por ele.
+  try { marcarContaNova(banco, id) } catch { /* banco sem a tabela (teste antigo): segue */ }
 
   // A primeira conta da casa é a administradora. Sem isto, uma instalação
   // nova não tem ninguém que possa convidar ou revisar, e a única saída seria
@@ -545,9 +550,12 @@ function apelidoDeAgente(agente) {
  */
 export function exportarTudo(banco, leitorId) {
   const l = banco.prepare(
-    'SELECT id, email, nome, jurisdicao, papel, criado_em, visto_em FROM leitor WHERE id = ?',
+    'SELECT id, usuario, email, nome, jurisdicao, papel, criado_em, visto_em FROM leitor WHERE id = ?',
   ).get(leitorId)
   if (!l) throw new Recusa('Conta não encontrada.', 404)
+  // O gosto e os avisos também são dados dela (LGPD, art. 18, V). As tabelas
+  // nascem com o servidor; num banco de teste sem elas, a exportação segue.
+  const seExistir = (sql) => { try { return banco.prepare(sql).all(leitorId) } catch { return [] } }
   return {
     exportadoEm: new Date().toISOString(),
     conta: l,
@@ -555,6 +563,8 @@ export function exportarTudo(banco, leitorId) {
     avaliacoes: banco.prepare(
       'SELECT obra_id, nota, resenha, criado_em, mudou_em FROM avaliacao WHERE leitor_id = ?',
     ).all(leitorId),
+    gosto: seExistir('SELECT respostas, respondido_em, mudou_em FROM gosto WHERE leitor_id = ?')[0] ?? null,
+    avisos: seExistir('SELECT tipo, titulo, corpo, link, criado_em, lido_em FROM aviso WHERE leitor_id = ?'),
   }
 }
 

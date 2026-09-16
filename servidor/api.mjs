@@ -26,6 +26,7 @@ import { ipDoPedido, freio, dicaDeIp } from './seguranca.mjs'
 import * as meusLivros from './meus-livros.mjs'
 import { conferirUsuario, estaTomado } from './usuario.mjs'
 import * as ajustes from './ajustes.mjs'
+import * as gosto from './gosto.mjs'
 
 const PORTA = Number(process.env.FIO_PORTA || 8787)
 const SITE = process.env.FIO_SITE || `http://localhost:${PORTA}`
@@ -37,6 +38,26 @@ const ORIGENS = (process.env.FIO_ORIGENS || '').split(',').map(s => s.trim()).fi
 
 const banco = abrir()
 const buscarNoTexto = criarBuscaNoTexto(banco)
+gosto.garantirTabelas(banco)
+
+// Recomendação custa uma passada pelo acervo legível; guardada por leitor
+// até alguma coisa dele mudar (leitura nova, nota, gosto) ou dez minutos.
+const recsGuardadas = new Map()
+function recomendacoesDe(leitorId) {
+  const indice = gosto.indiceDoSite(ESTATICO)
+  if (!indice) return { obras: [], semSinais: true, pedir: false }
+  const sinais = gosto.lerSinais(banco, leitorId)
+  const marca = [
+    Math.max(0, ...[...sinais.progresso.values()].map((p) => p.mudouEm ?? 0), ...[...sinais.estante.values()].map((e) => e.mudouEm ?? 0)),
+    sinais.notas.size, sinais.gostoMudou, indice.legiveis.length,
+  ].join('|')
+  const g = recsGuardadas.get(leitorId)
+  if (g && g.marca === marca && Date.now() - g.em < 10 * 60000) return g.valor
+  const valor = { ...gosto.recomendar(indice, sinais), pedir: sinais.pedido }
+  recsGuardadas.set(leitorId, { marca, em: Date.now(), valor })
+  if (recsGuardadas.size > 2000) recsGuardadas.clear()
+  return valor
+}
 
 // ─────────────────────────────────────────────────────────────
 // CSRF
@@ -355,10 +376,16 @@ const ROTAS = {
 
   'POST /api/apagar-conta': (req, res, dado) => {
     const pessoa = exigirEntrada(req)
-    // Exige o e-mail digitado. Apagar conta é irreversível, e um clique
+    // Exige digitar a identidade da conta. Apagar é irreversível, e um clique
     // sozinho não é consentimento suficiente para o que não volta.
-    if (String(dado.email ?? '').trim().toLowerCase() !== pessoa.email) {
-      throw new Recusa('Digite o e-mail da conta para confirmar.')
+    //
+    // Era só o e-mail — e desde 11/09 o e-mail é opcional: conta criada só com
+    // nome de usuário não tinha como se apagar (achado em 16/09, LGPD art. 18,
+    // VI). Agora vale o e-mail OU o nome de usuário.
+    const digitado = String(dado.email ?? dado.usuario ?? '').trim().toLowerCase()
+    const aceitos = [pessoa.email, pessoa.usuario].filter(Boolean).map((x) => String(x).toLowerCase())
+    if (!digitado || !aceitos.includes(digitado)) {
+      throw new Recusa('Digite o seu nome de usuário (ou o e-mail da conta) para confirmar.')
     }
     contas.apagarConta(banco, pessoa.id)
     semCookie(res)
@@ -464,6 +491,66 @@ const ROTAS = {
     const r = banco.prepare("DELETE FROM fila_traducao WHERE id = ? AND estado IN ('espera','erro')")
       .run(Number(dado.id))
     return { removidos: r.changes }
+  },
+
+  // ── gosto, recomendações e avisos ──
+  //
+  // Tudo com `exigirEntrada` e tudo preso ao id de quem pede: nenhuma destas
+  // rotas aceita id de leitor vindo de fora. O questionário só grava escolha de
+  // lista fechada (`gosto.limparRespostas`), e os links dos avisos são montados
+  // aqui, nunca recebidos.
+  'GET /api/gosto': (req) => {
+    const pessoa = exigirEntrada(req)
+    const s = gosto.lerSinais(banco, pessoa.id)
+    return {
+      respostas: s.respostas,
+      pedir: s.pedido,
+      opcoes: {
+        humores: gosto.HUMORES.map(({ chave, rotulo }) => ({ chave, rotulo })),
+        autores: gosto.AUTORES.map((a) => a.rotulo),
+        vitrine: gosto.VITRINE,
+        tempos: gosto.TEMPOS.map(({ chave, rotulo }) => ({ chave, rotulo })),
+        evitar: gosto.EVITAR,
+      },
+    }
+  },
+
+  'POST /api/gosto': (req, res, dado) => {
+    const pessoa = exigirEntrada(req)
+    const respostas = gosto.limparRespostas(dado)
+    banco.prepare(`
+      INSERT INTO gosto (leitor_id, respostas, respondido_em, mudou_em) VALUES (?, ?, datetime('now'), datetime('now'))
+      ON CONFLICT(leitor_id) DO UPDATE SET respostas = excluded.respostas,
+        respondido_em = datetime('now'), mudou_em = datetime('now')`).run(pessoa.id, JSON.stringify(respostas))
+    recsGuardadas.delete(pessoa.id)
+    gosto.avisar(banco, pessoa.id, { chave: 'boasvindas', tipo: 'boasvindas',
+      titulo: 'Suas primeiras recomendações estão prontas',
+      corpo: 'Elas mudam conforme você lê: o que você lê pesa mais do que o que você disse.', link: '/central.html' })
+    return { ok: true, respostas, ...recomendacoesDe(pessoa.id) }
+  },
+
+  'GET /api/recomendacoes': (req) => recomendacoesDe(exigirEntrada(req).id),
+
+  'GET /api/avisos': (req) => {
+    const pessoa = exigirEntrada(req)
+    gosto.gerarAvisos(banco, pessoa.id, gosto.indiceDoSite(ESTATICO))
+    const avisos = banco.prepare(`SELECT id, tipo, titulo, corpo, link, criado_em, lido_em IS NOT NULL lido
+      FROM aviso WHERE leitor_id = ? ORDER BY criado_em DESC, id DESC LIMIT 60`).all(pessoa.id)
+    return { avisos, naoLidos: avisos.filter((a) => !a.lido).length }
+  },
+
+  'GET /api/avisos/contagem': (req) => {
+    const pessoa = exigirEntrada(req)
+    gosto.gerarAvisos(banco, pessoa.id, gosto.indiceDoSite(ESTATICO))
+    return { naoLidos: banco.prepare('SELECT COUNT(*) n FROM aviso WHERE leitor_id = ? AND lido_em IS NULL').get(pessoa.id).n }
+  },
+
+  'POST /api/avisos/lido': (req, res, dado) => {
+    const pessoa = exigirEntrada(req)
+    const r = Number.isInteger(dado.id)
+      ? banco.prepare("UPDATE aviso SET lido_em = datetime('now') WHERE id = ? AND leitor_id = ? AND lido_em IS NULL").run(dado.id, pessoa.id)
+      : banco.prepare("UPDATE aviso SET lido_em = datetime('now') WHERE leitor_id = ? AND lido_em IS NULL").run(pessoa.id)
+    return { marcados: r.changes }
   },
 
   // ── a central de ajustes ──
@@ -844,6 +931,18 @@ const servidor = createServer(async (req, res) => {
   if (req.method !== 'GET' && req.method !== 'HEAD') { res.writeHead(405); return res.end() }
   try {
     if (servirArquivo(req, res, caminho)) return
+    // O app navega por HASH (`/#/obra/12`). Um endereço de caminho — `/obra/12`,
+    // vindo de um link antigo, de um compartilhamento ou do painel até 16/09 —
+    // recebia o index e abria na HOME, com o endereço errado na barra e sem
+    // livro nenhum. Agora vira o endereço que o app entende.
+    const rotaDoApp = caminho.match(/^\/(obra|autor|ler|tema|estante|caderno|entrar)(\/[^?#]*)?$/)
+    if (rotaDoApp) {
+      // `caminho` já veio decodificado; um tema com acento no cabeçalho cru
+      // derruba o writeHead (ERR_INVALID_CHAR). O destino é sempre relativo à
+      // própria casa — não há redirecionamento aberto.
+      res.writeHead(302, { location: `/#${encodeURI(caminho)}` })
+      return res.end()
+    }
     // rota do app: devolve o index e deixa o navegador resolver
     if (servirArquivo(req, res, '/index.html')) return
   } catch (e) {
