@@ -18,6 +18,7 @@
 import { writeFileSync, mkdirSync, rmSync, existsSync } from 'node:fs'
 import { join } from 'node:path'
 import { abrir, fechar, RAIZ } from '../servidor/banco/base.mjs'
+import { ORDEM, FICHAS, criarResolvedor } from './descoberta.mjs'
 
 // Para onde vai. O padrão continua sendo a pasta do site em desenvolvimento;
 // `--saida` existe porque este script também roda DENTRO do container, contra
@@ -104,6 +105,44 @@ const NOME_DA_LINGUA = {
   it: 'italiano', la: 'latim', zh: 'chinês',
 }
 
+// ── a camada de descoberta: "Antes de ler", ideias e conversas ──
+//
+// Vem de `descoberta.mjs`, e não do banco: é curadoria escrita à mão, versionada
+// com o código. As conversas apontam para outras obras por referência; só entra
+// a que resolve para uma obra publicada — ligação para livro que não existe no
+// site é link quebrado com cara de sugestão.
+const resolver = criarResolvedor(banco)
+const nomeDaObra = banco.prepare(`
+  SELECT COALESCE(o.titulo_pt, o.titulo) titulo,
+         (SELECT p.nome FROM obra_pessoa op JOIN pessoa p ON p.id = op.pessoa_id
+           WHERE op.obra_id = o.id AND op.papel = 'autor' LIMIT 1) autor
+    FROM obra o WHERE o.id = ? AND o.publicada = 1`)
+const extras = new Map()
+for (const fx of FICHAS) {
+  const id = resolver(fx.obra)
+  if (id == null) continue
+  const conexoes = []
+  for (const cx of fx.conexoes ?? []) {
+    const alvo = resolver(cx.obra)
+    const n = alvo != null && alvo !== id ? nomeDaObra.get(alvo) : null
+    if (n) conexoes.push({ id: alvo, titulo: limpo(n.titulo), autor: n.autor, porque: cx.porque })
+  }
+  extras.set(id, { antes: fx.antes ?? null, tags: fx.tags ?? [], conexoes })
+}
+
+// ── a chamada que vai para o catálogo ──
+//
+// No catálogo, a chamada tem UM uso: o destaque "para começar" da home sorteia
+// entre os legíveis que têm chamada e capa. Em 16/09 as leis ganharam capa, e a
+// home abriu com a Lei de Drogas como sugestão de leitura. A lei continua com
+// a chamada na ficha; só não entra no sorteio. E um livro da curadoria sem
+// chamada escrita usa o "você vai encontrar" do Antes de ler — assim o destaque
+// gira entre os livros que a descoberta quer mostrar.
+function chamadaDaHome(o, editorial) {
+  if (o.autor === 'Brasil') return null
+  return editorial.chamada ?? extras.get(o.id)?.antes?.encontra ?? null
+}
+
 const resumo = []
 let comTexto = 0
 let bytes = 0
@@ -143,12 +182,14 @@ for (const o of obras) {
     // a capa: arquivo nosso, ou id na Open Library, ou nada (o site desenha)
     capa: o.capa ?? null,
     capaOL: o.capa_externa ?? null,
-    ...(editorial.chamada ? { chamada: editorial.chamada } : {}),
+    ...(chamadaDaHome(o, editorial) ? { chamada: chamadaDaHome(o, editorial) } : {}),
   }
   resumo.push(linha)
 
   const ficha = {
     ...linha,
+    // a ficha mantém a chamada verdadeira, inclusive a das leis
+    ...(editorial.chamada ? { chamada: editorial.chamada } : {}),
     subtitulo: o.subtitulo,
     paginas: o.paginas,
     autorNasc: o.autor_nasc,
@@ -163,6 +204,7 @@ for (const o of obras) {
     olid: o.olid_work,
     onde: ondeDe.all(o.id),
     capitulos: null,
+    ...(extras.get(o.id) ?? {}),
   }
 
   if (podeLer) {
@@ -269,9 +311,26 @@ for (const t of temas) {
   t.legiveis = resumo.filter(o => o.temas.includes(t.nome) && o.trilho === 'A').length
 }
 
+// ── a ordem e o fim da vitrine ──
+//
+// A home desenha as coleções na ordem em que chegam. A ordem é a da curadoria
+// (`ORDEM`, em descoberta.mjs); o que não está nela vem depois, pela antiga.
+//
+// E a vitrine "O que ainda não podemos servir" saiu, a pedido do dono (16/09):
+// uma coleção sem NENHUM livro legível não é publicada. O site só desenha a
+// vitrine quando recebe coleção com `nossa: false` — sem nenhuma, ela some
+// sozinha, sem remendo no bundle. As fichas desses livros continuam existindo
+// e aparecem na busca e na estante; só deixaram de ter uma seção na home.
+const posicao = (nome) => { const i = ORDEM.indexOf(nome); return i < 0 ? ORDEM.length : i }
+const naHome = colecoes
+  .map((c, i) => ({ c, i }))
+  .sort((x, y) => posicao(x.c.nome) - posicao(y.c.nome) || x.i - y.i)
+  .map(({ c }) => c)
+  .filter(c => c.nossa && c.obras.length >= 3)
+
 writeFileSync(join(SAIDA, 'catalogo.json'), JSON.stringify({
   geradoEm: new Date().toISOString().slice(0, 10),
-  obras: resumo, temas, autores, colecoes: colecoes.filter(c => c.obras.length >= 3),
+  obras: resumo, temas, autores, colecoes: naHome,
 }))
 
 const capas = existsSync(join(RAIZ, 'web', 'public', 'capas'))
