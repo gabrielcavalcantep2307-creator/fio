@@ -25,5 +25,14 @@ for (const s of completo.series) {
   paginas += capitulos.reduce((n, c) => n + c.paginas.length, 0)
   series.push({ ...s, capa: capitulos[0].capa, capitulos })
 }
-process.stdout.write(JSON.stringify({ ...completo, series }))
+// `--resumo`: só o que a prateleira da home precisa (capa, título, contagem),
+// sem as milhares de páginas — a home carrega isto a cada visita.
+if (process.argv.includes('--resumo')) {
+  process.stdout.write(JSON.stringify({
+    geradoEm: completo.geradoEm,
+    series: series.map(({ capitulos, ...s }) => ({ ...s, volumes: capitulos.length })),
+  }))
+} else {
+  process.stdout.write(JSON.stringify({ ...completo, series }))
+}
 process.stderr.write(`prontos: ${series.length} séries, ${caps} capítulos, ${paginas} páginas\n`)

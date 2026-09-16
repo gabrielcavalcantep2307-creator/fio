@@ -121,9 +121,16 @@ const REMENDOS = [
     para: '(0,N.jsx)(`a`,{href:`/quadrinhos.html`,className:`block px-4 py-3.5 text-sm`,style:{color:`var(--tinta)`,borderBottom:`1px solid var(--linha)`},children:`quadrinhos e mangá`}),n&&(0,N.jsx)(`a`,{href:`/central.html`,className:`block px-4 py-3.5 text-sm`',
   },
   {
-    nome: 'home: chamada para os quadrinhos, logo depois de "Não sabe o que ler?"',
-    de: '(0,N.jsx)(pt,{catalogo:e}),',
-    para: '(0,N.jsx)(pt,{catalogo:e}),(0,N.jsxs)(`a`,{href:`/quadrinhos.html`,className:`block rounded-xl p-5 sm:p-7`,style:{background:`linear-gradient(120deg, color-mix(in srgb, var(--acento) 20%, var(--papel-2)), var(--papel-2))`,border:`1px solid var(--linha)`,textDecoration:`none`},children:[(0,N.jsx)(`div`,{className:`miudo`,children:`novo · quadrinhos e mangá`}),(0,N.jsx)(`h2`,{className:`text-[1.15rem]`,style:{fontFamily:`Literata, serif`,marginTop:`.4rem`},children:`Pepper&Carrot, Hokusai Manga, os monstros yōkai e Bordalo Pinheiro →`}),(0,N.jsx)(`p`,{className:`text-sm mt-1.5`,style:{color:`var(--tinta-2)`},children:`Com leitor próprio: rolagem para o quadrinho da tela, página dupla, e mangá lido da direita para a esquerda.`})]}),',
+    // Era um quadro só de texto, depois dos botões de humor: ficava a 3.600 px
+    // do topo e ninguém via (16/09). Agora é prateleira com capa, no alto.
+    nome: 'home: carrega o resumo das séries de quadrinhos',
+    de: 'function ht({catalogo:e}){',
+    para: 'function ht({catalogo:e}){let[qdSeries,qdSet]=(0,l.useState)(null);(0,l.useEffect)(()=>{fetch(`/dados/quadrinhos-resumo.json`).then(e=>e.ok?e.json():null).then(e=>e&&qdSet(e.series)).catch(()=>{})},[]);',
+  },
+  {
+    nome: 'home: prateleira "Quadrinhos e mangá" com capas, antes do Top 10',
+    de: '(0,N.jsx)(dt,{titulo:`Top 10 — o que está sendo lido`',
+    para: 'qdSeries&&qdSeries.length>0&&(0,N.jsxs)(`section`,{children:[(0,N.jsxs)(`div`,{className:`flex items-baseline gap-3 mb-4 px-1 flex-wrap`,children:[(0,N.jsx)(`h2`,{style:{fontFamily:`Literata, serif`},className:`text-[1.15rem]`,children:`Quadrinhos e mangá`}),(0,N.jsx)(`span`,{className:`text-xs`,style:{color:`var(--tinta-2)`},children:`${qdSeries.length} séries · colorido e preto e branco · mangá lido da direita para a esquerda`}),(0,N.jsx)(`a`,{href:`/quadrinhos.html`,className:`text-[0.68rem] italic ml-auto hover:opacity-70`,style:{color:`var(--tinta-2)`},children:`ver todos →`})]}),(0,N.jsx)(`div`,{className:`flex overflow-x-auto pb-2`,style:{gap:`1rem`,scrollbarWidth:`none`,overscrollBehaviorX:`contain`},children:qdSeries.slice(0,20).map(e=>(0,N.jsxs)(`a`,{href:`/quadrinhos.html?serie=${encodeURIComponent(e.id)}`,className:`group shrink-0 block`,style:{width:`8.5rem`},children:[(0,N.jsxs)(`span`,{className:`block overflow-hidden rounded-[3px] transition-transform duration-200 group-hover:-translate-y-1`,style:{position:`relative`,aspectRatio:`2/3`,background:`var(--papel-2)`,boxShadow:`0 1px 2px rgba(0,0,0,.2), 0 10px 24px -14px rgba(0,0,0,.6)`},children:[(0,N.jsx)(`img`,{src:e.capa,alt:`Capa de ${e.titulo}`,loading:`lazy`,style:{width:`100%`,height:`100%`,objectFit:`cover`,display:`block`}}),(0,N.jsx)(`span`,{style:{position:`absolute`,left:`6px`,bottom:`6px`,background:`rgba(0,0,0,.72)`,color:`#fff`,fontSize:`.6rem`,borderRadius:`999px`,padding:`1px 7px`},children:e.sentido===`rtl`?`mangá ←`:e.estilo})]}),(0,N.jsx)(`span`,{className:`block mt-2 text-[0.8rem] leading-snug line-clamp-2`,style:{fontFamily:`Literata, serif`},children:e.titulo}),(0,N.jsx)(`span`,{className:`block text-[0.68rem] truncate`,style:{color:`var(--tinta-2)`},children:`${e.autor} · ${e.volumes} ${e.formato===`quadrinho`?`episódios`:`volumes`}`})]},e.id))})]}),(0,N.jsx)(dt,{titulo:`Top 10 — o que está sendo lido`',
   },
   // ── apagar a conta sem e-mail (LGPD, achado em 16/09) ──
   // As duas telas de apagar só habilitavam o botão quando o texto digitado era

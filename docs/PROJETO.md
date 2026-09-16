@@ -122,7 +122,10 @@ pirata.
 
 O download roda **no host da VPS**, fora do container:
 `/opt/fio/entrada/baixar-quadrinhos.sh`, com 6 downloads em paralelo, retomável.
-`ingestao/quadrinhos-prontos.mjs` publica só volume **inteiro**.
+`ingestao/quadrinhos-prontos.mjs` publica só volume **inteiro**. Rode-o duas
+vezes ao publicar: sem flag gera `dados/quadrinhos.json` (o leitor), e com
+`--resumo` gera `dados/quadrinhos-resumo.json` (25 KB, só capas e contagens). O
+resumo alimenta a prateleira **Quadrinhos e mangá** da home, logo antes do Top 10.
 
 O leitor (`quadrinho.html`) tem modos rolagem, página e dupla, sentido ocidental
 ou mangá (direita→esquerda, com setas, toque e deslize invertidos), zoom,
