@@ -303,7 +303,8 @@ function recentes(lista) {
   const corpo = el('tbody', {})
   for (const o of lista) {
     corpo.append(el('tr', {},
-      el('td', {}, el('a', { href: `/obra/${o.id}` }, o.titulo)),
+      // o site navega por hash: `/obra/12` abria a home
+      el('td', {}, el('a', { href: `/#/obra/${o.id}` }, o.titulo)),
       el('td', {}, o.autor || '—'),
       el('td', { class: 'mono' }, (o.criado_em || '').slice(0, 16))))
   }

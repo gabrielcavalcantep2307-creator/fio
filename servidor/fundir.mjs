@@ -31,6 +31,11 @@ const DE_GENTE = [
   // máquina de desenvolvimento não tem nenhuma. Substituí-la apagaria a
   // contagem de "o mais lido" a cada publicação.
   'abertura',
+  // Desde 15–16/09: gosto e avisos de cada leitor, a contagem anônima do portão
+  // de leitura, os ajustes do painel (inclui o segredo das perguntas) e a fila
+  // de tradução do painel. Nenhuma está em DO_CATALOGO, então nenhuma é tocada;
+  // estão aqui para aparecerem no relatório e na revisão.
+  'gosto', 'aviso', 'leitura_livre', 'ajuste', 'fila_traducao',
 ]
 
 const entrada = process.argv[2]
@@ -55,6 +60,34 @@ const contar = (t) => {
 const antes = Object.fromEntries(DE_GENTE.map(t => [t, contar(t)]))
 
 banco.exec(`ATTACH DATABASE '${entrada.replace(/'/g, "''")}' AS entrada`)
+
+// ─────────────────────────────────────────────────────────────
+// A TRAVA: catálogo mais velho que a produção não entra
+//
+// Desde 15/09 o catálogo também é trabalhado DIRETO na produção: leis puxadas
+// do Planalto, capas trocadas, seções de descoberta, traduções instaladas pela
+// esteira. O banco da máquina de desenvolvimento ficou para trás — e fundi-lo
+// apagaria tudo isso em silêncio, porque `DO_CATALOGO` é substituído em bloco.
+//
+// Então compara-se a obra mais recentemente mexida e a quantidade de obras.
+// Se o que chega é mais velho ou menor, recusa. `FIO_FUNDIR_FORCAR=1` passa por
+// cima, e só deve ser usado sabendo exatamente o que vai se perder.
+// ─────────────────────────────────────────────────────────────
+{
+  const ultima = (esquema) => banco.prepare(`SELECT MAX(atualizado_em) m, COUNT(*) n FROM ${esquema}.obra`).get()
+  const aqui = ultima('main'), la = ultima('entrada')
+  const maisVelho = aqui.m && la.m && la.m < aqui.m
+  const menor = la.n < aqui.n
+  if ((maisVelho || menor) && process.env.FIO_FUNDIR_FORCAR !== '1') {
+    console.error('RECUSADO: o catálogo que chega é mais velho ou menor que o de produção.')
+    console.error(`  produção: ${aqui.n} obras, última mudança ${aqui.m}`)
+    console.error(`  chegando: ${la.n} obras, última mudança ${la.m}`)
+    console.error('  Fundir apagaria leis, capas, seções e traduções feitas direto na produção.')
+    console.error('  Se é isso mesmo: FIO_FUNDIR_FORCAR=1')
+    banco.exec('DETACH DATABASE entrada')
+    process.exit(1)
+  }
+}
 
 // As chaves estrangeiras ficam desligadas durante a troca: apagar `obra`
 // com elas ligadas dispara cascatas que apagariam `texto` de leitor (trilho

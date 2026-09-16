@@ -6,9 +6,15 @@ O nome é provisório — vem da ideia de puxar um fio: você entra por *A Revol
 dos Bichos* e sai em Hannah Arendt sem ter planejado.
 
 > **No ar em <https://fiolib.duckdns.org>**, na mesma VPS do Wallt.
-> **1.488 obras** com capa e categoria, **526 para ler inteiras** num leitor
-> próprio — inclusive a Constituição e nove códigos, livres por lei. Dá para
-> **baixar em EPUB**. Contas funcionando: criar (com convite), entrar,
+> **5.077 obras**, **4.432 para ler inteiras** num leitor próprio — inclusive a
+> Constituição e 24 leis e códigos, livres por lei — e **34 séries de quadrinhos
+> e mangá** legais, com leitor próprio. Recomendações pelo que você lê, avisos,
+> painel de administração.
+>
+> **Comece por [`docs/PROJETO.md`](docs/PROJETO.md)**: o projeto inteiro, os
+> comandos e as armadilhas, atualizado em 16/09/2026.
+>
+> Dá para **baixar em EPUB**. Contas funcionando: criar, entrar,
 > recuperar senha, e o que você marca aparece no outro aparelho.
 
 **O acervo é só em português.** Traduzido ou original, mas em português — livro

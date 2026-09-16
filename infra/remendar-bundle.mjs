@@ -78,6 +78,65 @@ const REMENDOS = [
     para: 'c=n?(n.nome.split(` `).find(e=>e&&!/\\.$/.test(e))||n.nome).toLowerCase():`entrar`',
   },
   {
+    nome: 'cabeçalho pergunta quantos avisos novos há (só com conta)',
+    // Hook novo antes do `return`, sempre na mesma ordem: regra de hooks
+    // respeitada. Refaz a pergunta a cada troca de rota.
+    de: ';return(0,l.useEffect)(()=>{a(!1)},[e]),',
+    para: ';let[avN,avSet]=(0,l.useState)(0);(0,l.useEffect)(()=>{if(!n){avSet(0);return}fetch(`/api/avisos/contagem`,{credentials:`include`}).then(e=>e.ok?e.json():null).then(e=>e&&avSet(e.naoLidos||0)).catch(()=>{})},[n?.id,e]);return(0,l.useEffect)(()=>{a(!1)},[e]),',
+  },
+  {
+    nome: 'link "para você" com contador no cabeçalho (computador)',
+    de: 'n?.papel===`admin`&&(0,N.jsx)(`a`,{href:`/admin.html`,className:`miudo hover:opacity-70`',
+    para: 'n&&(0,N.jsxs)(`a`,{href:`/central.html`,className:`miudo hover:opacity-70`,children:[`para você`,avN>0&&(0,N.jsx)(`span`,{style:{marginLeft:`.35rem`,background:`var(--acento)`,color:`#fff`,borderRadius:`999px`,padding:`0 .4rem`,fontSize:`.65rem`},children:avN})]}),n?.papel===`admin`&&(0,N.jsx)(`a`,{href:`/admin.html`,className:`miudo hover:opacity-70`',
+  },
+  {
+    nome: 'link "para você" no menu do celular',
+    de: 'n?.papel===`admin`&&(0,N.jsx)(`a`,{href:`/admin.html`,className:`block px-4 py-3.5 text-sm`',
+    para: 'n&&(0,N.jsx)(`a`,{href:`/central.html`,className:`block px-4 py-3.5 text-sm`,style:{color:`var(--tinta)`,borderBottom:`1px solid var(--linha)`},children:avN>0?`para você · ${avN} ${avN===1?`aviso novo`:`avisos novos`}`:`para você`}),n?.papel===`admin`&&(0,N.jsx)(`a`,{href:`/admin.html`,className:`block px-4 py-3.5 text-sm`',
+  },
+  {
+    nome: 'home: pede as recomendações de quem tem conta',
+    de: 'function ht({catalogo:e}){',
+    para: 'function ht({catalogo:e}){let pvEu=E(),[pvRec,pvSet]=(0,l.useState)(null);(0,l.useEffect)(()=>{if(!pvEu){pvSet(null);return}fetch(`/api/recomendacoes`,{credentials:`include`}).then(e=>e.ok?e.json():null).then(e=>pvSet(e)).catch(()=>{})},[pvEu?.id]);',
+  },
+  {
+    nome: 'home: prateleira "Para você" (ou o convite ao questionário)',
+    de: 's.length>0&&(0,N.jsxs)(`div`,{className:`flex flex-col gap-3`,children:[(0,N.jsx)(lt,{titulo:`Você parou aqui`',
+    para: 'pvRec&&pvRec.pedir&&(0,N.jsxs)(`a`,{href:`/central.html?bemvindo=1`,className:`block rounded-xl p-5 sm:p-7`,style:{background:`var(--papel-2)`,border:`1px solid var(--linha)`,textDecoration:`none`},children:[(0,N.jsx)(`div`,{className:`miudo`,children:`para você`}),(0,N.jsx)(`h2`,{className:`text-[1.15rem]`,style:{fontFamily:`Literata, serif`,marginTop:`.4rem`},children:`Conte do que você gosta e receba recomendações na hora →`})]}),pvRec&&pvRec.obras&&pvRec.obras.length>=3&&(0,N.jsx)(lt,{titulo:`Para você`,subtitulo:pvRec.resumo,obras:pvRec.obras.map(e=>a.get(e.id)).filter(e=>!!e),verMais:`/central.html`}),s.length>0&&(0,N.jsxs)(`div`,{className:`flex flex-col gap-3`,children:[(0,N.jsx)(lt,{titulo:`Você parou aqui`',
+  },
+  {
+    nome: 'depois de criar a conta, o questionário de gosto',
+    de: 'await de(n.nome,n.email,n.senha,h,n.convite)',
+    para: 'await de(n.nome,n.email,n.senha,h,n.convite),location.href=`/central.html?bemvindo=1`',
+  },
+  // ── quadrinhos e mangá (16/09) ──
+  {
+    nome: 'link "quadrinhos" no cabeçalho (computador)',
+    de: 'n&&(0,N.jsxs)(`a`,{href:`/central.html`,className:`miudo hover:opacity-70`',
+    para: '(0,N.jsx)(`a`,{href:`/quadrinhos.html`,className:`miudo hover:opacity-70`,children:`quadrinhos`}),n&&(0,N.jsxs)(`a`,{href:`/central.html`,className:`miudo hover:opacity-70`',
+  },
+  {
+    nome: 'link "quadrinhos e mangá" no menu do celular',
+    de: 'n&&(0,N.jsx)(`a`,{href:`/central.html`,className:`block px-4 py-3.5 text-sm`',
+    para: '(0,N.jsx)(`a`,{href:`/quadrinhos.html`,className:`block px-4 py-3.5 text-sm`,style:{color:`var(--tinta)`,borderBottom:`1px solid var(--linha)`},children:`quadrinhos e mangá`}),n&&(0,N.jsx)(`a`,{href:`/central.html`,className:`block px-4 py-3.5 text-sm`',
+  },
+  {
+    nome: 'home: chamada para os quadrinhos, logo depois de "Não sabe o que ler?"',
+    de: '(0,N.jsx)(pt,{catalogo:e}),',
+    para: '(0,N.jsx)(pt,{catalogo:e}),(0,N.jsxs)(`a`,{href:`/quadrinhos.html`,className:`block rounded-xl p-5 sm:p-7`,style:{background:`linear-gradient(120deg, color-mix(in srgb, var(--acento) 20%, var(--papel-2)), var(--papel-2))`,border:`1px solid var(--linha)`,textDecoration:`none`},children:[(0,N.jsx)(`div`,{className:`miudo`,children:`novo · quadrinhos e mangá`}),(0,N.jsx)(`h2`,{className:`text-[1.15rem]`,style:{fontFamily:`Literata, serif`,marginTop:`.4rem`},children:`Pepper&Carrot, Hokusai Manga, os monstros yōkai e Bordalo Pinheiro →`}),(0,N.jsx)(`p`,{className:`text-sm mt-1.5`,style:{color:`var(--tinta-2)`},children:`Com leitor próprio: rolagem para o quadrinho da tela, página dupla, e mangá lido da direita para a esquerda.`})]}),',
+  },
+  // ── apagar a conta sem e-mail (LGPD, achado em 16/09) ──
+  // As duas telas de apagar só habilitavam o botão quando o texto digitado era
+  // igual ao e-mail. Conta criada só com nome de usuário nunca conseguia.
+  { nome: 'apagar conta (estante): mostra o usuário quando não há e-mail',
+    de: 'Digite `,(0,N.jsx)(`b`,{children:r.email})', para: 'Digite `,(0,N.jsx)(`b`,{children:r.email||r.usuario})' },
+  { nome: 'apagar conta (estante): placeholder', de: 'placeholder:r.email,', para: 'placeholder:r.email||r.usuario,' },
+  { nome: 'apagar conta (estante): botão aceita o usuário',
+    de: 'disabled:d.trim().toLowerCase()!==r.email,', para: 'disabled:d.trim().toLowerCase()!==String(r.email||r.usuario).toLowerCase(),' },
+  { nome: 'apagar conta (conta): rótulo', de: 'rotulo:`digite ${e.email} para confirmar`', para: 'rotulo:`digite ${e.email||e.usuario} para confirmar`' },
+  { nome: 'apagar conta (conta): botão aceita o usuário', de: '!==e.email', para: '!==String(e.email||e.usuario).toLowerCase()' },
+  { nome: 'apagar conta (conta): texto', de: 'por isso é preciso digitar o e-mail.', para: 'por isso é preciso digitar o seu nome de usuário (ou o e-mail).' },
+  {
     nome: 'home sem as prateleiras genéricas por tema',
     // "Romance", "Filosofia", "História": catálogo, não descoberta. Os temas
     // continuam na estante e em /tema; só saem da home, onde as coleções

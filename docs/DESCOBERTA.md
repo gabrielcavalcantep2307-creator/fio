@@ -19,7 +19,7 @@ Huxley, Hesse, Borges, Clarice, Guimarães Rosa, Kelsen, Hart, Dworkin têm dono
 | # | Pedido | Estado |
 |---|---|---|
 | 1 | Home com cara própria ("Leia algo que vale a pena lembrar") | **pendente** — frase e topo novos |
-| 1 | "Continuar explorando" personalizado pelo histórico | **parcial** — existe "Você parou aqui" e "Para ler depois"; recomendação por histórico falta (tabelas `perfil_leitor`/`recomendacao` já existem) |
+| 1 | "Continuar explorando" personalizado pelo histórico | **feito (16/09)** — prateleira "Para você" na home e central `/central.html`; recomenda pelo que a pessoa lê e pelo questionário de gosto das contas novas (`servidor/gosto.mjs`) |
 | 2 | Livros que mudam a maneira de ver o mundo | **feito** |
 | 3 | Antes de ler (o que é, encontra, dificuldade, ritmo, gostou de, não espere) | **feito para 28 livros**; os demais é curadoria contínua |
 | 4 | Entre impérios, reis e conspirações | **feito** como "Poder, reis e impérios" (sem os protegidos) |
@@ -40,11 +40,13 @@ Huxley, Hesse, Borges, Clarice, Guimarães Rosa, Kelsen, Hart, Dworkin têm dono
 | 19 | Livros estranhos | **feito**; visual escuro próprio **pendente** |
 | 20 | Rotas de leitura | **feito** 3 (Nietzsche, Estado, ficção científica) como seções em ordem; página de rota com passos **pendente** |
 | 21 | Tags conceituais | **feito** nas 28 fichas ("ideias"); página por tag e ligação automática **pendente** |
-| 22 | Identidade visual das capas por coleção | **pendente** (dá para fazer como as capas das leis) |
+| 22 | Identidade visual das capas por coleção | **parcial (16/09)** — capas desenhadas por tema (poesia, história, filosofia, religião, teatro, ciência, romance) para as 711 obras sem capa real; por seção ainda pendente |
 | 23 | "O que você quer sentir hoje?" | **feito** — 10 botões de humor |
 | — | Conexões ("este livro conversa com…") | **feito para 28 livros** |
 | — | Tirar "O que ainda não podemos servir" | **feito** |
 | — | Link do painel no site, só para admin | **feito** |
+| — | Central de notificações e perfil de gosto | **feito (16/09)** — avisos "já dá para ler", "continue", semana e boas-vindas |
+| — | Mangá e quadrinhos, colorido e P&B, com leitura própria | **feito (16/09)** — 34 séries legais (Pepper&Carrot, Hokusai, yōkai, Bordalo, Edo); leitor com rolagem, página, dupla e sentido mangá. Manhwa: nenhuma fonte legal encontrada |
 
 ## Livros na esteira para as seções
 

@@ -36,7 +36,10 @@ echo "==> Guardando o que está lá, antes de trocar"
 remoto "rm -rf $CASA/servidor.antes && cp -r $CASA/servidor $CASA/servidor.antes"
 
 echo "==> Enviando servidor/ e infra/"
-tar czf - servidor | remoto "tar xzf - -C $CASA"
+# Pasta nova, e não extração por cima: `tar xzf` só acrescenta, e arquivo que
+# saiu do repositório ficava lá para sempre — em 16/09 a VPS ainda carregava o
+# `email.mjs` apagado em 41cb983. A cópia de segurança já está em servidor.antes.
+tar czf - servidor | remoto "rm -rf $CASA/servidor && tar xzf - -C $CASA"
 tar czf - -C infra Dockerfile docker-compose.yml backup.sh Caddyfile.fio \
   | remoto "tar xzf - -C $CASA/infra"
 
@@ -50,11 +53,15 @@ echo "    $SAUDE"
 
 # A porta da casa é o motivo desta rodada. Se ela não fechou, o deploy não
 # valeu, e é melhor gritar aqui do que descobrir por um cadastro estranho.
+# Desde 15/09 a porta também se abre pelo painel (Configurações → cadastro
+# aberto), então "aberta" pode ser decisão do dono. O aviso diz de onde vem.
 case "$SAUDE" in
   *'"convite":"obrigatorio"'*)
     echo "    OK: a porta está fechada, entra quem tem convite." ;;
+  *'"convite":"opcional"'*)
+    echo "    A porta está ABERTA (cadastro sem convite). Se foi o interruptor do"
+    echo "    painel, está certo. Se não foi, confira FIO_CONVITE no $CASA/infra/.env."
+    echo "    Para voltar ao servidor anterior: $CASA/servidor.antes" ;;
   *)
-    echo "    ATENÇÃO: a porta NÃO está fechada. Confira FIO_CONVITE no"
-    echo "    $CASA/infra/.env e no docker-compose.yml, e rode de novo."
-    echo "    Para voltar ao que estava: $CASA/servidor.antes" ;;
+    echo "    ATENÇÃO: o servidor não respondeu a saúde. Para voltar: $CASA/servidor.antes" ;;
 esac
