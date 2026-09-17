@@ -56,11 +56,24 @@ function espelharNaUrl() {
   history.replaceState(null, '', `/quadrinhos.html${p.toString() ? '?' + p : ''}`)
 }
 
-const chips = (nome, opcoes) => el('div', { class: 'linha-filtro' }, el('span', { class: 'rot' }, nome),
-  opcoes.map(([valor, rotulo, chaveFiltro]) => el('button', {
-    class: 'filtro', 'aria-pressed': String(filtros[chaveFiltro] === valor),
-    onclick: () => { filtros[chaveFiltro] = valor; buscar(true) },
-  }, rotulo)))
+// O botão marcado tem que acompanhar o filtro. Até 17/09 o painel era montado
+// uma vez só e o clique mudava o filtro sem remarcar os botões: a lista
+// filtrava, e "Todos" continuava aceso.
+const chips = (nome, opcoes) => {
+  const botoes = opcoes.map(([valor, rotulo, chaveFiltro]) => {
+    const b = el('button', {
+      class: 'filtro', type: 'button', 'aria-pressed': String(filtros[chaveFiltro] === valor),
+      onclick: () => {
+        filtros[chaveFiltro] = valor
+        for (const outro of botoes) outro.setAttribute('aria-pressed', String(outro._valor === valor))
+        buscar(true)
+      },
+    }, rotulo)
+    b._valor = valor
+    return b
+  })
+  return el('div', { class: 'linha-filtro' }, el('span', { class: 'rot' }, nome), botoes)
+}
 
 const seletor = (chave, opcoes) => {
   const s = el('select', { class: 'sel', 'aria-label': chave, onchange: (e) => { filtros[chave] = e.target.value; buscar(true) } },
@@ -80,7 +93,10 @@ function cartaoManga(o) {
 
 async function buscar(recomecar) {
   if (recomecar) { resultados = []; proxima = 1 }
-  if (!proxima || carregando) return
+  // Filtro novo passa mesmo com busca em andamento: a resposta velha é
+  // descartada pelo `pedidoAtual`. Antes, o segundo clique rápido (tipo e
+  // depois cor) era ignorado e a lista mostrava só o primeiro filtro.
+  if (!proxima || (carregando && !recomecar)) return
   carregando = true
   const meu = ++pedidoAtual
   espelharNaUrl()
@@ -237,7 +253,11 @@ async function mostrarAqui() {
   const busca = el('input', { class: 'busca', type: 'search', placeholder: 'Buscar por título, autor ou tema', value: filtrosAqui.q })
   busca.addEventListener('input', () => { filtrosAqui.q = busca.value; desenharListaAqui() })
   const chipsAqui = (rot, chave, opcoes) => el('div', { class: 'linha-filtro' }, el('span', { class: 'rot' }, rot),
-    opcoes.map(([v, r]) => el('button', { class: 'filtro', 'aria-pressed': String(filtrosAqui[chave] === v), onclick: () => { filtrosAqui[chave] = v; mostrarAqui() } }, r)))
+    opcoes.map(([v, r]) => el('button', { class: 'filtro', type: 'button', 'aria-pressed': String(filtrosAqui[chave] === v), onclick: (e) => {
+      filtrosAqui[chave] = v
+      for (const b of e.currentTarget.parentNode.querySelectorAll('button')) b.setAttribute('aria-pressed', String(b === e.currentTarget))
+      desenharListaAqui()
+    } }, r)))
 
   const area = el('div', {})
   function desenharListaAqui() {
@@ -301,7 +321,8 @@ function cabecalho() {
     el('h1', {}, 'Quadrinhos, mangá e manhwa'),
     el('div', { class: 'abas', role: 'tablist' },
       el('button', { role: 'tab', 'aria-selected': String(aba === 'descobrir'), onclick: () => trocarAba('descobrir') }, 'Descobrir mangá, manhwa e manhua'),
-      el('button', { role: 'tab', 'aria-selected': String(aba === 'aqui'), onclick: () => trocarAba('aqui') }, 'Ler aqui (livres)')))
+      el('button', { role: 'tab', 'aria-selected': String(aba === 'aqui'), onclick: () => trocarAba('aqui') }, 'Ler aqui (livres)'),
+      el('a', { role: 'tab', href: '/publicacoes.html?tipo=quadrinho', style: 'color:var(--tinta2);font-size:15px;padding:10px 14px;text-decoration:none' }, 'Da comunidade')))
 }
 
 function trocarAba(nova) {

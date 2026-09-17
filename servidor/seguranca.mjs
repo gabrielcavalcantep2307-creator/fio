@@ -145,6 +145,13 @@ export const LIMITES = {
   // servidor inteiro: sem freio por pessoa, um laço num filtro gastaria o teto
   // de todo mundo. Noventa por minuto cobre folhear filtros à vontade.
   'mangas': { quantas: 90, minutos: 1 },
+  // Publicações (17/09). Ler a vitrine é folhear; escrever custa atenção da
+  // administração e disco; imagem custa disco — um capítulo de 150 páginas
+  // cabe folgado em uma hora, um laço não. Denunciar é raro por natureza.
+  'publicacoes': { quantas: 150, minutos: 1 },
+  'publicar': { quantas: 120, minutos: 60 },
+  'upload': { quantas: 600, minutos: 60 },
+  'denunciar': { quantas: 10, minutos: 60 },
 }
 
 /**

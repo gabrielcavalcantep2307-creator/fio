@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Publicar — Fio</title>
+<link rel="icon" type="image/svg+xml" href="/fio.svg">
+<link rel="stylesheet" href="/fio-paginas.css">
+<style>
+  .uso{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin:0 0 26px}
+  .uso .caixa{padding:14px 16px}
+  .uso b{font-size:22px;font-family:Literata,Georgia,serif;font-weight:500}
+  .barrinha{height:5px;background:var(--linha);border-radius:3px;margin-top:8px;overflow:hidden}
+  .barrinha i{display:block;height:100%;background:var(--acento)}
+  .minhas{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(min(100%,420px),1fr))}
+  .minha{display:grid;grid-template-columns:90px 1fr;gap:14px;background:var(--papel2);border:1px solid var(--linha);border-radius:12px;padding:12px;text-decoration:none}
+  .minha img,.minha .sem{width:90px;aspect-ratio:2/3;object-fit:cover;border-radius:4px;background:var(--linha)}
+  .minha h2{font-size:18px;margin:0 0 4px}
+  .minha .aut{font-size:12.5px;color:var(--tinta2)}
+  .secao{margin:0 0 34px}
+  .duas{display:grid;gap:0 18px;grid-template-columns:1fr 1fr}
+  .generos{display:flex;flex-wrap:wrap;gap:6px}
+  .generos label{border:1px solid var(--linha);border-radius:999px;padding:4px 11px;font-size:13px;cursor:pointer;user-select:none}
+  .generos label:has(input:checked){background:var(--acento);border-color:var(--acento);color:#fff}
+  .generos input{position:absolute;opacity:0;pointer-events:none}
+  .capa-atual{display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap}
+  .capa-atual img{width:140px;aspect-ratio:2/3;object-fit:cover;border-radius:6px;background:var(--papel2)}
+  .caps-ed{list-style:none;padding:0;margin:0 0 12px}
+  .caps-ed li{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:10px 4px;border-bottom:1px solid var(--linha)}
+  .caps-ed .n{color:var(--tinta2);min-width:2em}
+  .caps-ed .acoes{margin-left:auto;display:flex;gap:6px}
+  .miniaturas{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));margin:12px 0}
+  .mini{position:relative;border:1px solid var(--linha);border-radius:6px;overflow:hidden;background:var(--papel2)}
+  .mini img{width:100%;aspect-ratio:3/4;object-fit:cover;display:block}
+  .mini .num{position:absolute;top:4px;left:4px;background:rgba(0,0,0,.75);color:#fff;font-size:11px;border-radius:999px;padding:0 6px}
+  .mini .bts{display:flex;justify-content:space-between;padding:3px}
+  .mini .bts button{background:none;border:none;color:var(--tinta);cursor:pointer;font-size:14px;padding:2px 6px}
+  .contador{font-size:12px;color:var(--tinta2);text-align:right}
+  .regras{font-size:13.5px;color:var(--tinta2)}
+  .regras li{margin:4px 0}
+  @media (max-width:640px){.duas{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main id="main"><p class="sub">abrindo…</p></main>
+<script src="/fio-comum.js"></script>
+<script src="/publicar.js"></script>
+</body>
+</html>

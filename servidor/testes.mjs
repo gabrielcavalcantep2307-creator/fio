@@ -1324,3 +1324,159 @@ test('mangás: tipo, cor, sentido e "oficial em português" saem certos da ficha
   assert.equal(m.emPortugues, true)
   assert.deepEqual(m.ondeLer.map((l) => l.site), ['MANGA Plus'], 'rede social ou link não-https entrou')
 })
+
+// ─────────────────────────────────────────────────────────────
+// Assinaturas e publicações (17/09/2026). O que se testa é o que NÃO pode
+// passar: imagem com coisa escondida, quem não tem plano publicando, obra em
+// revisão aparecendo para estranho, página de outra obra entrando num capítulo.
+// ─────────────────────────────────────────────────────────────
+
+import { deflateSync, crc32 as crc } from 'node:zlib'
+import { limparImagem, ImagemRecusada } from './imagem.mjs'
+import * as planos from './planos.mjs'
+import { chaveDe } from './usuario.mjs'
+
+function pngDeTeste(w, h, { extra = [], cauda = null } = {}) {
+  const bloco = (tipo, dados) => {
+    const t = Buffer.from(tipo, 'latin1'), tam = Buffer.alloc(4), c = Buffer.alloc(4)
+    tam.writeUInt32BE(dados.length); c.writeUInt32BE(crc(Buffer.concat([t, dados])))
+    return Buffer.concat([tam, t, dados, c])
+  }
+  const ihdr = Buffer.alloc(13); ihdr.writeUInt32BE(w, 0); ihdr.writeUInt32BE(h, 4); ihdr[8] = 8; ihdr[9] = 2
+  const cru = Buffer.alloc(Math.min(h, 2000) * (1 + 3 * Math.min(w, 2000)))
+  return Buffer.concat([Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]), bloco('IHDR', ihdr),
+    ...extra.map(([t, d]) => bloco(t, Buffer.from(d))), bloco('IDAT', deflateSync(cru)), bloco('IEND', Buffer.alloc(0)),
+    ...(cauda ? [Buffer.from(cauda)] : [])])
+}
+
+function jpegDeTeste(w, h) {
+  const seg = (m, dados) => { const t = Buffer.alloc(4); t[0] = 0xff; t[1] = m; t.writeUInt16BE(dados.length + 2, 2); return Buffer.concat([t, Buffer.from(dados)]) }
+  const sof = Buffer.alloc(9); sof[0] = 8; sof.writeUInt16BE(h, 1); sof.writeUInt16BE(w, 3); sof[5] = 1; sof[6] = 1; sof[7] = 0x11; sof[8] = 0
+  return Buffer.concat([Buffer.from([0xff, 0xd8]), seg(0xe0, Buffer.from('JFIF\0\x01\x01\0\0\x01\0\x01\0\0', 'latin1')),
+    seg(0xe1, Buffer.from('Exif\0\0GPS-LATITUDE-23.5', 'latin1')), seg(0xfe, Buffer.from('<script>alert(1)</script>')),
+    seg(0xdb, Buffer.alloc(65)), seg(0xc0, sof), seg(0xc4, Buffer.alloc(29)), seg(0xda, Buffer.from([1, 1, 0, 0, 63, 0])),
+    Buffer.from([0x12, 0xff, 0x00, 0x34, 0xff, 0xd0, 0x56]), Buffer.from([0xff, 0xd9]), Buffer.from('PK\x03\x04<html>esconderijo</html>', 'latin1')])
+}
+
+test('imagem: PNG perde texto escondido e o que vem depois do fim', () => {
+  const r = limparImagem(pngDeTeste(40, 60, { extra: [['tEXt', 'Comment\0<script>x</script>']], cauda: '<html><script>alert(1)</script>' }))
+  assert.equal(r.mime, 'image/png'); assert.equal(r.largura, 40); assert.equal(r.altura, 60)
+  const s = r.bytes.toString('latin1')
+  assert.ok(!s.includes('script') && !s.includes('tEXt'), 'sobrou texto ou cauda no PNG')
+  assert.equal(s.slice(-8, -4), 'IEND', 'PNG não termina no IEND')
+})
+
+test('imagem: JPEG perde EXIF (GPS), comentário e o ZIP colado atrás', () => {
+  const r = limparImagem(jpegDeTeste(320, 480))
+  assert.equal(r.mime, 'image/jpeg'); assert.equal(r.largura, 320); assert.equal(r.altura, 480)
+  const s = r.bytes.toString('latin1')
+  assert.ok(!s.includes('Exif') && !s.includes('GPS') && !s.includes('script') && !s.includes('PK'), 'metadado ou cauda sobreviveu')
+  assert.equal(r.bytes.at(-1), 0xd9)
+})
+
+test('imagem: WebP estático passa; SVG, GIF, HTML e PNG adulterado não', () => {
+  const webp = Buffer.from('UklGRhoAAABXRUJQVlA4TA0AAAAvAAAAEAcQERGIiP4HAA==', 'base64')
+  assert.equal(limparImagem(webp).largura, 1)
+  const ruins = [
+    Buffer.from('<svg xmlns="http://www.w3.org/2000/svg"><script>alert(1)</script></svg>'),
+    Buffer.from('GIF89a\x01\x00\x01\x00', 'latin1'),
+    Buffer.from('<!doctype html><script>alert(1)</script>'),
+  ]
+  const adulterado = pngDeTeste(10, 10); adulterado[adulterado.length - 20] ^= 0xff
+  ruins.push(adulterado, pngDeTeste(20000, 10), Buffer.alloc(0))
+  for (const b of ruins) assert.throws(() => limparImagem(b), ImagemRecusada)
+})
+
+test('planos: admin é Tear; cortesia vale até vencer; admin não recebe linha', () => {
+  const b = bd(); planos.garantirTabelas(b)
+  const adm = leitorDeTeste('admplano'); b.prepare("UPDATE leitor SET papel = 'admin' WHERE id = ?").run(adm)
+  const zeca = leitorDeTeste('zecaplano')
+  const p = (id) => b.prepare('SELECT id, usuario, papel FROM leitor WHERE id = ?').get(id)
+  const ctx = { chaveDe, Recusa: contas.Recusa }
+  assert.equal(planos.planoDe(b, p(adm)).chave, 'tear')
+  assert.equal(planos.planoDe(b, p(zeca)).chave, 'leitor')
+  planos.conceder(b, adm, { usuario: 'ZecaPlano', plano: 'trama' }, ctx)
+  assert.equal(planos.planoDe(b, p(zeca)).chave, 'trama')
+  b.prepare("UPDATE assinatura SET ate = datetime('now', '-1 day') WHERE leitor_id = ?").run(zeca)
+  assert.equal(planos.planoDe(b, p(zeca)).chave, 'leitor', 'cortesia vencida continuou valendo')
+  assert.throws(() => planos.conceder(b, adm, { usuario: 'admplano', plano: 'novelo' }, ctx), contas.Recusa)
+  assert.throws(() => planos.conceder(b, adm, { usuario: 'zecaplano', plano: 'ouro' }, ctx), contas.Recusa)
+  assert.equal(planos.vitrine(b, null).disponivel, false, 'assinatura apareceu como disponível')
+})
+
+test('publicações: sem plano não publica; com Trama publica só depois da revisão, e dentro do limite', async () => {
+  process.env.FIO_PUBLICACOES = join(pasta, 'publicacoes')
+  const pub = await import('./publicacoes.mjs')
+  const b = bd(); planos.garantirTabelas(b); pub.garantirTabelas(b); gosto.garantirTabelas(b)
+  const p = (id) => b.prepare('SELECT id, usuario, papel FROM leitor WHERE id = ?').get(id)
+  const ctx = { chaveDe, Recusa: contas.Recusa }
+  const adm = leitorDeTeste('admpub'); b.prepare("UPDATE leitor SET papel = 'admin' WHERE id = ?").run(adm)
+  const semPlano = leitorDeTeste('semplanopub'), autora = leitorDeTeste('autorapub'), leitora = leitorDeTeste('leitorapub')
+  const obra = { tipo: 'livro', titulo: 'A Torre de Sal', formato: 'romance', generos: ['fantasia', 'progressao'],
+    classificacao: '14', sinopse: 'Uma menina sobe andar por andar de uma torre que muda.', autoria: true }
+
+  assert.throws(() => pub.salvarObra(b, p(semPlano), obra), (e) => e.status === 403)
+  planos.conceder(b, adm, { usuario: 'autorapub', plano: 'trama' }, ctx)
+  assert.throws(() => pub.salvarObra(b, p(autora), { ...obra, autoria: false }), contas.Recusa, 'publicou sem declarar autoria')
+  assert.throws(() => pub.salvarObra(b, p(autora), { ...obra, generos: ['hentai'] }), contas.Recusa, 'gênero fora da lista')
+
+  const { id } = pub.salvarObra(b, p(autora), obra)
+  pub.salvarParte(b, p(autora), { publicacao: id, titulo: 'Primeiro andar', texto: 'Era uma vez uma torre. '.repeat(20) })
+  assert.throws(() => pub.enviar(b, p(autora), { id }), /capa/)
+  assert.throws(() => pub.receberImagem(b, p(autora), { id, uso: 'capa' }, pngDeTeste(600, 300)), /em pé/)
+  const capa = pub.receberImagem(b, p(autora), { id, uso: 'capa' }, pngDeTeste(400, 600))
+  assert.equal(pub.enviar(b, p(autora), { id }).estado, 'revisao')
+
+  const busca = (q) => new URLSearchParams(q)
+  assert.equal(pub.listar(b, null, busca('')).obras.length, 0, 'obra em revisão apareceu na vitrine')
+  assert.throws(() => pub.ficha(b, p(leitora), id), (e) => e.status === 404)
+  const nomeCapa = capa.arquivo.split('.')[0]
+  assert.equal(pub.podeVerArquivo(b, null, nomeCapa), null, 'capa em revisão servida a estranho')
+  assert.ok(pub.podeVerArquivo(b, p(autora), nomeCapa), 'autora não vê a própria capa')
+
+  pub.decidir(b, p(adm), { alvo: 'obra', id, acao: 'aprovar' })
+  assert.equal(pub.listar(b, null, busca('genero=fantasia')).obras.length, 1)
+  assert.equal(pub.listar(b, null, busca('genero=terror')).obras.length, 0, 'filtro de gênero não filtrou')
+  assert.equal(pub.listar(b, null, busca('tipo=quadrinho')).obras.length, 0, 'filtro de tipo não filtrou')
+  assert.equal(pub.listar(b, null, busca('classificacao=12')).obras.length, 0, 'classificação 14 passou no filtro até 12')
+  assert.ok(pub.podeVerArquivo(b, null, nomeCapa)?.publico)
+  assert.match(pub.lerParte(b, null, id, 1).texto, /torre/)
+
+  // capítulo novo em obra publicada: fica escondido até a revisão
+  pub.salvarParte(b, p(autora), { publicacao: id, titulo: 'Segundo andar', texto: 'O segundo andar tinha água. '.repeat(10) })
+  pub.enviar(b, p(autora), { id })
+  assert.throws(() => pub.lerParte(b, null, id, 2), (e) => e.status === 404)
+
+  // limite do plano Trama: 3 obras
+  pub.salvarObra(b, p(autora), obra); pub.salvarObra(b, p(autora), obra)
+  assert.throws(() => pub.salvarObra(b, p(autora), obra), (e) => e.status === 403, 'passou do limite de obras')
+})
+
+test('publicações: página de outra obra não entra; três denúncias suspendem', async () => {
+  const pub = await import('./publicacoes.mjs')
+  const b = bd()
+  const p = (id) => b.prepare('SELECT id, usuario, papel FROM leitor WHERE id = ?').get(id)
+  const ctx = { chaveDe, Recusa: contas.Recusa }
+  const adm = b.prepare("SELECT id FROM leitor WHERE usuario = 'admpub'").get().id
+  const a1 = leitorDeTeste('quadrinista1'), a2 = leitorDeTeste('quadrinista2')
+  for (const u of ['quadrinista1', 'quadrinista2']) planos.conceder(b, adm, { usuario: u, plano: 'tear' }, ctx)
+  const base = { tipo: 'quadrinho', formato: 'manga', generos: ['acao'], classificacao: 'livre', cor: 'pb', sentido: 'rtl',
+    sinopse: 'Um lutador que não sabe perder aprende a cair.', autoria: true }
+  const o1 = pub.salvarObra(b, p(a1), { ...base, titulo: 'Queda' }).id
+  const o2 = pub.salvarObra(b, p(a2), { ...base, titulo: 'Outra' }).id
+  const alheia = pub.receberImagem(b, p(a2), { id: o2, uso: 'pagina' }, pngDeTeste(80, 120)).arquivo
+  assert.throws(() => pub.receberImagem(b, p(a1), { id: o2, uso: 'pagina' }, pngDeTeste(80, 120)), (e) => e.status === 404, 'subiu imagem na obra alheia')
+  assert.throws(() => pub.salvarParte(b, p(a1), { publicacao: o1, titulo: 'Cap 1', paginas: [alheia] }), /não pertence/)
+  assert.throws(() => pub.salvarParte(b, p(a1), { publicacao: o1, titulo: 'Cap 1', paginas: ['../../etc/passwd'] }), /não pertence/)
+  const minha = pub.receberImagem(b, p(a1), { id: o1, uso: 'pagina' }, pngDeTeste(80, 120)).arquivo
+  pub.salvarParte(b, p(a1), { publicacao: o1, titulo: 'Cap 1', paginas: [minha] })
+  pub.receberImagem(b, p(a1), { id: o1, uso: 'capa' }, pngDeTeste(400, 600))
+  pub.enviar(b, p(a1), { id: o1 }); pub.decidir(b, p(adm), { alvo: 'obra', id: o1, acao: 'aprovar' })
+  assert.equal(pub.lerParte(b, null, o1, 1).paginas.length, 1)
+
+  for (const u of ['den1', 'den2', 'den3']) pub.denunciar(b, p(leitorDeTeste(u)), { id: o1, motivo: 'direitos' })
+  assert.equal(b.prepare('SELECT estado FROM publicacao WHERE id = ?').get(o1).estado, 'suspensa', 'três denúncias não suspenderam')
+  assert.equal(pub.listar(b, null, new URLSearchParams('')).obras.some((o) => o.id === o1), false)
+  pub.apagarObra(b, p(a1), o1)
+  assert.equal(b.prepare('SELECT COUNT(*) n FROM publicacao_arquivo WHERE publicacao_id = ?').get(o1).n, 0, 'arquivos ficaram para trás')
+})

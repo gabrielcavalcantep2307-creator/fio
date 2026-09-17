@@ -25,7 +25,7 @@ const el = (tag, attrs = {}, ...filhos) => {
     else if (k.startsWith('on')) e.addEventListener(k.slice(2), v)
     else if (v != null) e.setAttribute(k, v)
   }
-  for (const f of filhos) e.append(f?.nodeType ? f : document.createTextNode(String(f ?? '')))
+  for (const f of filhos.flat(Infinity)) e.append(f?.nodeType ? f : document.createTextNode(String(f ?? '')))
   return e
 }
 const num = (n) => (n ?? 0).toLocaleString('pt-BR')
@@ -79,17 +79,155 @@ function telaEntrar() {
 
 async function desenhar() {
   main.replaceChildren(el('p', { class: 'ajuda' }, 'Carregando o panorama…'))
-  let p, fila, aj
-  try { [p, fila, aj] = await Promise.all([pedir('/painel'), pedir('/fila'), pedir('/ajustes')]) }
-  catch (e) { main.replaceChildren(recado('ruim', `Não deu para carregar: ${e.message}`)); return }
+  let p, fila, aj, ass, pubs
+  try {
+    [p, fila, aj, ass, pubs] = await Promise.all([pedir('/painel'), pedir('/fila'), pedir('/ajustes'),
+      pedir('/admin/assinaturas'), pedir('/admin/publicacoes')])
+  } catch (e) { main.replaceChildren(recado('ruim', `Não deu para carregar: ${e.message}`)); return }
 
+  const pendencias = pubs.obras.length + pubs.denuncias.length
   main.replaceChildren(
     abas([
       ['panorama', 'Panorama', () => [panorama(p), recentes(p.recentes)]],
       ['esteira', 'Esteira', () => [secaoFila(fila.itens), secaoAdicionar()]],
+      ['publicacoes', `Publicações${pendencias ? ` (${pendencias})` : ''}`, () => [secaoPublicacoes(pubs)]],
+      ['assinaturas', 'Assinaturas', () => [secaoAssinaturas(ass)]],
       ['ajustes', 'Configurações', () => [secaoAjustes(aj)]],
     ]),
   )
+}
+
+// ── assinaturas: dar, trocar e tirar plano ──
+//
+// Ninguém assina sozinho ainda (sem pagamento). O dono concede aqui, pelo nome
+// de usuário. Conta de admin já é Tear e não aparece na lista.
+function secaoAssinaturas(a) {
+  const s = el('section', {}, el('h2', {}, 'Assinaturas'))
+  s.append(el('p', { class: 'ajuda' },
+    'As assinaturas ainda não estão à venda: quem tem plano é quem você concede aqui. Publicar começa no plano Trama. ',
+    'Contas de administração são sempre Tear. ', el('a', { href: '/assinaturas.html', target: '_blank' }, 'Ver a página de planos')))
+
+  const usuario = el('input', { placeholder: 'nome de usuário' })
+  const plano = el('select', { style: 'padding:8px;border-radius:7px;border:1px solid var(--linha);background:var(--fundo);color:var(--tinta)' },
+    a.planos.map((x) => el('option', { value: x.chave }, x.chave === 'leitor' ? 'Leitor (tirar o plano)' : x.nome)))
+  plano.value = 'trama'
+  const dias = el('input', { type: 'number', min: '0', placeholder: 'sem prazo' })
+  const nota = el('input', { placeholder: 'por quê (só você vê)' })
+  s.append(el('form', { class: 'add', onsubmit: async (ev) => {
+    ev.preventDefault()
+    const b = ev.submitter; b.disabled = true
+    try {
+      const r = await pedir('/admin/assinatura', { usuario: usuario.value, plano: plano.value, dias: Number(dias.value) || null, nota: nota.value })
+      abaAtual = 'assinaturas'; await desenhar()
+      main.prepend(recado('bom', r.plano === 'leitor' ? `${r.usuario} voltou ao plano Leitor.` : `${r.usuario} agora tem o plano ${r.plano}.`))
+    } catch (e) { b.disabled = false; main.prepend(recado('ruim', e.message)) }
+  } },
+  el('div', { class: 'campos' },
+    el('div', {}, el('label', {}, 'Conta'), usuario),
+    el('div', {}, el('label', {}, 'Plano'), plano),
+    el('div', {}, el('label', {}, 'Dias (vazio = sem prazo)'), dias),
+    el('div', {}, el('label', {}, 'Nota'), nota)),
+  el('div', { style: 'margin-top:12px' }, el('button', {}, 'Conceder'))))
+
+  if (!a.assinaturas.length) { s.append(el('div', { class: 'vazio' }, 'Ninguém tem plano ainda.')); return s }
+  const t = el('table', { style: 'margin-top:16px' }, el('thead', {}, el('tr', {},
+    el('th', {}, 'Conta'), el('th', {}, 'Plano'), el('th', {}, 'Desde'), el('th', {}, 'Até'), el('th', {}, 'Nota'), el('th', {}, ''))))
+  const corpo = el('tbody', {})
+  for (const x of a.assinaturas) {
+    const vencida = x.ate && new Date(x.ate.replace(' ', 'T') + 'Z') < new Date()
+    corpo.append(el('tr', {},
+      el('td', {}, x.usuario), el('td', {}, el('span', { class: `selo ${vencida ? 'erro' : 'pronto'}` }, x.plano + (vencida ? ' (vencida)' : ''))),
+      el('td', { class: 'mono' }, (x.desde || '').slice(0, 10)), el('td', { class: 'mono' }, x.ate ? x.ate.slice(0, 10) : '—'),
+      el('td', {}, x.nota || ''),
+      el('td', {}, el('button', { class: 'fraco', onclick: async () => {
+        if (!confirm(`Tirar o plano de ${x.usuario}? As obras publicadas continuam no ar, mas ele não publica mais.`)) return
+        try { await pedir('/admin/assinatura', { usuario: x.usuario, plano: 'leitor' }); abaAtual = 'assinaturas'; await desenhar() }
+        catch (e) { main.prepend(recado('ruim', e.message)) }
+      } }, 'tirar'))))
+  }
+  t.append(corpo); s.append(t)
+  return s
+}
+
+// ── publicações: a fila de revisão e as denúncias ──
+function secaoPublicacoes(d) {
+  const s = el('section', {}, el('h2', {}, 'Revisão de publicações'))
+  s.append(el('p', { class: 'ajuda' },
+    'Nada de leitor aparece no site sem passar por aqui. Abra a obra (“ver”) antes de aprovar: confira se é mesmo de quem publicou, ',
+    'se não tem sexo explícito e se a classificação bate. Recusar e suspender pedem motivo, que vai para o autor.'))
+
+  const decidir = async (dado, pedirMotivo) => {
+    let motivo = null
+    if (pedirMotivo) { motivo = prompt('Motivo (vai para o autor):'); if (!motivo) return }
+    try { await pedir('/admin/publicacao', { ...dado, motivo }); abaAtual = 'publicacoes'; await desenhar() }
+    catch (e) { main.prepend(recado('ruim', e.message)) }
+  }
+  const bt = (rotulo, dado, pedirMotivo, fraco = true) =>
+    el('button', { class: fraco ? 'fraco' : '', style: 'margin:2px', onclick: () => decidir(dado, pedirMotivo) }, rotulo)
+
+  if (!d.obras.length) s.append(el('div', { class: 'vazio' }, 'Nada esperando revisão.'))
+  for (const o of d.obras) {
+    const caixa = el('div', { class: 'grupo' })
+    caixa.append(el('div', { style: 'display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap' },
+      o.capa ? el('img', { src: o.capa, alt: '', style: 'width:80px;aspect-ratio:2/3;object-fit:cover;border-radius:4px' }) : '',
+      o.capa_pendente ? el('div', {}, el('div', { class: 'ajuda' }, 'capa nova'), el('img', { src: o.capa_pendente, alt: '', style: 'width:80px;aspect-ratio:2/3;object-fit:cover;border-radius:4px' })) : '',
+      el('div', { style: 'flex:1;min-width:220px' },
+        el('h3', {}, o.titulo),
+        el('div', { class: 'ajuda' }, `${o.tipo} · ${o.formato} · ${o.classificacao === 'livre' ? 'livre' : o.classificacao + '+'} · por ${o.usuario} · ${o.estado}`),
+        o.declarou_autoria ? el('div', { class: 'ajuda mono' }, `declarou autoria: ${o.declarou_autoria}`) : '',
+        o.motivo ? el('div', { class: 'ajuda', style: 'color:var(--alerta)' }, o.motivo) : '',
+        el('div', { style: 'margin-top:8px' },
+          el('a', { href: `/publicacoes.html?id=${o.id}`, target: '_blank' }, 'ver a obra'), ' ',
+          o.estado === 'revisao' ? bt('Aprovar obra', { alvo: 'obra', id: o.id, acao: 'aprovar' }, false, false) : '',
+          o.estado === 'revisao' ? bt('Recusar', { alvo: 'obra', id: o.id, acao: 'recusar' }, true) : '',
+          o.estado === 'suspensa' ? bt('Reativar', { alvo: 'obra', id: o.id, acao: 'reativar' }, false, false) : '',
+          o.estado === 'publicada' ? bt('Suspender', { alvo: 'obra', id: o.id, acao: 'suspender' }, true) : '',
+          o.capa_pendente ? bt('Aprovar capa', { alvo: 'capa', id: o.id, acao: 'aprovar' }) : '',
+          o.capa_pendente ? bt('Recusar capa', { alvo: 'capa', id: o.id, acao: 'recusar' }, true) : ''))))
+    if (o.partes.length && o.estado !== 'revisao') {
+      const lista = el('div', { style: 'margin-top:10px' }, el('div', { class: 'ajuda' }, 'Capítulos esperando revisão:'))
+      for (const x of o.partes) {
+        lista.append(el('div', { style: 'display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:4px 0;border-top:1px solid var(--linha)' },
+          el('span', {}, `${x.ordem}. ${x.titulo}`),
+          el('span', { class: 'ajuda' }, x.paginas ? `${x.paginas} páginas` : `${x.palavras} palavras`),
+          el('a', { href: `/publicacoes.html?id=${o.id}&cap=${x.ordem}`, target: '_blank' }, 'ler'),
+          bt('Aprovar', { alvo: 'parte', id: x.id, acao: 'aprovar' }, false, false),
+          bt('Recusar', { alvo: 'parte', id: x.id, acao: 'recusar' }, true)))
+      }
+      caixa.append(lista)
+    } else if (o.partes.length) {
+      caixa.append(el('div', { class: 'ajuda', style: 'margin-top:6px' }, `${o.partes.length} capítulo(s) entram junto com a aprovação da obra.`))
+    }
+    s.append(caixa)
+  }
+
+  if (d.denuncias.length) {
+    s.append(el('h2', { style: 'margin-top:26px' }, `Denúncias abertas (${d.denuncias.length})`))
+    const t = el('table', {}, el('thead', {}, el('tr', {}, el('th', {}, 'Obra'), el('th', {}, 'Motivo'), el('th', {}, 'Quem'), el('th', {}, ''))))
+    const corpo = el('tbody', {})
+    for (const x of d.denuncias) {
+      corpo.append(el('tr', {},
+        el('td', {}, el('a', { href: `/publicacoes.html?id=${x.publicacao_id}`, target: '_blank' }, `#${x.publicacao_id}`)),
+        el('td', {}, x.motivoNome, x.detalhe ? el('div', { class: 'ajuda' }, x.detalhe) : ''),
+        el('td', {}, x.usuario || '(conta apagada)'),
+        el('td', {}, bt('resolvida', { alvo: 'denuncia', id: x.id, acao: 'resolver' }))))
+    }
+    t.append(corpo); s.append(t)
+  }
+
+  if (d.publicadas.length) {
+    s.append(el('h2', { style: 'margin-top:26px' }, 'No ar'))
+    const t = el('table', {}, el('thead', {}, el('tr', {}, el('th', {}, 'Obra'), el('th', {}, 'Autor'), el('th', {}, 'Leituras'), el('th', {}, ''))))
+    const corpo = el('tbody', {})
+    for (const x of d.publicadas) {
+      corpo.append(el('tr', {},
+        el('td', {}, el('a', { href: `/publicacoes.html?id=${x.id}`, target: '_blank' }, x.titulo)),
+        el('td', {}, x.usuario), el('td', { class: 'mono' }, num(x.leituras)),
+        el('td', {}, bt('suspender', { alvo: 'obra', id: x.id, acao: 'suspender' }, true))))
+    }
+    t.append(corpo); s.append(t)
+  }
+  return s
 }
 
 // A navegação do painel: três frentes, uma de cada vez. Guarda a escolha em

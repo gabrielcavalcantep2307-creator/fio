@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Comunidade — Fio</title>
+<link rel="icon" type="image/svg+xml" href="/fio.svg">
+<link rel="stylesheet" href="/fio-paginas.css">
+<style>
+  .topo{display:grid;grid-template-columns:220px 1fr;gap:28px;margin-bottom:30px}
+  .topo img{width:100%;border-radius:6px;box-shadow:0 20px 40px -20px rgba(0,0,0,.7);aspect-ratio:2/3;object-fit:cover;background:var(--papel2)}
+  .aut{color:var(--tinta2);font-size:13.5px}
+  .sinopse{white-space:pre-line;max-width:64ch}
+  .caps{list-style:none;padding:0;margin:0;border-top:1px solid var(--linha)}
+  .caps li{border-bottom:1px solid var(--linha)}
+  .caps a{display:flex;gap:14px;align-items:baseline;padding:12px 4px;text-decoration:none}
+  .caps a:hover{background:var(--papel2)}
+  .caps .n{color:var(--tinta2);font-variant-numeric:tabular-nums;min-width:2.5em}
+  .caps .d{margin-left:auto;font-size:12px;color:var(--tinta2);white-space:nowrap}
+  .vazia-capa{width:100%;aspect-ratio:2/3;border-radius:6px;background:var(--papel2);display:flex;align-items:center;justify-content:center;color:var(--tinta2);font-size:12px}
+  /* leitor */
+  .leitor-topo{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:22px}
+  .leitor-topo .t{font-family:Literata,Georgia,serif;font-size:18px}
+  .texto{font-family:Literata,Georgia,serif;font-size:19px;line-height:1.75;max-width:40em;margin:0 auto}
+  .texto p{margin:0 0 1.1em;text-indent:1.4em}
+  .texto h2{text-align:center;margin:0 0 1.4em;font-size:28px}
+  .paginas{max-width:900px;margin:0 auto;display:flex;flex-direction:column;align-items:center}
+  .paginas img{width:100%;height:auto;display:block;background:var(--papel2)}
+  .navcap{display:flex;justify-content:space-between;gap:10px;max-width:40em;margin:40px auto 0}
+  .denuncia{margin-top:30px;font-size:13px}
+  .denuncia summary{cursor:pointer;color:var(--tinta2)}
+  dialog{border:1px solid var(--linha);border-radius:14px;background:var(--papel);color:var(--tinta);max-width:460px;width:calc(100% - 32px)}
+  dialog::backdrop{background:rgba(0,0,0,.55)}
+  @media (max-width:640px){.topo{grid-template-columns:120px 1fr;gap:14px}.topo h1{font-size:24px}.texto{font-size:17.5px}}
+</style>
+</head>
+<body>
+<main id="main"><p class="sub">abrindo…</p></main>
+<script src="/fio-comum.js"></script>
+<script src="/publicacoes.js"></script>
+</body>
+</html>

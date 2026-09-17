@@ -1,4 +1,4 @@
-# Fio — o projeto inteiro, em 16/09/2026
+# Fio — o projeto inteiro, em 17/09/2026
 
 Uma biblioteca em português que liga um livro ao próximo. No ar em
 <https://fiolib.duckdns.org> (e `fio.142-93-57-2.sslip.io`), na mesma VPS do Wallt.
@@ -21,6 +21,8 @@ nos outros arquivos de `docs/` (índice no fim).
 | Seções de descoberta na home | **17** curadas + 4 mantidas + "A lei, na íntegra" |
 | Quadrinhos e mangá para ler aqui | **34 séries, 157 volumes, 4.672 páginas** |
 | Mangá, manhwa e manhua para descobrir | **milhares** (AniList, consultado na hora), com onde ler oficialmente |
+| Publicações da comunidade | seção nova (17/09): livros e quadrinhos de assinantes Trama/Tear, com revisão |
+| Assinaturas | Leitor (grátis) · Novelo R$ 7,90 · Trama R$ 16,90 · Tear R$ 29,90 — **ainda sem pagamento**, concedidas pelo painel |
 | Contas | 2 (ambas admin) · cadastro **aberto** · portão de leitura **ligado** |
 
 ## 2. A regra que vem antes de tudo
@@ -161,6 +163,13 @@ rodar de novo retoma.
   - Panorama.
   - Esteira: fila e adicionar livros.
   - Configurações: cadastro aberto; portão de leitura e páginas de graça (padrão ≈ 5 livros).
+- **Assinaturas** (`servidor/planos.mjs`, `/assinaturas.html`): quatro níveis — Leitor (grátis), Novelo, Trama e Tear. **Ninguém assina sozinho ainda**: a página mostra preços e a comparação completa com o aviso de que o pagamento vem depois; o dono concede plano pelo painel (aba Assinaturas), com prazo opcional. Admin é sempre Tear. Tudo pergunta `planoDe()`; o gateway, quando vier, só grava `origem = 'pagamento'`.
+- **Publicações** (`servidor/publicacoes.mjs`, `/publicar.html`, `/publicacoes.html`):
+  - Só Trama (3 obras, 40 capítulos, 80 páginas/cap., 300 MB) e Tear (20 obras, 400 capítulos, 150 páginas/cap., 3 GB). Limites conferidos no servidor.
+  - Obrigatórios para aparecer nos filtros: tipo, formato, até 4 gêneros de lista fechada, classificação, sinopse, cor e sentido (quadrinho), e a declaração de autoria.
+  - **Nada aparece sem revisão**: obra nova, capítulo novo ou editado e capa trocada (a antiga fica até aprovar). Admin publica direto. Três denúncias de contas diferentes suspendem a obra.
+  - **Imagem** (`servidor/imagem.mjs`): só JPEG, PNG e WebP estático, decididos pelos bytes; o arquivo é desmontado e remontado só com os blocos que desenham (some EXIF/GPS, comentários, texto e o que vier depois do fim — onde mora o arquivo poliglota). Nome sorteado, fora da pasta do site (`/dados/publicacoes`), servido por `/api/pub-arquivo/` conferindo permissão, com `nosniff` e CSP `sandbox`. Faxina de hora em hora.
+  - Painel, aba Publicações: aprovar, recusar (motivo vai para o autor como aviso), suspender, reativar, capas pendentes e denúncias.
 - **Portão de leitura:** quem lê sem conta tem um teto de páginas (contado por faixa de IP). Estourou, o próximo livro vira um capítulo que convida a criar conta.
 - **Gosto, recomendações e avisos** (`servidor/gosto.mjs`, `/central.html`):
   - **Conta nova** responde humores, livros que ama, autores, tempo e o que evitar, e sai com recomendações na hora. **Conta antiga** não é interrompida.
@@ -177,10 +186,11 @@ bash infra/publicar-so-servidor.sh
 node infra/remendar-bundle.mjs --base index-DBmeFHaL.js --index index.html --saida saida/
 #   (base e index vêm de /opt/fio/site; copiar saida/ativos/*.js e saida/index.html de volta)
 
-# páginas próprias (painel, central, quadrinhos): scp direto para /opt/fio/site/
+# páginas próprias (painel, central, quadrinhos, comunidade, publicar, planos): scp direto para /opt/fio/site/
+#   (fio-comum.js e fio-paginas.css são dividas pelas três páginas novas)
 
 # testes
-node --test servidor/testes.mjs        # 84 testes
+node --test servidor/testes.mjs        # 93 testes
 
 # seções de descoberta e catálogo (dentro do container)
 node /app/ingestao/secoes.mjs --banco /dados/catalogo.db --gravar
@@ -208,6 +218,9 @@ Antes de rodar um script de ingestão no container, copie-o de novo.
 
 ## 9. O que falta
 
+- **Antes de cobrar assinatura:** termos de uso, CNPJ/nota, gateway com Pix, 7 dias de arrependimento, licença comercial do AniList acima de US$ 150/mês e a licença dos modelos de tradução (`docs/CAMINHOS-LEGAIS.md` §0 e §3).
+- **As cinco ideias de 17/09** (`docs/IDEIAS-2026-09-17.md`): fundo dos criadores, Assistir por embed oficial, Descobrir anime, leitura em voz alta, revisão comunitária das traduções.
+
 - **Reconstruir `web/src`** até alcançar o site no ar. É o que destrava:
   - as telas grandes do direcionamento: notas de world-building, barra de progressão, escala do mundo, linha do tempo navegável, página de rota e de tag;
   - o fim dos remendos.
@@ -222,6 +235,8 @@ Antes de rodar um script de ingestão no container, copie-o de novo.
 | Arquivo | Assunto |
 |---|---|
 | `PROJETO.md` | este |
+| `CAMINHOS-LEGAIS.md` | como crescer acervo, vídeo e mangá sem pirataria; o que muda quando o site cobra (17/09) |
+| `IDEIAS-2026-09-17.md` | cinco ideias estruturadas |
 | `DESCOBERTA.md` | checklist do direcionamento da home (16/09) |
 | `AUDITORIA-2026-09-16.md` | a auditoria desta rodada |
 | `ARQUITETURA.md`, `VPS.md` | infraestrutura em detalhe |

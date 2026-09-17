@@ -36,6 +36,8 @@ const DE_GENTE = [
   // de tradução do painel. Nenhuma está em DO_CATALOGO, então nenhuma é tocada;
   // estão aqui para aparecerem no relatório e na revisão.
   'gosto', 'aviso', 'leitura_livre', 'ajuste', 'fila_traducao',
+  // 17/09: assinaturas e publicações de leitores (as imagens moram em /dados/publicacoes).
+  'assinatura', 'publicacao', 'publicacao_parte', 'publicacao_arquivo', 'publicacao_denuncia',
 ]
 
 const entrada = process.argv[2]

@@ -28,6 +28,9 @@ import { conferirUsuario, estaTomado } from './usuario.mjs'
 import * as ajustes from './ajustes.mjs'
 import * as gosto from './gosto.mjs'
 import * as mangas from './mangas.mjs'
+import * as planos from './planos.mjs'
+import * as publicacoes from './publicacoes.mjs'
+import { chaveDe } from './usuario.mjs'
 
 const PORTA = Number(process.env.FIO_PORTA || 8787)
 const SITE = process.env.FIO_SITE || `http://localhost:${PORTA}`
@@ -40,6 +43,11 @@ const ORIGENS = (process.env.FIO_ORIGENS || '').split(',').map(s => s.trim()).fi
 const banco = abrir()
 const buscarNoTexto = criarBuscaNoTexto(banco)
 gosto.garantirTabelas(banco)
+planos.garantirTabelas(banco)
+publicacoes.garantirTabelas(banco)
+// A faxina das imagens de publicação: na subida e de hora em hora.
+try { publicacoes.faxina(banco) } catch (e) { console.error('[fio] faxina', e) }
+setInterval(() => { try { publicacoes.faxina(banco) } catch (e) { console.error('[fio] faxina', e) } }, 3600_000).unref()
 
 // Recomendação custa uma passada pelo acervo legível; guardada por leitor
 // até alguma coisa dele mudar (leitura nova, nota, gosto) ou dez minutos.
@@ -132,8 +140,8 @@ async function bytesDoPedido(req, teto) {
   return Buffer.concat(pedacos)
 }
 
-async function corpo(req) {
-  const bytes = await bytesDoPedido(req, 64 * 1024)
+async function corpo(req, teto = 64 * 1024) {
+  const bytes = await bytesDoPedido(req, teto)
   if (!bytes.length) return {}
   try { return JSON.parse(bytes.toString('utf8')) }
   catch { throw new Recusa('Não entendi o pedido.', 400) }
@@ -162,6 +170,13 @@ const exigirEntrada = (req) => {
 // gravado no banco, lido na hora — não de um cookie que diga "sou admin". Quem
 // não é admin recebe o MESMO 404 de uma rota que não existe: um leitor comum
 // não deve nem descobrir que o painel existe.
+// Entrada + freio por conta, para as escritas que custam disco ou atenção.
+const comFreio = (req, acao) => {
+  const pessoa = exigirEntrada(req)
+  if (!freio(banco, acao, `leitor-${pessoa.id}`).passa) throw new Recusa('Muitas ações seguidas. Espere um pouco.', 429)
+  return pessoa
+}
+
 const exigirAdmin = (req) => {
   const pessoa = exigirEntrada(req)
   if (pessoa.papel !== 'admin') throw new Recusa('Não existe.', 404)
@@ -554,6 +569,50 @@ const ROTAS = {
     return { marcados: r.changes }
   },
 
+  // ── assinaturas (servidor/planos.mjs) ──
+  //
+  // A vitrine é pública: quem não tem conta também vê os planos. Ninguém
+  // assina sozinho ainda — só o painel concede.
+  'GET /api/planos': (req) => planos.vitrine(banco, contas.deQuemE(banco, lerCookie(req))),
+
+  'GET /api/admin/assinaturas': (req) => {
+    exigirAdmin(req)
+    return { assinaturas: planos.listar(banco), planos: planos.ORDEM.map((k) => ({ chave: k, nome: planos.PLANOS[k].nome })) }
+  },
+
+  'POST /api/admin/assinatura': (req, res, dado) => {
+    const adm = exigirAdmin(req)
+    return planos.conceder(banco, adm.id, dado, { chaveDe, Recusa })
+  },
+
+  // ── publicações (servidor/publicacoes.mjs) ──
+  //
+  // Escrever exige conta, plano que publica e passa por freio. Ler é público,
+  // mas só o que a administração aprovou. A imagem e o arquivo de imagem têm
+  // rotas próprias, fora deste mapa, mais abaixo.
+  'GET /api/minhas-publicacoes': (req) => publicacoes.minhas(banco, exigirEntrada(req)),
+
+  'POST /api/publicacao': (req, res, dado) => publicacoes.salvarObra(banco, comFreio(req, 'publicar'), dado),
+  'POST /api/publicacao/apagar': (req, res, dado) => publicacoes.apagarObra(banco, comFreio(req, 'publicar'), dado.id),
+  'POST /api/publicacao/parte': (req, res, dado) => publicacoes.salvarParte(banco, comFreio(req, 'publicar'), dado),
+  'POST /api/publicacao/parte/apagar': (req, res, dado) => publicacoes.apagarParte(banco, comFreio(req, 'publicar'), dado),
+  'POST /api/publicacao/enviar': (req, res, dado) => publicacoes.enviar(banco, comFreio(req, 'publicar'), dado),
+
+  'GET /api/publicacoes': (req, res, dado, ctx) => {
+    if (!freio(banco, 'publicacoes', dicaDeIp(ipDe(req)) ?? 'sem-ip').passa) throw new Recusa('Muitas buscas seguidas. Espere um instante.', 429)
+    return publicacoes.listar(banco, contas.deQuemE(banco, lerCookie(req)), ctx.busca)
+  },
+  'GET /api/publicacao': (req, res, dado, ctx) =>
+    publicacoes.ficha(banco, contas.deQuemE(banco, lerCookie(req)), ctx.busca.get('id')),
+  'GET /api/publicacao/parte': (req, res, dado, ctx) => {
+    if (!freio(banco, 'publicacoes', dicaDeIp(ipDe(req)) ?? 'sem-ip').passa) throw new Recusa('Muitos pedidos seguidos. Espere um instante.', 429)
+    return publicacoes.lerParte(banco, contas.deQuemE(banco, lerCookie(req)), ctx.busca.get('id'), ctx.busca.get('ordem'))
+  },
+  'POST /api/publicacao/denunciar': (req, res, dado) => publicacoes.denunciar(banco, comFreio(req, 'denunciar'), dado),
+
+  'GET /api/admin/publicacoes': (req) => { exigirAdmin(req); return publicacoes.filaDeRevisao(banco) },
+  'POST /api/admin/publicacao': (req, res, dado) => publicacoes.decidir(banco, exigirAdmin(req), dado),
+
   // ── a central de ajustes ──
   //
   // As poucas chaves que o dono muda pelo painel. Só leitura e escrita de uma
@@ -860,6 +919,37 @@ const servidor = createServer(async (req, res) => {
     }
   }
 
+  // ── imagem de publicação: capa ou página (servidor/imagem.mjs limpa) ──
+  //
+  // Corpo binário cru, como o EPUB da estante: sem multipart. O que decide o
+  // tipo são os bytes, nunca o cabeçalho.
+  if (caminho === '/api/publicacao/imagem' && req.method === 'POST') {
+    try {
+      if (req.headers['x-fio'] !== '1') throw new Recusa('Pedido sem identificação.', 403)
+      if (!origemOk(req)) throw new Recusa('Origem não confere.', 403)
+      const pessoa = comFreio(req, 'upload')
+      const busca = new URL(req.url, 'http://x').searchParams
+      const bytes = await bytesDoPedido(req, publicacoes.TETO_UPLOAD + 1024)
+      return responder(res, 200, publicacoes.receberImagem(banco, pessoa, { id: busca.get('id'), uso: busca.get('uso') }, bytes))
+    } catch (e) {
+      if (e instanceof Recusa) return responder(res, e.status, { erro: e.message })
+      console.error('[fio] publicacao/imagem', e)
+      return responder(res, 500, { erro: 'Não consegui guardar a imagem.' })
+    }
+  }
+
+  const pedindoArquivoPub = caminho.match(/^\/api\/pub-arquivo\/([^/]{1,80})$/)
+  if (pedindoArquivoPub) {
+    try {
+      if (req.method !== 'GET' && req.method !== 'HEAD') throw new Recusa('Só GET.', 405)
+      return publicacoes.servirArquivo(banco, contas.deQuemE(banco, lerCookie(req)), req, res, pedindoArquivoPub[1])
+    } catch (e) {
+      if (e instanceof Recusa) return responder(res, e.status, { erro: e.message })
+      console.error('[fio] pub-arquivo', e)
+      return responder(res, 500, { erro: 'erro' })
+    }
+  }
+
   // ── as avaliações de uma obra: leitura pública ──
   const pedindoAvaliacoes = caminho.match(/^\/api\/obra\/(\d+)\/avaliacoes$/)
   if (pedindoAvaliacoes && req.method === 'GET') {
@@ -937,7 +1027,8 @@ const servidor = createServer(async (req, res) => {
       if (req.method === 'POST' && req.headers['x-fio'] !== '1') {
         throw new Recusa('Pedido sem identificação.', 403)
       }
-      const dado = req.method === 'POST' ? await corpo(req) : {}
+      // capítulo de livro publicado pode ter 200 mil caracteres: teto maior só ali
+      const dado = req.method === 'POST' ? await corpo(req, chave === 'POST /api/publicacao/parte' ? 2 * 1024 * 1024 : 64 * 1024) : {}
       const ctx = {
         ip: ipDe(req),
         agente: req.headers['user-agent'],

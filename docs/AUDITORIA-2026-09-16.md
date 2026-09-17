@@ -55,3 +55,37 @@ do código novo e dos scripts de deploy, e verificação das telas no navegador.
 - **Links "onde ler":** só https, sem redes sociais (teste com `javascript:` e Twitter).
 - **Abuso:** freio de 90/min por faixa de IP; teto global de 25 chamadas/min ao AniList, servindo o cache antigo quando o teto estoura. POST na rota → 405.
 - **Termos do AniList:** uso não comercial; nada do catálogo é guardado em disco; crédito na página e em cada ficha.
+
+## Adendo 2 — assinaturas, publicações e o filtro dos quadrinhos (17/09)
+
+93 testes (6 novos), sondas no ar, 400 imagens reais passadas pela limpeza e
+decodificadas de novo, e o fluxo inteiro feito no navegador (criar obra, capa,
+capítulo com páginas JPG/PNG/WebP, enviar, aprovar no painel, filtrar, ler).
+
+### Corrigidos
+
+| # | Gravidade | Achado | Correção |
+|---|---|---|---|
+| 13 | média | **Filtro dos quadrinhos não marcava** (relatado pelo dono): o painel era montado uma vez e o clique mudava o filtro sem remarcar os botões — "Todos" ficava aceso. | Os botões do grupo se remarcam a cada clique (Descobrir e Ler aqui). |
+| 14 | média | **Segundo filtro rápido era ignorado:** clicar em "Manhwa" e logo em "Colorido" descartava o segundo enquanto a primeira busca carregava; a lista mostrava só o primeiro filtro. | Filtro novo passa sempre; a resposta velha é descartada pelo contador de pedidos. Conferido no ar. |
+| 15 | baixa | "null" escrito na ficha da obra (mesmo defeito da central em 16/09). | Todo redesenho das páginas novas passa por `por()`, que tira nulos. |
+| 16 | baixa | Trocar de "Quadrinhos" para "Tudo" deixava o filtro de cor valendo, escondido. | Trocar de tipo limpa formato e cor. |
+| 17 | baixa | Classificação 10+ aparecia antes de "Livre"; campos de quadrinho apareciam para livro (`display:grid` vencia `hidden`). | Ordem fixa; `[hidden]` com `!important`. |
+
+### Verificado e sem problema
+
+- **Upload:** SVG, HTML, GIF, `win.ini`, JPEG falso (`FFD8FF` + HTML), PNG com CRC adulterado e imagem de 20.000 px → recusados. PNG com `tEXt` + HTML colado depois do `IEND` e JPEG com EXIF/GPS + comentário `<script>` + ZIP colado → saem sem nada disso (testes).
+- **Sem sessão, sem `x-fio` ou de outra origem:** upload recusado (401/403). Corpo acima de 5 MB → 413 enquanto chega.
+- **Arquivo de obra em revisão:** 404 para anônimo e para outra conta; dono e admin veem com `private, no-store`. Publicado: `public`, `nosniff`, `content-security-policy: default-src 'none'; sandbox`.
+- **Travessia:** `/api/pub-arquivo/..%2f..%2fcatalogo.db` → 404 (nome precisa ser 32 hex + extensão e ter linha no banco).
+- **Página de outra obra** ou caminho inventado num capítulo → recusado; imagem na obra alheia → 404 (testes).
+- **Limites do plano** conferidos no servidor (obras, capítulos, páginas, caracteres, espaço); conta sem plano → 403. Rota de admin → 404 para leitor.
+- **Denúncia:** uma por conta por obra; três contas → suspensa e fora da vitrine (teste).
+- **LGPD:** exportação leva assinatura e publicações com os capítulos; apagar a conta leva tudo em cascata, e a faxina apaga os arquivos que ficaram no disco.
+
+### Riscos conhecidos
+
+- **A limpeza é estrutural, não redecodifica a imagem.** Um conteúdo escondido *dentro* dos dados comprimidos continuaria lá — mas só como bytes de imagem, servidos com o tipo certo, `nosniff` e CSP `sandbox`, por uma rota que nunca executa nada. Redecodificar exigiria biblioteca de imagem.
+- **O servidor está nos EUA** (DigitalOcean, New Jersey): vale também a lei americana. Ver `docs/CAMINHOS-LEGAIS.md`.
+- **Antes de cobrar:** licença comercial do AniList acima de US$ 150/mês de receita, e a licença dos modelos de tradução (NLLB é CC-BY-NC). Ver `CAMINHOS-LEGAIS.md` §0.
+- **Revisão é manual:** com muitos autores, a fila cresce. Hoje só publica quem o dono escolhe, então o volume é pequeno.

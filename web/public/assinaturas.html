@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Planos — Fio</title>
+<link rel="icon" type="image/svg+xml" href="/fio.svg">
+<link rel="stylesheet" href="/fio-paginas.css">
+<style>
+  .planos{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));margin:0 0 40px}
+  .plano{background:var(--papel2);border:1px solid var(--linha);border-radius:16px;padding:20px;display:flex;flex-direction:column;position:relative}
+  .plano.destaque{border-color:var(--acento);box-shadow:0 18px 40px -26px var(--acento)}
+  .plano .fita{position:absolute;top:-11px;left:20px;background:var(--acento);color:#fff;font-size:11px;border-radius:999px;padding:2px 10px}
+  .plano .meu{position:absolute;top:-11px;right:20px;background:var(--bom);color:#fff;font-size:11px;border-radius:999px;padding:2px 10px}
+  .plano h2{margin:4px 0 2px;font-size:26px}
+  .plano .frase{color:var(--tinta2);font-size:13.5px;min-height:42px;margin:0 0 14px}
+  .preco{font-family:Literata,Georgia,serif;font-size:34px;line-height:1}
+  .preco small{font-family:Inter,system-ui,sans-serif;font-size:13px;color:var(--tinta2)}
+  .ano{font-size:12.5px;color:var(--tinta2);margin:6px 0 16px;min-height:18px}
+  .plano ul{list-style:none;padding:0;margin:0 0 18px;font-size:13.5px;flex:1}
+  .plano li{padding:5px 0 5px 22px;position:relative;border-top:1px dashed var(--linha)}
+  .plano li:first-child{border-top:none}
+  .plano li::before{content:'✓';position:absolute;left:2px;color:var(--bom)}
+  .plano li.breve{color:var(--tinta2)}
+  .plano li.breve::before{content:'◷';color:var(--ouro)}
+  .plano .botao{justify-content:center}
+  .tabela{overflow-x:auto;border:1px solid var(--linha);border-radius:14px}
+  .tabela table{min-width:640px}
+  .tabela th{position:sticky;top:0;background:var(--papel2);font-size:13px}
+  .tabela td:not(:first-child),.tabela th:not(:first-child){text-align:center;width:14%}
+  .tabela tr.grupo td{background:var(--papel2);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--tinta2)}
+  .sim{color:var(--bom);font-weight:600}.nao{color:var(--tinta2);opacity:.6}
+  .breve-t{display:inline-block;font-size:10.5px;color:var(--ouro);border:1px solid var(--ouro);border-radius:999px;padding:0 6px;margin-left:6px;vertical-align:1px}
+  .perguntas{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));margin-top:14px}
+  .perguntas .caixa h4{margin:0 0 6px;font-size:15px}
+  .perguntas .caixa p{margin:0;color:var(--tinta2);font-size:13.5px}
+</style>
+</head>
+<body>
+<main id="main"><p class="sub">abrindo…</p></main>
+<script src="/fio-comum.js"></script>
+<script src="/assinaturas.js"></script>
+</body>
+</html>

@@ -565,6 +565,11 @@ export function exportarTudo(banco, leitorId) {
     ).all(leitorId),
     gosto: seExistir('SELECT respostas, respondido_em, mudou_em FROM gosto WHERE leitor_id = ?')[0] ?? null,
     avisos: seExistir('SELECT tipo, titulo, corpo, link, criado_em, lido_em FROM aviso WHERE leitor_id = ?'),
+    assinatura: seExistir('SELECT plano, origem, desde, ate FROM assinatura WHERE leitor_id = ?')[0] ?? null,
+    publicacoes: seExistir(`SELECT id, tipo, formato, titulo, sinopse, generos, classificacao, estado, criada_em, publicada_em,
+        (SELECT json_group_array(json_object('ordem', ordem, 'titulo', titulo, 'texto', texto, 'paginas', json(paginas)))
+           FROM publicacao_parte x WHERE x.publicacao_id = publicacao.id) partes
+        FROM publicacao WHERE autor_id = ?`),
   }
 }
 
