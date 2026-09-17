@@ -1,4 +1,4 @@
-# Fio — o projeto inteiro, em 17/09/2026
+# Fio — o projeto inteiro, em 17/09/2026 (tarde)
 
 Uma biblioteca em português que liga um livro ao próximo. No ar em
 <https://fiolib.duckdns.org> (e `fio.142-93-57-2.sslip.io`), na mesma VPS do Wallt.
@@ -22,7 +22,7 @@ nos outros arquivos de `docs/` (índice no fim).
 | Quadrinhos e mangá para ler aqui | **34 séries, 157 volumes, 4.672 páginas** |
 | Mangá, manhwa e manhua para descobrir | **milhares** (AniList, consultado na hora), com onde ler oficialmente |
 | Publicações da comunidade | seção nova (17/09): livros e quadrinhos de assinantes Trama/Tear, com revisão |
-| Assinaturas | Leitor (grátis) · Novelo R$ 7,90 · Trama R$ 16,90 · Tear R$ 29,90 — **ainda sem pagamento**, concedidas pelo painel |
+| Planos | sem conta: 1º capítulo · Grátis: 3 livros/mês · Novelo R$ 9,90 · Trama R$ 19,90 · Tear R$ 34,90 — **ainda sem pagamento**, concedidos pelo painel |
 | Contas | 2 (ambas admin) · cadastro **aberto** · portão de leitura **ligado** |
 
 ## 2. A regra que vem antes de tudo
@@ -118,6 +118,9 @@ tem o direito conferido na hora:
 | **Yōkai: o bestiário de Toriyama Sekien** (11 vol.) | domínio público, Smithsonian |
 | **Bordalo Pinheiro** (4 vol., português, caricatura) | domínio público (autor morreu em 1905) |
 | **+30 álbuns do Japão de Edo** (Hiroshige, Utamaro, Kōrin, Morikuni…) | domínio público, Smithsonian |
+| **Little Nemo no País dos Sonhos** (11 vol., 260 páginas de domingo, 1905–1911, colorido) | domínio público (McCay morreu em 1934; publicado antes de 1931), digitalizações do Wikimedia Commons — `ingestao/quadrinhos-commons.mjs` |
+
+**Tradução dos balões** (`ingestao/quadrinhos-ocr.mjs`): OCR lê cada página e devolve os blocos de texto com a posição; a esteira (MinT) traduz; o resultado vai para `/dados/quadrinhos-traducao/<serie>.json` e o leitor põe a tradução **sobre cada balão**, com botão PT/original (tecla T). Motores: **Google Cloud Vision** (lê letra desenhada à mão; precisa de chave em `dados/.chave-google-vision`, 1.000 imagens/mês grátis) ou o **OCR do Windows** (`ingestao/ocr-windows.ps1`, grátis e local, mas perde a maior parte da letra à mão — serve para letra tipográfica). Retomável por página; bloco de baixa confiança sai marcado para revisão.
 
 **Mangá, manhwa e manhua modernos — o catálogo de descoberta** (`servidor/mangas.mjs`, aba *Descobrir* e prateleira "Mangá e manhwa em alta" na home). Não hospedamos essas obras: o Fio consulta o **AniList na hora**, com cache de 30 min e teto de 25 chamadas por minuto (os termos da API proíbem coletar e guardar o catálogo). Filtros: tipo (mangá, manhwa, manhua), cor (tag *Full Color*), gênero, status, ordem e "só com versão oficial em português". A ficha lista **onde ler oficialmente**, com as plataformas em português primeiro (MANGA Plus, Comikey…), e os títulos parecidos. As capas passam pelo nosso proxy (`/api/capa-manga/...`), que só aceita o CDN de capas do AniList. Ecchi e adulto ficam fora, e há freio de 90 buscas por minuto por faixa de IP.
 
@@ -159,18 +162,21 @@ rodar de novo retoma.
 - **Papéis:** `leitor` e `admin`, conferidos no banco a cada pedido. Rota de admin responde 404 para quem não é admin.
 - **Cadastro:** o e-mail é opcional. Se a tela manda só o e-mail, deriva-se um nome de usuário válido e livre.
 - **LGPD:** exportar tudo (inclui gosto e avisos); apagar a conta digitando o nome de usuário ou o e-mail, com cascata.
+- **Barra superior única:** `fio-cabecalho.js` + `fio-cabecalho.css` + `fio-tema.js` repetem nas páginas soltas (quadrinhos, comunidade, publicar, planos, para você, painel) a mesma barra do app, com o mesmo tema (lido de `fio.estante.v1`). "buscar" marca `fio:abrir-busca` e o app abre a busca. Comunidade e "para você" têm sub-barra.
 - **Painel** (`/admin.html`, conta `curador`):
-  - Panorama.
-  - Esteira: fila e adicionar livros.
-  - Configurações: cadastro aberto; portão de leitura e páginas de graça (padrão ≈ 5 livros).
-- **Assinaturas** (`servidor/planos.mjs`, `/assinaturas.html`): quatro níveis — Leitor (grátis), Novelo, Trama e Tear. **Ninguém assina sozinho ainda**: a página mostra preços e a comparação completa com o aviso de que o pagamento vem depois; o dono concede plano pelo painel (aba Assinaturas), com prazo opcional. Admin é sempre Tear. Tudo pergunta `planoDe()`; o gateway, quando vier, só grava `origem = 'pagamento'`.
+  - Panorama e Esteira com **a esteira ao vivo**: livro de agora, % dos trechos, tempo restante, % do plano inteiro, últimos livros e log. A esteira manda um pulso (`ingestao/pulso.mjs` → `POST /api/esteira/pulso`, chave `FIO_ESTEIRA_CHAVE` no `.env` da VPS e em `dados/traducoes/.chave-esteira` no PC). Pulso com mais de 2 min = parada.
+  - Publicações, Correções, Assinaturas.
+  - Configurações: cadastro aberto; "sem conta, só o 1º capítulo"; livros por mês do plano grátis.
+- **Planos** (`servidor/planos.mjs`, `servidor/acesso.mjs`, `/assinaturas.html`): sem conta lê o 1º capítulo de cada livro e o 1º volume de cada quadrinho; **Grátis** abre 3 livros novos a cada 30 dias (livro aberto não fecha; leis não contam); **Novelo** livros sem limite, ouvir, EPUB e 2 pedidos de tradução/mês; **Trama** + publicar até 3 obras e 5 pedidos; **Tear** até 20 obras, 15 pedidos na frente da fila e prioridade na revisão. Tudo conferido em `/api/livro/:id`, `/api/livro/:id/epub` (sem plano → planos) e nas imagens de quadrinho. **Ninguém assina sozinho ainda**: a página mostra preços e a comparação completa com o aviso de que o pagamento vem depois; o dono concede plano pelo painel (aba Assinaturas), com prazo opcional. Admin é sempre Tear. Tudo pergunta `planoDe()`; o gateway, quando vier, só grava `origem = 'pagamento'`.
 - **Publicações** (`servidor/publicacoes.mjs`, `/publicar.html`, `/publicacoes.html`):
-  - Só Trama (3 obras, 40 capítulos, 80 páginas/cap., 300 MB) e Tear (20 obras, 400 capítulos, 150 páginas/cap., 3 GB). Limites conferidos no servidor.
+  - Só Trama (3 obras) e Tear (20 obras). Os tetos técnicos (capítulos, páginas, espaço) existem no servidor e não aparecem na vitrine.
   - Obrigatórios para aparecer nos filtros: tipo, formato, até 4 gêneros de lista fechada, classificação, sinopse, cor e sentido (quadrinho), e a declaração de autoria.
-  - **Nada aparece sem revisão**: obra nova, capítulo novo ou editado e capa trocada (a antiga fica até aprovar). Admin publica direto. Três denúncias de contas diferentes suspendem a obra.
+  - **Nada aparece sem revisão**: obra nova, capítulo novo ou editado e capa trocada (a antiga fica até aprovar). Admin publica direto. **Nada sai do ar sozinho:** denúncia vai para a fila; edição de capítulo publicado espera com a versão atual no ar.
   - **Imagem** (`servidor/imagem.mjs`): só JPEG, PNG e WebP estático, decididos pelos bytes; o arquivo é desmontado e remontado só com os blocos que desenham (some EXIF/GPS, comentários, texto e o que vier depois do fim — onde mora o arquivo poliglota). Nome sorteado, fora da pasta do site (`/dados/publicacoes`), servido por `/api/pub-arquivo/` conferindo permissão, com `nosniff` e CSP `sandbox`. Faxina de hora em hora.
   - Painel, aba Publicações: aprovar, recusar (motivo vai para o autor como aviso), suspender, reativar, capas pendentes e denúncias.
-- **Portão de leitura:** quem lê sem conta tem um teto de páginas (contado por faixa de IP). Estourou, o próximo livro vira um capítulo que convida a criar conta.
+- **Ouvir em voz alta:** o botão "ouvir" do leitor (voz do próprio aparelho) só fala com plano — o bundle pergunta `window.fioVoz`, que `fio-leitor.js` preenche; sem plano, vai para os planos. Chip de velocidade (0,8× a 1,8×).
+- **Revisão comunitária** (`servidor/correcoes.mjs`): nos livros traduzidos pelo Fio, selecionar um trecho mostra "sugerir correção". O painel aceita (troca o texto na hora, só se o trecho for único no capítulo, e credita quem sugeriu) ou recusa, e marca o livro como revisado (rótulo automático sai).
+- **Pedidos de tradução** (`servidor/esteira.mjs`, central → Pedidos): busca no Gutendex, confere domínio público (autor morto até 1955, não português) e põe na fila com quem pediu; aviso quando fica pronto.
 - **Gosto, recomendações e avisos** (`servidor/gosto.mjs`, `/central.html`):
   - **Conta nova** responde humores, livros que ama, autores, tempo e o que evitar, e sai com recomendações na hora. **Conta antiga** não é interrompida.
   - A recomendação é uma **conta aberta com o motivo escrito** ("porque você leu Crime e Castigo"). Pesa o que a pessoa **lê** (tempo e idade da leitura) mais do que o que ela disse, e o questionário perde peso conforme ela lê.
@@ -190,15 +196,22 @@ node infra/remendar-bundle.mjs --base index-DBmeFHaL.js --index index.html --sai
 #   (fio-comum.js e fio-paginas.css são dividas pelas três páginas novas)
 
 # testes
-node --test servidor/testes.mjs        # 93 testes
+node --test servidor/testes.mjs        # 96 testes
 
 # seções de descoberta e catálogo (dentro do container)
 node /app/ingestao/secoes.mjs --banco /dados/catalogo.db --gravar
 node /app/ingestao/publicar.mjs --saida /tmp/dados   # depois copiar catalogo.json e fichas/
 
-# esteira (PC)
+# esteira (PC) — manda o pulso ao painel sozinha
 node ingestao/puxar-fila.mjs
-node ingestao/esteira.mjs --subir
+node ingestao/esteira.mjs --subir --minutos 100000
+
+# quadrinhos do Commons (Little Nemo): catálogo + downloads; o download roda no host
+node ingestao/quadrinhos-commons.mjs --completo quadrinhos-completo.json --baixar commons-downloads.tsv
+#   VPS: /opt/fio/entrada/baixar-commons.sh (baixa, publica quadrinhos.json e o resumo)
+
+# tradução dos balões (PC): OCR + tradução → web/public/dados/quadrinhos-traducao/<serie>.json → scp para /opt/fio/site/dados/
+node ingestao/quadrinhos-ocr.mjs --serie little-nemo --paginas dados/quadrinhos-ocr/little-nemo.tsv --motor google
 ```
 
 `/app/ingestao` **some a cada deploy do servidor** (a imagem só leva `servidor/`).
@@ -224,6 +237,7 @@ Antes de rodar um script de ingestão no container, copie-o de novo.
 - **Reconstruir `web/src`** até alcançar o site no ar. É o que destrava:
   - as telas grandes do direcionamento: notas de world-building, barra de progressão, escala do mundo, linha do tempo navegável, página de rota e de tag;
   - o fim dos remendos.
+- **Chave do Google Vision** para a tradução dos balões de Little Nemo (e depois Krazy Kat, Tokyo Puck): sem ela, o OCR do Windows não dá qualidade.
 - **Progresso dos quadrinhos na conta** (hoje só no navegador).
 - **Mais "Antes de ler"** (28 livros hoje) e mais "Você gostou de…".
 - **Esteira independente do PC:** mover para a VPS ou para uma máquina que não dorme.

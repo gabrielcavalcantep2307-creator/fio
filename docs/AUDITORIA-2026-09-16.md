@@ -89,3 +89,31 @@ capítulo com páginas JPG/PNG/WebP, enviar, aprovar no painel, filtrar, ler).
 - **O servidor está nos EUA** (DigitalOcean, New Jersey): vale também a lei americana. Ver `docs/CAMINHOS-LEGAIS.md`.
 - **Antes de cobrar:** licença comercial do AniList acima de US$ 150/mês de receita, e a licença dos modelos de tradução (NLLB é CC-BY-NC). Ver `CAMINHOS-LEGAIS.md` §0.
 - **Revisão é manual:** com muitos autores, a fila cresce. Hoje só publica quem o dono escolhe, então o volume é pequeno.
+
+## Adendo 3 — planos com limite real, barra única, esteira ao vivo, voz, correções e Little Nemo (17/09, tarde)
+
+96 testes (3 novos: limite do plano grátis, pulso da esteira, correções; 2 ampliados: denúncia não suspende, edição pendente não sai do ar). Sondas no ar depois do deploy.
+
+### Corrigidos ou mudados por decisão do dono
+
+| # | Gravidade | Achado | Correção |
+|---|---|---|---|
+| 18 | **alta** | Sem ajuste gravado, o limite do plano grátis virava **0 livros** (`Number(null)` é 0) e trancaria todo mundo. Pego pelo teste novo antes do deploy. | Sem ajuste, vale o padrão (3). |
+| 19 | média | Denúncia suspendia a obra sozinha (3 contas). | Vai para a fila do painel; só a administração suspende. |
+| 20 | média | Editar capítulo publicado o tirava do ar até a revisão. | A edição espera em colunas `*_pendente`; a versão publicada segue no ar; página nova da edição não é servida ao público até aprovar (teste). |
+| 21 | média | A fila do painel mostrava "29 na esteira" com a esteira parada havia dias: só mudava quando alguém rodava `puxar-fila.mjs`. | Pulso da esteira + reconciliação da fila a cada leitura do painel. |
+| 22 | baixa | "null" escrito na barra do celular das páginas soltas. | Nós nulos fora do `replaceChildren`. |
+
+### Verificado no ar
+
+- Sem conta: `/api/livro/1050` sai com 2 capítulos (1º + convite); lei (`/api/livro/660`) sai inteira; `/api/livro/…/epub` → 302 para os planos; volume 2 de quadrinho → 401, volume 1 → 200.
+- Pulso sem chave → 404; com a chave → gravado. Chave só no `.env` (modo 600) e em `dados/traducoes/.chave-esteira` (fora do git).
+- "ouvir" sem plano leva a `/assinaturas.html?por=voz`. Busca aberta a partir das páginas soltas.
+- Correção entra só como texto (HTML escapado, teste com `<img onerror>`), só se o trecho for único no capítulo.
+- Little Nemo: 260 páginas, todas marcadas domínio público no Commons, baixadas com user-agent identificado.
+
+### Riscos conhecidos
+
+- Voz e velocidade são conferidas no navegador (o custo é zero para o servidor; quem burlar só usa a voz do próprio aparelho).
+- O limite do grátis conta por conta; quem criar várias contas lê mais. Aceitável enquanto o cadastro não tem verificação.
+- OCR do Windows não lê letra desenhada à mão; a tradução de Little Nemo depende da chave do Google Vision.

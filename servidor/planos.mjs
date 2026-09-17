@@ -11,71 +11,89 @@
 // da casa não depende de alguém lembrar de lhe dar assinatura.
 //
 // Os nomes seguem o fio: novelo (o fio enrolado), trama (o fio que se cruza
-// com outros e vira tecido) e tear (onde se faz o tecido). Publicar começa na
-// Trama — é o nível em que você passa de ler histórias a tecer as suas.
+// com outros e vira tecido) e tear (onde se faz o tecido).
+//
+// ─────────────────────────────────────────────────────────────
+// A LÓGICA DOS NÍVEIS (refeita em 17/09, a pedido do dono)
+//
+//   sem conta  lê o PRIMEIRO capítulo de cada livro. Para seguir, cria conta.
+//   Grátis     3 livros novos por mês. Livro aberto fica aberto para sempre
+//              (ninguém perde a leitura no meio). Leis, quadrinhos livres e a
+//              comunidade não contam.
+//   Novelo     ler sem limite, ouvir em voz alta, baixar EPUB, pedir tradução.
+//   Trama      tudo do Novelo + publicar.
+//   Tear       tudo da Trama, em escala, e com prioridade.
+//
+// Cada item da tabela abaixo é COISA QUE O SERVIDOR FAZ VALER hoje — nada de
+// "em breve" e nada de detalhe de infraestrutura (megabytes, páginas por
+// capítulo): ninguém compra plano por isso. Os tetos técnicos continuam
+// existindo em `publicar`, só não viram argumento de venda.
+// ─────────────────────────────────────────────────────────────
 
 export const DISPONIVEL = false
-export const AVISO = 'As assinaturas ainda não estão abertas. Os planos e os preços abaixo já são os que vão valer; o pagamento chega numa próxima etapa. Por enquanto os planos são concedidos pela administração do Fio.'
+export const AVISO = 'As assinaturas ainda não estão abertas. Os preços abaixo são os que vão valer quando o pagamento for ligado. Até lá, os planos são concedidos pela administração do Fio.'
 
 const MB = 1024 * 1024
+const SEM_LIMITE = Infinity
 
-// Os limites que o servidor FAZ valer hoje. O que é só promessa de tela fica
-// em `recursos`, marcado com `em_breve`.
 export const PLANOS = {
   leitor: {
-    chave: 'leitor', nome: 'Leitor', nivel: 0, preco: 0, precoAno: 0,
-    frase: 'A biblioteca inteira, de graça, para sempre.',
+    chave: 'leitor', nome: 'Grátis', nivel: 0, preco: 0, precoAno: 0,
+    frase: 'Para conhecer a casa.',
+    livrosMes: 3, voz: false, epub: false, pedidosMes: 0, prioridade: false,
     publicar: null,
   },
   novelo: {
-    chave: 'novelo', nome: 'Novelo', nivel: 1, preco: 7.9, precoAno: 79,
-    frase: 'Para quem lê muito e quer apoiar a casa.',
+    chave: 'novelo', nome: 'Novelo', nivel: 1, preco: 9.9, precoAno: 99,
+    frase: 'Para quem lê de verdade.',
+    livrosMes: SEM_LIMITE, voz: true, epub: true, pedidosMes: 2, prioridade: false,
     publicar: null,
   },
   trama: {
-    chave: 'trama', nome: 'Trama', nivel: 2, preco: 16.9, precoAno: 169,
-    frase: 'Para quem também escreve ou desenha: publique livros e quadrinhos.',
-    publicar: { obras: 3, partesPorObra: 40, paginasPorParte: 80, armazenamento: 300 * MB, caracteresPorParte: 120_000 },
+    chave: 'trama', nome: 'Trama', nivel: 2, preco: 19.9, precoAno: 199,
+    frase: 'Para quem também escreve ou desenha.',
+    livrosMes: SEM_LIMITE, voz: true, epub: true, pedidosMes: 5, prioridade: false,
+    publicar: { obras: 3, partesPorObra: 60, paginasPorParte: 120, armazenamento: 1000 * MB, caracteresPorParte: 150_000 },
   },
   tear: {
-    chave: 'tear', nome: 'Tear', nivel: 3, preco: 29.9, precoAno: 299,
-    frase: 'Para criadores com série em andamento e público formado.',
-    publicar: { obras: 20, partesPorObra: 400, paginasPorParte: 150, armazenamento: 3000 * MB, caracteresPorParte: 200_000 },
+    chave: 'tear', nome: 'Tear', nivel: 3, preco: 34.9, precoAno: 349,
+    frase: 'Para séries em andamento e para quem estuda pesado.',
+    livrosMes: SEM_LIMITE, voz: true, epub: true, pedidosMes: 15, prioridade: true,
+    publicar: { obras: 20, partesPorObra: 500, paginasPorParte: 200, armazenamento: 5000 * MB, caracteresPorParte: 200_000 },
   },
 }
 
 export const ORDEM = ['leitor', 'novelo', 'trama', 'tear']
 
-// A comparação que a página de planos desenha. Cada linha: o recurso e o que
-// cada plano leva. `true`/`false` viram ✓/—; texto aparece como está.
+// A comparação. `true`/`false` viram ✓/—; texto aparece como está.
 export const RECURSOS = [
   { grupo: 'Ler', itens: [
-    { nome: 'Todo o acervo: livros, leis, quadrinhos livres', leitor: true, novelo: true, trama: true, tear: true },
-    { nome: 'Publicações da comunidade', leitor: true, novelo: true, trama: true, tear: true },
+    { nome: 'Livros por mês', leitor: '3', novelo: 'sem limite', trama: 'sem limite', tear: 'sem limite' },
+    { nome: 'Leis e códigos completos', leitor: true, novelo: true, trama: true, tear: true },
+    { nome: 'Quadrinhos livres e obras da comunidade', leitor: true, novelo: true, trama: true, tear: true },
     { nome: 'Progresso, marcações e notas em todos os aparelhos', leitor: true, novelo: true, trama: true, tear: true },
-    { nome: 'Recomendações pelo seu gosto', leitor: true, novelo: true, trama: true, tear: true },
-    { nome: 'Baixar EPUB', leitor: true, novelo: true, trama: true, tear: true },
-    { nome: 'Pedir tradução de um livro em domínio público', leitor: false, novelo: '1 por mês', trama: '3 por mês', tear: '8 por mês', em_breve: true },
-    { nome: 'Pular a fila da esteira de tradução', leitor: false, novelo: false, trama: false, tear: true, em_breve: true },
-    { nome: 'Leitura em voz alta no navegador', leitor: false, novelo: true, trama: true, tear: true, em_breve: true },
+    { nome: 'Ouvir em voz alta', leitor: false, novelo: true, trama: true, tear: true },
+    { nome: 'Baixar em EPUB (Kindle, Kobo, celular)', leitor: false, novelo: true, trama: true, tear: true },
+  ] },
+  { grupo: 'Traduções', itens: [
+    { nome: 'Sugerir correções e aparecer como revisor', leitor: true, novelo: true, trama: true, tear: true },
+    { nome: 'Pedir a tradução de um clássico', leitor: false, novelo: '2 por mês', trama: '5 por mês', tear: '15 por mês' },
+    { nome: 'Seus pedidos na frente da fila', leitor: false, novelo: false, trama: false, tear: true },
   ] },
   { grupo: 'Publicar', itens: [
-    { nome: 'Publicar livros e quadrinhos (mangá, manhwa, HQ)', leitor: false, novelo: false, trama: true, tear: true },
-    { nome: 'Obras publicadas ao mesmo tempo', leitor: false, novelo: false, trama: '3', tear: '20' },
-    { nome: 'Capítulos por obra', leitor: false, novelo: false, trama: '40', tear: '400' },
-    { nome: 'Páginas de quadrinho por capítulo', leitor: false, novelo: false, trama: '80', tear: '150' },
-    { nome: 'Espaço para imagens', leitor: false, novelo: false, trama: '300 MB', tear: '3 GB' },
-    { nome: 'Capa própria', leitor: false, novelo: false, trama: true, tear: true },
-    { nome: 'Leituras de cada obra e de cada capítulo', leitor: false, novelo: false, trama: true, tear: true },
-    { nome: 'Destaque na vitrine da comunidade', leitor: false, novelo: false, trama: false, tear: '1 por mês', em_breve: true },
-    { nome: 'Parte da receita para criadores (por leitura)', leitor: false, novelo: false, trama: true, tear: true, em_breve: true },
-  ] },
-  { grupo: 'A casa', itens: [
-    { nome: 'Selo de apoiador no perfil e nas resenhas', leitor: false, novelo: true, trama: true, tear: true, em_breve: true },
-    { nome: 'Novidades antes de todo mundo', leitor: false, novelo: false, trama: true, tear: true, em_breve: true },
-    { nome: 'Voto no que a casa traduz a seguir', leitor: false, novelo: true, trama: true, tear: true, em_breve: true },
+    { nome: 'Publicar livros, mangás e HQs', leitor: false, novelo: false, trama: 'até 3 obras', tear: 'até 20 obras' },
+    { nome: 'Leituras de cada obra e capítulo', leitor: false, novelo: false, trama: true, tear: true },
+    { nome: 'Prioridade na revisão', leitor: false, novelo: false, trama: false, tear: true },
   ] },
 ]
+
+// Os destaques de cada cartão: poucas linhas, o que faz a pessoa escolher.
+export const DESTAQUES = {
+  leitor: ['3 livros novos por mês', 'Leis, quadrinhos livres e comunidade à vontade', 'Progresso em todos os aparelhos'],
+  novelo: ['Livros sem limite', 'Ouvir em voz alta', 'Baixar em EPUB', '2 pedidos de tradução por mês'],
+  trama: ['Tudo do Novelo', 'Publicar até 3 obras', 'Leituras de cada capítulo', '5 pedidos de tradução por mês'],
+  tear: ['Tudo da Trama', 'Publicar até 20 obras', '15 pedidos de tradução, na frente da fila', 'Prioridade na revisão'],
+}
 
 export function garantirTabelas(banco) {
   banco.exec(`
@@ -109,8 +127,8 @@ export function vitrine(banco, pessoa) {
     disponivel: DISPONIVEL,
     aviso: AVISO,
     planos: ORDEM.map((k) => {
-      const { publicar, ...resto } = PLANOS[k]
-      return { ...resto, publica: !!publicar }
+      const { chave, nome, nivel, preco, precoAno, frase } = PLANOS[k]
+      return { chave, nome, nivel, preco, precoAno, frase, destaques: DESTAQUES[k] }
     }),
     recursos: RECURSOS,
     meu: pessoa ? { plano: meu.chave, nome: meu.nome, porAdmin: pessoa.papel === 'admin', desde: linha?.desde ?? null, ate: linha?.ate ?? null } : null,

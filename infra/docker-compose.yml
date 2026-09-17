@@ -31,6 +31,9 @@ services:
       FIO_CONVITE: ${FIO_CONVITE:-obrigatorio}
       # Vazio = só a própria origem. É o certo em produção.
       FIO_ORIGENS: ${FIO_ORIGENS:-}
+      # A chave com que a esteira (no PC do dono) manda o pulso ao painel.
+      # Só no .env; sem ela a rota do pulso não existe.
+      FIO_ESTEIRA_CHAVE: ${FIO_ESTEIRA_CHAVE:-}
     volumes:
       # O banco: catálogo, contas e sessões. É o único estado que importa.
       - dados:/dados

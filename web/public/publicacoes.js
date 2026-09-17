@@ -7,7 +7,6 @@
 // Texto de capítulo entra por nó de texto, parágrafo a parágrafo; imagem só
 // pelo caminho /api/pub-arquivo/, que confere permissão no servidor.
 
-cabecalho('comunidade')
 const main = document.getElementById('main')
 const url = new URLSearchParams(location.search)
 
@@ -117,7 +116,7 @@ function montarVitrine() {
     el('h1', {}, 'Comunidade'),
     el('p', { class: 'sub' }, 'Livros, mangás, manhwas e HQs publicados por quem escreve e desenha aqui. Tudo passa pela revisão do Fio antes de aparecer.'),
     painel, area,
-    el('p', { class: 'rodape' }, 'Viu alguma obra que não é de quem publicou? Abra a obra e use “denunciar”. Obras com denúncias saem do ar até a revisão.'))
+    el('p', { class: 'rodape' }, 'Viu alguma obra que não é de quem publicou? Abra a obra e use “denunciar”. A administração revisa toda denúncia.'))
   desenharLista()
 }
 

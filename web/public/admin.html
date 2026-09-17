@@ -17,8 +17,7 @@
   *{box-sizing:border-box}
   body{margin:0;background:var(--fundo);color:var(--tinta);
     font:15px/1.5 ui-serif,Georgia,"Times New Roman",serif}
-  header{padding:20px 24px;border-bottom:1px solid var(--linha);display:flex;
-    align-items:baseline;gap:14px;flex-wrap:wrap}
+  .topo-painel{max-width:1000px;margin:0 auto;padding:22px 24px 0;display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
   h1{margin:0;font-size:20px;letter-spacing:.3px}
   .quem{color:var(--tinta2);font-size:13px}
   main{max-width:1000px;margin:0 auto;padding:22px 24px 80px}
@@ -68,16 +67,18 @@
   a{color:var(--acento)}
   @media(max-width:640px){.campos{grid-template-columns:1fr 1fr}}
 </style>
+<link rel="stylesheet" href="/fio-cabecalho.css">
+<script src="/fio-tema.js"></script>
 </head>
-<body>
-<header>
+<body data-area="painel">
+<div class="topo-painel">
   <h1>Painel do Fio</h1>
   <span class="quem" id="quem"></span>
-  <span style="margin-left:auto"><a href="/">← voltar ao site</a></span>
-</header>
+</div>
 <main id="main">
   <p class="ajuda" id="carregando">Conferindo o acesso…</p>
 </main>
+<script src="/fio-cabecalho.js"></script>
 <script src="/admin.js"></script>
 </body>
 </html>

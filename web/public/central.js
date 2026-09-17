@@ -62,9 +62,8 @@ async function iniciar() {
       el('a', { class: 'botao', href: '/#/entrar', style: 'text-decoration:none;display:inline-block' }, 'Entrar'))
     return
   }
-  document.getElementById('conta').textContent = eu.nome
-  document.getElementById('abas').hidden = false
-  for (const b of document.querySelectorAll('#abas button')) b.addEventListener('click', () => ir(b.dataset.aba))
+  // As seções moram na sub-barra do cabeçalho (fio-cabecalho.js), como links de âncora.
+  addEventListener('hashchange', () => { const a = location.hash.slice(1); if (ABAS.includes(a)) ir(a) })
 
   const [cat, g] = await Promise.all([
     fetch('/dados/catalogo.json').then((r) => r.json()),
@@ -76,24 +75,24 @@ async function iniciar() {
   atualizarContagem()
 
   const bemvindo = new URLSearchParams(location.search).has('bemvindo')
-  ir(bemvindo || g.pedir ? 'gosto' : (location.hash === '#avisos' ? 'avisos' : 'recs'))
+  const pedida = location.hash.slice(1)
+  ir(bemvindo || g.pedir ? 'gosto' : (ABAS.includes(pedida) ? pedida : 'recs'))
 }
 
+const ABAS = ['recs', 'avisos', 'gosto', 'pedidos']
 function ir(aba) {
   estado.aba = aba
-  for (const b of document.querySelectorAll('#abas button')) b.setAttribute('aria-selected', String(b.dataset.aba === aba))
+  window.fioMarcarSub?.(aba)
+  if (location.hash.slice(1) !== aba) history.replaceState(null, '', `/central.html#${aba}`)
   if (aba === 'recs') mostrarRecs()
   else if (aba === 'avisos') mostrarAvisos()
+  else if (aba === 'pedidos') mostrarPedidos()
   else mostrarGosto()
   window.scrollTo(0, 0)
 }
 
-async function atualizarContagem() {
-  try {
-    const { naoLidos } = await pedir('/avisos/contagem')
-    document.getElementById('contagem').replaceChildren(naoLidos ? el('span', { class: 'contagem' }, naoLidos) : '')
-  } catch { /* sem rede: a contagem espera */ }
-}
+// A contagem mora no cabeçalho, que pergunta sozinho a cada página.
+function atualizarContagem() {}
 
 // ── Para você ──
 async function mostrarRecs(recado) {
@@ -201,6 +200,49 @@ function mostrarGosto() {
     el('section', { class: 'passo' }, el('h2', {}, 'Quanto tempo você costuma ter?'), tempos),
     el('section', { class: 'passo' }, el('h2', {}, 'Prefere deixar de fora'), el('p', {}, 'Opcional.'), chips(opcoes.evitar, r.evitar)),
     enviar)
+}
+
+// ── Pedidos de tradução ──
+//
+// Assinante escolhe um clássico do Project Gutenberg; o servidor confere que é
+// domínio público e põe na fila da esteira. O limite do mês vem do plano.
+async function mostrarPedidos() {
+  main.replaceChildren(el('p', { class: 'vazio' }, 'abrindo…'))
+  let r
+  try { r = await pedir('/pedidos-traducao') } catch (e) { main.replaceChildren(el('p', { class: 'vazio' }, e.message)); return }
+  const ESTADOS = { espera: 'na fila', na_esteira: 'traduzindo', pronto: 'pronto', erro: 'não deu certo' }
+  const saida = el('div', {})
+  const resultados = el('div', {})
+  const campo = el('input', { type: 'search', placeholder: 'Título, autor ou link do Gutenberg (ex.: Moby Dick)', style: 'flex:1;min-width:220px;padding:10px 14px;border:1px solid var(--linha);border-radius:999px;background:var(--papel);color:var(--tinta);font:inherit' })
+  const procurar = async () => {
+    resultados.replaceChildren(el('p', { class: 'vazio' }, 'procurando no Gutenberg…'))
+    try {
+      const b = await pedir(`/pedidos-traducao/buscar?q=${encodeURIComponent(campo.value)}`)
+      resultados.replaceChildren(...(b.livros.length ? b.livros.map((l) => el('div', { class: 'aviso', style: 'cursor:default;align-items:center' },
+        el('div', { style: 'flex:1' }, el('b', {}, l.titulo), el('span', {}, [l.autor, l.morte ? `morreu em ${l.morte}` : null, l.idiomaNome].filter(Boolean).join(' · ')),
+          !l.pode ? el('time', {}, `não dá: ${l.problema}`) : null),
+        l.pode && r.limite > r.usados ? el('button', { class: 'fraco', onclick: async (ev) => {
+          ev.target.disabled = true
+          try { const x = await pedir('/pedidos-traducao', { gutenberg: l.gutenberg }); mostrarPedidos().then(() => main.prepend(el('div', { class: 'recado' }, `Pedido feito: ${x.titulo}. Você recebe um aviso quando ficar pronto.`))) }
+          catch (x) { ev.target.disabled = false; saida.replaceChildren(el('div', { class: 'recado' }, x.message)) }
+        } }, 'Pedir') : null)) : [el('p', { class: 'vazio' }, 'Nada encontrado.')]))
+    } catch (e) { resultados.replaceChildren(el('div', { class: 'recado' }, e.message)) }
+  }
+  campo.addEventListener('keydown', (e) => { if (e.key === 'Enter') procurar() })
+
+  main.replaceChildren(...[
+    el('h1', {}, 'Pedidos de tradução'),
+    el('p', { class: 'sub' }, 'Escolha um clássico em domínio público (autor morto até 1955) que ainda não existe em português. A esteira do Fio traduz, e ele entra no acervo para todo mundo.'),
+    r.limite
+      ? el('p', {}, el('b', {}, `${r.usados} de ${r.limite}`), ` pedidos usados nos últimos 30 dias (plano ${r.plano}).`)
+      : el('div', { class: 'recado' }, 'Pedir tradução faz parte dos planos Novelo, Trama e Tear. ', el('a', { href: '/assinaturas.html' }, 'Ver os planos')),
+    r.limite ? el('div', { style: 'display:flex;gap:8px;flex-wrap:wrap;margin:18px 0' }, campo, el('button', { class: 'botao', onclick: procurar }, 'Procurar')) : null,
+    saida, resultados,
+    r.pedidos.length ? el('h2', { style: 'margin-top:34px;font-family:Literata,Georgia,serif;font-weight:500' }, 'Seus pedidos') : null,
+    r.pedidos.length ? el('div', {}, r.pedidos.map((p) => el('div', { class: 'aviso', style: 'cursor:default' },
+      el('div', {}, el('b', {}, p.titulo ?? 'pedido'), el('span', {}, [p.autor, ESTADOS[p.estado] ?? p.estado].filter(Boolean).join(' · ')),
+        p.estado === 'pronto' && p.obra_id ? el('a', { href: `/#/obra/${p.obra_id}` }, ' ler agora →') : null)))) : null,
+  ].filter(Boolean))
 }
 
 iniciar().catch((e) => main.replaceChildren(el('p', { class: 'vazio' }, `Não consegui abrir a central: ${e.message}`)))

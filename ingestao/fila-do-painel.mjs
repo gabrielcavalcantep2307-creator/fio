@@ -64,7 +64,7 @@ try {
     marcar.run(obraId, f.id)
     plano.push({
       obra: obraId, titulo: f.titulo, autor: f.autor, morte: f.morte ?? null,
-      fonte: f.fonte, de: f.idioma, saida: `obra${obraId}`, emTrilha: 1,
+      fonte: f.fonte, de: f.idioma, saida: `obra${obraId}`, emTrilha: 1, prioridade: f.prioridade ?? 0,
     })
   }
   db.exec('COMMIT')

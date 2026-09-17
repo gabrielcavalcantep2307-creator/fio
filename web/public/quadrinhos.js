@@ -307,7 +307,7 @@ function mostrarSerie(s) {
       const emCurso = progresso.cap === c.n && !lidos.has(c.n)
       const fracao = emCurso ? Math.min(1, (progresso.pag + 1) / c.paginas.length) : lidos.has(c.n) ? 1 : 0
       return el('a', { class: 'cap', href: emCurso ? leitor(c, progresso.pag) : leitor(c) },
-        el('img', { src: c.capa, alt: c.titulo, loading: 'lazy' }),
+        el('img', { src: c.capa, alt: c.titulo, loading: 'lazy', onerror: (e) => { e.target.style.visibility = 'hidden' } }),
         lidos.has(c.n) ? el('span', { class: 'estado' }, 'lido') : emCurso ? el('span', { class: 'estado' }, 'lendo') : null,
         fracao > 0 ? el('div', { class: 'barrinha' }, el('i', { style: `width:${Math.round(fracao * 100)}%` })) : null,
         el('div', { class: 't' }, c.titulo), el('div', { class: 'n' }, `${c.paginas.length} páginas`))

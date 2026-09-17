@@ -3,7 +3,7 @@
 // Todo texto entra por nó de texto: `el()` nunca aceita HTML. Escrita manda o
 // cabeçalho `x-fio`, que o servidor exige contra CSRF.
 
-/* exported el, pedir, eu, cabecalho, dinheiro, recado, por */
+/* exported el, pedir, eu, dinheiro, recado, por */
 
 function el(tag, attrs = {}, ...filhos) {
   const e = document.createElement(tag)
@@ -33,16 +33,6 @@ let _eu
 function eu() {
   _eu ??= pedir('/eu').then((r) => r.pessoa).catch(() => null)
   return _eu
-}
-
-function cabecalho(atual) {
-  const links = [['/#/', 'livros', 'livros'], ['/quadrinhos.html', 'quadrinhos', 'quadrinhos'],
-    ['/publicacoes.html', 'comunidade', 'comunidade'], ['/publicar.html', 'publicar', 'publicar'], ['/assinaturas.html', 'planos', 'planos']]
-  const h = el('header', {}, el('div', { class: 'barra' },
-    el('a', { class: 'marca', href: '/#/' }, 'Fio'),
-    el('nav', { class: 'nav' }, links.map(([href, rot, chave]) =>
-      el('a', { href, 'aria-current': chave === atual ? 'page' : null }, rot)))))
-  document.body.prepend(h)
 }
 
 // `replaceChildren(null)` escreve "null" na tela (já apareceu na central em

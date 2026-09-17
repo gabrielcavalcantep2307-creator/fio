@@ -4,7 +4,6 @@
 // imagem). Esta página só evita a viagem inútil: confere tamanho e tipo antes
 // de mandar, e mostra o limite antes de a pessoa bater nele.
 
-cabecalho('publicar')
 const main = document.getElementById('main')
 const url = new URLSearchParams(location.search)
 const MB = 1024 * 1024
@@ -40,10 +39,9 @@ function regras() {
     el('ul', { class: 'regras' },
       el('li', {}, 'Só publique o que é seu, ou o que você tem autorização por escrito para publicar. Mangá, manhwa ou livro de outra pessoa é retirado, e a conta pode perder o plano.'),
       el('li', {}, 'Nada de sexo explícito, em nenhuma classificação. Violência e temas pesados são aceitos com a classificação certa.'),
-      el('li', {}, 'Tudo passa pela revisão da administração antes de aparecer: obra nova, capítulo novo, capítulo editado e capa trocada.'),
-      el('li', {}, 'Imagens: JPG, PNG ou WebP. Capa em pé (2:3), até 3 MB. Páginas até 5 MB cada; para webtoon, 800 a 1200 px de largura lê bem no celular.'),
-      el('li', {}, 'Removemos das imagens os dados escondidos (como a localização de fotos de celular) antes de guardar.'),
-      el('li', {}, 'Três denúncias de pessoas diferentes tiram a obra do ar até a revisão.')))
+      el('li', {}, 'Obra nova, capítulo novo, edição e capa trocada passam pela revisão antes de aparecer. O que já está no ar continua no ar enquanto a edição espera.'),
+      el('li', {}, 'Capa em pé (2:3). Páginas em JPG, PNG ou WebP; para webtoon, 800 a 1200 px de largura lê bem no celular.'),
+      el('li', {}, 'Denúncias vão para a administração, que decide. Nada sai do ar sozinho.')))
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -61,8 +59,7 @@ function painel() {
       el('a', { href: '/publicacoes.html' }, 'comunidade'), ' e nos filtros por formato, gênero, cor e classificação.'),
     lim ? el('div', { class: 'uso' },
       el('div', { class: 'caixa' }, el('div', { class: 'aut' }, 'plano'), el('b', {}, plano.nome), el('div', {}, el('a', { href: '/assinaturas.html', style: 'font-size:12.5px;color:var(--tinta2)' }, 'ver planos'))),
-      el('div', { class: 'caixa' }, el('div', { class: 'aut' }, 'obras'), el('b', {}, `${uso.obras} de ${lim.obras}`), barra(uso.obras, lim.obras)),
-      el('div', { class: 'caixa' }, el('div', { class: 'aut' }, 'espaço de imagens'), el('b', {}, `${mb(uso.bytes)} de ${mb(lim.armazenamento)}`), barra(uso.bytes, lim.armazenamento)))
+      el('div', { class: 'caixa' }, el('div', { class: 'aut' }, 'obras'), el('b', {}, `${uso.obras} de ${lim.obras}`), barra(uso.obras, lim.obras)))
       : el('div', { class: 'aviso-topo' }, el('span', { style: 'font-size:20px' }, '✒️'), el('div', {},
         el('b', {}, `Publicar faz parte dos planos Trama e Tear. O seu plano é ${plano.nome}.`),
         'As assinaturas ainda não estão abertas; por enquanto os planos são concedidos pela administração. ',
@@ -190,7 +187,7 @@ async function editor(id) {
 
   // ── capítulos ──
   const listaCaps = el('ul', { class: 'caps-ed' }, obra.partes.map((p) => el('li', {},
-    el('span', { class: 'n' }, String(p.ordem)), el('span', {}, p.titulo), seloEstado(p.estado),
+    el('span', { class: 'n' }, String(p.ordem)), el('span', {}, p.titulo), seloEstado(p.estado), p.pendente ? el('span', { class: 'selo ouro' }, p.pendente === 'revisao' ? 'edição em revisão' : 'edição não enviada') : null,
     p.motivo ? el('span', { class: 'aut', style: 'color:var(--acento)' }, p.motivo) : null,
     el('span', { class: 'aut' }, obra.tipo === 'livro' ? `${p.palavras.toLocaleString('pt-BR')} palavras` : `${p.paginas} páginas`),
     el('span', { class: 'acoes' },
@@ -258,7 +255,7 @@ async function editor(id) {
       catch (x) { b.disabled = false; avisar('ruim', x.message) }
     } },
     el('h3', { style: 'margin-top:0' }, parte ? `Editando: ${parte.titulo}` : 'Novo capítulo'),
-    parte && parte.estado === 'publicada' ? el('p', { class: 'aut' }, 'Salvar uma edição tira este capítulo do ar até a revisão aprovar de novo.') : null,
+    parte && parte.estado === 'publicada' ? el('p', { class: 'aut' }, 'Este capítulo está no ar. A edição fica guardada e só troca a versão publicada depois da revisão; até lá os leitores continuam vendo a atual.') : null,
     el('label', { class: 'campo' }, el('span', {}, 'Título do capítulo'), tituloCap),
     corpo,
     el('div', { style: 'margin-top:12px;display:flex;gap:8px' },

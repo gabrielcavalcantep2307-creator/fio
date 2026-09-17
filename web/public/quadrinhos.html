@@ -13,11 +13,6 @@
   *{box-sizing:border-box}
   body{margin:0;background:var(--papel);color:var(--tinta);font:15px/1.55 Inter,system-ui,sans-serif}
   a{color:inherit}
-  header{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--papel) 90%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--linha)}
-  .barra{max-width:1120px;margin:0 auto;padding:0 16px;height:56px;display:flex;align-items:center;gap:16px}
-  .marca{font-family:Literata,Georgia,serif;font-size:20px;text-decoration:none}
-  .barra .onde{color:var(--tinta2);font-size:13px}
-  .barra .volta{margin-left:auto;font-size:13px;color:var(--tinta2);text-decoration:none}
   main{max-width:1120px;margin:0 auto;padding:30px 16px 90px}
   h1{font-family:Literata,Georgia,serif;font-weight:500;font-size:clamp(28px,4.5vw,42px);margin:0 0 8px;line-height:1.1}
   .sub{color:var(--tinta2);margin:0 0 22px;max-width:66ch}
@@ -100,10 +95,12 @@
     .caps{grid-template-columns:repeat(auto-fill,minmax(120px,1fr))}
   }
 </style>
+<link rel="stylesheet" href="/fio-cabecalho.css">
+<script src="/fio-tema.js"></script>
 </head>
-<body>
-<header><div class="barra"><a class="marca" href="/#/">Fio</a><span class="onde">quadrinhos, mangá e manhwa</span><a class="volta" href="/#/">← voltar aos livros</a></div></header>
+<body data-area="quadrinhos">
 <main id="main"><p class="sub">abrindo…</p></main>
+<script src="/fio-cabecalho.js"></script>
 <script src="/quadrinhos.js"></script>
 </body>
 </html>

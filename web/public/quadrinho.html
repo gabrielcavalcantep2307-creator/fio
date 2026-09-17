@@ -46,6 +46,12 @@
   .fim .proximo{display:inline-block;margin-top:14px;background:#c46a5c;color:#fff;text-decoration:none;border-radius:8px;padding:12px 22px}
   .fim a{color:#e9e4da}
   #fimPagina{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:#0d0c0b;z-index:6;overflow:auto}
+  /* tradução sobre os balões: uma camada do tamanho da imagem, com caixas em % */
+  .camada{position:absolute;pointer-events:none;z-index:3}
+  .camada .balao{position:absolute;display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden;background:rgba(255,252,242,.97);color:#16130f;border-radius:7px;padding:1px 3px;font-weight:600;line-height:1.08;letter-spacing:-.01em;box-shadow:0 0 0 1px rgba(0,0,0,.08)}
+  .camada .balao.duvida{box-shadow:0 0 0 1.5px #d9a441}
+  #rolagem .folha{position:relative;width:100%;max-width:900px}
+  #rolagem .folha img{max-width:none}
   .dica{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.8);padding:14px 18px;border-radius:12px;z-index:20;text-align:center;pointer-events:none;transition:opacity .6s}
 </style>
 </head>
@@ -61,6 +67,7 @@
       <button class="ic so-grande" data-modo="dupla" title="Duas páginas lado a lado">dupla</button>
     </div>
     <button class="ic" id="sentido" title="Sentido de leitura"></button>
+    <button class="ic" id="traducao" title="Mostrar a tradução sobre os balões (T)" hidden>PT</button>
     <button class="ic so-grande" id="tela" title="Tela cheia (F)">⛶</button>
   </div>
   <div id="rolagem" hidden></div>

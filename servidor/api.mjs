@@ -30,6 +30,9 @@ import * as gosto from './gosto.mjs'
 import * as mangas from './mangas.mjs'
 import * as planos from './planos.mjs'
 import * as publicacoes from './publicacoes.mjs'
+import * as acesso from './acesso.mjs'
+import * as esteira from './esteira.mjs'
+import * as correcoes from './correcoes.mjs'
 import { chaveDe } from './usuario.mjs'
 
 const PORTA = Number(process.env.FIO_PORTA || 8787)
@@ -45,6 +48,9 @@ const buscarNoTexto = criarBuscaNoTexto(banco)
 gosto.garantirTabelas(banco)
 planos.garantirTabelas(banco)
 publicacoes.garantirTabelas(banco)
+acesso.garantirTabelas(banco)
+esteira.garantirTabelas(banco)
+correcoes.garantirTabelas(banco)
 // A faxina das imagens de publicação: na subida e de hora em hora.
 try { publicacoes.faxina(banco) } catch (e) { console.error('[fio] faxina', e) }
 setInterval(() => { try { publicacoes.faxina(banco) } catch (e) { console.error('[fio] faxina', e) } }, 3600_000).unref()
@@ -573,7 +579,50 @@ const ROTAS = {
   //
   // A vitrine é pública: quem não tem conta também vê os planos. Ninguém
   // assina sozinho ainda — só o painel concede.
-  'GET /api/planos': (req) => planos.vitrine(banco, contas.deQuemE(banco, lerCookie(req))),
+  'GET /api/planos': (req) => {
+    const pessoa = contas.deQuemE(banco, lerCookie(req))
+    const v = planos.vitrine(banco, pessoa)
+    if (pessoa && v.meu) {
+      const p = planos.planoDe(banco, pessoa)
+      v.meu.uso = {
+        livros: p.livrosMes === Infinity ? null : { ...acesso.usoDoMes(banco, pessoa.id), limite: acesso.livrosGratis(banco) },
+        pedidos: { usados: acesso.pedidosDoMes(banco, pessoa.id), limite: p.pedidosMes },
+      }
+      v.meu.voz = p.voz
+      v.meu.epub = p.epub
+    }
+    return v
+  },
+
+  // ── pedidos de tradução (servidor/esteira.mjs) ──
+  'GET /api/pedidos-traducao': (req) => {
+    const pessoa = exigirEntrada(req)
+    const p = planos.planoDe(banco, pessoa)
+    return { pedidos: esteira.meusPedidos(banco, pessoa), usados: acesso.pedidosDoMes(banco, pessoa.id), limite: p.pedidosMes, plano: p.nome }
+  },
+  'GET /api/pedidos-traducao/buscar': async (req, res, dado, ctx) => {
+    const pessoa = comFreio(req, 'buscar-gutenberg')
+    void pessoa
+    return esteira.buscarLivro(ctx.busca.get('q'))
+  },
+  'POST /api/pedidos-traducao': async (req, res, dado) => {
+    const pessoa = comFreio(req, 'pedir-traducao')
+    return esteira.pedir(banco, pessoa, planos.planoDe(banco, pessoa), dado)
+  },
+
+  // ── o pulso da esteira: só com a chave da máquina do dono ──
+  'POST /api/esteira/pulso': (req, res, dado) => {
+    if (!esteira.chaveConfere(req.headers['x-esteira-chave'])) throw new Recusa('Não existe.', 404)
+    return esteira.receberPulso(banco, dado)
+  },
+  'GET /api/admin/esteira': (req) => { exigirAdmin(req); return esteira.estado(banco) },
+
+  // ── correções comunitárias (servidor/correcoes.mjs) ──
+  'GET /api/correcoes/resumo': (req, res, dado, ctx) => correcoes.resumo(banco, ctx.busca.get('obra')) ?? { revisao: null },
+  'POST /api/correcoes': (req, res, dado) => correcoes.sugerir(banco, comFreio(req, 'corrigir'), dado),
+  'GET /api/admin/correcoes': (req) => { exigirAdmin(req); return correcoes.fila(banco) },
+  'POST /api/admin/correcao': (req, res, dado) => correcoes.decidir(banco, exigirAdmin(req), dado),
+  'POST /api/admin/correcoes/revisado': (req, res, dado) => correcoes.marcarRevisado(banco, exigirAdmin(req), dado),
 
   'GET /api/admin/assinaturas': (req) => {
     exigirAdmin(req)
@@ -622,9 +671,8 @@ const ROTAS = {
     exigirAdmin(req)
     return {
       cadastro_aberto: ajustes.ler(banco, 'cadastro_aberto') === 'sim',
-      portao_ativo: ajustes.ler(banco, 'portao_ativo') === 'sim',
-      portao_paginas: ajustes.portaoPaginas(banco),
-      portao_paginas_padrao: ajustes.paginasPadrao(banco),
+      amostra: acesso.amostraLigada(banco),
+      gratis_livros_mes: acesso.livrosGratis(banco),
       // contexto, só leitura: vem do ambiente, não se muda por aqui.
       esteira_paralelo: Number(process.env.FIO_PARALELO || 8),
       jurisdicao: process.env.FIO_JURISDICAO || 'BR',
@@ -638,16 +686,17 @@ const ROTAS = {
       ajustes.escrever(banco, 'cadastro_aberto', dado.cadastro_aberto ? 'sim' : 'nao')
       mudou.cadastro_aberto = !!dado.cadastro_aberto
     }
-    if (dado.portao_ativo !== undefined) {
-      ajustes.escrever(banco, 'portao_ativo', dado.portao_ativo ? 'sim' : 'nao')
-      mudou.portao_ativo = !!dado.portao_ativo
+    // `portao_ativo` virou "sem conta lê só a amostra" (17/09): a chave é a
+    // mesma para o que já estava ligado continuar ligado.
+    if (dado.amostra !== undefined) {
+      ajustes.escrever(banco, 'portao_ativo', dado.amostra ? 'sim' : 'nao')
+      mudou.amostra = !!dado.amostra
     }
-    if (dado.portao_paginas !== undefined) {
-      // vazio/0 = voltar ao padrão calculado; guardamos nada e o cálculo assume.
-      const n = Math.round(Number(dado.portao_paginas) || 0)
-      if (n > 0) ajustes.escrever(banco, 'portao_paginas', String(Math.min(100000, n)))
-      else banco.prepare("DELETE FROM ajuste WHERE chave = 'portao_paginas'").run()
-      mudou.portao_paginas = ajustes.portaoPaginas(banco)
+    if (dado.gratis_livros_mes !== undefined) {
+      const n = Math.round(Number(dado.gratis_livros_mes))
+      if (!Number.isInteger(n) || n < 0 || n > 100) throw new Recusa('Livros por mês: um número de 0 a 100.')
+      ajustes.escrever(banco, 'gratis_livros_mes', String(n))
+      mudou.gratis_livros_mes = n
     }
     return { ok: true, mudou }
   },
@@ -688,7 +737,7 @@ const capitulosDo = banco.prepare(
 
 const paraLeitura = banco.prepare(`
   SELECT o.id, o.titulo, o.titulo_pt, o.minutos_leitura, o.capa, o.capa_externa, o.trilho,
-         t.id texto_id, t.revisao, t.aviso, t.fonte_url base_url, tr.nome tradutor, d.estado,
+         t.id texto_id, t.fonte, t.revisao, t.aviso, t.fonte_url base_url, tr.nome tradutor, d.estado,
          p.id autor_id, p.nome autor
     FROM obra o
     JOIN texto t ON ${O_TEXTO_QUE_VALE}
@@ -705,7 +754,7 @@ const paraLeitura = banco.prepare(`
 // afirma nada sobre o arquivo de ninguém.
 const paraLeituraDoDono = banco.prepare(`
   SELECT o.id, o.titulo, o.titulo_pt, o.minutos_leitura, o.capa, o.capa_externa, o.trilho,
-         t.id texto_id, NULL revisao, NULL aviso, NULL base_url, NULL tradutor,
+         t.id texto_id, 'meu' fonte, NULL revisao, NULL aviso, NULL base_url, NULL tradutor,
          'dominio_publico' estado,
          p.id autor_id, p.nome autor
     FROM obra o
@@ -725,28 +774,20 @@ const paraLeituraDoDono = banco.prepare(`
  * O direito é conferido AQUI de novo. `obra.trilho` é rótulo de tela; a regra
  * é a tabela `direito`.
  */
-// O muro do portão: quando o anônimo esgota as páginas de graça, o livro sai
-// com UM capítulo no lugar do texto — o convite para criar conta. É um livro
-// de verdade para o leitor (a tela não precisa saber de portão nenhum), e o
-// texto some porque quem não entrou não recebe o texto.
-function muroDeConta(o, g) {
-  const corpo = [
-    `Você já leu por aqui cerca de ${g.lidas} páginas — o tanto que a biblioteca abre sem conta, mais ou menos cinco livros.`,
-    `Para continuar deste ponto, crie uma conta. É de graça, leva um minuto, e passa a guardar o seu progresso, as suas marcações e as suas notas entre todos os seus aparelhos.`,
-    `Toque em “entrar”, no alto da página, e depois em “criar conta”. Se você já tem conta, é só entrar — e o livro abre na mesma hora, onde você parou.`,
-  ].join('\n\n')
-  return {
-    id: o.id,
-    titulo: primeiraLinha(o.titulo_pt || o.titulo),
-    autor: o.autor ?? 'autoria não identificada',
-    autorId: o.autor_id, ano: null, trilho: 'A', minutos: 0, temas: [],
-    capa: o.capa, capaOL: o.capa_externa, textoId: 0, comecaEm: 0,
-    aviso: null, traducao: null, portao: true,
-    capitulos: [{ ordem: 1, titulo: 'Crie uma conta para continuar lendo', corpo, palavras: 0 }],
-  }
+// A amostra (ver `acesso.mjs`): quem não pode ler o livro inteiro recebe os
+// capítulos até o primeiro capítulo de verdade e, no fim, um capítulo que
+// explica o porquê. Para a tela é um livro como outro qualquer; o resto do
+// texto simplesmente não sai daqui.
+function amostra(capitulos, decisao) {
+  const comeca = ondeComecaOLivro(capitulos)
+  const i = Math.max(0, capitulos.findIndex((c) => c.ordem === comeca))
+  const ate = capitulos.slice(0, i + 1)
+  const muro = acesso.capituloDoMuro(decisao)
+  return [...ate, { ordem: (ate.at(-1)?.ordem ?? 0) + 1, titulo: muro.titulo, corpo: muro.corpo, palavras: 0 }]
 }
 
-function servirLivro(res, id, leitorId = null, dica = null) {
+function servirLivro(res, id, pessoa = null) {
+  const leitorId = pessoa?.id ?? null
   const casa = process.env.FIO_JURISDICAO || 'BR'
 
   // ── trilho C primeiro ──
@@ -763,15 +804,15 @@ function servirLivro(res, id, leitorId = null, dica = null) {
   if (!meu && o.estado !== 'dominio_publico' && o.estado !== 'licenca_livre') {
     throw new Recusa('Esta obra não pode ser lida aqui.', 403)
   }
-  const capitulos = capitulosDo.all(o.texto_id)
+  let capitulos = capitulosDo.all(o.texto_id)
   if (!capitulos.length) throw new Recusa('Não temos o texto desta obra.', 404)
 
-  // O portão: quem lê sem conta tem um teto de páginas. O livro que estoura o
-  // teto ainda sai inteiro; o próximo é que vira convite para entrar. Vale só
-  // para o acervo da casa — nunca para o livro que é do próprio leitor (meu).
-  if (!leitorId && !meu) {
-    const g = ajustes.podeLerAnon(banco, dica ?? 'sem-ip', o.id, capitulos)
-    if (!g.pode) { res.setHeader('cache-control', 'no-store'); return responder(res, 200, muroDeConta(o, g)) }
+  // O limite do plano. Nunca para o livro que é do próprio leitor (meu), nunca
+  // para lei. Quem não pode ler inteiro recebe a amostra.
+  let limitado = null
+  if (!meu) {
+    const decisao = acesso.decidir(banco, pessoa, o.id, { ehLei: o.fonte === 'planalto' })
+    if (!decisao.pode) { capitulos = amostra(capitulos, decisao); limitado = decisao.motivo }
   }
 
   responder(res, 200, {
@@ -794,6 +835,8 @@ function servirLivro(res, id, leitorId = null, dica = null) {
     // O rótulo viaja com o TEXTO, e não como enfeite da ficha: quem abre o
     // livro direto pelo endereço tem que ver o aviso do mesmo jeito.
     traducao: o.revisao ? { revisao: o.revisao, tradutor: o.tradutor, original: o.base_url } : null,
+    // 'conta' | 'limite' quando o texto veio só em amostra
+    limitado,
     capitulos,
   })
 }
@@ -995,9 +1038,9 @@ const servidor = createServer(async (req, res) => {
       // O texto de domínio público não muda; o navegador pode guardar. O do
       // leitor, não: `public` autorizaria um proxy no caminho a guardar o
       // livro de alguém e servi-lo a outra pessoa.
-      const quemLe = contas.deQuemE(banco, lerCookie(req))?.id ?? null
-      res.setHeader('cache-control', quemLe ? 'private, no-store' : 'public, max-age=3600')
-      return servirLivro(res, Number(pedindoLivro[1]), quemLe, dicaDeIp(ipDe(req)))
+      const quemLe = contas.deQuemE(banco, lerCookie(req))
+      res.setHeader('cache-control', 'private, no-store')
+      return servirLivro(res, Number(pedindoLivro[1]), quemLe)
     } catch (e) {
       if (e instanceof Recusa) return responder(res, e.status, { erro: e.message })
       console.error('[fio] livro', e)
@@ -1009,6 +1052,13 @@ const servidor = createServer(async (req, res) => {
   if (baixando) {
     try {
       if (req.method !== 'GET') throw new Recusa('Só GET.', 405)
+      // EPUB é benefício de plano (Novelo em diante). O botão é um link comum,
+      // então quem não tem plano é levado à página de planos, e não a um JSON.
+      const quemBaixa = contas.deQuemE(banco, lerCookie(req))
+      if (!planos.planoDe(banco, quemBaixa).epub) {
+        res.writeHead(302, { location: '/assinaturas.html?por=epub', 'cache-control': 'no-store' })
+        return res.end()
+      }
       return baixar(req, res, Number(baixando[1]))
     } catch (e) {
       if (e instanceof Recusa) return responder(res, e.status, { erro: e.message })
@@ -1047,6 +1097,14 @@ const servidor = createServer(async (req, res) => {
   // ── site ──
   if (req.method !== 'GET' && req.method !== 'HEAD') { res.writeHead(405); return res.end() }
   try {
+    // Quadrinhos livres: sem conta, só o primeiro volume/episódio de cada
+    // série. A imagem das outras pede conta (a página do leitor explica).
+    // (as pastas são "01", "ep02", "vol03"…; a capa de cada volume é sempre livre)
+    const quadro = caminho.match(/^\/quadrinhos\/[^/]+\/[a-z]*(\d+)\/([^/]+)$/)
+    if (quadro && Number(quadro[1]) > 1 && !/^capa\./.test(quadro[2]) && acesso.amostraLigada(banco) && !contas.deQuemE(banco, lerCookie(req))) {
+      res.writeHead(401, { 'content-type': 'text/plain; charset=utf-8', 'cache-control': 'no-store' })
+      return res.end('crie uma conta para continuar')
+    }
     if (servirArquivo(req, res, caminho)) return
     // O app navega por HASH (`/#/obra/12`). Um endereço de caminho — `/obra/12`,
     // vindo de um link antigo, de um compartilhamento ou do painel até 16/09 —

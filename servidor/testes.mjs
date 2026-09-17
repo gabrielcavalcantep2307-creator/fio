@@ -1474,9 +1474,94 @@ test('publicações: página de outra obra não entra; três denúncias suspende
   pub.enviar(b, p(a1), { id: o1 }); pub.decidir(b, p(adm), { alvo: 'obra', id: o1, acao: 'aprovar' })
   assert.equal(pub.lerParte(b, null, o1, 1).paginas.length, 1)
 
+  // 17/09: denúncia vai para a revisão, nunca tira do ar sozinha
   for (const u of ['den1', 'den2', 'den3']) pub.denunciar(b, p(leitorDeTeste(u)), { id: o1, motivo: 'direitos' })
-  assert.equal(b.prepare('SELECT estado FROM publicacao WHERE id = ?').get(o1).estado, 'suspensa', 'três denúncias não suspenderam')
-  assert.equal(pub.listar(b, null, new URLSearchParams('')).obras.some((o) => o.id === o1), false)
+  assert.equal(b.prepare('SELECT estado FROM publicacao WHERE id = ?').get(o1).estado, 'publicada', 'denúncia tirou a obra do ar sozinha')
+  assert.equal(pub.filaDeRevisao(b).denuncias.filter((d) => d.publicacao_id === o1).length, 3)
+
+  // edição de capítulo publicado: a versão antiga fica no ar até aprovar
+  const nova = pub.receberImagem(b, p(a1), { id: o1, uso: 'pagina' }, pngDeTeste(80, 120)).arquivo
+  const idParte = b.prepare('SELECT id FROM publicacao_parte WHERE publicacao_id = ?').get(o1).id
+  assert.equal(pub.salvarParte(b, p(a1), { publicacao: o1, id: idParte, titulo: 'Cap 1 (nova)', paginas: [nova] }).pendente, true)
+  pub.enviar(b, p(a1), { id: o1 })
+  assert.equal(pub.lerParte(b, null, o1, 1).parte.titulo, 'Cap 1', 'edição pendente apareceu para o leitor')
+  assert.ok(pub.podeVerArquivo(b, null, minha.split('.')[0]), 'página antiga saiu do ar durante a revisão')
+  assert.equal(pub.podeVerArquivo(b, null, nova.split('.')[0]), null, 'página da edição pendente ficou pública')
+  pub.decidir(b, p(adm), { alvo: 'parte', id: idParte, acao: 'aprovar' })
+  assert.equal(pub.lerParte(b, null, o1, 1).parte.titulo, 'Cap 1 (nova)')
+  assert.equal(pub.podeVerArquivo(b, null, minha.split('.')[0]), null, 'página que saiu do capítulo continuou servida')
+
   pub.apagarObra(b, p(a1), o1)
   assert.equal(b.prepare('SELECT COUNT(*) n FROM publicacao_arquivo WHERE publicacao_id = ?').get(o1).n, 0, 'arquivos ficaram para trás')
+})
+
+// ─────────────────────────────────────────────────────────────
+// Limite do plano grátis, amostra, pulso da esteira e correções (17/09)
+// ─────────────────────────────────────────────────────────────
+
+test('acesso: sem conta é amostra; grátis abre 3 livros por mês e livro aberto não fecha; lei não conta; plano pago não tem limite', async () => {
+  const acesso = await import('./acesso.mjs')
+  const b = bd(); planos.garantirTabelas(b); acesso.garantirTabelas(b)
+  const p = (id) => b.prepare('SELECT id, usuario, papel FROM leitor WHERE id = ?').get(id)
+  const gratis = leitorDeTeste('gratislimite'), pago = leitorDeTeste('pagolimite')
+  const adm = b.prepare("SELECT id FROM leitor WHERE usuario = 'admplano'").get().id
+  planos.conceder(b, adm, { usuario: 'pagolimite', plano: 'novelo' }, { chaveDe, Recusa: contas.Recusa })
+
+  assert.equal(acesso.decidir(b, null, 1).motivo, 'conta')
+  for (const obra of [101, 102, 103]) assert.equal(acesso.decidir(b, p(gratis), obra).pode, true)
+  const quarta = acesso.decidir(b, p(gratis), 104)
+  assert.equal(quarta.pode, false); assert.equal(quarta.motivo, 'limite'); assert.ok(quarta.renovaEm)
+  assert.equal(acesso.decidir(b, p(gratis), 102).pode, true, 'livro já aberto fechou')
+  assert.equal(acesso.decidir(b, p(gratis), 999, { ehLei: true }).pode, true, 'lei contou no limite')
+  b.prepare("UPDATE livro_liberado SET liberado_em = datetime('now', '-31 days') WHERE leitor_id = ? AND obra_id = 101").run(gratis)
+  assert.equal(acesso.decidir(b, p(gratis), 104).pode, true, 'o limite não renovou depois de 30 dias')
+  for (let obra = 200; obra < 230; obra++) assert.equal(acesso.decidir(b, p(pago), obra).pode, true)
+  assert.match(acesso.capituloDoMuro(quarta).corpo, /planos/)
+})
+
+test('esteira: pulso só com a chave, com campos limpos; fila se reconcilia', async () => {
+  const esteira = await import('./esteira.mjs')
+  const b = bd(); esteira.garantirTabelas(b)
+  process.env.FIO_ESTEIRA_CHAVE = 'chave-de-teste-com-mais-de-24-caracteres'
+  assert.equal(esteira.chaveConfere('errada'), false)
+  assert.equal(esteira.chaveConfere(undefined), false)
+  assert.equal(esteira.chaveConfere('chave-de-teste-com-mais-de-24-caracteres'), true)
+  esteira.receberPulso(b, { estado: '<script>', atual: { titulo: 'x'.repeat(999), feitas: 10, total: 40 }, log: Array(50).fill('linha'), extra: 'não entra' })
+  const e = esteira.estado(b)
+  assert.equal(e.pulso.estado, 'traduzindo'); assert.equal(e.pulso.atual.titulo.length, 160); assert.equal(e.pulso.log.length, 12)
+  assert.equal(e.pulso.extra, undefined); assert.equal(e.viva, true)
+  delete process.env.FIO_ESTEIRA_CHAVE
+  assert.equal(esteira.chaveConfere('chave-de-teste-com-mais-de-24-caracteres'), false, 'sem variável a rota não pode aceitar nada')
+})
+
+test('correções: acha o trecho através da marcação, aplica só se for único, e credita quem sugeriu', async () => {
+  const cor = await import('./correcoes.mjs')
+  const b = bd(); cor.garantirTabelas(b); gosto.garantirTabelas(b)
+  const obra = Number(b.prepare("INSERT INTO obra (titulo, trilho, publicada) VALUES ('Livro Traduzido', 'A', 1)").run().lastInsertRowid)
+  const texto = Number(b.prepare("INSERT INTO texto (obra_id, idioma, fonte, normalizado, revisao) VALUES (?, 'pt', 'fio_traducao', 1, 'automatica')").run(obra).lastInsertRowid)
+  b.prepare('INSERT INTO capitulo (texto_id, ordem, titulo, corpo, palavras) VALUES (?, 1, NULL, ?, 20)')
+    .run(texto, '<p>O homem <em>saiu</em> da menoridade da qual ele próprio é culpado.</p><p>Repetido aqui. Repetido aqui.</p>')
+  const leitora = leitorDeTeste('revisora1')
+  const adm = { id: b.prepare("SELECT id FROM leitor WHERE usuario = 'admplano'").get().id, papel: 'admin' }
+  const p = { id: leitora, usuario: 'revisora1' }
+
+  assert.throws(() => cor.sugerir(b, p, { obra, capitulo: 1, trecho: 'não existe isso', proposta: 'x' }), /Não achei/)
+  assert.equal(cor.sugerir(b, p, { obra, capitulo: 99, trecho: 'próprio é', proposta: 'mesmo é' }).ok, true, 'não achou o trecho em outro capítulo')
+  cor.decidir(b, { id: 0 }, { id: cor.fila(b).pendentes.at(-1).id, acao: 'recusar' })
+  cor.sugerir(b, p, { obra, capitulo: 1, trecho: 'O homem saiu da menoridade', proposta: 'O ser humano saiu da menoridade' })
+  cor.sugerir(b, p, { obra, capitulo: 1, trecho: 'Repetido aqui.', proposta: 'Uma vez só.' })
+  const [c1, c2] = cor.fila(b).pendentes
+  assert.equal(c1.achados, 1); assert.equal(c2.achados, 2)
+  cor.decidir(b, adm, { id: c1.id, acao: 'aceitar' })
+  assert.throws(() => cor.decidir(b, adm, { id: c2.id, acao: 'aceitar' }), (e) => e.status === 409, 'aplicou em trecho ambíguo')
+  const corpo = b.prepare('SELECT corpo FROM capitulo WHERE texto_id = ?').get(texto).corpo
+  assert.match(corpo, /<p>O ser humano saiu da menoridade da qual/)
+  const r = cor.resumo(b, obra)
+  assert.equal(r.aceitas, 1); assert.deepEqual(r.revisores.map((x) => x.usuario), ['revisora1'])
+  cor.sugerir(b, p, { obra, capitulo: 1, trecho: 'culpado', proposta: '<img src=x onerror=alert(1)>' })
+  cor.decidir(b, adm, { id: cor.fila(b).pendentes.find((x) => x.trecho === 'culpado').id, acao: 'aceitar' })
+  assert.ok(!/<img/.test(b.prepare('SELECT corpo FROM capitulo WHERE texto_id = ?').get(texto).corpo), 'correção entrou como HTML')
+  cor.marcarRevisado(b, adm, { obra })
+  assert.equal(b.prepare('SELECT revisao FROM texto WHERE id = ?').get(texto).revisao, 'humana')
+  assert.equal(cor.resumo(b, obra).revisao, 'comunitaria')
 })

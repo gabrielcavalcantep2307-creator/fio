@@ -11,6 +11,9 @@ export const CHAVES = {
   cadastro_aberto: 'bool', // qualquer um pode criar conta, sem convite
   portao_ativo: 'bool',    // depois de X páginas, anônimo precisa entrar
   portao_paginas: 'int',   // o X; vazio = a média calculada do acervo
+  // 17/09: o portão por páginas deu lugar à amostra (portao_ativo = sem conta
+  // lê só o 1º capítulo) e ao limite do plano grátis, em livros por mês.
+  gratis_livros_mes: 'int',
 }
 
 // A régua editorial de sempre: 300 palavras por página é o meio-termo entre

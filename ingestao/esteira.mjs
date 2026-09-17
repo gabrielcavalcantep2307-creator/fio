@@ -34,6 +34,7 @@ import { spawn, spawnSync } from 'node:child_process'
 import { readFileSync, existsSync, writeFileSync } from 'node:fs'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { criarPulso } from './pulso.mjs'
 
 const RAIZ = join(dirname(fileURLToPath(import.meta.url)), '..')
 const PASTA = join(RAIZ, 'dados', 'traducoes')
@@ -58,6 +59,13 @@ const minutos = Number(arg('minutos', 600))
 const subirACada = process.argv.includes('--subir') ? Number(arg('lote', 5)) : 0
 const plano = JSON.parse(readFileSync(join(PASTA, 'esteira.json'), 'utf8')).plano
 
+// O pulso para o painel (ingestao/pulso.mjs). Tudo que a esteira escreve no
+// console vai também para as últimas linhas do pulso.
+const pulso = criarPulso(RAIZ)
+const logOriginal = console.log
+console.log = (...a) => { logOriginal(...a); for (const l of a.join(' ').split('\n')) pulso.registrar(l) }
+const traduzidosNoPlano = () => plano.filter((o) => existsSync(join(PASTA, `${o.saida}.json`))).length
+
 /**
  * Roda um comando e devolve o que ele disse, sem deixar ninguém sem saída.
  *
@@ -73,10 +81,10 @@ const plano = JSON.parse(readFileSync(join(PASTA, 'esteira.json'), 'utf8')).plan
  * nada — e a promessa valia só para as falhas que chegavam a ter código de
  * saída.
  */
-const rodar = (args, programa = process.execPath, argsDele = null) => new Promise((pronto) => {
+const rodar = (args, programa = process.execPath, argsDele = null, aoFalar = null) => new Promise((pronto) => {
   const p = spawn(programa, argsDele ?? args, { cwd: RAIZ })
   let saida = ''
-  p.stdout.on('data', (d) => { saida += d })
+  p.stdout.on('data', (d) => { saida += d; aoFalar?.(String(d)) })
   p.stderr.on('data', (d) => { saida += d })
   p.on('error', (e) => pronto({ codigo: -1, saida: `${saida}\nErro: não deu para rodar "${programa}": ${e.message}` }))
   p.on('close', (codigo) => pronto({ codigo, saida }))
@@ -153,6 +161,7 @@ async function medir(itens) {
  * o pior negócio possível.
  */
 async function publicar() {
+  pulso.mudar({ estado: 'publicando', atual: null }, { agora: true })
   const t0 = Date.now()
   const bash = acharBash()
   if (!bash) {
@@ -170,8 +179,9 @@ async function publicar() {
 }
 
 console.log('medindo as fontes…')
+pulso.mudar({ estado: 'medindo', plano: { total: plano.length, traduzidos: traduzidosNoPlano() } }, { agora: true })
 const fila = (await medir(plano))
-  .sort((a, b) => a.bytes - b.bytes || (b.emTrilha ?? 0) - (a.emTrilha ?? 0))
+  .sort((a, b) => (b.prioridade ?? 0) - (a.prioridade ?? 0) || a.bytes - b.bytes || (b.emTrilha ?? 0) - (a.emTrilha ?? 0))
   .slice(0, quantos)
 
 console.log(`esteira: ${fila.length} obras, do menor para o maior\n`)
@@ -180,6 +190,9 @@ const prazo = Date.now() + minutos * 60_000
 const feitos = []
 const falhas = []
 let novos = 0
+const inicioRodada = new Date().toISOString()
+const pulsoRodada = () => ({ total: fila.length, feitos: feitos.length, falhas: falhas.length, inicio: inicioRodada })
+const ultimos = []
 
 for (const [i, o] of fila.entries()) {
   if (Date.now() > prazo) { console.log('\n(prazo desta rodada acabou; o resto fica para a próxima)'); break }
@@ -191,10 +204,16 @@ for (const [i, o] of fila.entries()) {
 
   console.log(`${cabeca}\n   de ${o.de}, ${o.fonte}`)
   const t0 = Date.now()
+  const atual = { obra: o.obra, titulo: o.titulo, de: o.de, feitas: 0, total: null, minRestantes: null, inicio: new Date().toISOString() }
+  pulso.mudar({ estado: 'traduzindo', atual, rodada: pulsoRodada(), plano: { total: plano.length, traduzidos: traduzidosNoPlano() } }, { agora: true })
   const { codigo, saida } = await rodar([
     join(RAIZ, 'ingestao', 'traduzir-obra.mjs'),
     '--fonte', o.fonte, '--de', o.de, '--titulo', o.titulo, '--saida', o.saida,
-  ])
+  ], process.execPath, null, (pedaco) => {
+    // "  120/860  ~14 min restantes" — a última que apareceu neste pedaço
+    const m = [...pedaco.matchAll(/(\d+)\/(\d+)\s+~(\d+) min/g)].at(-1)
+    if (m) pulso.mudar({ atual: { ...atual, feitas: Number(m[1]), total: Number(m[2]), minRestantes: Number(m[3]) } })
+  })
   const min = Math.round((Date.now() - t0) / 60_000)
 
   if (codigo === 0 && existsSync(arquivo)) {
@@ -202,6 +221,8 @@ for (const [i, o] of fila.entries()) {
     const palavras = t.capitulos.reduce((a, c) => a + c.palavras, 0)
     console.log(`   pronto: ${t.capitulos.length} capítulos, ${palavras} palavras, ${min} min\n`)
     feitos.push({ ...o, capitulos: t.capitulos.length, palavras })
+    ultimos.unshift({ titulo: o.titulo, min, palavras, ok: true }); ultimos.splice(8)
+    pulso.mudar({ atual: null, ultimos, rodada: pulsoRodada(), plano: { total: plano.length, traduzidos: traduzidosNoPlano() } }, { agora: true })
 
     // Publica de lote em lote, para o livro aparecer no site enquanto a
     // esteira ainda anda. `novos` conta só o que saiu NESTA rodada: as que já
@@ -218,6 +239,8 @@ for (const [i, o] of fila.entries()) {
       ?? linhas.at(-1) ?? 'sem mensagem'
     console.log(`   FALHOU (${min} min): ${erro.slice(0, 140)}\n`)
     falhas.push({ obra: o.obra, titulo: o.titulo, fonte: o.fonte, erro: erro.slice(0, 300) })
+    ultimos.unshift({ titulo: o.titulo, min, palavras: 0, ok: false }); ultimos.splice(8)
+    pulso.mudar({ atual: null, ultimos, rodada: pulsoRodada() }, { agora: true })
   }
 }
 
@@ -229,6 +252,8 @@ if (subirACada && novos % subirACada !== 0 && novos > 0) {
 }
 
 const relatorio = join(PASTA, 'esteira-relatorio.json')
+await pulso.mudar({ estado: 'terminou', atual: null, ultimos, rodada: pulsoRodada(), plano: { total: plano.length, traduzidos: traduzidosNoPlano() } }, { agora: true })
+pulso.fim()
 writeFileSync(relatorio, JSON.stringify({ feito_em: new Date().toISOString(), feitos, falhas }, null, 1), 'utf8')
 
 console.log(`\n${feitos.length} traduzidas, ${falhas.length} falharam`)

@@ -152,6 +152,10 @@ export const LIMITES = {
   'publicar': { quantas: 120, minutos: 60 },
   'upload': { quantas: 600, minutos: 60 },
   'denunciar': { quantas: 10, minutos: 60 },
+  // 17/09: busca no Gutenberg (sai para a internet), pedidos e correções.
+  'buscar-gutenberg': { quantas: 30, minutos: 10 },
+  'pedir-traducao': { quantas: 20, minutos: 60 },
+  'corrigir': { quantas: 60, minutos: 60 },
 }
 
 /**

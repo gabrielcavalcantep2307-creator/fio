@@ -197,6 +197,21 @@ const REMENDOS = [
     de: OBSERVAR,
     para: OBSERVAR + CONVERSA,
   },
+  // ── 17/09: ouvir é benefício de plano; busca aberta a partir das páginas soltas ──
+  {
+    // `window.fioVoz` vem de /fio-leitor.js (o plano da pessoa). A velocidade
+    // escolhida no chip do leitor vale ao começar a falar.
+    nome: 'ouvir em voz alta: só com plano, e com a velocidade escolhida',
+    de: 'le.current=bn({aoMudar:O,aoAcabar:()=>{oe(!1),O(-1)}}),le.current.falar(ue),oe(!0)',
+    para: 'if(window.fioVoz!==!0){location.href=`/assinaturas.html?por=voz`;return}le.current=bn({velocidade:Number(localStorage.getItem(`fio:voz-vel`))||1,aoMudar:O,aoAcabar:()=>{oe(!1),O(-1)}}),le.current.falar(ue),oe(!0)',
+  },
+  {
+    // A barra das páginas soltas não tem a busca (ela mora no app): marca o
+    // pedido e vem para cá; o app abre a busca assim que monta.
+    nome: 'busca: abre quando outra página pediu',
+    de: 'p=E();(0,l.useEffect)(()=>{document.documentElement.dataset.tema=t.tema},[t.tema])',
+    para: 'p=E();(0,l.useEffect)(()=>{document.documentElement.dataset.tema=t.tema},[t.tema]),(0,l.useEffect)(()=>{try{sessionStorage.getItem(`fio:abrir-busca`)&&(sessionStorage.removeItem(`fio:abrir-busca`),f(!0))}catch{}},[])',
+  },
 ]
 
 let s = readFileSync(arg('base'), 'utf8')
@@ -217,7 +232,11 @@ const saida = arg('saida')
 mkdirSync(join(saida, 'ativos'), { recursive: true })
 const nome = `index-${createHash('sha256').update(s).digest('base64url').slice(0, 8)}.js`
 writeFileSync(join(saida, 'ativos', nome), s)
-const index = readFileSync(arg('index'), 'utf8').replace(/\/ativos\/index-[\w-]+\.js/, `/ativos/${nome}`)
+// /fio-leitor.js: o que o leitor ganhou por fora do bundle (voz por plano,
+// correções comunitárias). Script da própria origem, sem nada embutido.
+let index = readFileSync(arg('index'), 'utf8').replace(/\/ativos\/index-[\w-]+\.js/, `/ativos/${nome}`)
+if (!index.includes('/fio-leitor.js')) index = index.replace('</head>', '    <script defer src="/fio-leitor.js"></script>\n  </head>')
 if (!index.includes(nome)) throw new Error('index.html não aponta para o bundle novo')
+if (!index.includes('/fio-leitor.js')) throw new Error('index.html sem /fio-leitor.js')
 writeFileSync(join(saida, 'index.html'), index)
 console.log(`\n${saida}/ativos/${nome}`)

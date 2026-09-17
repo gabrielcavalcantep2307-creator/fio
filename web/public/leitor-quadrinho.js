@@ -24,7 +24,7 @@ const guardar = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)) } c
 const ler = (k, p) => { try { return JSON.parse(localStorage.getItem(k)) ?? p } catch { return p } }
 
 const params = new URLSearchParams(location.search)
-const estado = { serie: null, cap: null, pagina: 0, modo: 'pagina', sentido: 'ltr', total: 0 }
+const estado = { serie: null, cap: null, pagina: 0, modo: 'pagina', sentido: 'ltr', total: 0, traducao: null, mostrarTraducao: false }
 let escondeTimer = null
 
 async function iniciar() {
@@ -35,11 +35,42 @@ async function iniciar() {
   // só caminho da própria casa vira <img>
   c.paginas = c.paginas.filter((p) => typeof p === 'string' && p.startsWith('/quadrinhos/'))
 
+  // Sem conta, só o primeiro volume de cada série (o servidor recusa as
+  // imagens dos outros). Em vez de páginas quebradas, o convite.
+  if (c.n > 1) {
+    const eu = await fetch('/api/eu', { credentials: 'same-origin' }).then((r) => (r.ok ? r.json() : null)).catch(() => null)
+    if (!eu?.pessoa) {
+      const caixa = document.createElement('div')
+      caixa.setAttribute('style', 'position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:20px;background:#111;color:#eee;font:16px/1.5 Inter,system-ui,sans-serif;text-align:center')
+      const dentro = document.createElement('div')
+      dentro.setAttribute('style', 'max-width:420px')
+      const t = document.createElement('p'); t.setAttribute('style', 'font:22px Literata,Georgia,serif;margin:0 0 10px'); t.textContent = 'Continue lendo com uma conta grátis'
+      const p = document.createElement('p'); p.setAttribute('style', 'color:#bbb;margin:0 0 20px'); p.textContent = `O primeiro volume de ${s.titulo} é aberto para todo mundo. Para seguir, crie uma conta — é de graça.`
+      const entrar = document.createElement('a'); entrar.href = '/#/entrar'; entrar.textContent = 'Criar conta ou entrar'
+      entrar.setAttribute('style', 'display:inline-block;background:#c96a5c;color:#fff;border-radius:8px;padding:11px 20px;text-decoration:none')
+      const voltar = document.createElement('a'); voltar.href = `/quadrinhos.html?aba=aqui&serie=${encodeURIComponent(s.id)}`; voltar.textContent = 'voltar à série'
+      voltar.setAttribute('style', 'display:block;margin-top:14px;color:#bbb')
+      dentro.append(t, p, entrar, voltar); caixa.append(dentro); document.body.append(caixa)
+      return
+    }
+  }
+
   estado.serie = s; estado.cap = c; estado.total = c.paginas.length
   const prefs = ler('fio:quadrinhos:prefs', {})[s.id] ?? {}
   estado.modo = prefs.modo ?? s.modo
   estado.sentido = prefs.sentido ?? s.sentido
   if (estado.modo === 'dupla' && innerWidth < 900) estado.modo = 'pagina'
+
+  // Tradução dos balões (ingestao/quadrinhos-ocr.mjs). Só caminho da casa.
+  if (typeof s.traducao === 'string' && s.traducao.startsWith('/dados/quadrinhos-traducao/')) {
+    estado.traducao = await fetch(s.traducao).then((r) => (r.ok ? r.json() : null)).catch(() => null)
+    const temAqui = estado.traducao && c.paginas.some((p) => estado.traducao.paginas?.[p]?.blocos?.length)
+    if (temAqui) {
+      estado.mostrarTraducao = prefs.traducao ?? true
+      $('traducao').hidden = false
+      $('traducao').addEventListener('click', alternarTraducao)
+    }
+  }
   estado.pagina = Math.max(0, Math.min(estado.total - 1, Number(params.get('p')) || 0))
 
   document.title = `${c.titulo} — ${s.titulo}`
@@ -61,7 +92,8 @@ async function iniciar() {
   $('barra').addEventListener('input', (e) => irPara(Number(e.target.value)))
   $('zonaEsq').addEventListener('click', () => (estado.sentido === 'rtl' ? avancar() : voltar()))
   $('zonaDir').addEventListener('click', () => (estado.sentido === 'rtl' ? voltar() : avancar()))
-  $('palco').addEventListener('dblclick', () => $('palco').classList.toggle('zoom'))
+  $('palco').addEventListener('dblclick', () => { $('palco').classList.toggle('zoom'); requestAnimationFrame(() => { for (const f of camadas) f() }) })
+  $('palco').addEventListener('scroll', () => { for (const f of camadas) f() }, { passive: true })
   $('palco').addEventListener('click', alternarUi)
   document.addEventListener('keydown', teclas)
   gestos()
@@ -75,7 +107,7 @@ async function iniciar() {
 
 function salvarPrefs() {
   const todas = ler('fio:quadrinhos:prefs', {})
-  todas[estado.serie.id] = { modo: estado.modo, sentido: estado.sentido }
+  todas[estado.serie.id] = { modo: estado.modo, sentido: estado.sentido, traducao: estado.mostrarTraducao }
   guardar('fio:quadrinhos:prefs', todas)
 }
 
@@ -95,6 +127,8 @@ function mudarModo(modo) {
 function desenhar() {
   for (const b of document.querySelectorAll('[data-modo]')) b.setAttribute('aria-pressed', String(b.dataset.modo === estado.modo))
   $('sentido').textContent = estado.sentido === 'rtl' ? 'mangá ←' : 'ocidental →'
+  $('traducao').setAttribute('aria-pressed', String(estado.mostrarTraducao))
+  $('traducao').textContent = estado.mostrarTraducao ? 'PT' : 'original'
   const rolando = estado.modo === 'rolagem'
   $('rolagem').hidden = !rolando
   $('palco').hidden = rolando
@@ -117,7 +151,10 @@ function montarRolagem() {
     img.loading = i < 3 ? 'eager' : 'lazy'; img.decoding = 'async'
     img.addEventListener('load', () => img.setAttribute('data-carregada', ''), { once: true })
     img.src = src
-    box.append(img)
+    const folha = document.createElement('div'); folha.className = 'folha'
+    folha.append(img)
+    box.append(folha)
+    sobrepor(img, src)
   })
   box.append(blocoFim())
   const alvo = box.children[estado.pagina]
@@ -137,7 +174,7 @@ function aoRolar() {
     ultimoY = y
     const meio = innerHeight / 2
     let atual = 0
-    for (const img of $('rolagem').querySelectorAll('img')) {
+    for (const img of $('rolagem').querySelectorAll('.folha > img')) {
       if (img.getBoundingClientRect().top < meio) atual = Number(img.dataset.i); else break
     }
     if (atual !== estado.pagina) { estado.pagina = atual; atualizarBarra() }
@@ -162,6 +199,7 @@ function mostrarPagina() {
     img.src = estado.cap.paginas[i]; img.alt = `Página ${i + 1} de ${estado.total}`; img.draggable = false
     return img
   }))
+  for (const img of [...palco.querySelectorAll('img')]) sobrepor(img, img.getAttribute('src'))
   // já pede as próximas, para virar a página não esperar rede
   for (let k = 1; k <= 3; k++) { const src = estado.cap.paginas[estado.pagina + k]; if (src) new Image().src = src }
   salvarProgresso(estado.pagina + (estado.modo === 'dupla' ? 2 : 1) >= estado.total)
@@ -242,6 +280,7 @@ function teclas(e) {
   else if (e.key === 'ArrowLeft') { e.preventDefault(); rtl ? avancar() : voltar() }
   else if (e.key === ' ' && estado.modo !== 'rolagem') { e.preventDefault(); avancar() }
   else if (e.key === 'f' || e.key === 'F') telaCheia()
+  else if ((e.key === 't' || e.key === 'T') && !$('traducao').hidden) alternarTraducao()
   else if (e.key === 'm' || e.key === 'M') mudarModo({ rolagem: 'pagina', pagina: innerWidth >= 900 ? 'dupla' : 'rolagem', dupla: 'rolagem' }[estado.modo])
 }
 
@@ -270,6 +309,69 @@ function agendarEsconder() {
   clearTimeout(escondeTimer)
   document.body.classList.remove('escondida')
   escondeTimer = setTimeout(() => { if (estado.modo !== 'rolagem') document.body.classList.add('escondida') }, 2500)
+}
+
+// ── a tradução sobre os balões ──
+//
+// Uma camada do tamanho exato da imagem, com uma caixa por balão (posições em %
+// vindas do OCR). O texto encolhe até caber na caixa. Tudo por textContent.
+const camadas = new Set()
+
+function sobrepor(img, caminho) {
+  const blocos = estado.traducao?.paginas?.[caminho]?.blocos
+  if (!blocos?.length) return
+  const camada = document.createElement('div')
+  camada.className = 'camada'
+  for (const b of blocos) {
+    if (!b.t) continue
+    const caixa = document.createElement('div')
+    caixa.className = b.duvida ? 'balao duvida' : 'balao'
+    // um pouco maior que o texto original, para cobrir as letras de baixo
+    const folga = 0.6
+    caixa.style.left = `${Math.max(0, b.x - folga)}%`
+    caixa.style.top = `${Math.max(0, b.y - folga)}%`
+    caixa.style.width = `${b.w + folga * 2}%`
+    caixa.style.height = `${b.h + folga * 2}%`
+    caixa.title = b.o
+    caixa.textContent = b.t
+    camada.append(caixa)
+  }
+  img.parentElement.append(camada)
+  const posicionar = () => {
+    if (!img.isConnected) { camadas.delete(posicionar); camada.remove(); return }
+    camada.hidden = !estado.mostrarTraducao
+    if (!estado.mostrarTraducao || !img.naturalWidth) return
+    const pai = img.parentElement.getBoundingClientRect(), r = img.getBoundingClientRect()
+    Object.assign(camada.style, { left: `${r.left - pai.left + img.parentElement.scrollLeft}px`, top: `${r.top - pai.top + img.parentElement.scrollTop}px`, width: `${r.width}px`, height: `${r.height}px` })
+    for (const caixa of camada.children) caber(caixa)
+  }
+  camadas.add(posicionar)
+  if (img.complete) posicionar(); else img.addEventListener('load', posicionar, { once: true })
+}
+
+function caber(caixa) {
+  let tam = Math.min(22, caixa.clientHeight * 0.45)
+  caixa.style.fontSize = `${tam}px`
+  while (tam > 5 && (caixa.scrollHeight > caixa.clientHeight + 1 || caixa.scrollWidth > caixa.clientWidth + 1)) {
+    tam -= 0.5
+    caixa.style.fontSize = `${tam}px`
+  }
+}
+
+let quadroPendente = false
+addEventListener('resize', () => {
+  if (quadroPendente) return
+  quadroPendente = true
+  requestAnimationFrame(() => { quadroPendente = false; for (const f of camadas) f() })
+})
+
+function alternarTraducao() {
+  estado.mostrarTraducao = !estado.mostrarTraducao
+  salvarPrefs()
+  $('traducao').setAttribute('aria-pressed', String(estado.mostrarTraducao))
+  $('traducao').textContent = estado.mostrarTraducao ? 'PT' : 'original'
+  for (const f of camadas) f()
+  dica(estado.mostrarTraducao ? 'Tradução sobre os balões' : 'Original em inglês')
 }
 
 function telaCheia() {
