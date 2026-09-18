@@ -38,6 +38,9 @@ const DE_GENTE = [
   'gosto', 'aviso', 'leitura_livre', 'ajuste', 'fila_traducao',
   // 17/09: assinaturas e publicações de leitores (as imagens moram em /dados/publicacoes).
   'assinatura', 'publicacao', 'publicacao_parte', 'publicacao_arquivo', 'publicacao_denuncia',
+  // 17/09 (tarde): acesso, esteira, correções, curadoria e as ideias novas.
+  'livro_liberado', 'pedido_traducao', 'esteira_pulso', 'correcao', 'revisao_comunitaria',
+  'curadoria_obra', 'curadoria_serie', 'meta_leitura', 'quadrinho_progresso', 'publicacao_seguidor',
 ]
 
 const entrada = process.argv[2]

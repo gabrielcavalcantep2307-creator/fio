@@ -79,7 +79,7 @@ async function iniciar() {
   ir(bemvindo || g.pedir ? 'gosto' : (ABAS.includes(pedida) ? pedida : 'recs'))
 }
 
-const ABAS = ['recs', 'avisos', 'gosto', 'pedidos']
+const ABAS = ['recs', 'cegas', 'avisos', 'gosto', 'pedidos']
 function ir(aba) {
   estado.aba = aba
   window.fioMarcarSub?.(aba)
@@ -87,6 +87,7 @@ function ir(aba) {
   if (aba === 'recs') mostrarRecs()
   else if (aba === 'avisos') mostrarAvisos()
   else if (aba === 'pedidos') mostrarPedidos()
+  else if (aba === 'cegas') mostrarCegas()
   else mostrarGosto()
   window.scrollTo(0, 0)
 }
@@ -243,6 +244,78 @@ async function mostrarPedidos() {
       el('div', {}, el('b', {}, p.titulo ?? 'pedido'), el('span', {}, [p.autor, ESTADOS[p.estado] ?? p.estado].filter(Boolean).join(' · ')),
         p.estado === 'pronto' && p.obra_id ? el('a', { href: `/#/obra/${p.obra_id}` }, ' ler agora →') : null)))) : null,
   ].filter(Boolean))
+}
+
+// ── Encontro às cegas com um livro ──
+//
+// A ideia das livrarias que embrulham o livro em papel pardo e escrevem só
+// umas pistas por fora. Três pacotes, escolhidos entre as suas recomendações
+// (ou entre os livros legíveis, para quem ainda não tem), com pistas que não
+// entregam título nem autor. Desembrulhou, está na mão — e o pacote não volta.
+const CHAVE_CEGAS = 'fio:cegas'
+const lerCegas = () => { try { return JSON.parse(localStorage.getItem(CHAVE_CEGAS) || '{"abertos":[],"pacotes":[]}') } catch { return { abertos: [], pacotes: [] } } }
+const gravarCegas = (x) => { try { localStorage.setItem(CHAVE_CEGAS, JSON.stringify(x)) } catch {} }
+
+async function escolherPacotes(estadoCegas) {
+  let base = []
+  try { base = (await pedir('/recomendacoes')).obras.map((x) => x.id) } catch {}
+  const legiveis = estado.catalogo.obras.filter((o) => o.trilho === 'A' && o.minutos >= 20 && (o.capa || o.capaOL))
+  const ja = new Set(estadoCegas.abertos)
+  const candidatos = [...new Set([...base, ...legiveis.sort(() => Math.random() - 0.5).slice(0, 60).map((o) => o.id)])]
+    .filter((id) => !ja.has(id) && estado.obras.get(id))
+  return candidatos.slice(0, 3)
+}
+
+const tempoDeLeitura = (min) => min < 60 ? 'cabe numa sentada' : min < 240 ? 'uma tarde ou duas' : min < 600 ? 'uma semana de leitura' : 'um calhamaço para morar dentro'
+function pistasDe(o, ficha) {
+  const p = []
+  if (o.temas?.length) p.push(`fala de ${o.temas.slice(0, 2).map((t) => t.toLowerCase()).join(' e ')}`)
+  p.push(tempoDeLeitura(o.minutos ?? 0))
+  const ano = ficha?.ano ?? ficha?.autorNasc
+  if (ano) p.push(`${ficha.ano ? 'escrito' : 'de alguém nascido'} na década de ${Math.floor(ano / 10) * 10}`)
+  if (ficha?.chamada) {
+    // a chamada sem nomes próprios: não pode entregar o livro
+    const semNomes = ficha.chamada.replace(/\b[A-ZÀ-Ý][a-zà-ÿ]+(?:\s+[A-ZÀ-Ý][a-zà-ÿ]+)*\b/g, (m, i) => (i === 0 ? m : '…'))
+    p.push(`“${semNomes}”`)
+  }
+  return p
+}
+
+async function mostrarCegas() {
+  main.replaceChildren(el('p', { class: 'vazio' }, 'embrulhando…'))
+  const cegas = lerCegas()
+  if (!cegas.pacotes?.length || cegas.pacotes.every((id) => cegas.abertos.includes(id))) {
+    cegas.pacotes = await escolherPacotes(cegas)
+    gravarCegas(cegas)
+  }
+  const fichas = await Promise.all(cegas.pacotes.map((id) => fetch(`/dados/fichas/${id}.json`).then((r) => (r.ok ? r.json() : null)).catch(() => null)))
+  const pacote = (id, i) => {
+    const o = estado.obras.get(id)
+    if (!o) return null
+    const aberto = cegas.abertos.includes(id)
+    if (aberto) {
+      return el('div', { style: 'display:flex;flex-direction:column;gap:8px' },
+        cartaoLivro(o, 'desembrulhado'),
+        el('a', { class: 'botao', href: `/#/ler/${o.id}`, style: 'text-decoration:none;text-align:center;font-size:14px;padding:9px' }, 'Ler agora'))
+    }
+    const papel = ['#b8926a', '#a8845e', '#c29c72'][i % 3]
+    return el('div', { style: `position:relative;border-radius:6px;padding:18px 16px 16px;min-height:260px;display:flex;flex-direction:column;gap:10px;color:#2b2016;background:${papel};background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.05) 0 6px,transparent 6px 12px);box-shadow:0 12px 26px -16px rgba(0,0,0,.7)` },
+      el('div', { style: 'position:absolute;left:50%;top:0;bottom:0;width:10px;margin-left:-5px;background:rgba(122,46,46,.55)' }),
+      el('div', { style: 'position:relative;background:#f4ecd8;border-radius:4px;padding:10px 12px;font:14px/1.45 Literata,Georgia,serif;box-shadow:0 2px 6px rgba(0,0,0,.25)' },
+        el('div', { style: 'font:600 11px Inter,system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#7a2e2e;margin-bottom:6px' }, `pacote ${i + 1}`),
+        el('ul', { style: 'margin:0;padding-left:18px' }, pistasDe(o, fichas[i]).map((t) => el('li', {}, t)))),
+      el('button', { class: 'botao', style: 'position:relative;margin-top:auto', onclick: () => {
+        const x = lerCegas(); if (!x.abertos.includes(id)) x.abertos.push(id); gravarCegas(x); mostrarCegas()
+      } }, 'Desembrulhar'))
+  }
+  main.replaceChildren(...[
+    el('h1', {}, 'Encontro às cegas com um livro'),
+    el('p', { class: 'sub' }, 'Como nas livrarias que embrulham o livro e deixam só umas pistas por fora. Escolha um pacote pelo que ele promete — o título só aparece depois.'),
+    el('div', { class: 'grade', style: 'grid-template-columns:repeat(auto-fill,minmax(220px,1fr))' }, cegas.pacotes.map(pacote).filter(Boolean)),
+    el('p', { style: 'margin-top:22px' }, el('button', { class: 'fraco', onclick: async () => {
+      const x = lerCegas(); x.pacotes = []; gravarCegas(x); mostrarCegas()
+    } }, 'Embrulhar outros três')),
+  ])
 }
 
 iniciar().catch((e) => main.replaceChildren(el('p', { class: 'vazio' }, `Não consegui abrir a central: ${e.message}`)))

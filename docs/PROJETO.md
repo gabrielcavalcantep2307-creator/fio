@@ -1,4 +1,4 @@
-# Fio — o projeto inteiro, em 17/09/2026 (tarde)
+# Fio — o projeto inteiro, em 18/09/2026
 
 Uma biblioteca em português que liga um livro ao próximo. No ar em
 <https://fiolib.duckdns.org> (e `fio.142-93-57-2.sslip.io`), na mesma VPS do Wallt.
@@ -15,11 +15,11 @@ nos outros arquivos de `docs/` (índice no fim).
 |---|---|
 | Obras no catálogo | **5.077** |
 | Para ler inteiras aqui | **4.432** (113 milhões de palavras, 88 mil capítulos) |
-| Traduzidas por nós (esteira) | **41**, e mais 117 na fila da esteira |
+| Traduzidas por nós (esteira) | **41**, e o plano da esteira com **203** (86 clássicos populares entraram em 18/09: Jane Eyre, O Morro dos Ventos Uivantes, Mulherzinhas, Sherlock, Padre Brown, Arsène Lupin, Wilkie Collins…) |
 | Leis oficiais completas | **25** (Constituição, códigos, estatutos) |
 | Obras com capa | **1.921** — 1.405 locais (711 desenhadas por tema, 25 de lei), 516 da Open Library |
 | Seções de descoberta na home | **17** curadas + 4 mantidas + "A lei, na íntegra" |
-| Quadrinhos e mangá para ler aqui | **34 séries, 157 volumes, 4.672 páginas** |
+| Quadrinhos e mangá para ler aqui | **40 séries, 186 volumes, 9.045 páginas** |
 | Mangá, manhwa e manhua para descobrir | **milhares** (AniList, consultado na hora), com onde ler oficialmente |
 | Publicações da comunidade | seção nova (17/09): livros e quadrinhos de assinantes Trama/Tear, com revisão |
 | Planos | sem conta: 1º capítulo · Grátis: 3 livros/mês · Novelo R$ 9,90 · Trama R$ 19,90 · Tear R$ 34,90 — **ainda sem pagamento**, concedidos pelo painel |
@@ -69,7 +69,7 @@ Toda mudança no app vira um **remendo registrado** em `infra/remendar-bundle.mj
 âncora exata, quantas vezes deve aparecer, e o que entra no lugar. O script parte
 do bundle ORIGINAL (`/opt/fio/site/ativos/index-DBmeFHaL.js`, **nunca apagar**),
 aplica tudo em ordem, recusa se alguma âncora não bater, e gera
-`index-<hash>.js` + `index.html`. São 23 remendos hoje:
+`index-<hash>.js` + `index.html`. São 27 remendos hoje:
 
 - login por usuário OU e-mail
 - links **painel** (só admin), **para você** (com contador de avisos) e **quadrinhos** no cabeçalho
@@ -79,6 +79,9 @@ aplica tudo em ordem, recusa se alguma âncora não bater, e gera
 - ficha do livro: **Antes de ler** e **Este livro conversa com**
 - depois de criar conta → questionário de gosto
 - apagar conta sem e-mail (confirmação pelo nome de usuário)
+- a tela antiga de conta ("Olá, … · perfil senha perguntas…") leva para **`/conta.html`**
+- espaços vazios na **estante** e no **caderno** que `fio-app-extras.js` preenche (meta do ano, revisão do dia)
+- livro em **amostra** não fica no cache do app (antes, entrar na conta e voltar mostrava ainda só o 1º capítulo)
 
 Estilo novo vai **em linha**: o CSS no ar só tem as classes Tailwind que o build
 antigo usou.
@@ -119,6 +122,7 @@ tem o direito conferido na hora:
 | **Bordalo Pinheiro** (4 vol., português, caricatura) | domínio público (autor morreu em 1905) |
 | **+30 álbuns do Japão de Edo** (Hiroshige, Utamaro, Kōrin, Morikuni…) | domínio público, Smithsonian |
 | **Little Nemo no País dos Sonhos** (11 vol., 260 páginas de domingo, 1905–1911, colorido) | domínio público (McCay morreu em 1934; publicado antes de 1931), digitalizações do Wikimedia Commons — `ingestao/quadrinhos-commons.mjs` |
+| **Wilhelm Busch** (Max und Moritz, Fipps, Julchen — 3 vol.; *Plish and Plum* ficou fora, 3 páginas somem no Archive), **Benjamin Rabier** (3), **Buster Brown** (3), **Töpffer** (o primeiro álbum, 1), **Willie e o papai** (Opper, 1), **Bordalo** agora com 11 vol. | domínio público (todos morreram antes de 1955), Internet Archive, Smithsonian e Commons — `ingestao/quadrinhos-extras.mjs` (18/09) |
 
 **Tradução dos balões** (`ingestao/quadrinhos-ocr.mjs`): OCR lê cada página e devolve os blocos de texto com a posição; a esteira (MinT) traduz; o resultado vai para `/dados/quadrinhos-traducao/<serie>.json` e o leitor põe a tradução **sobre cada balão**, com botão PT/original (tecla T). Motores: **Google Cloud Vision** (lê letra desenhada à mão; precisa de chave em `dados/.chave-google-vision`, 1.000 imagens/mês grátis) ou o **OCR do Windows** (`ingestao/ocr-windows.ps1`, grátis e local, mas perde a maior parte da letra à mão — serve para letra tipográfica). Retomável por página; bloco de baixa confiança sai marcado para revisão.
 
@@ -154,6 +158,14 @@ Wikimedia, grátis e sem chave.
 **Limitação:** a esteira roda no **PC do dono**. PC dormindo mata a esteira;
 rodar de novo retoma.
 
+**Como acelerar (estudo de 18/09):** mandar vários parágrafos numa chamada só
+ao MinT **não ajuda** (1,37 s por parágrafo em lote contra 0,44 s com 8 em
+paralelo — o serviço processa em série). Modelo local neste PC (i5 sem placa de
+vídeo) sai na mesma velocidade. O que acelera de verdade:
+1. **Rodar 24 h** numa máquina que não dorme (a VPS aguenta a esteira; ela só manda texto e espera o MinT);
+2. **API paga com cota grátis:** DeepL (500 mil caracteres/mês grátis) ou Google Translate (500 mil/mês) — 10 a 50× mais rápido, precisa de chave do dono;
+3. **Quadrinhos:** o gargalo é o OCR da letra à mão — só a chave do Google Vision resolve.
+
 ## 6. Contas, segurança e o que cada leitor tem
 
 - **Login:** usuário OU e-mail + senha. Senha em scrypt (N=2¹⁵) com sal próprio. Sessão opaca em cookie `__Host-` HttpOnly, SameSite=Lax, Secure. Freio de tentativas por conta e por faixa de IP.
@@ -176,7 +188,17 @@ rodar de novo retoma.
   - Painel, aba Publicações: aprovar, recusar (motivo vai para o autor como aviso), suspender, reativar, capas pendentes e denúncias.
 - **Ouvir em voz alta:** o botão "ouvir" do leitor (voz do próprio aparelho) só fala com plano — o bundle pergunta `window.fioVoz`, que `fio-leitor.js` preenche; sem plano, vai para os planos. Chip de velocidade (0,8× a 1,8×).
 - **Revisão comunitária** (`servidor/correcoes.mjs`): nos livros traduzidos pelo Fio, selecionar um trecho mostra "sugerir correção". O painel aceita (troca o texto na hora, só se o trecho for único no capítulo, e credita quem sugeriu) ou recusa, e marca o livro como revisado (rótulo automático sai).
-- **Pedidos de tradução** (`servidor/esteira.mjs`, central → Pedidos): busca no Gutendex, confere domínio público (autor morto até 1955, não português) e põe na fila com quem pediu; aviso quando fica pronto.
+- **Pedidos de tradução** (`servidor/esteira.mjs`, central → Pedidos): busca no catálogo OPDS do Gutenberg e lê a ficha RDF de cada livro (menos de 1 s; o Gutendex levava mais de um minuto). Confere domínio público de **todos** os autores **e tradutores** (morto até 1955; até 18/09 só o primeiro autor era olhado) e põe na fila com quem pediu; aviso quando fica pronto.
+- **Curadoria do acervo** (`servidor/curadoria.mjs`, painel → aba **Acervo**): editar título, autor, temas, chamada, "por que ler", o que observar e a capa (upload limpo como as publicações) de qualquer livro, ou escondê-lo; nos quadrinhos, título, resumo, tags, capa (uma página da série ou upload), destaque e esconder. O original nunca é tocado: as mudanças ficam em `curadoria_obra`/`curadoria_serie` e são aplicadas **na hora** sobre `catalogo.json`, `fichas/N.json` e `quadrinhos*.json`, com cache por data do arquivo e versão das mudanças. Cada campo mostra o original e volta a ele com um clique. Livro escondido some do catálogo, das coleções e dá 404 na ficha e no texto.
+- **Estúdio de publicação** (`/publicar.html`, refeito em 18/09): começa por "Livro" ou "Quadrinho"; cada obra tem abas Capítulos / Dados / Capa e um checklist do que falta para enviar. Livro: editor com negrito, itálico, quebra de cena e travessão de diálogo, prévia, contagem, **rascunho salvo sozinho no aparelho** (volta se a aba fechar), Ctrl+S, e **importar manuscrito** (.docx, .epub, .txt, .md — lido no navegador por `fio-manuscrito.js`, vira capítulos para conferir). Quadrinho: arrastar várias páginas, barra de progresso, 3 envios em paralelo com nova tentativa, reordenar arrastando. Capítulos também se reordenam arrastando.
+- **Minha conta** (`/conta.html`): perfil com os números da leitura, nome, e-mail (pede a senha), plano e uso com barras, senha com medidor, perguntas de recuperação, aparelhos (sair de um só ou de todos os outros), exportar dados, apagar dados de leitura, apagar conta.
+- **Controle de fluxo** (`servidor/seguranca.mjs` → `fluxoPassa`): por IP, 300 pedidos de API e 1.500 de arquivo por minuto; passou disso, 429 com `retry-after`. Os freios por ação continuam por cima (entrar, publicar, buscar, pedir tradução, corrigir…). O banco espera até 4 s por trava (`busy_timeout`) em vez de falhar.
+- **As cinco ideias de 18/09** (tiradas de sites de leitura), uma por ramo:
+  - **Estante — meta do ano** (desafio anual do Goodreads): anel de progresso, ritmo, projeção, livros por mês e capas dos terminados (`/api/meta`).
+  - **Caderno — revisão do dia** (Daily Review do Kindle/Readwise): marcações antigas voltam em repetição espaçada; fica no navegador.
+  - **Quadrinhos — progresso na conta** (Webtoon/Tapas): volume e página por série sincronizados; prateleira "Continuar lendo" (`/api/quadrinhos/progresso`).
+  - **Comunidade — seguir obra** (o "inscrever-se" do Webtoon): aviso quando sai capítulo; filtro "só o que sigo".
+  - **Para você — encontro às cegas com um livro** (as livrarias que embrulham o livro): três pacotes com pistas, o título só aparece ao desembrulhar.
 - **Gosto, recomendações e avisos** (`servidor/gosto.mjs`, `/central.html`):
   - **Conta nova** responde humores, livros que ama, autores, tempo e o que evitar, e sai com recomendações na hora. **Conta antiga** não é interrompida.
   - A recomendação é uma **conta aberta com o motivo escrito** ("porque você leu Crime e Castigo"). Pesa o que a pessoa **lê** (tempo e idade da leitura) mais do que o que ela disse, e o questionário perde peso conforme ela lê.
@@ -192,11 +214,12 @@ bash infra/publicar-so-servidor.sh
 node infra/remendar-bundle.mjs --base index-DBmeFHaL.js --index index.html --saida saida/
 #   (base e index vêm de /opt/fio/site; copiar saida/ativos/*.js e saida/index.html de volta)
 
-# páginas próprias (painel, central, quadrinhos, comunidade, publicar, planos): scp direto para /opt/fio/site/
+# páginas próprias (painel, central, quadrinhos, comunidade, publicar, planos, conta) e os scripts
+# que o app carrega (fio-leitor.js, fio-app-extras.js): scp direto para /opt/fio/site/
 #   (fio-comum.js e fio-paginas.css são dividas pelas três páginas novas)
 
 # testes
-node --test servidor/testes.mjs        # 96 testes
+node --test servidor/testes.mjs        # 101 testes
 
 # seções de descoberta e catálogo (dentro do container)
 node /app/ingestao/secoes.mjs --banco /dados/catalogo.db --gravar
@@ -238,7 +261,6 @@ Antes de rodar um script de ingestão no container, copie-o de novo.
   - as telas grandes do direcionamento: notas de world-building, barra de progressão, escala do mundo, linha do tempo navegável, página de rota e de tag;
   - o fim dos remendos.
 - **Chave do Google Vision** para a tradução dos balões de Little Nemo (e depois Krazy Kat, Tokyo Puck): sem ela, o OCR do Windows não dá qualidade.
-- **Progresso dos quadrinhos na conta** (hoje só no navegador).
 - **Mais "Antes de ler"** (28 livros hoje) e mais "Você gostou de…".
 - **Esteira independente do PC:** mover para a VPS ou para uma máquina que não dorme.
 - **Quadrinho brasileiro em domínio público:** Angelo Agostini e *O Tico-Tico* estão na Hemeroteca da Biblioteca Nacional, sem API simples.

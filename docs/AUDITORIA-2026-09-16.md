@@ -117,3 +117,36 @@ capítulo com páginas JPG/PNG/WebP, enviar, aprovar no painel, filtrar, ler).
 - Voz e velocidade são conferidas no navegador (o custo é zero para o servidor; quem burlar só usa a voz do próprio aparelho).
 - O limite do grátis conta por conta; quem criar várias contas lê mais. Aceitável enquanto o cadastro não tem verificação.
 - OCR do Windows não lê letra desenhada à mão; a tradução de Little Nemo depende da chave do Google Vision.
+
+## Adendo 4 — curadoria, estúdio, conta, controle de fluxo e acervo novo (18/09)
+
+101 testes (5 novos: curadoria, controle de fluxo, meta/quadrinhos na conta/seguir obra, regra de todos os autores e tradutores; os da esteira ampliados). Sondas no ar depois do deploy.
+
+### Corrigidos
+
+| # | Gravidade | Achado | Correção |
+|---|---|---|---|
+| 23 | **alta** (legal) | A checagem de domínio público dos pedidos de tradução olhava **só o primeiro autor** e ignorava o tradutor. "Washington Confidential" (Lait † 1954, Mortimer † 1963) passava; uma tradução inglesa recente de um clássico também passaria. | `fichaGutenberg` lê todos os `dcterms:creator` e todos os `marcrel:trl`/`adp`; vale a última morte; tradutor sem data ou morto depois de 1955 barra. Teste com os dois casos. |
+| 24 | média | Nenhum teto global de pedidos: um script podia martelar a API (cada `/api/livro` lê o banco síncrono). | `fluxoPassa`: 300 pedidos de API e 1.500 de arquivo por minuto por IP → 429 com `retry-after`. No ar: 330 pedidos em rajada → 300 × 200 e 30 × 429; arquivos seguem servidos. |
+| 25 | média | Livro aberto em amostra (sem conta) ficava no cache do app; depois de entrar, continuava mostrando só o 1º capítulo até recarregar. | Remendo: resposta `limitado` não entra no cache. |
+| 26 | média | Rascunho de capítulo se perdia ao fechar ou recarregar a aba do estúdio. | Rascunho salvo no aparelho a cada tecla (com aviso para recuperar) e aviso antes de sair com texto não enviado. |
+| 27 | baixa | Progresso de quadrinho só no navegador: trocar de aparelho perdia o ponto. | Sincronizado na conta a cada 15 s e ao sair da página; o mais recente vence. |
+| 28 | baixa | Trava do SQLite sob escrita concorrente virava erro 500. | `busy_timeout = 4000`. |
+| 29 | baixa | "null" escrito na meta da estante e na revisão do caderno; plural errado. | Nós nulos fora do `replaceChildren`. |
+| 30 | baixa | Leitor de manuscrito: .docx de zip feito no Windows (`word\document.xml`) não abria; capítulo curto com título do EPUB era descartado como "capa". | Barra invertida normalizada; capítulo com título entra a partir de 15 palavras; sumário (`<nav>`) sai. |
+
+### Verificado e sem problema
+
+- **Curadoria**: todas as rotas passam por `exigirAdmin` (401/404 para os outros — conferido no ar). Capa de livro só muda por upload (mesma limpeza das publicações: bytes decidem o tipo, só os blocos que desenham, nome sorteado de 24 hex, gravado com `wx`) ou volta ao original; capa de série só pode ser uma página da própria série. `/capas/cur-*` só casa `cur-[0-9a-f]{24}.(jpg|png|webp)`. Texto editado aparece por nó de texto no app e nas páginas.
+- **Conta**: trocar e-mail pede a senha atual (conferida no servidor) e não diz de quem é um e-mail já usado; sair de um aparelho só apaga sessão da **própria** conta (`WHERE id = ? AND leitor_id = ?`).
+- **Estúdio**: o manuscrito é lido no navegador e nunca sobe como arquivo; o texto vira nós (`marcacaoParaNos`), nunca HTML.
+- **Progresso de quadrinhos**: série validada por `^[a-z0-9-]{2,80}$`, números com teto, até 500 séries por conta, data do futuro cortada.
+- **Seguir obra**: só obra publicada; teto de 500; aviso com chave única (não duplica).
+- **Limites do plano no ar**: sem conta → 401 nas rotas de conta; `/api/minha-conta`, `/api/meta`, `/api/quadrinhos/progresso` → 401 anônimo.
+- **Peso do site**: catálogo (1,1 MB) sai com gzip (233 KB) e revalida com 304 (0 bytes); bundle com cache eterno (nome com hash). O foco do leitor pergunta o plano no máximo 1 vez por minuto; a barra guarda a identidade 10 s.
+
+### Riscos conhecidos
+
+- O teto de fluxo é por IP: muita gente atrás do mesmo NAT (uma escola) divide os 300/min. Folgado para leitura; rever se aparecer 429 legítimo no log.
+- A revisão do dia fica no navegador (não sincroniza entre aparelhos) — escolha consciente para não guardar trecho marcado no servidor.
+- Quadrinhos do Internet Archive: 3 páginas de *Plish and Plum* (Busch) dão 404 lá; como só volume inteiro é publicado, ele ficou de fora (Busch saiu com Max und Moritz, Fipps e Julchen).

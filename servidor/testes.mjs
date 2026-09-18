@@ -1534,6 +1534,20 @@ test('esteira: pulso só com a chave, com campos limpos; fila se reconcilia', as
   assert.equal(esteira.chaveConfere('chave-de-teste-com-mais-de-24-caracteres'), false, 'sem variável a rota não pode aceitar nada')
 })
 
+test('esteira: livro só entra se TODOS os autores e tradutores morreram a tempo', async () => {
+  const { avaliar } = await import('./esteira.mjs')
+  const base = { id: 1, title: 'X', languages: ['en'], livreEUA: true }
+  const a = (name, death_year) => ({ name, death_year })
+  assert.equal(avaliar({ ...base, authors: [a('Lait, Jack', 1954)] }).pode, true)
+  const dois = avaliar({ ...base, authors: [a('Lait, Jack', 1954), a('Mortimer, Lee', 1963)] })
+  assert.equal(dois.pode, false); assert.equal(dois.morte, 1963); assert.equal(dois.autor, 'Jack Lait e Lee Mortimer')
+  assert.equal(avaliar({ ...base, authors: [a('A, B', 1900), a('C, D', null)] }).pode, false, 'coautor sem data não entra')
+  const trad = avaliar({ ...base, authors: [a('Dostoyevsky, Fyodor', 1881)], translators: [a('Novo, Tradutor', 1990)] })
+  assert.equal(trad.pode, false); assert.match(trad.problema, /Tradutor Novo, que morreu em 1990/)
+  assert.equal(avaliar({ ...base, authors: [a('Dostoyevsky, Fyodor', 1881)], translators: [a('Garnett, Constance', 1946)] }).pode, true)
+  assert.equal(avaliar({ ...base, authors: [a('X, Y', 1881)], translators: [a('Sem, Data', null)] }).pode, false)
+})
+
 test('correções: acha o trecho através da marcação, aplica só se for único, e credita quem sugeriu', async () => {
   const cor = await import('./correcoes.mjs')
   const b = bd(); cor.garantirTabelas(b); gosto.garantirTabelas(b)
@@ -1564,4 +1578,120 @@ test('correções: acha o trecho através da marcação, aplica só se for únic
   cor.marcarRevisado(b, adm, { obra })
   assert.equal(b.prepare('SELECT revisao FROM texto WHERE id = ?').get(texto).revisao, 'humana')
   assert.equal(cor.resumo(b, obra).revisao, 'comunitaria')
+})
+
+// ─────────────────────────────────────────────────────────────
+// Curadoria, controle de fluxo, meta, quadrinhos na conta, seguir (17/09, noite)
+// ─────────────────────────────────────────────────────────────
+
+import { mkdirSync, writeFileSync } from 'node:fs'
+import { fluxoPassa } from './seguranca.mjs'
+
+function siteDeTeste() {
+  const site = join(pasta, 'site')
+  mkdirSync(join(site, 'dados', 'fichas'), { recursive: true })
+  writeFileSync(join(site, 'dados', 'catalogo.json'), JSON.stringify({
+    obras: [{ id: 1, titulo: 'Livro Um', autor: 'A', temas: ['Contos'], capa: null }, { id: 2, titulo: 'Livro Dois', autor: 'B', temas: [], capa: null }],
+    temas: [{ nome: 'Contos' }, { nome: 'Filosofia' }], autores: [], colecoes: [{ nome: 'C', obras: [1, 2] }],
+  }))
+  writeFileSync(join(site, 'dados', 'fichas', '1.json'), JSON.stringify({ id: 1, titulo: 'Livro Um', autor: 'A', temas: ['Contos'], porque: 'original', capitulos: [] }))
+  writeFileSync(join(site, 'dados', 'fichas', '2.json'), JSON.stringify({ id: 2, titulo: 'Livro Dois', autor: 'B', temas: [], capitulos: [] }))
+  writeFileSync(join(site, 'dados', 'quadrinhos.json'), JSON.stringify({ series: [
+    { id: 'serie-a', titulo: 'A', capa: '/quadrinhos/serie-a/01/000.jpg', capitulos: [{ n: 1, paginas: ['/quadrinhos/serie-a/01/000.jpg', '/quadrinhos/serie-a/01/001.jpg'] }] },
+    { id: 'serie-b', titulo: 'B', capa: '/quadrinhos/serie-b/01/000.jpg', capitulos: [{ n: 1, paginas: ['/quadrinhos/serie-b/01/000.jpg'] }] }] }))
+  return site
+}
+
+function respostaFalsa() {
+  const r = { status: 0, cabecalhos: {}, corpo: '' }
+  return Object.assign(r, { writeHead(s, h) { r.status = s; Object.assign(r.cabecalhos, h ?? {}) }, end(c) { r.corpo = c ? String(c) : '' } })
+}
+
+test('curadoria: edição vale por cima do catálogo; obra oculta some do catálogo, da ficha e das coleções; capa de série só de página da série', async () => {
+  process.env.FIO_CURADORIA = join(pasta, 'curadoria')
+  const cur = await import('./curadoria.mjs')
+  const b = bd(); cur.garantirTabelas(b)
+  const site = siteDeTeste()
+  const adm = { id: 1, papel: 'admin' }
+  const pedido = (caminho) => { const res = respostaFalsa(); cur.servirCatalogo(b, site, { headers: {}, method: 'GET' }, res, caminho); return res }
+
+  cur.salvarObra(b, adm, site, { id: 1, titulo: 'Título Corrigido', porque: '<b>novo</b> texto', temas: ['Filosofia', 'Inventado'] })
+  let cat = JSON.parse(pedido('/dados/catalogo.json').corpo)
+  assert.equal(cat.obras.find((o) => o.id === 1).titulo, 'Título Corrigido')
+  assert.deepEqual(cat.obras.find((o) => o.id === 1).temas, ['Filosofia'], 'tema fora da lista entrou')
+  const ficha = JSON.parse(pedido('/dados/fichas/1.json').corpo)
+  assert.equal(ficha.porque, '<b>novo</b> texto', 'o texto vai como texto; quem escapa é a tela')
+
+  cur.salvarObra(b, adm, site, { id: 2, oculta: true })
+  cat = JSON.parse(pedido('/dados/catalogo.json').corpo)
+  assert.equal(cat.obras.some((o) => o.id === 2), false, 'obra oculta ficou no catálogo')
+  assert.deepEqual(cat.colecoes[0].obras, [1], 'obra oculta ficou na coleção')
+  assert.equal(pedido('/dados/fichas/2.json').status, 404)
+  assert.equal(cur.obraOculta(b, 2), true)
+
+  cur.salvarObra(b, adm, site, { id: 1, titulo: '' })
+  assert.equal(JSON.parse(pedido('/dados/catalogo.json').corpo).obras.find((o) => o.id === 1).titulo, 'Livro Um', 'campo vazio não voltou ao original')
+
+  assert.throws(() => cur.salvarSerie(b, adm, site, { id: 'serie-a', capa: '/etc/passwd' }), /página da própria série/)
+  cur.salvarSerie(b, adm, site, { id: 'serie-b', destaque: true, capa: '/quadrinhos/serie-b/01/000.jpg' })
+  cur.salvarSerie(b, adm, site, { id: 'serie-a', oculta: true })
+  const q = JSON.parse(pedido('/dados/quadrinhos.json').corpo)
+  assert.deepEqual(q.series.map((s) => s.id), ['serie-b'])
+  assert.throws(() => cur.salvarObra(b, adm, site, { id: 999 }), (e) => e.status === 404)
+})
+
+test('controle de fluxo: passa até o teto por IP, e um IP não gasta o do outro', () => {
+  const ip = `teste-${Date.now()}`
+  let passou = 0
+  for (let i = 0; i < 320; i++) if (fluxoPassa(ip, 'api').passa) passou++
+  assert.equal(passou, 300)
+  const barrado = fluxoPassa(ip, 'api')
+  assert.equal(barrado.passa, false); assert.ok(barrado.esperar > 0)
+  assert.equal(fluxoPassa(`${ip}-outro`, 'api').passa, true, 'um IP gastou o teto do outro')
+})
+
+test('meta, quadrinhos na conta e seguir obra: o mais novo vence, lixo não entra, aviso chega a quem segue', async () => {
+  const ext = await import('./extras.mjs')
+  const pub = await import('./publicacoes.mjs')
+  const b = bd(); ext.garantirTabelas(b)
+  const leitora = leitorDeTeste('extrasleitora')
+  const p = { id: leitora, usuario: 'extrasleitora', papel: 'leitor' }
+
+  const ano = new Date().getUTCFullYear()
+  b.prepare(`INSERT INTO guardado (leitor_id, tipo, chave, valor, mudou_em) VALUES (?, 'estante', '10', '"lido"', ?), (?, 'estante', '11', '"lendo"', ?)`)
+    .run(leitora, Date.UTC(ano, 2, 5), leitora, Date.now())
+  assert.throws(() => ext.definirMeta(b, p, { livros: 0 }), /meta entre/)
+  const m = ext.definirMeta(b, p, { livros: 12 })
+  assert.equal(m.meta, 12); assert.equal(m.lidos.length, 1); assert.equal(m.porMes[2], 1); assert.equal(m.lendo, 1)
+
+  ext.guardarProgressoQuadrinho(b, p, { itens: [{ serie: 'little-nemo', cap: 2, pag: 5, lidos: [1], em: 2000 }] })
+  ext.guardarProgressoQuadrinho(b, p, { itens: [{ serie: 'little-nemo', cap: 1, pag: 0, lidos: [], em: 1000 }, { serie: '../../x', cap: 1, pag: 0, em: 3000 }] })
+  const prog = ext.progressoQuadrinhos(b, p).series
+  assert.equal(prog.length, 1, 'série com nome inválido entrou')
+  assert.equal(prog[0].cap, 2, 'progresso velho passou por cima do novo')
+
+  // seguir: obra publicada de outra autora; capítulo aprovado avisa quem segue
+  const b2 = bd()
+  const adm = b2.prepare("SELECT id FROM leitor WHERE usuario = 'admpub'").get().id
+  const autora = leitorDeTeste('autoraseguida')
+  planos.conceder(b2, adm, { usuario: 'autoraseguida', plano: 'trama' }, { chaveDe, Recusa: contas.Recusa })
+  const pa = { id: autora, usuario: 'autoraseguida', papel: 'leitor' }
+  const obra = pub.salvarObra(b2, pa, { tipo: 'livro', titulo: 'Seguida', formato: 'romance', generos: ['drama'], classificacao: 'livre', sinopse: 'Uma obra para seguir de perto.', autoria: true }).id
+  pub.salvarParte(b2, pa, { publicacao: obra, titulo: 'Um', texto: 'Primeiro capítulo com texto suficiente. '.repeat(3) })
+  pub.receberImagem(b2, pa, { id: obra, uso: 'capa' }, pngDeTeste(400, 600))
+  pub.enviar(b2, pa, { id: obra }); pub.decidir(b2, { id: adm, papel: 'admin' }, { alvo: 'obra', id: obra, acao: 'aprovar' })
+  assert.equal(ext.seguir(b2, p, { id: obra, seguir: true }).seguidores, 1)
+  assert.equal(pub.listar(b2, p, new URLSearchParams('seguindo=1')).obras.length, 1)
+  const parte2 = pub.salvarParte(b2, pa, { publicacao: obra, titulo: 'Dois', texto: 'Segundo capítulo com texto suficiente. '.repeat(3) }).id
+  pub.enviar(b2, pa, { id: obra })
+  pub.decidir(b2, { id: adm, papel: 'admin' }, { alvo: 'parte', id: parte2, acao: 'aprovar' })
+  const avisos = b2.prepare("SELECT titulo, link FROM aviso WHERE leitor_id = ? AND tipo = 'seguindo'").all(leitora)
+  assert.equal(avisos.length, 1, 'quem segue não recebeu aviso do capítulo novo')
+  assert.match(avisos[0].link, new RegExp(`id=${obra}&cap=2`))
+
+  // reordenar: lista incompleta é recusada; lista certa inverte
+  const ids = b2.prepare('SELECT id FROM publicacao_parte WHERE publicacao_id = ? ORDER BY ordem').all(obra).map((x) => x.id)
+  assert.throws(() => pub.reordenarPartes(b2, pa, { publicacao: obra, ids: [ids[0]] }), /não confere/)
+  pub.reordenarPartes(b2, pa, { publicacao: obra, ids: [...ids].reverse() })
+  assert.deepEqual(b2.prepare('SELECT id FROM publicacao_parte WHERE publicacao_id = ? ORDER BY ordem').all(obra).map((x) => x.id), [...ids].reverse())
 })

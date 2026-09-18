@@ -205,6 +205,33 @@ const REMENDOS = [
     de: 'le.current=bn({aoMudar:O,aoAcabar:()=>{oe(!1),O(-1)}}),le.current.falar(ue),oe(!0)',
     para: 'if(window.fioVoz!==!0){location.href=`/assinaturas.html?por=voz`;return}le.current=bn({velocidade:Number(localStorage.getItem(`fio:voz-vel`))||1,aoMudar:O,aoAcabar:()=>{oe(!1),O(-1)}}),le.current.falar(ue),oe(!0)',
   },
+  // ── 17/09 (noite): conta nova, espaços para as ideias, livro em amostra fora do cache ──
+  {
+    // A tela de conta virou /conta.html (perfil, plano, segurança, aparelhos,
+    // dados). Quem entra em #/entrar já logado vai para lá.
+    nome: 'conta: a tela antiga leva para /conta.html',
+    de: 'function Zt(){let e=E(),[t,n]=(0,l.useState)(`perfil`);return(',
+    para: 'function Zt(){(0,l.useEffect)(()=>{location.replace(`/conta.html`)},[]);return null;let e=E(),[t,n]=(0,l.useState)(`perfil`);return(',
+  },
+  {
+    // Um div vazio que o React não mexe; /fio-app-extras.js monta a meta de
+    // leitura dentro dele.
+    nome: 'estante: espaço da meta de leitura do ano',
+    de: 'e.startsWith(`/estante`)?(0,N.jsx)(wt,{catalogo:n})',
+    para: 'e.startsWith(`/estante`)?(0,N.jsxs)(N.Fragment,{children:[(0,N.jsx)(`div`,{id:`fio-extra-estante`,className:`max-w-6xl mx-auto px-4 sm:px-8`}),(0,N.jsx)(wt,{catalogo:n})]})',
+  },
+  {
+    nome: 'caderno: espaço da revisão do dia',
+    de: 'e.startsWith(`/caderno`)?(0,N.jsx)(Ut,{catalogo:n})',
+    para: 'e.startsWith(`/caderno`)?(0,N.jsxs)(N.Fragment,{children:[(0,N.jsx)(`div`,{id:`fio-extra-caderno`,className:`max-w-6xl mx-auto px-4 sm:px-8`}),(0,N.jsx)(Ut,{catalogo:n})]})',
+  },
+  {
+    // Livro que veio em amostra (sem conta ou limite do mês) não fica no cache
+    // da sessão: quem entra ou assina e reabre recebe o livro inteiro.
+    nome: 'livro em amostra não fica no cache',
+    de: 'let i=await r.json();return f.set(t,i),i}',
+    para: 'let i=await r.json();return i.limitado||f.set(t,i),i}',
+  },
   {
     // A barra das páginas soltas não tem a busca (ela mora no app): marca o
     // pedido e vem para cá; o app abre a busca assim que monta.
@@ -236,6 +263,7 @@ writeFileSync(join(saida, 'ativos', nome), s)
 // correções comunitárias). Script da própria origem, sem nada embutido.
 let index = readFileSync(arg('index'), 'utf8').replace(/\/ativos\/index-[\w-]+\.js/, `/ativos/${nome}`)
 if (!index.includes('/fio-leitor.js')) index = index.replace('</head>', '    <script defer src="/fio-leitor.js"></script>\n  </head>')
+if (!index.includes('/fio-app-extras.js')) index = index.replace('</head>', '    <script defer src="/fio-app-extras.js"></script>\n  </head>')
 if (!index.includes(nome)) throw new Error('index.html não aponta para o bundle novo')
 if (!index.includes('/fio-leitor.js')) throw new Error('index.html sem /fio-leitor.js')
 writeFileSync(join(saida, 'index.html'), index)

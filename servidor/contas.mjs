@@ -566,6 +566,12 @@ export function exportarTudo(banco, leitorId) {
     gosto: seExistir('SELECT respostas, respondido_em, mudou_em FROM gosto WHERE leitor_id = ?')[0] ?? null,
     avisos: seExistir('SELECT tipo, titulo, corpo, link, criado_em, lido_em FROM aviso WHERE leitor_id = ?'),
     assinatura: seExistir('SELECT plano, origem, desde, ate FROM assinatura WHERE leitor_id = ?')[0] ?? null,
+    meta_leitura: seExistir('SELECT ano, livros, mudou_em FROM meta_leitura WHERE leitor_id = ?'),
+    quadrinhos: seExistir('SELECT serie, cap, pag, lidos, em FROM quadrinho_progresso WHERE leitor_id = ?'),
+    seguindo: seExistir('SELECT publicacao_id, desde FROM publicacao_seguidor WHERE leitor_id = ?'),
+    correcoes: seExistir('SELECT obra_id, capitulo_ordem, trecho, proposta, estado, criada_em FROM correcao WHERE leitor_id = ?'),
+    pedidos_traducao: seExistir('SELECT fila_id, criado_em FROM pedido_traducao WHERE leitor_id = ?'),
+    livros_liberados: seExistir('SELECT obra_id, liberado_em FROM livro_liberado WHERE leitor_id = ?'),
     publicacoes: seExistir(`SELECT id, tipo, formato, titulo, sinopse, generos, classificacao, estado, criada_em, publicada_em,
         (SELECT json_group_array(json_object('ordem', ordem, 'titulo', titulo, 'texto', texto, 'paginas', json(paginas)))
            FROM publicacao_parte x WHERE x.publicacao_id = publicacao.id) partes

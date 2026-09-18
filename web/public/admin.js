@@ -92,10 +92,217 @@ async function desenhar() {
       ['esteira', 'Esteira', () => [esteiraAoVivo(), secaoFila(fila.itens), secaoAdicionar()]],
       ['publicacoes', `Publicações${pendencias ? ` (${pendencias})` : ''}`, () => [secaoPublicacoes(pubs)]],
       ['correcoes', `Correções${cor.pendentes.length ? ` (${cor.pendentes.length})` : ''}`, () => [secaoCorrecoes(cor)]],
+      ['acervo', 'Acervo', () => [secaoAcervo()]],
       ['assinaturas', 'Assinaturas', () => [secaoAssinaturas(ass)]],
       ['ajustes', 'Configurações', () => [secaoAjustes(aj)]],
     ]),
   )
+}
+
+// ── acervo: a curadoria dos livros e dos quadrinhos (servidor/curadoria.mjs) ──
+//
+// Procurar, corrigir título e autor, trocar capa, reescrever o "por que ler",
+// arrumar temas, destacar e esconder — sem reconstruir o catálogo. A edição
+// fica no banco e o servidor a aplica por cima do arquivo do catálogo.
+let acervoAba = 'livros'
+function secaoAcervo() {
+  const s = el('section', {}, el('h2', {}, 'Acervo'))
+  s.append(el('p', { class: 'ajuda' },
+    'A curadoria do que está no site. As mudanças valem na hora para quem abrir o site de novo, e continuam valendo quando o catálogo for republicado. Campo vazio volta ao original.'))
+  const barra = el('div', { class: 'aba' })
+  const alvo = el('div', {})
+  const pintar = () => {
+    for (const b of barra.children) b.setAttribute('aria-selected', String(b._chave === acervoAba))
+    alvo.replaceChildren(el('p', { class: 'ajuda' }, 'carregando o catálogo…'))
+    ;(acervoAba === 'livros' ? acervoLivros : acervoQuadrinhos)(alvo)
+  }
+  for (const [k, r] of [['livros', 'Livros'], ['quadrinhos', 'Quadrinhos']]) {
+    const b = el('button', { onclick: () => { acervoAba = k; pintar() } }, r)
+    b._chave = k; barra.append(b)
+  }
+  s.append(barra, alvo)
+  pintar()
+  return s
+}
+
+const capaUrl = (o, capaEditada) => {
+  const c = capaEditada ?? o.capa
+  return c ? `/capas/${c}` : o.capaOL ? `https://covers.openlibrary.org/b/id/${o.capaOL}-M.jpg` : null
+}
+const miniCapa = (src, largura = 52) => el('div', { style: `width:${largura}px;aspect-ratio:2/3;border-radius:3px;overflow:hidden;background:var(--linha);flex:none` },
+  src ? el('img', { src, alt: '', loading: 'lazy', style: 'width:100%;height:100%;object-fit:cover;display:block' }) : '')
+const normal = (t) => String(t ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
+
+let baseLivros = null
+async function acervoLivros(alvo) {
+  try { baseLivros ??= await pedir('/admin/curadoria/base?tipo=livros') } catch (e) { alvo.replaceChildren(recado('ruim', e.message)); return }
+  const busca = el('input', { placeholder: 'título, autor ou número da obra', style: 'max-width:420px' })
+  const filtro = el('select', { style: 'padding:8px;border-radius:7px;border:1px solid var(--linha);background:var(--fundo);color:var(--tinta)' },
+    ...[['', 'todos'], ['editados', 'editados'], ['ocultos', 'ocultos'], ['semcapa', 'sem capa'], ['legiveis', 'para ler (trilho A)']].map(([v, r]) => el('option', { value: v }, r)))
+  const lista = el('div', {})
+  const editor = el('div', {})
+  const desenharLista = () => {
+    const q = normal(busca.value.trim())
+    const f = filtro.value
+    let itens = baseLivros.obras
+    if (f === 'editados') itens = itens.filter((o) => o.edicao)
+    if (f === 'ocultos') itens = itens.filter((o) => o.edicao?.oculta)
+    if (f === 'semcapa') itens = itens.filter((o) => !o.capa && !o.capaOL && !o.edicao?.capa)
+    if (f === 'legiveis') itens = itens.filter((o) => o.trilho === 'A')
+    if (q) itens = /^\d+$/.test(q) ? itens.filter((o) => String(o.id) === q) : itens.filter((o) => normal(`${o.titulo} ${o.autor}`).includes(q))
+    if (!q && !f) { lista.replaceChildren(el('p', { class: 'ajuda' }, `${num(baseLivros.obras.length)} obras. Procure pelo título ou autor, ou use o filtro.`)); return }
+    lista.replaceChildren(
+      el('p', { class: 'ajuda' }, `${num(itens.length)} encontrada(s)${itens.length > 60 ? ' — mostrando 60' : ''}`),
+      el('div', { style: 'display:grid;gap:6px' }, itens.slice(0, 60).map((o) => el('button', {
+        class: 'fraco', style: 'display:flex;gap:12px;align-items:center;text-align:left;padding:8px;width:100%',
+        onclick: () => abrirLivro(o.id),
+      }, miniCapa(capaUrl(o, o.edicao?.capa), 36),
+      el('span', { style: 'flex:1;min-width:0' }, el('b', { style: 'display:block;font-weight:600;color:var(--tinta)' }, o.edicao?.titulo ?? o.titulo),
+        el('span', { class: 'ajuda' }, `${o.edicao?.autor ?? o.autor ?? '—'} · nº ${o.id} · trilho ${o.trilho}`)),
+      o.edicao?.oculta ? el('span', { class: 'selo erro' }, 'oculto') : o.edicao ? el('span', { class: 'selo pronto' }, 'editado') : ''))))
+  }
+  let espera
+  busca.addEventListener('input', () => { clearTimeout(espera); espera = setTimeout(desenharLista, 200) })
+  filtro.addEventListener('change', desenharLista)
+
+  async function abrirLivro(id) {
+    editor.replaceChildren(el('p', { class: 'ajuda' }, 'abrindo a obra…'))
+    editor.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    let f
+    try { f = await pedir(`/admin/curadoria/ficha?id=${id}`) } catch (e) { editor.replaceChildren(recado('ruim', e.message)); return }
+    const o = f.original, ed = f.edicao.campos
+    const valor = (k) => ed[k] ?? o[k] ?? ''
+    const campoTexto = (k, rotulo, { longo = false, max = 200 } = {}) => {
+      const inp = longo ? el('textarea', { maxlength: String(max), style: 'min-height:96px;font-family:inherit' }) : el('input', { maxlength: String(max) })
+      inp.value = valor(k)
+      const original = String(o[k] ?? '')
+      return { k, inp, no: el('div', { style: 'margin-top:10px' },
+        el('label', {}, rotulo, ed[k] !== undefined ? el('span', { class: 'selo pronto', style: 'margin-left:6px' }, 'editado') : ''),
+        inp,
+        el('div', { class: 'ajuda', style: 'font-size:12px;margin-top:2px' }, original ? `original: ${original.slice(0, 160)}${original.length > 160 ? '…' : ''}` : 'original: (vazio)',
+          ed[k] !== undefined ? el('button', { class: 'fraco', style: 'margin-left:8px;padding:1px 8px;font-size:11px', onclick: (e) => { e.preventDefault(); inp.value = original } }, 'voltar ao original') : '')) }
+    }
+    const campos = [
+      campoTexto('titulo', 'Título'), campoTexto('autor', 'Autor exibido', { max: 160 }), campoTexto('subtitulo', 'Subtítulo'),
+      campoTexto('chamada', 'Chamada (a frase da vitrine)', { max: 240 }),
+      campoTexto('porque', 'Por que ler', { longo: true, max: 2000 }), campoTexto('observar', 'O que observar', { longo: true, max: 2000 }),
+    ]
+    const temasSel = new Set(ed.temas ?? o.temas ?? [])
+    const temas = el('div', { style: 'display:flex;flex-wrap:wrap;gap:6px;margin-top:6px' }, baseLivros.temas.map((t) => {
+      const c = el('input', { type: 'checkbox', style: 'width:auto' }); c.checked = temasSel.has(t)
+      c.addEventListener('change', () => { c.checked ? temasSel.add(t) : temasSel.delete(t) })
+      return el('label', { style: 'display:inline-flex;gap:4px;align-items:center;border:1px solid var(--linha);border-radius:999px;padding:2px 10px;font-size:13px;color:var(--tinta);margin:0' }, c, t)
+    }))
+    const oculta = el('input', { type: 'checkbox', style: 'width:auto' }); oculta.checked = f.edicao.oculta
+    const arquivoCapa = el('input', { type: 'file', accept: 'image/jpeg,image/png,image/webp', style: 'width:auto' })
+    const saida = el('div')
+    const capaAtual = capaUrl(o, ed.capa)
+    editor.replaceChildren(el('div', { class: 'grupo', style: 'margin-top:18px' },
+      el('div', { style: 'display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start' },
+        el('div', { style: 'display:flex;flex-direction:column;gap:8px;align-items:flex-start' },
+          miniCapa(capaAtual, 140),
+          arquivoCapa,
+          el('button', { class: 'fraco', onclick: async () => {
+            const arq = arquivoCapa.files[0]; if (!arq) return saida.replaceChildren(recado('ruim', 'Escolha a imagem da capa.'))
+            try {
+              const r = await fetch(`/api/admin/curadoria/capa?tipo=obra&id=${o.id}`, { method: 'POST', credentials: 'include', headers: { 'x-fio': '1' }, body: arq })
+              const j = await r.json(); if (!r.ok) throw new Error(j.erro)
+              baseLivros = null; abrirLivro(o.id)
+            } catch (e) { saida.replaceChildren(recado('ruim', e.message)) }
+          } }, 'Enviar capa nova'),
+          ed.capa ? el('button', { class: 'fraco', onclick: async () => { await pedir('/admin/curadoria/obra', { id: o.id, capa: null }); baseLivros = null; abrirLivro(o.id) } }, 'Voltar à capa original') : ''),
+        el('div', { style: 'flex:1;min-width:280px' },
+          el('h3', {}, `${valor('titulo')} `, el('span', { class: 'ajuda' }, `nº ${o.id} · ${o.capitulos} capítulos · ${o.fonte ?? ''}`)),
+          el('div', { style: 'display:flex;gap:10px;flex-wrap:wrap' },
+            el('a', { href: `/#/obra/${o.id}`, target: '_blank' }, 'ver no site'), el('a', { href: `/#/ler/${o.id}`, target: '_blank' }, 'ler')),
+          ...campos.map((c) => c.no),
+          el('div', { style: 'margin-top:10px' }, el('label', {}, 'Temas (até 6)'), temas),
+          el('label', { class: 'liga', style: 'margin-top:12px' }, el('span', {}, 'Ocultar do site (sai do catálogo e da leitura)'), oculta),
+          el('div', { style: 'display:flex;gap:8px;margin-top:12px' },
+            el('button', { onclick: async (ev) => {
+              ev.target.disabled = true
+              const dado = { id: o.id, temas: [...temasSel].slice(0, 6), oculta: oculta.checked }
+              // igual ao original = não é edição
+              for (const c of campos) dado[c.k] = c.inp.value.trim() === String(o[c.k] ?? '').trim() ? null : c.inp.value
+              if (JSON.stringify([...temasSel].sort()) === JSON.stringify([...(o.temas ?? [])].sort())) dado.temas = null
+              try { await pedir('/admin/curadoria/obra', dado); baseLivros = null; saida.replaceChildren(recado('bom', 'Salvo. Já vale no site.')); await acervoLivrosRecarregar() }
+              catch (e) { saida.replaceChildren(recado('ruim', e.message)) }
+              ev.target.disabled = false
+            } }, 'Salvar')),
+          saida))))
+  }
+  async function acervoLivrosRecarregar() { baseLivros = await pedir('/admin/curadoria/base?tipo=livros'); desenharLista() }
+
+  alvo.replaceChildren(el('div', { style: 'display:flex;gap:8px;flex-wrap:wrap' }, busca, filtro), lista, editor)
+  desenharLista()
+  busca.focus()
+}
+
+async function acervoQuadrinhos(alvo) {
+  let base
+  try { base = await pedir('/admin/curadoria/base?tipo=quadrinhos') } catch (e) { alvo.replaceChildren(recado('ruim', e.message)); return }
+  const editor = el('div', {})
+  const lista = el('div', { style: 'display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(150px,1fr))' }, base.series.map((s) => el('button', {
+    class: 'fraco', style: 'display:flex;flex-direction:column;gap:6px;align-items:flex-start;text-align:left;padding:8px',
+    onclick: () => abrir(s),
+  }, miniCapa(s.edicao?.capa ?? s.capa, 130),
+  el('b', { style: 'font-weight:600;color:var(--tinta);font-size:13px' }, s.edicao?.titulo ?? s.titulo),
+  el('span', { class: 'ajuda', style: 'font-size:12px' }, `${s.volumes.length} vol.`),
+  s.edicao?.oculta ? el('span', { class: 'selo erro' }, 'oculta') : s.edicao?.destaque ? el('span', { class: 'selo pronto' }, 'destaque') : s.edicao ? el('span', { class: 'selo espera' }, 'editada') : '')))
+
+  function abrir(s) {
+    const ed = s.edicao ?? {}
+    const titulo = el('input', { maxlength: '160' }); titulo.value = ed.titulo ?? s.titulo
+    const resumo = el('textarea', { maxlength: '1500', style: 'min-height:110px;font-family:inherit' }); resumo.value = ed.resumo ?? s.resumo ?? ''
+    const tags = el('input', {}); tags.value = (ed.tags ?? s.tags ?? []).join(', ')
+    const destaque = el('input', { type: 'checkbox', style: 'width:auto' }); destaque.checked = !!ed.destaque
+    const oculta = el('input', { type: 'checkbox', style: 'width:auto' }); oculta.checked = !!ed.oculta
+    let capaEscolhida = ed.capa ?? null
+    const previa = el('div', {})
+    const pintarPrevia = () => previa.replaceChildren(miniCapa(capaEscolhida ?? s.capa, 140))
+    pintarPrevia()
+    const paginas = [...new Set([...s.volumes.map((v) => v.capa), ...(s.volumes[0]?.paginas ?? [])])].filter(Boolean).slice(0, 40)
+    const escolha = el('div', { style: 'display:flex;gap:6px;overflow-x:auto;padding:4px 0' }, paginas.map((p) => el('button', {
+      class: 'fraco', style: 'padding:2px;flex:none', title: 'usar como capa', onclick: () => { capaEscolhida = p; pintarPrevia() },
+    }, miniCapa(p, 60))))
+    const arquivo = el('input', { type: 'file', accept: 'image/jpeg,image/png,image/webp', style: 'width:auto' })
+    const saida = el('div')
+    editor.replaceChildren(el('div', { class: 'grupo', style: 'margin-top:18px' },
+      el('div', { style: 'display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start' },
+        el('div', { style: 'display:flex;flex-direction:column;gap:8px' }, previa,
+          el('button', { class: 'fraco', onclick: () => { capaEscolhida = null; pintarPrevia() } }, 'capa original')),
+        el('div', { style: 'flex:1;min-width:280px' },
+          el('h3', {}, s.titulo, ' ', el('a', { href: `/quadrinhos.html?aba=aqui&serie=${encodeURIComponent(s.id)}`, target: '_blank', style: 'font-size:13px' }, 'ver no site')),
+          el('label', {}, 'Título'), titulo,
+          el('label', { style: 'margin-top:10px' }, 'Resumo'), resumo,
+          el('label', { style: 'margin-top:10px' }, 'Etiquetas (separadas por vírgula)'), tags,
+          el('label', { style: 'margin-top:10px' }, 'Capa: escolha uma página'), escolha,
+          el('div', { style: 'display:flex;gap:8px;align-items:center;flex-wrap:wrap' }, arquivo, el('button', { class: 'fraco', onclick: async () => {
+            const arq = arquivo.files[0]; if (!arq) return
+            try {
+              const r = await fetch(`/api/admin/curadoria/capa?tipo=serie&id=${encodeURIComponent(s.id)}`, { method: 'POST', credentials: 'include', headers: { 'x-fio': '1' }, body: arq })
+              const j = await r.json(); if (!r.ok) throw new Error(j.erro)
+              saida.replaceChildren(recado('bom', 'Capa enviada.')); acervoQuadrinhos(alvo)
+            } catch (e) { saida.replaceChildren(recado('ruim', e.message)) }
+          } }, 'ou enviar imagem')),
+          el('label', { class: 'liga', style: 'margin-top:12px' }, el('span', {}, 'Destaque (aparece primeiro)'), destaque),
+          el('label', { class: 'liga' }, el('span', {}, 'Ocultar do site'), oculta),
+          el('div', { style: 'margin-top:12px' }, el('button', { onclick: async (ev) => {
+            ev.target.disabled = true
+            const dado = {
+              id: s.id, destaque: destaque.checked, oculta: oculta.checked,
+              titulo: titulo.value.trim() === s.titulo ? null : titulo.value,
+              resumo: resumo.value.trim() === String(s.resumo ?? '').trim() ? null : resumo.value,
+              tags: tags.value.split(',').map((t) => t.trim()).filter(Boolean),
+            }
+            if (JSON.stringify(dado.tags) === JSON.stringify(s.tags ?? [])) dado.tags = null
+            if (!(capaEscolhida && capaEscolhida.startsWith('/capas/cur-'))) dado.capa = capaEscolhida
+            try { await pedir('/admin/curadoria/serie', dado); saida.replaceChildren(recado('bom', 'Salvo. Já vale no site.')); acervoQuadrinhos(alvo) }
+            catch (e) { saida.replaceChildren(recado('ruim', e.message)); ev.target.disabled = false }
+          } }, 'Salvar')), saida))))
+    editor.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+  alvo.replaceChildren(lista, editor)
 }
 
 // ── a esteira, ao vivo ──

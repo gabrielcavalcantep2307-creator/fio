@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Minha conta — Fio</title>
+<link rel="icon" type="image/svg+xml" href="/fio.svg">
+<link rel="stylesheet" href="/fio-paginas.css">
+<link rel="stylesheet" href="/fio-cabecalho.css">
+<script src="/fio-tema.js"></script>
+<style>
+  main{max-width:1040px}
+  .topo-conta{display:flex;gap:18px;align-items:center;flex-wrap:wrap;margin:0 0 26px}
+  .avatar{width:64px;height:64px;border-radius:50%;background:var(--acento);color:#fff;display:grid;place-items:center;font:500 26px Literata,Georgia,serif;flex:none}
+  .topo-conta h1{font-size:30px;margin:0}
+  .topo-conta .quem{color:var(--tinta2);font-size:14px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:4px}
+  .topo-conta .sair{margin-left:auto}
+  .layout{display:grid;grid-template-columns:220px 1fr;gap:28px;align-items:start}
+  .menu-conta{position:sticky;top:120px;display:flex;flex-direction:column;gap:2px}
+  .menu-conta a{padding:10px 12px;border-radius:8px;text-decoration:none;color:var(--tinta2);font-size:14.5px;display:flex;gap:10px;align-items:center}
+  .menu-conta a:hover{background:var(--papel2)}
+  .menu-conta a[aria-current=page]{background:var(--papel2);color:var(--tinta);font-weight:600}
+  .menu-conta .ic{width:20px;text-align:center}
+  .painel{display:flex;flex-direction:column;gap:18px}
+  .painel h2{margin:0 0 4px}
+  .painel .ajuda{color:var(--tinta2);font-size:13.5px;margin:0 0 14px;max-width:62ch}
+  .numeros{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}
+  .numero{background:var(--papel);border:1px solid var(--linha);border-radius:12px;padding:12px 14px;text-decoration:none}
+  .numero b{display:block;font:500 26px Literata,Georgia,serif}
+  .numero span{font-size:12.5px;color:var(--tinta2)}
+  .form{display:grid;gap:12px;max-width:460px}
+  .form label span{display:block;font-size:12.5px;color:var(--tinta2);margin-bottom:4px}
+  .form input,.form select{width:100%;padding:10px 12px;border:1px solid var(--linha);border-radius:8px;background:var(--papel);color:var(--tinta);font:inherit}
+  .form .fixo{padding:10px 12px;border:1px dashed var(--linha);border-radius:8px;color:var(--tinta2)}
+  .medidor{height:6px;border-radius:3px;background:var(--linha);overflow:hidden;margin-top:6px}
+  .medidor i{display:block;height:100%;transition:width .3s}
+  .aparelho{display:flex;gap:14px;align-items:center;padding:12px 0;border-top:1px solid var(--linha)}
+  .aparelho:first-child{border-top:none}
+  .aparelho .ic{font-size:22px;width:30px;text-align:center}
+  .aparelho .desc{flex:1;min-width:0}
+  .aparelho small{color:var(--tinta2);display:block}
+  .perigo{border-color:color-mix(in srgb,var(--acento) 45%,var(--linha))}
+  .uso-barra{height:8px;border-radius:4px;background:var(--linha);overflow:hidden;margin:8px 0 4px}
+  .uso-barra i{display:block;height:100%;background:var(--acento)}
+  @media (max-width:760px){
+    .layout{grid-template-columns:1fr}
+    .menu-conta{position:static;flex-direction:row;overflow-x:auto;scrollbar-width:none}
+    .menu-conta a{white-space:nowrap}
+    .topo-conta .sair{margin-left:0}
+  }
+</style>
+</head>
+<body data-area="conta">
+<main id="main"><p class="sub">abrindo…</p></main>
+<script src="/fio-cabecalho.js"></script>
+<script src="/fio-comum.js"></script>
+<script src="/conta.js"></script>
+</body>
+</html>

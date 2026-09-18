@@ -34,7 +34,9 @@
     return api('/planos').then((v) => { plano = v.meu; window.fioVoz = !!v.meu?.voz; mostrarChipVoz() }).catch(() => { window.fioVoz = false })
   }
   lerPlano()
-  addEventListener('focus', () => lerPlano())
+  // ao voltar para a aba, confere de novo — no máximo uma vez por minuto
+  let ultimaLeitura = Date.now()
+  addEventListener('focus', () => { if (Date.now() - ultimaLeitura > 60_000) { ultimaLeitura = Date.now(); lerPlano() } })
 
   // ── rota ──
   const rotaLeitor = () => location.hash.match(/^#\/ler\/(\d+)/)?.[1] ?? null

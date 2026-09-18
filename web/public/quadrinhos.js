@@ -22,6 +22,38 @@ const el = (tag, attrs = {}, ...filhos) => {
 const lerProgresso = () => { try { return JSON.parse(localStorage.getItem('fio:quadrinhos') || '{}') } catch { return {} } }
 
 const main = document.getElementById('main')
+
+// Progresso da conta chega aqui antes de desenhar "continuar lendo" (17/09).
+const progressoDaConta = fetch('/api/quadrinhos/progresso', { credentials: 'same-origin' })
+  .then((r) => (r.ok ? r.json() : null)).then((r) => {
+    if (!r?.series) return
+    const todos = lerProgresso()
+    for (const s of r.series) if (!todos[s.serie] || (todos[s.serie].em ?? 0) < s.em) todos[s.serie] = { cap: s.cap, pag: s.pag, lidos: s.lidos, em: s.em }
+    try { localStorage.setItem('fio:quadrinhos', JSON.stringify(todos)) } catch {}
+  }).catch(() => {})
+
+/** A prateleira "Continuar lendo": as séries com leitura em curso, a mais recente primeiro. */
+async function prateleiraContinuar() {
+  await progressoDaConta
+  const todos = lerProgresso()
+  const emCurso = Object.entries(todos).filter(([, p]) => p?.cap).sort((a, b) => (b[1].em ?? 0) - (a[1].em ?? 0)).slice(0, 12)
+  if (!emCurso.length) return null
+  catalogo ??= await fetch('/dados/quadrinhos.json').then((r) => r.json()).catch(() => ({ series: [] }))
+  const cartoes = emCurso.map(([id, p]) => {
+    const s = catalogo.series.find((x) => x.id === id)
+    const c = s?.capitulos.find((x) => x.n === p.cap)
+    if (!s || !c) return null
+    const fracao = Math.min(1, ((p.pag ?? 0) + 1) / c.paginas.length)
+    return el('a', { class: 'cap', href: `/quadrinho.html?serie=${encodeURIComponent(id)}&cap=${c.n}${p.pag ? `&p=${p.pag}` : ''}`, style: 'width:132px;flex:none' },
+      el('img', { src: s.capa, alt: '', loading: 'lazy', onerror: (e) => { e.target.style.visibility = 'hidden' } }),
+      el('div', { class: 'barrinha' }, el('i', { style: `width:${Math.round(fracao * 100)}%` })),
+      el('div', { class: 't' }, s.titulo), el('div', { class: 'n' }, `${c.titulo} · pág. ${(p.pag ?? 0) + 1}`))
+  }).filter(Boolean)
+  if (!cartoes.length) return null
+  return el('section', { style: 'margin:0 0 26px' },
+    el('h2', { style: 'font-family:Literata,Georgia,serif;font-weight:500;font-size:20px;margin:0 0 12px' }, 'Continuar lendo'),
+    el('div', { style: 'display:flex;gap:14px;overflow-x:auto;padding-bottom:6px' }, cartoes))
+}
 const url = new URLSearchParams(location.search)
 let aba = url.get('aba') === 'aqui' || url.get('serie') ? 'aqui' : 'descobrir'
 
@@ -270,8 +302,10 @@ async function mostrarAqui() {
           el('p', { class: 'resumo' }, s.resumo), parou ? el('span', { class: 'continuar' }, `continuar: ${parou.cap.titulo} →`) : null))
     })) : el('p', { class: 'estado-m' }, 'Nada com esses filtros.'))
   }
-  main.replaceChildren(
+  const continuar = await prateleiraContinuar()
+  main.replaceChildren(...[
     cabecalho(),
+    continuar,
     el('p', { class: 'sub' }, `${catalogo.series.length} séries livres para ler aqui dentro, com leitor próprio: domínio público ou licença livre, sempre com crédito.`),
     el('div', { class: 'painel-filtros' },
       el('div', { class: 'linha-filtro' }, busca),
@@ -280,7 +314,7 @@ async function mostrarAqui() {
       el('div', { class: 'linha-filtro' }, el('label', { class: 'chave' },
         el('input', { type: 'checkbox', ...(filtrosAqui.lendo ? { checked: '' } : {}), onchange: (e) => { filtrosAqui.lendo = e.target.checked; desenharListaAqui() } }),
         'Só o que estou lendo'))),
-    area)
+    area].filter(Boolean))
   desenharListaAqui()
   void lista
 }

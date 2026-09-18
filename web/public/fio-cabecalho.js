@@ -41,7 +41,7 @@
 
   const SUBS = {
     comunidade: [['explorar', '/publicacoes.html', 'Explorar'], ['publicar', '/publicar.html', 'Publicar'], ['planos', '/assinaturas.html', 'Planos']],
-    central: [['recs', '/central.html#recs', 'Para você'], ['avisos', '/central.html#avisos', 'Avisos'], ['gosto', '/central.html#gosto', 'Meu gosto'], ['pedidos', '/central.html#pedidos', 'Pedidos de tradução'], ['planos', '/assinaturas.html', 'Meu plano']],
+    central: [['recs', '/central.html#recs', 'Para você'], ['cegas', '/central.html#cegas', 'Encontro às cegas'], ['avisos', '/central.html#avisos', 'Avisos'], ['gosto', '/central.html#gosto', 'Meu gosto'], ['pedidos', '/central.html#pedidos', 'Pedidos de tradução'], ['planos', '/assinaturas.html', 'Meu plano']],
   }
 
   const barra = h('header', { class: 'fio-barra' })
@@ -60,7 +60,7 @@
       h('a', { class: cls, href: '/publicacoes.html', 'aria-current': atual('comunidade') }, 'comunidade'),
       eu ? h('a', { class: cls, href: '/central.html', 'aria-current': atual('central') }, 'para você', avisos > 0 ? h('span', { class: 'num' }, String(avisos)) : null) : null,
       eu?.papel === 'admin' ? h('a', { class: `${cls} adm`, href: '/admin.html', 'aria-current': atual('painel') }, largo ? 'painel' : 'painel de administração') : null,
-      h('a', { class: cls, href: '/#/entrar' }, nome),
+      h('a', { class: cls, href: eu ? '/conta.html' : '/#/entrar', 'aria-current': atual('conta') }, nome),
     ]
   }
 
@@ -94,14 +94,23 @@
     if (e.key === '/' || ((e.metaKey || e.ctrlKey) && e.key === 'k')) { e.preventDefault(); buscar() }
   })
 
-  fetch('/api/eu', { credentials: 'same-origin' }).then((r) => (r.ok ? r.json() : null)).then((r) => {
-    eu = r?.pessoa ?? null
-    window.dispatchEvent(new CustomEvent('fio:eu', { detail: eu }))
-    desenhar()
-    if (!eu) return
-    fetch('/api/avisos/contagem', { credentials: 'same-origin' }).then((x) => (x.ok ? x.json() : null))
-      .then((x) => { avisos = x?.naoLidos || 0; desenhar() }).catch(() => {})
-  }).catch(() => {})
+  // Quem é e quantos avisos: guardado 10 s nesta aba, para não perguntar de
+  // novo a cada página que se abre em sequência.
+  let lembrado = null
+  try { lembrado = JSON.parse(sessionStorage.getItem('fio:barra') || 'null') } catch {}
+  if (lembrado && Date.now() - lembrado.em < 10_000) {
+    eu = lembrado.eu; avisos = lembrado.avisos; desenhar()
+  } else {
+    fetch('/api/eu', { credentials: 'same-origin' }).then((r) => (r.ok ? r.json() : null)).then(async (r) => {
+      eu = r?.pessoa ?? null
+      desenhar()
+      if (eu) {
+        const x = await fetch('/api/avisos/contagem', { credentials: 'same-origin' }).then((y) => (y.ok ? y.json() : null)).catch(() => null)
+        avisos = x?.naoLidos || 0; desenhar()
+      }
+      try { sessionStorage.setItem('fio:barra', JSON.stringify({ eu, avisos, em: Date.now() })) } catch {}
+    }).catch(() => {})
+  }
 
   // para páginas que trocam a sub-seção sem recarregar (central)
   window.fioMarcarSub = (chave) => { document.body.dataset.subAtual = chave; desenhar() }

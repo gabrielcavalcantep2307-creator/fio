@@ -27,7 +27,31 @@ const params = new URLSearchParams(location.search)
 const estado = { serie: null, cap: null, pagina: 0, modo: 'pagina', sentido: 'ltr', total: 0, traducao: null, mostrarTraducao: false }
 let escondeTimer = null
 
+// Progresso na conta (17/09): o navegador guarda na hora; a conta recebe a
+// cada 15 s e ao sair da página. Ao abrir, o que for mais novo vence.
+let pendenteConta = null, relogioConta = null
+async function puxarDaConta() {
+  const r = await fetch('/api/quadrinhos/progresso', { credentials: 'same-origin' }).then((x) => (x.ok ? x.json() : null)).catch(() => null)
+  if (!r?.series) return false
+  const todos = ler('fio:quadrinhos', {})
+  for (const s of r.series) {
+    const local = todos[s.serie]
+    if (!local || (local.em ?? 0) < s.em) todos[s.serie] = { cap: s.cap, pag: s.pag, lidos: s.lidos, em: s.em }
+  }
+  guardar('fio:quadrinhos', todos)
+  return true
+}
+function mandarParaConta(agora = false) {
+  if (!pendenteConta) return
+  const corpo = JSON.stringify({ itens: [pendenteConta] })
+  pendenteConta = null
+  fetch('/api/quadrinhos/progresso', { method: 'POST', credentials: 'same-origin', keepalive: agora,
+    headers: { 'content-type': 'application/json', 'x-fio': '1' }, body: corpo }).catch(() => {})
+}
+addEventListener('pagehide', () => mandarParaConta(true))
+
 async function iniciar() {
+  const naConta = await puxarDaConta()
   const catalogo = await fetch('/dados/quadrinhos.json').then((r) => r.json())
   const s = catalogo.series.find((x) => x.id === params.get('serie'))
   const c = s?.capitulos.find((x) => x.n === Number(params.get('cap')))
@@ -55,6 +79,7 @@ async function iniciar() {
     }
   }
 
+  sincronizaConta = naConta
   estado.serie = s; estado.cap = c; estado.total = c.paginas.length
   const prefs = ler('fio:quadrinhos:prefs', {})[s.id] ?? {}
   estado.modo = prefs.modo ?? s.modo
@@ -118,7 +143,13 @@ function salvarProgresso(terminou = false) {
   if (terminou && !p.lidos.includes(estado.cap.n)) p.lidos.push(estado.cap.n)
   todos[estado.serie.id] = p
   guardar('fio:quadrinhos', todos)
+  if (sincronizaConta) {
+    pendenteConta = { serie: estado.serie.id, cap: p.cap, pag: p.pag, lidos: p.lidos, em: p.em }
+    clearTimeout(relogioConta)
+    relogioConta = setTimeout(() => mandarParaConta(), 15_000)
+  }
 }
+let sincronizaConta = false
 
 function mudarModo(modo) {
   estado.modo = modo; salvarPrefs(); desenhar()

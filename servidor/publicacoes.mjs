@@ -409,6 +409,7 @@ export function enviar(banco, pessoa, { id }) {
 
   if (ehAdmin(pessoa)) {
     for (const x of banco.prepare("SELECT id FROM publicacao_parte WHERE publicacao_id = ? AND pendente IS NOT NULL").all(o.id)) aplicarPendente(banco, x.id)
+    for (const x of banco.prepare("SELECT ordem, titulo FROM publicacao_parte WHERE publicacao_id = ? AND estado <> 'publicada'").all(o.id)) avisarSeguidores(banco, o.id, x.ordem, x.titulo, o.titulo)
     banco.prepare(`UPDATE publicacao_parte SET estado='publicada', motivo=NULL, publicada_em=COALESCE(publicada_em, datetime('now'))
         WHERE publicacao_id = ? AND estado <> 'publicada'`).run(o.id)
     banco.prepare(`UPDATE publicacao SET estado='publicada', motivo=NULL, publicada_em=COALESCE(publicada_em, datetime('now')),
@@ -457,6 +458,9 @@ export function listar(banco, pessoa, busca) {
   if (!pessoa) ate = Math.min(ate, ORDEM_CLASS.indexOf('16'))
   onde.push(`p.classificacao IN (${ORDEM_CLASS.slice(0, ate + 1).map(() => '?').join(',')})`)
   args.push(...ORDEM_CLASS.slice(0, ate + 1))
+  if (busca.get('seguindo') === '1' && pessoa) {
+    onde.push('EXISTS (SELECT 1 FROM publicacao_seguidor f WHERE f.publicacao_id = p.id AND f.leitor_id = ?)'); args.push(pessoa.id)
+  }
   const q = linha(busca.get('q'), 60)
   if (q) {
     const like = `%${q.replace(/[\\%_]/g, (c) => `\\${c}`)}%`
@@ -507,6 +511,8 @@ export function ficha(banco, pessoa, id) {
       ...(dono ? { estado: p.estado, motivo: p.motivo, leituras: p.leituras, pendente: p.pendente } : {}),
     })),
     souDono: !!dono,
+    seguidores: contarSeguidores(banco, o.id),
+    seguindo: pessoa ? !!banco.prepare('SELECT 1 FROM publicacao_seguidor WHERE leitor_id = ? AND publicacao_id = ?').get(pessoa.id, o.id) : false,
     ...(dono ? {
       estado: o.estado, motivo: o.motivo, capaPendente: urlArquivo(o.capa_pendente), statusObra: o.status_obra,
       generosChaves: JSON.parse(o.generos),
@@ -528,9 +534,10 @@ export function lerParte(banco, pessoa, id, ordem) {
   }
   return {
     obra: { id: o.id, titulo: o.titulo, tipo: o.tipo, sentido: o.sentido, autor: { usuario: o.usuario, nome: o.nome } },
-    parte: { id: p.id, ordem: p.ordem, titulo: p.titulo, estado: dono ? p.estado : undefined },
-    texto: o.tipo === 'livro' ? p.texto : null,
-    paginas: o.tipo === 'quadrinho' ? JSON.parse(p.paginas).map(urlArquivo) : null,
+    // quem é dono vê a edição que espera revisão (é o que ele vai continuar editando)
+    parte: { id: p.id, ordem: p.ordem, titulo: dono && p.titulo_pendente ? p.titulo_pendente : p.titulo, estado: dono ? p.estado : undefined, pendente: dono ? p.pendente : undefined },
+    texto: o.tipo === 'livro' ? (dono && p.texto_pendente != null ? p.texto_pendente : p.texto) : null,
+    paginas: o.tipo === 'quadrinho' ? JSON.parse(dono && p.paginas_pendente ? p.paginas_pendente : p.paginas).map(urlArquivo) : null,
     anterior: i > 0 ? vizinhos[i - 1] : null,
     proxima: i >= 0 && i < vizinhos.length - 1 ? vizinhos[i + 1] : null,
   }
@@ -695,7 +702,7 @@ export function decidir(banco, admin, { alvo, id, acao, motivo }) {
     }
     if (acao === 'aprovar') {
       banco.prepare("UPDATE publicacao_parte SET estado='publicada', motivo=NULL, publicada_em=COALESCE(publicada_em, datetime('now')) WHERE id = ?").run(p.id)
-      if (p.obra_estado === 'publicada') avisarAutor(p.autor_id, `Capítulo no ar: ${p.obra} — ${p.titulo}`, null)
+      if (p.obra_estado === 'publicada') { avisarAutor(p.autor_id, `Capítulo no ar: ${p.obra} — ${p.titulo}`, null); avisarSeguidores(banco, p.publicacao_id, p.ordem, p.titulo, p.obra) }
     } else if (acao === 'recusar') {
       if (!porque) throw new Recusa('Diga o motivo — ele vai para o autor.')
       banco.prepare("UPDATE publicacao_parte SET estado='recusada', motivo=? WHERE id = ?").run(porque, p.id)
@@ -754,4 +761,39 @@ function descartarPendente(banco, parteId) {
     if (!ficam.has(a.id)) apagarArquivos(banco, 'id = ?', a.id)
   }
   banco.prepare('UPDATE publicacao_parte SET titulo_pendente = NULL, texto_pendente = NULL, paginas_pendente = NULL, pendente = NULL WHERE id = ?').run(p.id)
+}
+
+// ── seguir obra e ordem dos capítulos (17/09, tarde) ──
+
+function contarSeguidores(banco, id) {
+  try { return banco.prepare('SELECT COUNT(*) n FROM publicacao_seguidor WHERE publicacao_id = ?').get(id).n } catch { return 0 }
+}
+
+/** Capítulo novo no ar: aviso para quem segue (uma vez por capítulo). */
+function avisarSeguidores(banco, publicacaoId, ordem, tituloParte, tituloObra) {
+  let quem = []
+  try { quem = banco.prepare('SELECT leitor_id FROM publicacao_seguidor WHERE publicacao_id = ?').all(publicacaoId) } catch { return }
+  for (const { leitor_id: id } of quem) {
+    avisar(banco, id, { chave: `seguindo-${publicacaoId}-${ordem}`, tipo: 'seguindo',
+      titulo: `Capítulo novo: ${tituloObra}`, corpo: tituloParte, link: `/publicacoes.html?id=${publicacaoId}&cap=${ordem}` })
+  }
+}
+
+/** Nova ordem dos capítulos: a lista inteira de ids, na ordem desejada. */
+export function reordenarPartes(banco, pessoa, { publicacao, ids }) {
+  const o = minhaObra(banco, pessoa, publicacao)
+  const atuais = banco.prepare('SELECT id FROM publicacao_parte WHERE publicacao_id = ?').all(o.id).map((x) => x.id)
+  const pedidos = (Array.isArray(ids) ? ids : []).map(Number)
+  if (pedidos.length !== atuais.length || new Set(pedidos).size !== atuais.length || !pedidos.every((id) => atuais.includes(id))) {
+    throw new Recusa('A lista de capítulos não confere. Recarregue a página.')
+  }
+  const mover = banco.prepare('UPDATE publicacao_parte SET ordem = ? WHERE id = ?')
+  banco.exec('BEGIN')
+  try {
+    pedidos.forEach((id, i) => mover.run(-(i + 1), id))
+    pedidos.forEach((id, i) => mover.run(i + 1, id))
+    banco.exec('COMMIT')
+  } catch (e) { banco.exec('ROLLBACK'); throw e }
+  banco.prepare("UPDATE publicacao SET atualizada_em = datetime('now') WHERE id = ?").run(o.id)
+  return { ok: true }
 }

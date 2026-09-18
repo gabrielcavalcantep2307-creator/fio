@@ -156,6 +156,10 @@ export const LIMITES = {
   'buscar-gutenberg': { quantas: 30, minutos: 10 },
   'pedir-traducao': { quantas: 20, minutos: 60 },
   'corrigir': { quantas: 60, minutos: 60 },
+  // meta, progresso de quadrinhos e seguir: gestos de leitura, frequentes
+  'guardar-extra': { quantas: 240, minutos: 60 },
+  // trocar e-mail exige senha: o mesmo teto de tentativas da senha
+  'senha-extra': { quantas: 6, minutos: 60 },
 }
 
 /**
@@ -205,12 +209,17 @@ export function perdoarDuplo(banco, acao, email, ip) {
     .run(`${acao}@ip:${dicaDeIp(ip) ?? 'sem-ip'}`)
 }
 
+let ultimaFaxina = 0
 export function freio(banco, acao, chave) {
   const limite = LIMITES[acao]
   if (!limite) return { passa: true }
   const alvo = `${acao}:${chave}`
 
-  banco.prepare(`DELETE FROM tentativa WHERE quando < datetime('now', '-24 hours')`).run()
+  // a faxina varre a tabela inteira; uma vez por minuto basta
+  if (Date.now() - ultimaFaxina > 60_000) {
+    ultimaFaxina = Date.now()
+    banco.prepare(`DELETE FROM tentativa WHERE quando < datetime('now', '-24 hours')`).run()
+  }
   const { n } = banco.prepare(
     `SELECT COUNT(*) n FROM tentativa WHERE chave = ? AND quando > datetime('now', ?)`,
   ).get(alvo, `-${limite.minutos} minutes`)
@@ -339,3 +348,35 @@ export function dicaDeIp(ip) {
   if (v4) return `${v4[1]}.${v4[2]}.x.x`
   return ip.split(':').slice(0, 3).join(':') + '::'
 }
+
+// ─────────────────────────────────────────────────────────────
+// Controle de fluxo em memória (17/09)
+//
+// O freio acima é por AÇÃO e grava no banco — certo para login e escrita, caro
+// demais para contar cada pedido. Este conta tudo, por IP inteiro, em memória
+// (nada vai para o disco), numa janela de um minuto:
+//
+//   api        300 pedidos/min — uma pessoa navegando rápido faz 30 a 60
+//   arquivos  1500 pedidos/min — um volume de quadrinho em rolagem pede ~150 imagens
+//
+// Passou do teto: 429 com Retry-After. É a defesa contra laço de script e
+// contra quem quer derrubar o site enchendo de pedido.
+// ─────────────────────────────────────────────────────────────
+
+const TETOS_FLUXO = { api: 300, arquivos: 1500 }
+const janelas = new Map()
+
+export function fluxoPassa(ip, tipo) {
+  const teto = TETOS_FLUXO[tipo] ?? 300
+  const chave = `${tipo}|${ip}`
+  const agora = Date.now()
+  let j = janelas.get(chave)
+  if (!j || agora - j.inicio >= 60_000) { j = { inicio: agora, n: 0 }; janelas.set(chave, j) }
+  j.n++
+  return j.n <= teto ? { passa: true } : { passa: false, esperar: Math.ceil((60_000 - (agora - j.inicio)) / 1000) }
+}
+
+setInterval(() => {
+  const agora = Date.now()
+  for (const [k, j] of janelas) if (agora - j.inicio > 120_000) janelas.delete(k)
+}, 60_000).unref()

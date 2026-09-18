@@ -88,38 +88,80 @@ export function estado(banco) {
 // Pedidos de tradução de assinantes
 //
 // A pessoa escolhe um livro do Project Gutenberg. O servidor confere no
-// Gutendex (catálogo aberto do Gutenberg) que o autor morreu até 1955 e que o
+// catálogo do próprio Gutenberg que o autor morreu até 1955 e que o
 // livro não está em português — é a mesma regra de domínio público do resto
 // da casa — e põe na fila do painel com o nome de quem pediu.
 // ─────────────────────────────────────────────────────────────
 
 const ANO_LIMITE = new Date().getFullYear() - 71 // 2026 → morto até 1955
+const UA = 'fio/0.1 (biblioteca em portugues; https://fiolib.duckdns.org)'
 
-async function gutendex(caminho) {
-  const r = await fetch(`https://gutendex.com/books${caminho}`, {
-    headers: { 'user-agent': 'fio/0.1 (biblioteca em portugues)' }, redirect: 'follow', signal: AbortSignal.timeout(12_000),
-  })
+// Consulta direto no catálogo do Project Gutenberg (17/09): a busca OPDS e a
+// ficha RDF de cada livro respondem em menos de um segundo. O Gutendex, que
+// se usava antes, chegou a levar mais de um minuto por página.
+async function buscarTexto(url) {
+  const r = await fetch(url, { headers: { 'user-agent': UA }, redirect: 'follow', signal: AbortSignal.timeout(15_000) })
   if (r.status === 404) return null
   if (!r.ok) throw new Recusa('O catálogo do Gutenberg não respondeu. Tente de novo em instantes.', 502)
-  return r.json()
+  return r.text()
+}
+
+const tirarEntidades = (t) => String(t ?? '').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;|&apos;/g, "'")
+
+/** A ficha RDF de um livro, reduzida ao que decide o pedido. */
+async function fichaGutenberg(id) {
+  const rdf = await buscarTexto(`https://www.gutenberg.org/ebooks/${id}.rdf`)
+  if (!rdf) return null
+  const um = (re) => tirarEntidades(rdf.match(re)?.[1] ?? '').trim()
+  const idioma = um(/<dcterms:language>[\s\S]*?<rdf:value[^>]*>([a-z]{2,3})</)
+  // TODAS as pessoas que têm direito sobre o texto: cada autor (livro com dois
+  // autores só entra se os dois morreram a tempo — "Washington Confidential"
+  // tem um de 1954 e outro de 1963) e cada tradutor/adaptador, porque traduzir
+  // uma tradução de 1990 é traduzir uma obra de 1990.
+  const agentes = new Map()
+  for (const m of rdf.matchAll(/<pgterms:agent rdf:about="([^"]+)">([\s\S]*?)<\/pgterms:agent>/g)) {
+    agentes.set(m[1], {
+      name: tirarEntidades(m[2].match(/<pgterms:name>([^<]*)</)?.[1] ?? '').trim(),
+      death_year: Number(m[2].match(/<pgterms:deathdate[^>]*>(-?\d{1,4})</)?.[1]) || null,
+    })
+  }
+  const pessoas = (papel) => [...rdf.matchAll(new RegExp(`<${papel}(?:\\s+rdf:resource="([^"]+)"\\s*/>|>([\\s\\S]*?)</${papel}>)`, 'g'))]
+    .map((m) => agentes.get(m[1] ?? m[2].match(/rdf:about="([^"]+)"/)?.[1]))
+    .filter((a) => a?.name)
+  return {
+    id: Number(id),
+    title: um(/<dcterms:title>([^<]*)</),
+    authors: pessoas('dcterms:creator'),
+    translators: [...pessoas('marcrel:trl'), ...pessoas('marcrel:adp')],
+    languages: idioma ? [idioma] : [],
+    livreEUA: /public domain in the usa/i.test(um(/<dcterms:rights>([^<]*)</)),
+  }
 }
 
 const IDIOMAS = { en: 'inglês', fr: 'francês', de: 'alemão', es: 'espanhol', it: 'italiano', ru: 'russo', la: 'latim', nl: 'holandês', fi: 'finlandês', sv: 'sueco', da: 'dinamarquês', el: 'grego', ja: 'japonês', zh: 'chinês' }
 
-function avaliar(livro) {
-  const autor = livro.authors?.[0]
-  const morte = autor?.death_year ?? null
+export function avaliar(livro) {
+  const autores = livro.authors ?? []
+  const autor = autores[0]
+  // a data que decide é a da ÚLTIMA morte entre os autores
+  const morte = autores.some((a) => a.death_year == null) ? null : Math.max(...autores.map((a) => a.death_year))
   const idioma = livro.languages?.[0] ?? null
+  const tradutor = (livro.translators ?? []).find((t) => t.death_year == null || t.death_year > ANO_LIMITE)
+  const nomeDe = (a) => a.name.split(', ').reverse().join(' ')
   let problema = null
   if (!autor) problema = 'sem autor identificado'
-  else if (morte == null) problema = 'não se sabe quando o autor morreu'
-  else if (morte > ANO_LIMITE) problema = `o autor morreu em ${morte}; só entra quem morreu até ${ANO_LIMITE}`
+  else if (morte == null) problema = autores.length > 1 ? 'não se sabe quando um dos autores morreu' : 'não se sabe quando o autor morreu'
+  else if (morte > ANO_LIMITE) problema = `${autores.length > 1 ? 'um dos autores' : 'o autor'} morreu em ${morte}; só entra quem morreu até ${ANO_LIMITE}`
+  else if (tradutor) problema = tradutor.death_year == null
+    ? `esta edição é uma tradução de ${nomeDe(tradutor)}, e não se sabe quando morreu`
+    : `esta edição é uma tradução de ${nomeDe(tradutor)}, que morreu em ${tradutor.death_year}`
+  else if (livro.livreEUA === false) problema = 'o Gutenberg não marca como domínio público'
   else if (idioma === 'pt') problema = 'já está em português'
   else if (!IDIOMAS[idioma]) problema = 'língua que a esteira ainda não traduz'
   return {
     gutenberg: livro.id,
     titulo: String(livro.title ?? '').split(/[\r\n;]/)[0].slice(0, 200),
-    autor: autor ? autor.name.split(', ').reverse().join(' ').slice(0, 120) : null,
+    autor: autor ? autores.map(nomeDe).join(' e ').slice(0, 120) : null,
     morte, idioma, idiomaNome: IDIOMAS[idioma] ?? idioma,
     pode: !problema, problema,
   }
@@ -130,11 +172,13 @@ export async function buscarLivro(q) {
   if (termo.length < 3) throw new Recusa('Digite ao menos 3 letras.')
   const id = termo.match(/(?:ebooks\/)?(\d{1,6})\b/)?.[1]
   if (id && /^\s*(https?:\/\/\S*gutenberg\S*|\d+)\s*$/.test(termo)) {
-    const l = await gutendex(`/${id}`)
+    const l = await fichaGutenberg(id)
     return { livros: l ? [avaliar(l)] : [] }
   }
-  const r = await gutendex(`?search=${encodeURIComponent(termo)}`)
-  return { livros: (r?.results ?? []).slice(0, 10).map(avaliar) }
+  const opds = await buscarTexto(`https://www.gutenberg.org/ebooks/search.opds/?query=${encodeURIComponent(termo)}`)
+  const ids = [...new Set([...String(opds ?? '').matchAll(/<id>https?:\/\/www\.gutenberg\.org\/ebooks\/(\d+)\.opds<\/id>/g)].map((m) => m[1]))].slice(0, 8)
+  const fichas = await Promise.all(ids.map((i) => fichaGutenberg(i).catch(() => null)))
+  return { livros: fichas.filter(Boolean).map(avaliar) }
 }
 
 export async function pedir(banco, pessoa, plano, { gutenberg }) {
@@ -143,7 +187,7 @@ export async function pedir(banco, pessoa, plano, { gutenberg }) {
   if (usados >= plano.pedidosMes) throw new Recusa(`Você já fez os ${plano.pedidosMes} pedidos deste mês.`, 403)
   const id = Number(gutenberg)
   if (!Number.isInteger(id) || id <= 0) throw new Recusa('Escolha um livro da busca.')
-  const l = await gutendex(`/${id}`)
+  const l = await fichaGutenberg(id)
   if (!l) throw new Recusa('Não achei esse livro no Gutenberg.', 404)
   const a = avaliar(l)
   if (!a.pode) throw new Recusa(`Não dá para pedir este: ${a.problema}.`)

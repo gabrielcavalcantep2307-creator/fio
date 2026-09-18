@@ -22,7 +22,7 @@ import { Recusa } from './contas.mjs'
 import { montarEpub, nomeDeArquivo } from './epub.mjs'
 import { ondeComecaOLivro } from './folha-de-rosto.mjs'
 import { criarBuscaNoTexto } from './busca-no-texto.mjs'
-import { ipDoPedido, freio, dicaDeIp } from './seguranca.mjs'
+import { ipDoPedido, freio, dicaDeIp, fluxoPassa } from './seguranca.mjs'
 import * as meusLivros from './meus-livros.mjs'
 import { conferirUsuario, estaTomado } from './usuario.mjs'
 import * as ajustes from './ajustes.mjs'
@@ -33,6 +33,8 @@ import * as publicacoes from './publicacoes.mjs'
 import * as acesso from './acesso.mjs'
 import * as esteira from './esteira.mjs'
 import * as correcoes from './correcoes.mjs'
+import * as curadoria from './curadoria.mjs'
+import * as extras from './extras.mjs'
 import { chaveDe } from './usuario.mjs'
 
 const PORTA = Number(process.env.FIO_PORTA || 8787)
@@ -51,6 +53,8 @@ publicacoes.garantirTabelas(banco)
 acesso.garantirTabelas(banco)
 esteira.garantirTabelas(banco)
 correcoes.garantirTabelas(banco)
+curadoria.garantirTabelas(banco)
+extras.garantirTabelas(banco)
 // A faxina das imagens de publicação: na subida e de hora em hora.
 try { publicacoes.faxina(banco) } catch (e) { console.error('[fio] faxina', e) }
 setInterval(() => { try { publicacoes.faxina(banco) } catch (e) { console.error('[fio] faxina', e) } }, 3600_000).unref()
@@ -610,6 +614,42 @@ const ROTAS = {
     return esteira.pedir(banco, pessoa, planos.planoDe(banco, pessoa), dado)
   },
 
+  // ── curadoria do acervo (servidor/curadoria.mjs) ──
+  'GET /api/admin/curadoria': (req, res, dado, ctx) => {
+    exigirAdmin(req)
+    const tipo = ctx.busca.get('tipo'), id = ctx.busca.get('id')
+    return {
+      editados: curadoria.listaEditados(banco),
+      ...(tipo === 'obra' && id ? { obra: curadoria.lerObra(banco, id) } : {}),
+      ...(tipo === 'serie' && id ? { serie: curadoria.lerSerie(banco, id) } : {}),
+    }
+  },
+  'GET /api/admin/curadoria/base': (req, res, dado, ctx) => { exigirAdmin(req); return curadoria.baseParaPainel(banco, ESTATICO, ctx.busca.get('tipo')) },
+  'GET /api/admin/curadoria/ficha': (req, res, dado, ctx) => { exigirAdmin(req); return curadoria.fichaOriginal(banco, ESTATICO, ctx.busca.get('id')) },
+  'POST /api/admin/curadoria/obra': (req, res, dado) => curadoria.salvarObra(banco, exigirAdmin(req), ESTATICO, dado),
+  'POST /api/admin/curadoria/serie': (req, res, dado) => curadoria.salvarSerie(banco, exigirAdmin(req), ESTATICO, dado),
+
+  // ── as ideias de 17/09: meta de leitura, quadrinhos na conta, seguir obra ──
+  'GET /api/meta': (req, res, dado, ctx) => extras.meta(banco, exigirEntrada(req), ctx.busca.get('ano')),
+  'POST /api/meta': (req, res, dado) => extras.definirMeta(banco, comFreio(req, 'guardar-extra'), dado),
+  'GET /api/quadrinhos/progresso': (req) => extras.progressoQuadrinhos(banco, exigirEntrada(req)),
+  'POST /api/quadrinhos/progresso': (req, res, dado) => extras.guardarProgressoQuadrinho(banco, comFreio(req, 'guardar-extra'), dado),
+  'POST /api/publicacao/seguir': (req, res, dado) => extras.seguir(banco, comFreio(req, 'guardar-extra'), dado),
+  'POST /api/publicacao/partes/ordem': (req, res, dado) => publicacoes.reordenarPartes(banco, comFreio(req, 'publicar'), dado),
+
+  // ── a página de conta ──
+  'GET /api/minha-conta': (req) => {
+    const pessoa = exigirEntrada(req)
+    const p = planos.planoDe(banco, pessoa)
+    const uso = {
+      livros: p.livrosMes === Infinity ? null : { ...acesso.usoDoMes(banco, pessoa.id), limite: acesso.livrosGratis(banco) },
+      pedidos: { usados: acesso.pedidosDoMes(banco, pessoa.id), limite: p.pedidosMes },
+    }
+    return extras.resumoConta(banco, pessoa, { plano: p, uso })
+  },
+  'POST /api/sair-do-aparelho': (req, res, dado) => extras.sairDoAparelho(banco, exigirEntrada(req), dado),
+  'POST /api/meu-email': async (req, res, dado) => extras.mudarEmail(banco, comFreio(req, 'senha-extra'), dado),
+
   // ── o pulso da esteira: só com a chave da máquina do dono ──
   'POST /api/esteira/pulso': (req, res, dado) => {
     if (!esteira.chaveConfere(req.headers['x-esteira-chave'])) throw new Recusa('Não existe.', 404)
@@ -801,6 +841,7 @@ function servirLivro(res, id, pessoa = null) {
   const meu = leitorId ? paraLeituraDoDono.get(leitorId, id) : null
   const o = meu ?? paraLeitura.get(casa, id)
   if (!o) throw new Recusa('Não temos o texto desta obra.', 404)
+  if (!meu && curadoria.obraOculta(banco, id)) throw new Recusa('Não temos o texto desta obra.', 404)
   if (!meu && o.estado !== 'dominio_publico' && o.estado !== 'licenca_livre') {
     throw new Recusa('Esta obra não pode ser lida aqui.', 403)
   }
@@ -845,7 +886,7 @@ function baixar(req, res, id) {
   const casa = process.env.FIO_JURISDICAO || 'BR'
   const o = doLivro.get(casa, id)
 
-  if (!o || o.normalizado !== 1) throw new Recusa('Não temos o texto desta obra.', 404)
+  if (!o || o.normalizado !== 1 || curadoria.obraOculta(banco, id)) throw new Recusa('Não temos o texto desta obra.', 404)
   if (o.estado !== 'dominio_publico' && o.estado !== 'licenca_livre') {
     throw new Recusa('Esta obra não pode ser distribuída daqui.', 403)
   }
@@ -922,6 +963,15 @@ const servidor = createServer(async (req, res) => {
   cors(req, res)
   if (req.method === 'OPTIONS') { res.writeHead(204); return res.end() }
 
+  // Controle de fluxo por IP, em memória (seguranca.mjs). A chave da esteira
+  // não passa por aqui: ela manda um pulso a cada 20 s e nunca chega perto.
+  const tipoFluxo = (req.url ?? '').startsWith('/api/') ? 'api' : 'arquivos'
+  const fluxo = fluxoPassa(ipDe(req) ?? 'sem-ip', tipoFluxo)
+  if (!fluxo.passa) {
+    res.writeHead(429, { 'content-type': 'application/json; charset=utf-8', 'retry-after': String(fluxo.esperar), 'cache-control': 'no-store' })
+    return res.end(JSON.stringify({ erro: 'Muitos pedidos seguidos. Espere um minuto.' }))
+  }
+
   let caminho
   try { caminho = decodeURIComponent(new URL(req.url, 'http://x').pathname) }
   catch { res.writeHead(400); return res.end() }
@@ -978,6 +1028,21 @@ const servidor = createServer(async (req, res) => {
       if (e instanceof Recusa) return responder(res, e.status, { erro: e.message })
       console.error('[fio] publicacao/imagem', e)
       return responder(res, 500, { erro: 'Não consegui guardar a imagem.' })
+    }
+  }
+
+  if (caminho === '/api/admin/curadoria/capa' && req.method === 'POST') {
+    try {
+      if (req.headers['x-fio'] !== '1') throw new Recusa('Pedido sem identificação.', 403)
+      if (!origemOk(req)) throw new Recusa('Origem não confere.', 403)
+      const adm = exigirAdmin(req)
+      const busca = new URL(req.url, 'http://x').searchParams
+      const bytes = await bytesDoPedido(req, 4 * 1024 * 1024 + 1024)
+      return responder(res, 200, curadoria.receberCapa(banco, adm, ESTATICO, { tipo: busca.get('tipo'), id: busca.get('id') }, bytes))
+    } catch (e) {
+      if (e instanceof Recusa) return responder(res, e.status, { erro: e.message })
+      console.error('[fio] curadoria/capa', e)
+      return responder(res, 500, { erro: 'Não consegui guardar a capa.' })
     }
   }
 
@@ -1105,6 +1170,8 @@ const servidor = createServer(async (req, res) => {
       res.writeHead(401, { 'content-type': 'text/plain; charset=utf-8', 'cache-control': 'no-store' })
       return res.end('crie uma conta para continuar')
     }
+    if (curadoria.servirCapa(req, res, caminho)) return
+    if (curadoria.servirCatalogo(banco, ESTATICO, req, res, caminho)) return
     if (servirArquivo(req, res, caminho)) return
     // O app navega por HASH (`/#/obra/12`). Um endereço de caminho — `/obra/12`,
     // vindo de um link antigo, de um compartilhamento ou do painel até 16/09 —

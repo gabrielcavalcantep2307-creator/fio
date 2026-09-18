@@ -17,6 +17,7 @@ const url = new URLSearchParams(location.search)
 const filtros = {
   q: url.get('q') ?? '', tipo: url.get('tipo') ?? '', formato: url.get('formato') ?? '', genero: url.get('genero') ?? '',
   cor: url.get('cor') ?? '', status: url.get('status') ?? '', classificacao: url.get('classificacao') ?? '', ordem: url.get('ordem') ?? 'recentes',
+  seguindo: url.get('seguindo') === '1' ? '1' : '',
 }
 let obras = [], proxima = 1, carregando = false, pedido = 0, erro = null, opcoes = null
 let area, painel
@@ -94,6 +95,9 @@ function seletor(chave, rotulo, lista) {
   return s
 }
 
+let logado = false
+eu().then((x) => { logado = !!x; if (x && painel) montarVitrine() })
+
 function montarVitrine() {
   const o = opcoes
   if (!o) { por(main, el('p', { class: 'sub' }, 'abrindo…')); return }
@@ -110,7 +114,10 @@ function montarVitrine() {
       seletor('genero', 'Gênero', [['', 'Todo gênero'], ...Object.entries(o.generos).sort((a, b) => a[1].localeCompare(b[1], 'pt'))]),
       seletor('status', 'Situação', [['', 'Qualquer situação'], ['andamento', 'Em andamento'], ['completa', 'Completa'], ['hiato', 'Em hiato']]),
       seletor('classificacao', 'Classificação', [['', 'Qualquer idade'], ['livre', 'Só livre'], ['12', 'Até 12+'], ['14', 'Até 14+'], ['16', 'Até 16+']]),
-      seletor('ordem', 'Ordem', [['recentes', 'Atualizadas agora'], ['populares', 'Mais lidas'], ['novas', 'Publicadas agora'], ['az', 'A–Z']])))
+      seletor('ordem', 'Ordem', [['recentes', 'Atualizadas agora'], ['populares', 'Mais lidas'], ['novas', 'Publicadas agora'], ['az', 'A–Z']])),
+    logado ? el('div', { class: 'linha-filtro' }, el('label', { class: 'chave' },
+      el('input', { type: 'checkbox', ...(filtros.seguindo ? { checked: '' } : {}), onchange: (e) => { filtros.seguindo = e.target.checked ? '1' : ''; buscar(true) } }),
+      'Só as obras que eu sigo')) : null)
   area ??= el('div', {})
   por(main, 
     el('h1', {}, 'Comunidade'),
@@ -152,7 +159,7 @@ async function mostrarFicha(id) {
         el('p', { class: 'sinopse' }, o.sinopse),
         el('p', {},
           primeiro ? el('a', { class: 'botao', href: `/publicacoes.html?id=${o.id}&cap=${primeiro.ordem}` }, o.tipo === 'livro' ? 'Começar a ler' : 'Ler o capítulo 1') : null, ' ',
-          o.souDono ? el('a', { class: 'botao fraco', href: `/publicar.html?obra=${o.id}` }, 'Editar') : null),
+          o.souDono ? el('a', { class: 'botao fraco', href: `/publicar.html?obra=${o.id}` }, 'Editar') : botaoSeguir(o, pessoa)),
         el('div', { class: 'aut' }, `${o.leituras.toLocaleString('pt-BR')} ${o.leituras === 1 ? 'leitura' : 'leituras'} · atualizada em ${dataCurta(o.atualizadaEm)}`))),
     el('h2', {}, o.tipo === 'livro' ? 'Capítulos' : 'Capítulos'),
     o.partes.length ? el('ul', { class: 'caps' }, o.partes.map((p) => el('li', {},
@@ -161,6 +168,23 @@ async function mostrarFicha(id) {
         o.souDono && p.estado !== 'publicada' ? el('span', { class: `selo ${p.estado === 'recusada' ? 'ruim' : 'ouro'}` }, p.estado) : null,
         el('span', { class: 'd' }, o.tipo === 'livro' ? `${Math.max(1, Math.round(p.palavras / 230))} min` : `${p.paginas} pág.`))))) : el('p', { class: 'sub' }, 'Nenhum capítulo publicado ainda.'),
     !o.souDono ? caixaDenuncia(o, pessoa) : null)
+}
+
+// Seguir a obra (o "inscrever-se" do Webtoon): aviso na central quando sai capítulo novo.
+function botaoSeguir(o, pessoa) {
+  if (o.estado && o.estado !== 'publicada') return null
+  let seguindo = o.seguindo, seguidores = o.seguidores ?? 0
+  const b = el('button', { class: 'botao fraco', type: 'button' })
+  const pintar = () => { b.textContent = seguindo ? `✓ Seguindo · ${seguidores}` : `+ Seguir${seguidores ? ` · ${seguidores}` : ''}`; b.title = seguindo ? 'Parar de seguir' : 'Receber aviso quando sair capítulo novo' }
+  pintar()
+  b.addEventListener('click', async () => {
+    if (!pessoa) { location.href = '/#/entrar'; return }
+    b.disabled = true
+    try { const r = await pedir('/publicacao/seguir', { id: o.id, seguir: !seguindo }); seguindo = r.seguindo; seguidores = r.seguidores; pintar() }
+    catch (e) { alert(e.message) }
+    b.disabled = false
+  })
+  return b
 }
 
 function caixaDenuncia(o, pessoa) {
@@ -198,7 +222,7 @@ async function mostrarCapitulo(id, cap) {
   let corpo
   if (r.texto != null) {
     corpo = el('article', { class: 'texto' }, el('h2', {}, r.parte.titulo),
-      r.texto.split(/\n\s*\n|\n/).map((t) => t.trim()).filter(Boolean).map((t) => el('p', {}, t)))
+      marcacaoParaNos(r.texto))
   } else {
     corpo = el('div', { class: 'paginas' }, r.paginas.filter((u) => u.startsWith('/api/pub-arquivo/'))
       .map((u, i) => el('img', { src: u, alt: `Página ${i + 1}`, loading: i < 3 ? 'eager' : 'lazy', decoding: 'async' })))

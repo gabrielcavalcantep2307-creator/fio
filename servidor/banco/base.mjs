@@ -21,6 +21,9 @@ export function abrir(caminho = process.env.FIO_BANCO || join(RAIZ, 'dados', 'ca
   db.exec('PRAGMA journal_mode = WAL')
   db.exec('PRAGMA foreign_keys = ON')
   db.exec('PRAGMA synchronous = NORMAL')
+  // A ingestão escreve no mesmo banco por outro processo (docker exec). Sem
+  // espera, a escrita do site que cruza com ela falha na hora com SQLITE_BUSY.
+  db.exec('PRAGMA busy_timeout = 4000')
   if (novo) {
     db.exec(readFileSync(join(RAIZ, 'servidor', 'esquema.sql'), 'utf8'))
   }

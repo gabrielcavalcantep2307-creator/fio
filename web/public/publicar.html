@@ -3,50 +3,88 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Publicar — Fio</title>
+<title>Estúdio — Fio</title>
 <link rel="icon" type="image/svg+xml" href="/fio.svg">
 <link rel="stylesheet" href="/fio-paginas.css">
 <link rel="stylesheet" href="/fio-cabecalho.css">
 <script src="/fio-tema.js"></script>
 <style>
-  .uso{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin:0 0 26px}
+  main{max-width:1180px}
+  .uso{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));margin:0 0 26px}
   .uso .caixa{padding:14px 16px}
   .uso b{font-size:22px;font-family:Literata,Georgia,serif;font-weight:500}
   .barrinha{height:5px;background:var(--linha);border-radius:3px;margin-top:8px;overflow:hidden}
   .barrinha i{display:block;height:100%;background:var(--acento)}
-  .minhas{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(min(100%,420px),1fr))}
-  .minha{display:grid;grid-template-columns:90px 1fr;gap:14px;background:var(--papel2);border:1px solid var(--linha);border-radius:12px;padding:12px;text-decoration:none}
-  .minha img,.minha .sem{width:90px;aspect-ratio:2/3;object-fit:cover;border-radius:4px;background:var(--linha)}
+  .minhas{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(min(100%,360px),1fr))}
+  .minha{display:grid;grid-template-columns:84px 1fr;gap:14px;background:var(--papel2);border:1px solid var(--linha);border-radius:12px;padding:12px;text-decoration:none}
+  .minha:hover{border-color:var(--acento)}
+  .minha img,.minha .sem{width:84px;aspect-ratio:2/3;object-fit:cover;border-radius:4px;background:var(--linha)}
   .minha h2{font-size:18px;margin:0 0 4px}
-  .minha .aut{font-size:12.5px;color:var(--tinta2)}
-  .secao{margin:0 0 34px}
+  .aut{font-size:12.5px;color:var(--tinta2)}
+  .nova{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));margin:10px 0 0}
+  .nova button{text-align:left;padding:18px;border:1px solid var(--linha);border-radius:14px;background:var(--papel2);color:var(--tinta);font:inherit;cursor:pointer}
+  .nova button:hover{border-color:var(--acento)}
+  .nova b{display:block;font:500 20px Literata,Georgia,serif;margin:6px 0 2px}
+  /* editor */
+  .topo-ed{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin:0 0 16px}
+  .topo-ed h1{font-size:28px;margin:0}
+  .topo-ed .acoes{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+  .abas-ed{display:flex;gap:4px;border-bottom:1px solid var(--linha);margin:0 0 18px}
+  .abas-ed button{background:none;border:none;border-bottom:2px solid transparent;padding:10px 14px;font:inherit;color:var(--tinta2);cursor:pointer;margin-bottom:-1px}
+  .abas-ed button[aria-selected=true]{color:var(--tinta);border-bottom-color:var(--acento)}
+  .estudio{display:grid;grid-template-columns:300px 1fr;gap:20px;align-items:start}
+  .lista-caps{background:var(--papel2);border:1px solid var(--linha);border-radius:12px;padding:8px;position:sticky;top:120px;max-height:calc(100vh - 140px);overflow:auto}
+  .item-cap{display:flex;gap:8px;align-items:center;padding:8px;border-radius:8px;cursor:pointer;border:1px solid transparent}
+  .item-cap:hover{background:var(--papel)}
+  .item-cap[aria-current=true]{background:var(--papel);border-color:var(--acento)}
+  .item-cap.arrastando{opacity:.4}
+  .item-cap.alvo{box-shadow:inset 0 2px 0 var(--acento)}
+  .item-cap .pega{cursor:grab;color:var(--tinta2);user-select:none;padding:0 2px}
+  .item-cap .n{color:var(--tinta2);font-variant-numeric:tabular-nums;min-width:1.6em}
+  .item-cap .t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px}
+  .ponto{width:8px;height:8px;border-radius:50%;flex:none}
+  .area-ed{min-width:0}
+  .barra-ferr{display:flex;gap:4px;flex-wrap:wrap;align-items:center;padding:6px;border:1px solid var(--linha);border-bottom:none;border-radius:10px 10px 0 0;background:var(--papel2)}
+  .barra-ferr button{background:none;border:1px solid transparent;border-radius:6px;padding:4px 9px;font:inherit;font-size:13px;color:var(--tinta);cursor:pointer}
+  .barra-ferr button:hover{border-color:var(--linha);background:var(--papel)}
+  .barra-ferr .dir{margin-left:auto;font-size:12px;color:var(--tinta2)}
+  .texto-cap{width:100%;min-height:62vh;border:1px solid var(--linha);border-radius:0 0 10px 10px;padding:18px 20px;font:17px/1.75 Literata,Georgia,serif;background:var(--papel);color:var(--tinta);resize:vertical}
+  .previa-texto{border:1px solid var(--linha);border-radius:0 0 10px 10px;padding:22px 26px;min-height:62vh;background:var(--papel);font:17px/1.75 Literata,Georgia,serif}
+  .previa-texto p{margin:0 0 1em;text-indent:1.4em}
+  .previa-texto .cena{text-align:center;letter-spacing:.6em;color:var(--tinta2);text-indent:0}
+  .soltar{border:2px dashed var(--linha);border-radius:12px;padding:26px;text-align:center;color:var(--tinta2);cursor:pointer;background:var(--papel2)}
+  .soltar.por-cima{border-color:var(--acento);color:var(--tinta);background:color-mix(in srgb,var(--acento) 8%,var(--papel2))}
+  .fila-up{display:grid;gap:4px;margin:10px 0}
+  .fila-up div{display:flex;gap:8px;align-items:center;font-size:12.5px}
+  .fila-up progress{flex:1;height:6px}
+  .miniaturas{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));margin:12px 0}
+  .mini{position:relative;border:1px solid var(--linha);border-radius:8px;overflow:hidden;background:var(--papel2);cursor:grab}
+  .mini.arrastando{opacity:.4}
+  .mini.alvo{outline:2px solid var(--acento)}
+  .mini img{width:100%;aspect-ratio:3/4;object-fit:cover;display:block;pointer-events:none}
+  .mini .num{position:absolute;top:4px;left:4px;background:rgba(0,0,0,.75);color:#fff;font-size:11px;border-radius:999px;padding:0 6px}
+  .mini .tirar{position:absolute;top:4px;right:4px;background:rgba(0,0,0,.7);color:#fff;border:none;border-radius:50%;width:22px;height:22px;cursor:pointer;font-size:13px;line-height:1}
+  .checklist{list-style:none;padding:0;margin:8px 0 0;display:grid;gap:6px;font-size:14px}
+  .checklist li::before{content:'○ ';color:var(--tinta2)}
+  .checklist li.feito::before{content:'● ';color:var(--bom)}
   .duas{display:grid;gap:0 18px;grid-template-columns:1fr 1fr}
   .generos{display:flex;flex-wrap:wrap;gap:6px}
   .generos label{border:1px solid var(--linha);border-radius:999px;padding:4px 11px;font-size:13px;cursor:pointer;user-select:none}
   .generos label:has(input:checked){background:var(--acento);border-color:var(--acento);color:#fff}
   .generos input{position:absolute;opacity:0;pointer-events:none}
-  .capa-atual{display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap}
-  .capa-atual img{width:140px;aspect-ratio:2/3;object-fit:cover;border-radius:6px;background:var(--papel2)}
-  .caps-ed{list-style:none;padding:0;margin:0 0 12px}
-  .caps-ed li{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:10px 4px;border-bottom:1px solid var(--linha)}
-  .caps-ed .n{color:var(--tinta2);min-width:2em}
-  .caps-ed .acoes{margin-left:auto;display:flex;gap:6px}
-  .miniaturas{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));margin:12px 0}
-  .mini{position:relative;border:1px solid var(--linha);border-radius:6px;overflow:hidden;background:var(--papel2)}
-  .mini img{width:100%;aspect-ratio:3/4;object-fit:cover;display:block}
-  .mini .num{position:absolute;top:4px;left:4px;background:rgba(0,0,0,.75);color:#fff;font-size:11px;border-radius:999px;padding:0 6px}
-  .mini .bts{display:flex;justify-content:space-between;padding:3px}
-  .mini .bts button{background:none;border:none;color:var(--tinta);cursor:pointer;font-size:14px;padding:2px 6px}
-  .contador{font-size:12px;color:var(--tinta2);text-align:right}
+  .capa-grande{width:220px;aspect-ratio:2/3;object-fit:cover;border-radius:8px;background:var(--papel2);box-shadow:0 18px 36px -20px rgba(0,0,0,.6)}
   .regras{font-size:13.5px;color:var(--tinta2)}
   .regras li{margin:4px 0}
-  @media (max-width:640px){.duas{grid-template-columns:1fr}}
+  .modal{position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.6);display:flex;align-items:flex-start;justify-content:center;overflow:auto;padding:30px 12px}
+  .modal .caixa{max-width:760px;width:100%;background:var(--papel)}
+  @media (max-width:860px){.estudio{grid-template-columns:1fr}.lista-caps{position:static;max-height:none}.duas{grid-template-columns:1fr}}
 </style>
 </head>
 <body data-area="comunidade" data-sub="comunidade" data-sub-atual="publicar">
 <main id="main"><p class="sub">abrindo…</p></main>
 <script src="/fio-cabecalho.js"></script>
 <script src="/fio-comum.js"></script>
+<script src="/fio-manuscrito.js"></script>
 <script src="/publicar.js"></script>
 </body>
 </html>
