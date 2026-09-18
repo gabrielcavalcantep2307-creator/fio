@@ -53,7 +53,17 @@
   .previa-texto{border:1px solid var(--linha);border-radius:0 0 10px 10px;padding:22px 26px;min-height:62vh;background:var(--papel);font:17px/1.75 Literata,Georgia,serif}
   .previa-texto p{margin:0 0 1em;text-indent:1.4em}
   .previa-texto .cena{text-align:center;letter-spacing:.6em;color:var(--tinta2);text-indent:0}
-  .soltar{border:2px dashed var(--linha);border-radius:12px;padding:26px;text-align:center;color:var(--tinta2);cursor:pointer;background:var(--papel2)}
+  /* a área de soltar é um <label>: sem display:block ela é EM LINHA, e a borda
+     tracejada quebrava em pedaços com o texto vazando (achado em 18/09) */
+  .soltar{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:170px;border:2px dashed var(--linha);border-radius:14px;padding:26px;text-align:center;color:var(--tinta2);cursor:pointer;background:var(--papel2);transition:border-color .15s,background .15s}
+  .soltar:hover{border-color:var(--acento)}
+  .soltar .icone{font-size:34px;line-height:1;opacity:.8}
+  .soltar b{font-size:16px;color:var(--tinta)}
+  .soltar .aut{max-width:44ch}
+  .grade-vazia{border:1px solid var(--linha);border-radius:12px;padding:18px;text-align:center;color:var(--tinta2);font-size:13.5px;margin:12px 0}
+  .barra-salvar{position:sticky;bottom:0;z-index:5;display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:12px 0;margin-top:8px;background:linear-gradient(transparent,var(--papel) 30%)}
+  .barra-salvar .conta{margin-right:auto;font-size:13px;color:var(--tinta2)}
+  .titulo-cap{font:500 20px Literata,Georgia,serif;width:100%;padding:9px 12px;border:1px solid var(--linha);border-radius:10px;background:var(--papel);color:var(--tinta);margin-bottom:12px}
   .soltar.por-cima{border-color:var(--acento);color:var(--tinta);background:color-mix(in srgb,var(--acento) 8%,var(--papel2))}
   .fila-up{display:grid;gap:4px;margin:10px 0}
   .fila-up div{display:flex;gap:8px;align-items:center;font-size:12.5px}

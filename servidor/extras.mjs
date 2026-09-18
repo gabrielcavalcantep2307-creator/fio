@@ -203,3 +203,19 @@ export function vitrineQuadrinhos(banco, estatico) {
   vitrineGuardada = { em: Date.now(), dados }
   return dados
 }
+
+// ── "chegaram agora" na home (18/09): as traduções do Fio mais recentes ──
+// Só o id da obra e quando entrou; o resto (título, capa) o navegador tira do
+// catálogo, que já esconde o que a curadoria ocultou.
+let novidadesGuardadas = null
+export function novidadesLivros(banco) {
+  if (novidadesGuardadas && Date.now() - novidadesGuardadas.em < 600_000) return novidadesGuardadas.dados
+  let obras = []
+  try {
+    obras = banco.prepare(`SELECT t.obra_id obra, MAX(t.criado_em) em FROM texto t JOIN obra o ON o.id = t.obra_id
+        WHERE t.fonte = 'fio_traducao' AND o.publicada = 1 GROUP BY t.obra_id ORDER BY MAX(t.id) DESC LIMIT 24`).all()
+  } catch {}
+  const dados = { obras: obras.map((o) => ({ obra: o.obra, em: Date.parse(String(o.em).replace(' ', 'T') + 'Z') || null })) }
+  novidadesGuardadas = { em: Date.now(), dados }
+  return dados
+}

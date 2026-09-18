@@ -168,12 +168,46 @@
     desenhar()
   }
 
+  // ─────────────────────────────────────────────────────────────
+  // HOME: "chegaram agora" — as traduções mais novas do Fio (18/09), como a
+  // faixa de "novas atualizações" dos sites de leitura
+  // ─────────────────────────────────────────────────────────────
+  const haQuanto = (ms) => {
+    if (!ms) return ''
+    const h = Math.floor((Date.now() - ms) / 3_600_000)
+    return h < 1 ? 'agora há pouco' : h < 24 ? `há ${h} h` : h < 48 ? 'ontem' : `há ${Math.floor(h / 24)} dias`
+  }
+  async function montarNovidades(alvo) {
+    alvo.dataset.montado = '1'
+    let r
+    try { r = await api('/novidades') } catch { return }
+    const cartoes = []
+    for (const n of r.obras ?? []) {
+      const o = await obraPorId(n.obra)
+      if (!o) continue
+      const capa = capaDe(o)
+      cartoes.push(h('a', { href: `#/obra/${o.id}`, title: o.titulo },
+        h('div', { class: 'cap' }, capa ? h('img', { src: capa, alt: `Capa de ${o.titulo}`, loading: 'lazy' }) : null),
+        n.em && Date.now() - n.em < 7 * 86_400_000 ? h('span', { class: 'novo' }, 'novo') : null,
+        h('div', { class: 't' }, o.titulo),
+        h('div', { class: 'q' }, [o.autor, haQuanto(n.em)].filter(Boolean).join(' · '))))
+      if (cartoes.length >= 18) break
+    }
+    if (cartoes.length < 3) { alvo.replaceChildren(); return }
+    alvo.replaceChildren(h('section', { class: 'fio-novidades' },
+      h('div', { class: 'topo' }, h('h2', { class: 'fio-titulo', style: 'font:600 1.15rem Literata,Georgia,serif;margin:0' }, 'Chegaram agora'),
+        h('span', {}, 'traduzidos pelo Fio, os mais novos primeiro')),
+      h('div', { class: 'rolo' }, cartoes)))
+  }
+
   // ── montar quando o app desenhar os espaços ──
   function procurar() {
     const e = document.getElementById('fio-extra-estante')
     if (e && !e.dataset.montado) montarMeta(e)
     const c = document.getElementById('fio-extra-caderno')
     if (c && !c.dataset.montado) montarRevisao(c)
+    const nv = document.getElementById('fio-extra-novidades')
+    if (nv && !nv.dataset.montado) montarNovidades(nv)
     // "Continuar com o Google" na tela de entrar: só aparece se o servidor
     // estiver com o Google ligado (servidor/google.mjs)
     const g = document.getElementById('fio-google')

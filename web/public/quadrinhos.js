@@ -116,14 +116,49 @@ const seletor = (chave, opcoes) => {
   return s
 }
 
-function cartaoManga(o) {
+// O cartão no desenho dos sites de leitura (18/09): o tipo colorido no canto,
+// a nota, a posição no ranking quando a lista é "mais populares", e embaixo
+// capítulos e se ainda está saindo.
+function cartaoManga(o, posicao = null) {
+  const statusClasse = o.status === 'finalizado' ? 'fim' : o.status === 'em hiato' ? 'hiato' : ''
   return el('button', { class: 'card', type: 'button', onclick: () => abrirFicha(o.id) },
     el('div', { class: 'cap', style: o.cor ? `background:${o.cor}` : null },
       o.capa?.startsWith('/api/capa-manga/') ? el('img', { src: o.capa, alt: `Capa de ${o.titulo}`, loading: 'lazy' }) : null,
-      el('div', { class: 'selos-c' },
-        el('span', {}, o.tipo), o.colorido ? el('span', {}, 'colorido') : null, o.emPortugues ? el('span', { class: 'pt' }, 'em português') : null)),
+      el('span', { class: `tipo-m ${o.tipo}` }, o.tipo),
+      o.nota ? el('span', { class: 'nota-m' }, `★ ${(o.nota / 10).toFixed(1)}`) : null,
+      posicao ? el('span', { class: 'pos-m', 'aria-label': `${posicao}º mais popular` }, String(posicao)) : null,
+      el('div', { class: 'selos-c', style: posicao ? 'left:auto' : null },
+        o.colorido ? el('span', {}, 'colorido') : null, o.emPortugues ? el('span', { class: 'pt' }, 'em português') : null)),
     el('div', { class: 't' }, o.titulo),
-    el('div', { class: 'g' }, [o.generos.slice(0, 2).join(' · '), o.nota ? `★ ${o.nota / 10}` : null].filter(Boolean).join('  ')))
+    el('div', { class: 'info-m' },
+      o.status ? el('span', { class: `ponto-m ${statusClasse}`, title: o.status }) : null,
+      [o.capitulos ? `${o.capitulos} cap.` : o.status === 'em lançamento' ? 'saindo' : null, o.ano, o.generos[0]].filter(Boolean).join(' · ')))
+}
+
+// A abertura da aba, só sem filtro: um destaque grande e a faixa "em alta".
+const filtrosPadrao = () => !filtros.q && filtros.tipo === 'todos' && filtros.cor === 'todos' && !filtros.genero && filtros.status === 'todos' && !filtros.pt && filtros.desde === '2010'
+let emAlta = null
+function vitrineDescobrir() {
+  const caixa = el('div', { class: 'vitrine-m' })
+  emAlta ??= fetch('/api/mangas?ordem=alta').then((r) => (r.ok ? r.json() : null)).then((r) => r?.obras ?? []).catch(() => [])
+  emAlta.then((lista) => {
+    if (!lista.length) return
+    const d = lista[Math.floor(Date.now() / 86_400_000) % Math.min(5, lista.length)]
+    const fundo = el('div', { class: 'fundo' })
+    if (d.capa?.startsWith('/api/capa-manga/')) fundo.style.backgroundImage = `url("${d.capa}")`
+    caixa.replaceChildren(
+      el('button', { class: 'hero-m', type: 'button', onclick: () => abrirFicha(d.id) },
+        fundo,
+        d.capa?.startsWith('/api/capa-manga/') ? el('img', { src: d.capa, alt: `Capa de ${d.titulo}` }) : el('div'),
+        el('div', {},
+          el('div', { class: 'tag' }, 'EM ALTA AGORA'),
+          el('h2', {}, d.titulo),
+          el('p', {}, [d.tipo, d.ano, d.capitulos ? `${d.capitulos} capítulos` : d.status, d.nota ? `★ ${(d.nota / 10).toFixed(1)}` : null].filter(Boolean).join(' · ')),
+          el('div', { class: 'chips' }, d.generos.slice(0, 4).map((g) => el('span', {}, g)), d.emPortugues ? el('span', {}, 'tem em português') : null),
+          el('p', { style: 'margin:14px 0 0' }, el('span', { class: 'botao' }, 'Ver onde ler')))),
+      el('section', { class: 'faixa-m' }, el('h3', {}, 'Em alta agora'), el('div', { class: 'rolo-m' }, lista.slice(0, 14).map((o) => cartaoManga(o)))))
+  })
+  return caixa
 }
 
 async function buscar(recomecar) {
@@ -153,12 +188,16 @@ async function buscar(recomecar) {
 }
 let erroDescobrir = null
 
-let areaResultados = null
+let areaResultados = null, vitrineEl = null, tituloRanking = null
 function desenharDescobrir() {
   if (aba !== 'descobrir') return
   if (!areaResultados || !document.body.contains(areaResultados)) montarDescobrir()
+  // destaque e ranking só na lista sem filtro (mais populares, de 2010 para cá)
+  const semFiltro = filtrosPadrao() && filtros.ordem === 'populares'
+  if (vitrineEl) vitrineEl.hidden = !semFiltro
+  if (tituloRanking) tituloRanking.hidden = !semFiltro
   areaResultados.replaceChildren(
-    resultados.length ? el('div', { class: 'grade-m' }, resultados.map(cartaoManga)) : null,
+    resultados.length ? el('div', { class: 'grade-m' }, resultados.map((o, i) => cartaoManga(o, filtros.ordem === 'populares' && filtrosPadrao() && i < 10 ? i + 1 : null))) : null,
     carregando ? el('p', { class: 'estado-m' }, 'procurando…') : null,
     !carregando && erroDescobrir ? el('p', { class: 'estado-m' }, erroDescobrir) : null,
     !carregando && !erroDescobrir && !resultados.length ? el('p', { class: 'estado-m' }, 'Nada com esses filtros. Tente tirar algum.') : null,
@@ -186,7 +225,10 @@ function montarDescobrir() {
   main.replaceChildren(
     cabecalho(),
     el('p', { class: 'sub' }, 'Milhares de mangás, manhwas e manhuas para descobrir. O Fio não hospeda essas obras — elas têm dono —, então cada ficha mostra onde ler oficialmente, muitas vezes de graça e em português.'),
-    painel, areaResultados,
+    (vitrineEl = vitrineDescobrir()),
+    painel,
+    (tituloRanking = el('h3', { style: 'font:500 19px Literata,Georgia,serif;margin:6px 0 12px' }, 'Os mais lidos de 2010 para cá')),
+    areaResultados,
     el('p', { class: 'credito-m' }, 'Dados e capas: AniList (anilist.co). As obras pertencem aos seus autores e editoras — leia nas plataformas oficiais.'))
 }
 

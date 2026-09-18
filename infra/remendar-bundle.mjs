@@ -280,6 +280,39 @@ const REMENDOS = [
     // Nasce escondido; /fio-app-extras.js mostra quando /api/google/ligado diz que está ligado.
     para: 'e!==`esqueci`&&(0,N.jsxs)(`div`,{id:`fio-google`,style:{display:`none`},children:[(0,N.jsxs)(`a`,{href:`/api/google/entrar?volta=%2F%23%2F`,className:`mt-7 flex items-center justify-center gap-3 px-4 py-2.5 rounded text-sm hover:opacity-80`,style:{border:`1px solid var(--linha)`,background:`var(--papel)`,color:`var(--tinta)`,textDecoration:`none`},children:[(0,N.jsx)(`span`,{"aria-hidden":!0,style:{fontWeight:700,fontFamily:`Arial, sans-serif`,background:`conic-gradient(#ea4335 0 25%,#fbbc05 0 50%,#34a853 0 75%,#4285f4 0)`,WebkitBackgroundClip:`text`,backgroundClip:`text`,color:`transparent`,fontSize:`1.15rem`},children:`G`}),e===`criar`?`Criar conta com o Google`:`Continuar com o Google`]}),(0,N.jsx)(`div`,{className:`mt-5 text-center text-xs`,style:{color:`var(--tinta-2)`},children:`ou com usuário e senha`})]}),(0,N.jsxs)(`form`,{onSubmit:T,className:`flex flex-col gap-3 mt-7`,children:[',
   },
+  // ── 18/09 (noite): a cara dos sites de leitura, com a identidade do Fio ──
+  // Estilos em /fio-visual.css; aqui só as classes e os selos.
+  {
+    // O destaque da home ganha a capa desfocada ao fundo.
+    nome: 'visual: destaque da home com a capa ao fundo',
+    de: '(0,N.jsxs)(`section`,{className:`rounded-xl overflow-hidden relative`,style:{background:`var(--papel-2)`,border:`1px solid var(--linha)`},children:[(0,N.jsx)(`div`,{"aria-hidden":!0,className:`absolute inset-0 pointer-events-none`,style:{background:`radial-gradient(58% 88% at 13% 42%, color-mix(in srgb, var(--acento) 14%, transparent), transparent 70%)`}}),',
+    para: '(0,N.jsxs)(`section`,{className:`fio-hero rounded-xl overflow-hidden relative`,children:[(0,N.jsx)(`div`,{"aria-hidden":!0,className:`fio-hero-fundo`,style:{backgroundImage:e.capa?`url("/capas/${e.capa}")`:e.capaOL?`url("https://covers.openlibrary.org/b/id/${e.capaOL}-M.jpg")`:void 0}}),(0,N.jsx)(`div`,{"aria-hidden":!0,className:`fio-hero-veu absolute inset-0 pointer-events-none`}),',
+  },
+  {
+    nome: 'visual: espaço de "chegaram agora" logo abaixo do destaque',
+    de: 'h&&(0,N.jsx)(gt,{obra:h,quantas:p.length}),',
+    para: 'h&&(0,N.jsx)(gt,{obra:h,quantas:p.length}),(0,N.jsx)(`div`,{id:`fio-extra-novidades`}),',
+  },
+  {
+    // Os selos do cartão de livro, como nos sites de mangá: o tipo no canto de
+    // cima, a nota à direita, o tempo de leitura embaixo.
+    nome: 'visual: selos no cartão de livro',
+    de: '(0,N.jsxs)(`div`,{className:`relative aspect-[2/3] overflow-hidden rounded-[3px] transition-transform duration-200 group-hover:-translate-y-1`,style:{boxShadow:`0 1px 2px rgba(0,0,0,.18), 0 8px 20px -12px rgba(0,0,0,.5)`},children:[(0,N.jsx)(Xe,{obra:e}),e.traducao===`automatica`&&(0,N.jsx)(`span`,{className:`absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded`,title:`tradução automática, sem revisão humana`,style:{background:`color-mix(in srgb, var(--papel) 88%, transparent)`,color:`var(--tinta-2)`,fontSize:9,letterSpacing:`.08em`,textTransform:`uppercase`},children:`trad. automática`}),',
+    para: '(0,N.jsxs)(`div`,{className:`fio-capa relative aspect-[2/3] overflow-hidden transition-transform duration-200 group-hover:-translate-y-1`,children:[(0,N.jsx)(Xe,{obra:e}),e.traducao===`automatica`?(0,N.jsx)(`span`,{className:`fio-selo fio-selo-trad`,title:`tradução automática do Fio, sem revisão humana`,children:`tradução Fio`}):/^lei-/.test(e.capa||``)?(0,N.jsx)(`span`,{className:`fio-selo fio-selo-lei`,children:`lei`}):null,e.nota!=null&&(0,N.jsxs)(`span`,{className:`fio-nota`,children:[`★ `,e.nota.toFixed(1).replace(`.`,`,`)]}),e.trilho===`A`&&ct(e.minutos)&&(0,N.jsx)(`span`,{className:`fio-tempo`,children:ct(e.minutos)}),',
+  },
+  {
+    nome: 'visual: títulos das prateleiras com a barrinha',
+    de: 'style:{fontFamily:`Literata, serif`},className:`text-[1.05rem]`',
+    para: 'style:{fontFamily:`Literata, serif`},className:`fio-titulo text-[1.05rem]`',
+    vezes: 2,
+  },
+  {
+    nome: 'visual: títulos grandes das prateleiras com a barrinha',
+    de: 'style:{fontFamily:`Literata, serif`},className:`text-[1.15rem]`',
+    para: 'style:{fontFamily:`Literata, serif`},className:`fio-titulo text-[1.15rem]`',
+    // 2 do bundle original + Da comunidade, Quadrinhos e Mangá em alta (remendos anteriores)
+    vezes: 5,
+  },
   {
     nome: 'caderno: seção "seus dados" desligada',
     de: 'h===`dados`&&(0,N.jsxs)(`section`,{className:`mt-8 pt-8`',
@@ -294,9 +327,12 @@ for (const r of REMENDOS) {
     if (!t) throw new Error(`âncora não encontrada: ${r.nome}`)
     s = s.slice(0, t[0]) + t[2] + s.slice(t[1])
   } else {
+    // `vezes`: quantas âncoras iguais o remendo troca (padrão 1); número
+    // diferente = bundle diferente do esperado, e nada é trocado
+    const esperadas = r.vezes ?? 1
     const n = s.split(r.de).length - 1
-    if (n !== 1) throw new Error(`"${r.nome}": esperava 1 âncora, achei ${n}`)
-    s = s.replace(r.de, () => r.para)
+    if (n !== esperadas) throw new Error(`"${r.nome}": esperava ${esperadas} âncora(s), achei ${n}`)
+    s = s.split(r.de).join(r.para)
   }
   console.log(`  ok  ${r.nome}`)
 }
@@ -312,6 +348,8 @@ let index = readFileSync(arg('index'), 'utf8').replace(/\/ativos\/index-[\w-]+\.
 // sincronia começa, `window.fioDono` já existe.
 if (!index.includes('/fio-dono.js')) index = index.replace(/<meta charset="UTF-8" \/>/i, (m) => `${m}\n    <script src="/fio-dono.js"></script>`)
 if (!index.includes('/fio-dono.js')) throw new Error('index.html sem /fio-dono.js')
+// /fio-visual.css: a cara dos sites de leitura (18/09), DEPOIS do CSS do app
+if (!index.includes('/fio-visual.css')) index = index.replace('</head>', '    <link rel="stylesheet" href="/fio-visual.css">\n  </head>')
 if (!index.includes('/fio-leitor.js')) index = index.replace('</head>', '    <script defer src="/fio-leitor.js"></script>\n  </head>')
 if (!index.includes('/fio-app-extras.js')) index = index.replace('</head>', '    <script defer src="/fio-app-extras.js"></script>\n  </head>')
 if (!index.includes(nome)) throw new Error('index.html não aponta para o bundle novo')

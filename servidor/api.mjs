@@ -664,6 +664,7 @@ const ROTAS = {
 
   // ── a página de conta ──
   'GET /api/google': (req) => google.situacao(banco, exigirEntrada(req).id),
+  'GET /api/novidades': () => extras.novidadesLivros(banco),
   'GET /api/quadrinhos/vitrine': () => extras.vitrineQuadrinhos(banco, ESTATICO),
   'GET /api/google/ligado': () => ({ disponivel: google.configurado() }),
   'POST /api/google/senha': async (req, res, dado) => {

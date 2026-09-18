@@ -475,7 +475,7 @@ function importar() {
 function editorPaginas(area, parte) {
   const o = obraAtual
   const lim = estudio.plano.limites
-  const titulo = el('input', { type: 'text', maxlength: '120', value: parte?.titulo ?? `Capítulo ${(o.partes.at(-1)?.ordem ?? 0) + 1}`, style: 'font:500 20px Literata,Georgia,serif;width:100%;padding:8px 10px;border:1px solid var(--linha);border-radius:8px;background:var(--papel);color:var(--tinta);margin-bottom:10px' })
+  const titulo = el('input', { type: 'text', maxlength: '120', value: parte?.titulo ?? `Capítulo ${(o.partes.at(-1)?.ordem ?? 0) + 1}`, class: 'titulo-cap', 'aria-label': 'Título do capítulo' })
   const paginas = []
   const grade = el('div', { class: 'miniaturas' })
   const fila = el('div', { class: 'fila-up' })
@@ -485,6 +485,7 @@ function editorPaginas(area, parte) {
   let arrastada = null
   const pintar = () => {
     contagem.textContent = `${paginas.length}${lim ? ` de até ${lim.paginasPorParte}` : ''} páginas`
+    if (!paginas.length) { por(grade, el('div', { class: 'grade-vazia', style: 'grid-column:1/-1' }, 'As páginas aparecem aqui na ordem de leitura. Arraste uma miniatura para mudar a ordem; o × tira a página.')); return }
     por(grade, paginas.map((p, i) => {
       const m = el('div', { class: 'mini', draggable: 'true' },
         el('img', { src: p.url, alt: `página ${i + 1}`, loading: 'lazy' }), el('span', { class: 'num' }, String(i + 1)),
@@ -546,7 +547,7 @@ function editorPaginas(area, parte) {
   }
 
   const escolher = el('input', { type: 'file', accept: TIPOS_IMG.join(','), multiple: true, hidden: true })
-  const soltar = el('label', { class: 'soltar' }, el('b', {}, 'Solte as páginas aqui'), el('div', { class: 'aut' }, 'ou clique para escolher · JPG, PNG ou WebP até 5 MB cada · entram em ordem de nome'), escolher)
+  const soltar = el('label', { class: 'soltar' }, el('span', { class: 'icone', 'aria-hidden': 'true' }, '⬆'), el('b', {}, 'Solte as páginas aqui'), el('div', { class: 'aut' }, 'ou clique para escolher · JPG, PNG ou WebP até 5 MB cada · entram em ordem de nome'), escolher)
   escolher.addEventListener('change', () => { receber(escolher.files); escolher.value = '' })
   soltar.addEventListener('dragover', (e) => { if (e.dataTransfer?.types?.includes('Files')) { e.preventDefault(); soltar.classList.add('por-cima') } })
   soltar.addEventListener('dragleave', () => soltar.classList.remove('por-cima'))
@@ -574,12 +575,11 @@ function editorPaginas(area, parte) {
     parte?.estado === 'publicada' ? el('p', { class: 'aut' }, parte.pendente ? 'Há uma edição deste capítulo esperando revisão; é ela que está aqui.' : 'Este capítulo está no ar. Salvar cria uma edição que só entra depois da revisão.') : null,
     parte?.motivo ? recado('ruim', `Motivo da recusa: ${parte.motivo}`) : null,
     titulo, soltar, fila,
-    el('div', { style: 'display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px' },
-      contagem,
-      el('button', { class: 'botao fraco mini', type: 'button', onclick: () => { paginas.reverse(); pintar() } }, 'inverter ordem'),
-      el('button', { class: 'botao fraco mini', type: 'button', onclick: previa }, 'prévia')),
     grade,
-    el('div', { style: 'display:flex;gap:8px;flex-wrap:wrap' },
+    el('div', { class: 'barra-salvar' },
+      el('span', { class: 'conta' }, contagem),
+      el('button', { class: 'botao fraco', type: 'button', style: 'padding:7px 12px;font-size:13px', onclick: () => { paginas.reverse(); pintar() } }, 'inverter ordem'),
+      el('button', { class: 'botao fraco', type: 'button', style: 'padding:7px 12px;font-size:13px', onclick: previa }, 'prévia'),
       el('button', { class: 'botao', type: 'button', disabled: !lim, onclick: (e) => salvar(e.currentTarget) }, 'Salvar capítulo'),
       parte ? el('button', { class: 'botao fraco', type: 'button', onclick: async () => {
         if (!confirm(`Apagar "${parte.titulo}"?`)) return
