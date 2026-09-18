@@ -14,7 +14,7 @@ import { join } from 'node:path'
 export function criarPulso(raiz) {
   const arquivo = join(raiz, 'dados', 'traducoes', '.chave-esteira')
   const chave = process.env.FIO_ESTEIRA_CHAVE || (existsSync(arquivo) ? readFileSync(arquivo, 'utf8').trim() : '')
-  const url = process.env.FIO_PULSO_URL || 'https://fiolib.duckdns.org/api/esteira/pulso'
+  const url = process.env.FIO_PULSO_URL || 'https://fiolib.com.br/api/esteira/pulso'
   const estado = { estado: 'medindo', rodada: {}, plano: {}, atual: null, ultimos: [], log: [] }
   let ultimoEnvio = 0, agendado = null, enviando = false
 

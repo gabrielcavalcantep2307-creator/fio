@@ -1,7 +1,10 @@
 # Fio — o projeto inteiro, em 18/09/2026
 
 Uma biblioteca em português que liga um livro ao próximo. No ar em
-<https://fiolib.duckdns.org> (e `fio.142-93-57-2.sslip.io`), na mesma VPS do Wallt.
+<https://fiolib.com.br> (domínio próprio desde 18/09/2026, Registro.br, ID GACPE180), na mesma VPS do Wallt.
+Os endereços antigos (`fiolib.duckdns.org`, `fio.142-93-57-2.sslip.io`) e o `www` redirecionam (308) para ele.
+
+**Caddy:** o `/opt/picord/Caddyfile` é montado somente-leitura e por ARQUIVO no container `picord-caddy-1`: editar com `sed -i` troca o arquivo e o container continua lendo o velho. Para aplicar sem reiniciar (ele também serve o Wallt): `docker cp /opt/picord/Caddyfile picord-caddy-1:/config/Caddyfile.atual` e `caddy reload --config /config/Caddyfile.atual`.
 
 Este é o documento de entrada: o que existe, onde mora, como se opera, quais
 armadilhas já custaram caro e o que falta. Os detalhes de cada assunto estão

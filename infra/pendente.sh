@@ -26,7 +26,7 @@ set -euo pipefail
 
 MAQUINA="${MAQUINA:-root@142.93.57.2}"
 CHAVE="${CHAVE_SSH:-$HOME/.ssh/picord-deploy}"
-SITE="${SITE:-https://fiolib.duckdns.org}"
+SITE="${SITE:-https://fiolib.com.br}"
 
 cd "$(dirname "$0")/.."
 remoto() { ssh -i "$CHAVE" -o StrictHostKeyChecking=accept-new -o ConnectTimeout=20 "$MAQUINA" "$@"; }

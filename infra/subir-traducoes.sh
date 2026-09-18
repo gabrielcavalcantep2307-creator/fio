@@ -100,10 +100,10 @@ remoto "
 "
 
 echo "==> conferindo de fora"
-GERADO=$(curl -s https://fiolib.duckdns.org/dados/catalogo.json | head -c 40)
+GERADO=$(curl -s https://fiolib.com.br/dados/catalogo.json | head -c 40)
 echo "    $GERADO"
 for id in $(ls dados/traducoes/obra*.json | sed 's/[^0-9]//g' | head -5); do
-  CODIGO=$(curl -s -o /dev/null -w '%{http_code}' "https://fiolib.duckdns.org/api/livro/$id")
+  CODIGO=$(curl -s -o /dev/null -w '%{http_code}' "https://fiolib.com.br/api/livro/$id")
   echo "    obra $id -> HTTP $CODIGO"
 done
 
