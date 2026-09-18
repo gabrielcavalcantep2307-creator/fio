@@ -97,7 +97,7 @@ export function capituloDoMuro(decisao) {
     corpo: [
       `No plano grátis dá para começar ${decisao.limite} livros novos a cada 30 dias, e você já começou os ${decisao.limite}. Os que já abriu continuam abertos: é só voltar a eles.`,
       decisao.renovaEm ? `Um novo livro libera em ${dataBr(decisao.renovaEm)}.` : '',
-      'Para ler sem limite — e ouvir em voz alta e baixar em EPUB —, veja os planos em fiolib.duckdns.org/assinaturas.html.',
+      'Para ler sem limite — e ouvir em voz alta e baixar em EPUB —, veja os planos em fiolib.com.br/assinaturas.html.',
     ].filter(Boolean).join('\n\n'),
   }
 }

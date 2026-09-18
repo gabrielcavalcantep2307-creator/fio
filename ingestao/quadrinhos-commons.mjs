@@ -19,7 +19,7 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs'
 import { join } from 'node:path'
 
 const arg = (n, p = null) => { const i = process.argv.indexOf(`--${n}`); return i > 0 && process.argv[i + 1] ? process.argv[i + 1] : p }
-const UA = 'fio/0.1 (biblioteca em portugues; https://fiolib.duckdns.org)'
+const UA = 'fio/0.1 (biblioteca em portugues; https://fiolib.com.br)'
 const API = 'https://commons.wikimedia.org/w/api.php'
 
 async function api(params) {

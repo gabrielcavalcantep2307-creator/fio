@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacidade — Fio</title>
+<meta name="description" content="O que o Fio guarda sobre quem lê, para quê, e como apagar.">
+<link rel="icon" type="image/svg+xml" href="/fio.svg">
+<link rel="stylesheet" href="/fio-paginas.css">
+<link rel="stylesheet" href="/fio-cabecalho.css">
+<link rel="stylesheet" href="/fio-visual.css">
+<script src="/fio-dono.js"></script>
+<script src="/fio-tema.js"></script>
+<style>
+  main{max-width:760px}
+  main h2{font:600 20px Literata,Georgia,serif;margin:34px 0 10px}
+  main p,main li{line-height:1.7}
+  main table{border-collapse:collapse;width:100%;font-size:14px;margin:10px 0}
+  main th,main td{border-bottom:1px solid var(--linha);padding:8px 6px;text-align:left;vertical-align:top}
+  main th{color:var(--tinta2);font-weight:500}
+</style>
+</head>
+<body data-area="privacidade">
+<main id="main">
+  <h1>Privacidade</h1>
+  <p class="sub">Atualizada em 18 de setembro de 2026. Em linguagem simples: o que o Fio guarda, para quê, com quem fala e como você apaga tudo.</p>
+
+  <h2>O resumo</h2>
+  <ul>
+    <li>O Fio é uma biblioteca. Guardamos só o necessário para você ler, continuar de onde parou e ter sua estante em qualquer aparelho.</li>
+    <li><b>Não há anúncio, não há rastreador, não há venda de dados.</b> Nenhum script de terceiros roda nas páginas.</li>
+    <li>Você exporta tudo o que temos sobre você e apaga a conta quando quiser, em <a href="/conta.html#dados">Minha conta → Privacidade e dados</a>.</li>
+  </ul>
+
+  <h2>O que guardamos</h2>
+  <table>
+    <tr><th>O quê</th><th>Para quê</th></tr>
+    <tr><td>Nome de usuário, nome de exibição e, se você quiser, e-mail</td><td>Entrar na conta e assinar resenhas e publicações. O e-mail é opcional.</td></tr>
+    <tr><td>Senha</td><td>Guardada só como resumo criptográfico (scrypt com sal): nem nós conseguimos lê-la.</td></tr>
+    <tr><td>Perguntas de recuperação</td><td>Recuperar a conta sem e-mail. As respostas também são guardadas só como resumo.</td></tr>
+    <tr><td>Se você entrar com o Google: nome, e-mail e o identificador da conta Google</td><td>Reconhecer você no próximo login. Não pedimos acesso a Gmail, Drive, contatos ou fotos.</td></tr>
+    <tr><td>Estante, progresso de leitura, marcações, notas, meta do ano, progresso nos quadrinhos, obras que você segue</td><td>Sincronizar sua leitura entre aparelhos.</td></tr>
+    <tr><td>Respostas do questionário de gosto e o que você lê</td><td>Recomendar livros para você. A recomendação é calculada aqui, não por terceiros.</td></tr>
+    <tr><td>Resenhas, correções sugeridas e obras publicadas</td><td>Mostrar o que você escolheu tornar público.</td></tr>
+    <tr><td>Sessões: tipo de navegador e uma faixa reduzida do IP</td><td>Mostrar seus aparelhos em "Minha conta" e frear tentativas de invasão.</td></tr>
+    <tr><td>Contagem anônima de leitura (qual obra foi aberta e quando, sem quem)</td><td>O "Top 10" e o limite de leitura de quem não tem conta.</td></tr>
+  </table>
+
+  <h2>Cookies</h2>
+  <p>Um só, para manter você entrado (<code>__Host-fio</code>, 30 dias). Quem entra pelo Google recebe mais um, temporário, que dura 10 minutos e existe só para proteger o login. Preferências de leitura e tema ficam no seu navegador.</p>
+
+  <h2>Com quem o Fio fala</h2>
+  <ul>
+    <li><b>Google</b>, só se você escolher "Continuar com o Google".</li>
+    <li><b>AniList</b>, para o catálogo de mangás da aba Descobrir. A consulta sai do nosso servidor: seu endereço não vai para eles.</li>
+    <li><b>Open Library / Internet Archive</b>, de onde vêm algumas capas. Essas imagens são carregadas pelo seu navegador.</li>
+    <li>As traduções são feitas por serviços de tradução automática sobre textos em domínio público; <b>nada seu</b> é enviado a eles.</li>
+  </ul>
+
+  <h2>Seus direitos (LGPD)</h2>
+  <p>Você pode ver, exportar, corrigir e apagar seus dados a qualquer momento, sozinho, em <a href="/conta.html#dados">Minha conta</a>. Apagar a conta apaga junto tudo o que é seu, na hora.</p>
+
+  <h2>Contato</h2>
+  <p>Dúvidas sobre seus dados: <b>contato@fiolib.com.br</b>.</p>
+  <p class="sub" style="margin-top:34px">Veja também os <a href="/termos.html">termos de uso</a>.</p>
+</main>
+<script src="/fio-cabecalho.js"></script>
+</body>
+</html>

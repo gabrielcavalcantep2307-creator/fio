@@ -23,7 +23,7 @@
 
 const API = 'https://graphql.anilist.co'
 const CDN = 'https://s4.anilist.co/file/anilistcdn/media/manga/cover/'
-const UA = 'fio-biblioteca/1.0 (uso nao comercial; fiolib.duckdns.org)'
+const UA = 'fio-biblioteca/1.0 (uso nao comercial; fiolib.com.br)'
 
 // ── listas fechadas: nada do que o leitor digita entra cru na consulta ──
 export const TIPOS = { todos: null, manga: 'JP', manhwa: 'KR', manhua: 'CN' }

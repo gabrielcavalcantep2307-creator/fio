@@ -94,7 +94,7 @@ export function estado(banco) {
 // ─────────────────────────────────────────────────────────────
 
 const ANO_LIMITE = new Date().getFullYear() - 71 // 2026 → morto até 1955
-const UA = 'fio/0.1 (biblioteca em portugues; https://fiolib.duckdns.org)'
+const UA = 'fio/0.1 (biblioteca em portugues; https://fiolib.com.br)'
 
 // Consulta direto no catálogo do Project Gutenberg (17/09): a busca OPDS e a
 // ficha RDF de cada livro respondem em menos de um segundo. O Gutendex, que

@@ -153,7 +153,7 @@ export function montarEpub(livro) {
   <p style="text-indent:0">${escapar(livro.autor)}</p>
   <p class="fonte">${escapar(livro.direito ?? 'Domínio público.')}${
     livro.fonteUrl ? `<br />Origem do texto: ${escapar(livro.fonteUrl)}` : ''
-  }<br />Baixado de fiolib.duckdns.org</p>
+  }<br />Baixado de fiolib.com.br</p>
 </div>`),
     },
     ...caps.map(c => ({
