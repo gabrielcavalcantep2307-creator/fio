@@ -38,7 +38,7 @@ async function iniciar() {
   if (eu.papel !== 'admin') {
     main.replaceChildren(el('p', { class: 'ajuda' },
       'Esta conta não tem acesso ao painel. Entre com a conta de administração.',
-      ' ', el('button', { class: 'fraco', onclick: async () => { try { await pedir('/sair', {}) } catch {} ; telaEntrar() } }, 'trocar de conta')))
+      ' ', el('button', { class: 'fraco', onclick: async () => { try { await pedir('/sair', {}) } catch {} ; window.fioDono?.saiu(); telaEntrar() } }, 'trocar de conta')))
     return
   }
   document.getElementById('quem').textContent = `entrado como ${eu.usuario}`

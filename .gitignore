@@ -7,3 +7,8 @@ web/dist/
 *.db
 *.db-wal
 *.db-shm
+
+# chaves de API do dono — nunca no git
+/Sen Apis/
+*.chave
+.chave-*

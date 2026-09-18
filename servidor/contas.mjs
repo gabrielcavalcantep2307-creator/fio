@@ -569,6 +569,7 @@ export function exportarTudo(banco, leitorId) {
     meta_leitura: seExistir('SELECT ano, livros, mudou_em FROM meta_leitura WHERE leitor_id = ?'),
     quadrinhos: seExistir('SELECT serie, cap, pag, lidos, em FROM quadrinho_progresso WHERE leitor_id = ?'),
     seguindo: seExistir('SELECT publicacao_id, desde FROM publicacao_seguidor WHERE leitor_id = ?'),
+    google: seExistir('SELECT email, desde FROM leitor_google WHERE leitor_id = ?'),
     correcoes: seExistir('SELECT obra_id, capitulo_ordem, trecho, proposta, estado, criada_em FROM correcao WHERE leitor_id = ?'),
     pedidos_traducao: seExistir('SELECT fila_id, criado_em FROM pedido_traducao WHERE leitor_id = ?'),
     livros_liberados: seExistir('SELECT obra_id, liberado_em FROM livro_liberado WHERE leitor_id = ?'),

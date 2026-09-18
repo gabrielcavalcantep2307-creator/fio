@@ -13,6 +13,8 @@
 // O caderno (revisão do dia) e o "para você" (encontro às cegas com um livro)
 // não guardam nada no servidor: vivem no navegador, com o que já existe.
 
+import { readFileSync, statSync } from 'node:fs'
+import { join, dirname } from 'node:path'
 import { Recusa } from './contas.mjs'
 import { conferirEmail, conferirSenha } from './seguranca.mjs'
 
@@ -71,6 +73,8 @@ export function definirMeta(banco, pessoa, { livros, ano }) {
 
 export function progressoQuadrinhos(banco, pessoa) {
   return {
+    // o navegador confere de quem são os dados dele antes de misturar (fio-dono.js)
+    dono: pessoa.id,
     series: banco.prepare('SELECT serie, cap, pag, lidos, em FROM quadrinho_progresso WHERE leitor_id = ? ORDER BY em DESC LIMIT 500')
       .all(pessoa.id).map((l) => ({ ...l, lidos: JSON.parse(l.lidos) })),
   }
@@ -124,7 +128,7 @@ export function resumoConta(banco, pessoa, { plano, uso }) {
     .all(pessoa.id).map((l) => [JSON.parse(l.valor), l.n]))
   const l = banco.prepare('SELECT usuario, nome, email, papel, criado_em FROM leitor WHERE id = ?').get(pessoa.id)
   return {
-    conta: { usuario: l.usuario, nome: l.nome, email: l.email, papel: l.papel, desde: l.criado_em },
+    conta: { id: pessoa.id, usuario: l.usuario, nome: l.nome, email: l.email, papel: l.papel, desde: l.criado_em },
     plano: { chave: plano.chave, nome: plano.nome, uso },
     numeros: {
       lidos: estante.lido ?? 0,
@@ -163,4 +167,39 @@ export async function mudarEmail(banco, pessoa, { email, senha }) {
   }
   banco.prepare('UPDATE leitor SET email = ? WHERE id = ?').run(limpo, pessoa.id)
   return { ok: true, email: limpo }
+}
+
+// ── vitrine dos quadrinhos (18/09): "novidades" e "mais lidos", como nos sites de leitura ──
+//
+// Novidade = a data em que a pasta do volume chegou ao site (é quando ele
+// passou a existir aqui). Mais lidos = quantas CONTAS têm progresso na série —
+// só a contagem sai daqui, nunca quem. Guardado 10 min: a vitrine é igual
+// para todo mundo.
+let vitrineGuardada = null
+export function vitrineQuadrinhos(banco, estatico) {
+  if (vitrineGuardada && Date.now() - vitrineGuardada.em < 600_000) return vitrineGuardada.dados
+  let cat = { series: [] }
+  try { cat = JSON.parse(readFileSync(join(estatico, 'dados', 'quadrinhos.json'), 'utf8')) } catch {}
+  const novidades = []
+  for (const s of cat.series ?? []) {
+    for (const c of s.capitulos ?? []) {
+      const primeira = c.paginas?.[0]
+      if (typeof primeira !== 'string' || !primeira.startsWith('/quadrinhos/')) continue
+      try {
+        const pasta = join(estatico, dirname(primeira.slice(1)))
+        novidades.push({ serie: s.id, cap: c.n, titulo: c.titulo, em: statSync(pasta).mtimeMs })
+      } catch {}
+    }
+  }
+  novidades.sort((a, b) => b.em - a.em)
+  // no máximo dois volumes por série, para uma série grande não tomar a faixa
+  const porSerie = new Map()
+  const variadas = novidades.filter((n) => { const q = (porSerie.get(n.serie) ?? 0) + 1; porSerie.set(n.serie, q); return q <= 2 })
+  let ranking = []
+  try {
+    ranking = banco.prepare('SELECT serie, COUNT(*) leitores FROM quadrinho_progresso GROUP BY serie ORDER BY leitores DESC, MAX(em) DESC LIMIT 10').all()
+  } catch {}
+  const dados = { novidades: variadas.slice(0, 18), ranking }
+  vitrineGuardada = { em: Date.now(), dados }
+  return dados
 }

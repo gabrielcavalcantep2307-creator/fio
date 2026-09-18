@@ -239,6 +239,52 @@ const REMENDOS = [
     de: 'p=E();(0,l.useEffect)(()=>{document.documentElement.dataset.tema=t.tema},[t.tema])',
     para: 'p=E();(0,l.useEffect)(()=>{document.documentElement.dataset.tema=t.tema},[t.tema]),(0,l.useEffect)(()=>{try{sessionStorage.getItem(`fio:abrir-busca`)&&(sessionStorage.removeItem(`fio:abrir-busca`),f(!0))}catch{}},[])',
   },
+  // ── 18/09: os dados do navegador têm dono (achado: a estante de uma conta ia para a outra) ──
+  {
+    // Antes da primeira sincronia com a conta que entrou, /fio-dono.js confere
+    // de quem é o que está no navegador. Se era de outra conta (ou de antes da
+    // correção), apaga aqui também, e a sincronia só traz o que é desta.
+    nome: 'sincronia: dados de outra conta saem antes de subir',
+    de: '(0,l.useEffect)(()=>{if(!p)return;let e=!0,t=!1,n,r=async()=>{',
+    para: '(0,l.useEffect)(()=>{if(!p)return;window.fioDono&&window.fioDono.conferir(p.id)&&ze();let e=!0,t=!1,n,r=async()=>{',
+  },
+  {
+    nome: 'sair: nada da conta fica no navegador',
+    de: 'async function be(){await D(`/sair`,{}),w=null,T()}',
+    para: 'async function be(){await D(`/sair`,{}),window.fioDono&&window.fioDono.saiu(),ze(),w=null,T()}',
+  },
+  {
+    // "Levar embora" (baixar marcações e JSON) saiu do caderno: com conta,
+    // tudo já fica guardado. Exportar e apagar moram em /conta.html#dados.
+    nome: 'caderno: sem a aba "conta e dados"',
+    de: '[`marcacoes`,`marcações`],[`dados`,`conta e dados`]]',
+    para: '[`marcacoes`,`marcações`]]',
+  },
+  {
+    // O botão era <a href="#onde">: no app o # é a rota, então clicar ia para
+    // uma tela que não existe. Agora rola até a lista "onde encontrar".
+    nome: 'ficha: "Onde encontrar" rola até a lista',
+    de: '(0,N.jsx)(`a`,{href:`#onde`,',
+    para: '(0,N.jsx)(`a`,{href:`#onde`,onClick:e=>{e.preventDefault();let t=document.getElementById(`fio-onde`);t&&t.scrollIntoView({behavior:`smooth`,block:`center`})},',
+  },
+  {
+    nome: 'ficha: a lista "onde encontrar" tem endereço',
+    de: '(0,N.jsx)(`div`,{className:`miudo mt-6 mb-3`,children:`onde encontrar`})',
+    para: '(0,N.jsx)(`div`,{id:`fio-onde`,className:`miudo mt-6 mb-3`,children:`onde encontrar`})',
+  },
+  {
+    // Entrar (ou criar conta) com o Google: servidor/google.mjs. O botão só
+    // leva ao servidor, que faz tudo por redirecionamento.
+    nome: 'entrar: botão "Continuar com o Google"',
+    de: '(0,N.jsxs)(`form`,{onSubmit:T,className:`flex flex-col gap-3 mt-7`,children:[',
+    // Nasce escondido; /fio-app-extras.js mostra quando /api/google/ligado diz que está ligado.
+    para: 'e!==`esqueci`&&(0,N.jsxs)(`div`,{id:`fio-google`,style:{display:`none`},children:[(0,N.jsxs)(`a`,{href:`/api/google/entrar?volta=%2F%23%2F`,className:`mt-7 flex items-center justify-center gap-3 px-4 py-2.5 rounded text-sm hover:opacity-80`,style:{border:`1px solid var(--linha)`,background:`var(--papel)`,color:`var(--tinta)`,textDecoration:`none`},children:[(0,N.jsx)(`span`,{"aria-hidden":!0,style:{fontWeight:700,fontFamily:`Arial, sans-serif`,background:`conic-gradient(#ea4335 0 25%,#fbbc05 0 50%,#34a853 0 75%,#4285f4 0)`,WebkitBackgroundClip:`text`,backgroundClip:`text`,color:`transparent`,fontSize:`1.15rem`},children:`G`}),e===`criar`?`Criar conta com o Google`:`Continuar com o Google`]}),(0,N.jsx)(`div`,{className:`mt-5 text-center text-xs`,style:{color:`var(--tinta-2)`},children:`ou com usuário e senha`})]}),(0,N.jsxs)(`form`,{onSubmit:T,className:`flex flex-col gap-3 mt-7`,children:[',
+  },
+  {
+    nome: 'caderno: seção "seus dados" desligada',
+    de: 'h===`dados`&&(0,N.jsxs)(`section`,{className:`mt-8 pt-8`',
+    para: '!1&&(0,N.jsxs)(`section`,{className:`mt-8 pt-8`',
+  },
 ]
 
 let s = readFileSync(arg('base'), 'utf8')
@@ -262,6 +308,10 @@ writeFileSync(join(saida, 'ativos', nome), s)
 // /fio-leitor.js: o que o leitor ganhou por fora do bundle (voz por plano,
 // correções comunitárias). Script da própria origem, sem nada embutido.
 let index = readFileSync(arg('index'), 'utf8').replace(/\/ativos\/index-[\w-]+\.js/, `/ativos/${nome}`)
+// /fio-dono.js roda ANTES do bundle (script comum, sem defer): quando a
+// sincronia começa, `window.fioDono` já existe.
+if (!index.includes('/fio-dono.js')) index = index.replace(/<meta charset="UTF-8" \/>/i, (m) => `${m}\n    <script src="/fio-dono.js"></script>`)
+if (!index.includes('/fio-dono.js')) throw new Error('index.html sem /fio-dono.js')
 if (!index.includes('/fio-leitor.js')) index = index.replace('</head>', '    <script defer src="/fio-leitor.js"></script>\n  </head>')
 if (!index.includes('/fio-app-extras.js')) index = index.replace('</head>', '    <script defer src="/fio-app-extras.js"></script>\n  </head>')
 if (!index.includes(nome)) throw new Error('index.html não aponta para o bundle novo')

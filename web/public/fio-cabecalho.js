@@ -103,6 +103,7 @@
   } else {
     fetch('/api/eu', { credentials: 'same-origin' }).then((r) => (r.ok ? r.json() : null)).then(async (r) => {
       eu = r?.pessoa ?? null
+      if (eu) window.fioDono?.conferir(eu.id)
       desenhar()
       if (eu) {
         const x = await fetch('/api/avisos/contagem', { credentials: 'same-origin' }).then((y) => (y.ok ? y.json() : null)).catch(() => null)

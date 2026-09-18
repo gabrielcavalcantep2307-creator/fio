@@ -1695,3 +1695,50 @@ test('meta, quadrinhos na conta e seguir obra: o mais novo vence, lixo não entr
   pub.reordenarPartes(b2, pa, { publicacao: obra, ids: [...ids].reverse() })
   assert.deepEqual(b2.prepare('SELECT id FROM publicacao_parte WHERE publicacao_id = ? ORDER BY ordem').all(obra).map((x) => x.id), [...ids].reverse())
 })
+
+test('google: conta nova, entrar de novo, nunca juntar pelo e-mail, vincular, senha e desligar', async () => {
+  const g = await import('./google.mjs')
+  const b = bd(); g.garantirTabelas(b); gosto.garantirTabelas(b)
+  process.env.FIO_CONVITE = 'aberto'
+  try {
+    // alguém cadastrou o e-mail da vítima antes: o Google dela NÃO pode cair nessa conta
+    const intruso = leitorDeTeste('intrusogoogle')
+    b.prepare("UPDATE leitor SET email = 'vitima@gmail.com' WHERE id = ?").run(intruso)
+    const perfil = { sub: 'g-111', email: 'vitima@gmail.com', nome: 'Vítima Real' }
+    const nova = await g.resolver(b, { perfil, modo: 'entrar' }, { ip: '10.0.0.1' })
+    assert.ok(nova.novo && nova.sessao?.token)
+    assert.notEqual(nova.leitorId, intruso, 'juntou a conta do Google com a conta de quem usou o e-mail antes')
+    assert.equal(b.prepare('SELECT email FROM leitor WHERE id = ?').get(nova.leitorId).email, null)
+    // de novo: entra na mesma
+    const de2 = await g.resolver(b, { perfil, modo: 'entrar' }, {})
+    assert.equal(de2.leitorId, nova.leitorId); assert.ok(!de2.novo)
+    // nasce sem senha conhecida: não desliga antes de criar uma
+    assert.equal(g.situacao(b, nova.leitorId).semSenha, true)
+    assert.throws(() => g.desligar(b, nova.leitorId), /Defina uma senha/)
+    await assert.rejects(g.definirSenha(b, nova.leitorId, { nova: '123' }))
+    await g.definirSenha(b, nova.leitorId, { nova: 'uma senha boa de verdade 42' })
+    await assert.rejects(g.definirSenha(b, nova.leitorId, { nova: 'outra senha boa de verdade 43' }), /já tem senha/)
+    assert.deepEqual(g.desligar(b, nova.leitorId), { ok: true })
+    // vincular: exige estar entrado; Google de outra pessoa não troca de dono
+    const eu = leitorDeTeste('vinculadora')
+    await assert.rejects(g.resolver(b, { perfil: { sub: 'g-222', email: null, nome: 'X' }, modo: 'vincular', leitorId: null }), /Entre na sua conta/)
+    assert.equal((await g.resolver(b, { perfil: { sub: 'g-222', email: null, nome: 'X' }, modo: 'vincular', leitorId: eu })).vinculou, true)
+    await assert.rejects(g.resolver(b, { perfil: { sub: 'g-222', email: null, nome: 'X' }, modo: 'vincular', leitorId: intruso }), /já está ligada a outra/)
+    // porta fechada: Google não cria conta
+    delete process.env.FIO_CONVITE
+    await assert.rejects(g.resolver(b, { perfil: { sub: 'g-333', email: 'x@y.com', nome: 'Y' }, modo: 'entrar' }, {}), /cadastro está fechado/)
+  } finally { delete process.env.FIO_CONVITE }
+
+  // a volta só aceita o navegador que começou, e nunca manda para fora da casa
+  process.env.GOOGLE_CLIENT_ID = 'id-teste'; process.env.GOOGLE_CLIENT_SECRET = 'segredo-teste'; process.env.FIO_GOOGLE = 'ligado'
+  try {
+    const { url, navegador } = g.comecar(b, { modo: 'entrar', volta: 'https://mal.com/x', redirectUri: 'https://fiolib.duckdns.org/api/google/volta', ip: '10.0.0.2' })
+    const state = new URL(url).searchParams.get('state')
+    assert.equal(new URL(url).searchParams.get('code_challenge_method'), 'S256')
+    assert.equal(g._pendentes.get(state).volta, '/#/', 'aceitou volta para outro site')
+    await assert.rejects(g.receber({ code: 'x', state, navegador: 'outro-navegador' }), /não começou neste navegador/)
+    await assert.rejects(g.receber({ code: 'x', state, navegador }), /venceu/, 'o mesmo state serviu duas vezes')
+    assert.equal(g.enderecoDeVolta('evil.com', 'https://fiolib.duckdns.org'), 'https://fiolib.duckdns.org/api/google/volta')
+    assert.equal(g.enderecoDeVolta('fio.142-93-57-2.sslip.io', 'https://fiolib.duckdns.org'), 'https://fio.142-93-57-2.sslip.io/api/google/volta')
+  } finally { delete process.env.GOOGLE_CLIENT_ID; delete process.env.GOOGLE_CLIENT_SECRET; delete process.env.FIO_GOOGLE }
+})

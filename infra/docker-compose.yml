@@ -34,6 +34,14 @@ services:
       # A chave com que a esteira (no PC do dono) manda o pulso ao painel.
       # Só no .env; sem ela a rota do pulso não existe.
       FIO_ESTEIRA_CHAVE: ${FIO_ESTEIRA_CHAVE:-}
+      # Entrar com o Google (servidor/google.mjs). Vazias = botão leva a um
+      # aviso de "ainda não ligado". A DEEPL_CHAVE fica no .env mas NÃO entra
+      # aqui: quem traduz é o PC, e o servidor não precisa dela.
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      FIO_HOSTS_GOOGLE: ${FIO_HOSTS_GOOGLE:-fio.142-93-57-2.sslip.io}
+      # 'ligado' depois de cadastrar os endereços de volta no console do Google
+      FIO_GOOGLE: ${FIO_GOOGLE:-}
     volumes:
       # O banco: catálogo, contas e sessões. É o único estado que importa.
       - dados:/dados

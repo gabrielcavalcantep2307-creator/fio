@@ -14,7 +14,7 @@
 // Variáveis: veja .env.exemplo
 
 import { createServer } from 'node:http'
-import { createReadStream, existsSync, statSync } from 'node:fs'
+import { createReadStream, existsSync, statSync, readFileSync } from 'node:fs'
 import { join, normalize, extname } from 'node:path'
 import { abrir, RAIZ } from './banco/base.mjs'
 import * as contas from './contas.mjs'
@@ -35,6 +35,7 @@ import * as esteira from './esteira.mjs'
 import * as correcoes from './correcoes.mjs'
 import * as curadoria from './curadoria.mjs'
 import * as extras from './extras.mjs'
+import * as google from './google.mjs'
 import { chaveDe } from './usuario.mjs'
 
 const PORTA = Number(process.env.FIO_PORTA || 8787)
@@ -55,6 +56,7 @@ esteira.garantirTabelas(banco)
 correcoes.garantirTabelas(banco)
 curadoria.garantirTabelas(banco)
 extras.garantirTabelas(banco)
+google.garantirTabelas(banco)
 // A faxina das imagens de publicação: na subida e de hora em hora.
 try { publicacoes.faxina(banco) } catch (e) { console.error('[fio] faxina', e) }
 setInterval(() => { try { publicacoes.faxina(banco) } catch (e) { console.error('[fio] faxina', e) } }, 3600_000).unref()
@@ -169,6 +171,29 @@ const responder = (res, status, dado) => {
 const primeiraLinha = (s) => String(s ?? '').split(/[\r\n]/)[0].replace(/\s+/g, ' ').trim()
 
 const ipDe = (req) => ipDoPedido(req.headers['x-forwarded-for'], req.socket.remoteAddress)
+
+// As imagens que servem de CAPA (da série e de cada volume, e as que a curadoria
+// escolheu) são públicas mesmo nos volumes que pedem conta: a vitrine e a
+// lista de volumes precisam mostrá-las. Só as páginas ficam fechadas.
+let capasGuardadas = { chave: '', lista: new Set() }
+function capasDeQuadrinho() {
+  const arq = join(ESTATICO, 'dados', 'quadrinhos.json')
+  let chave = ''
+  try { chave = `${statSync(arq).mtimeMs}` } catch { return capasGuardadas.lista }
+  let escolhidas = []
+  try { escolhidas = banco.prepare('SELECT campos FROM curadoria_serie').all().map((l) => JSON.parse(l.campos).capa).filter((c) => typeof c === 'string') } catch {}
+  chave += `|${escolhidas.join(',')}`
+  if (chave === capasGuardadas.chave) return capasGuardadas.lista
+  const lista = new Set(escolhidas)
+  try {
+    for (const s of JSON.parse(readFileSync(arq, 'utf8')).series ?? []) {
+      if (typeof s.capa === 'string') lista.add(s.capa)
+      for (const c of s.capitulos ?? []) if (typeof c.capa === 'string') lista.add(c.capa)
+    }
+  } catch {}
+  capasGuardadas = { chave, lista }
+  return lista
+}
 
 const exigirEntrada = (req) => {
   const pessoa = contas.deQuemE(banco, lerCookie(req))
@@ -638,6 +663,16 @@ const ROTAS = {
   'POST /api/publicacao/partes/ordem': (req, res, dado) => publicacoes.reordenarPartes(banco, comFreio(req, 'publicar'), dado),
 
   // ── a página de conta ──
+  'GET /api/google': (req) => google.situacao(banco, exigirEntrada(req).id),
+  'GET /api/quadrinhos/vitrine': () => extras.vitrineQuadrinhos(banco, ESTATICO),
+  'GET /api/google/ligado': () => ({ disponivel: google.configurado() }),
+  'POST /api/google/senha': async (req, res, dado) => {
+    const pessoa = exigirEntrada(req)
+    if (!freio(banco, 'senha-extra', String(pessoa.id)).passa) throw new Recusa('Muitas tentativas. Tente daqui a pouco.', 429)
+    return google.definirSenha(banco, pessoa.id, dado)
+  },
+  'POST /api/google/desligar': (req) => google.desligar(banco, exigirEntrada(req).id),
+
   'GET /api/minha-conta': (req) => {
     const pessoa = exigirEntrada(req)
     const p = planos.planoDe(banco, pessoa)
@@ -976,6 +1011,39 @@ const servidor = createServer(async (req, res) => {
   try { caminho = decodeURIComponent(new URL(req.url, 'http://x').pathname) }
   catch { res.writeHead(400); return res.end() }
 
+  // ── entrar com o Google: são redirecionamentos, não JSON (servidor/google.mjs) ──
+  if ((caminho === '/api/google/entrar' || caminho === '/api/google/volta') && req.method === 'GET') {
+    const busca = new URL(req.url, 'http://x').searchParams
+    const nomeG = SEGURO ? '__Host-fio-g' : 'fio-g'
+    const cookieG = (valor, idade) => `${nomeG}=${valor}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${idade}${SEGURO ? '; Secure' : ''}`
+    const para = (location, cookies) => { res.writeHead(302, { location, 'cache-control': 'no-store', ...(cookies ? { 'set-cookie': cookies } : {}) }); res.end() }
+    const erro = (e, padrao) => `/entrar-google.html?erro=${encodeURIComponent(e instanceof Recusa ? e.message : padrao)}`
+    if (caminho === '/api/google/entrar') {
+      try {
+        const atual = contas.deQuemE(banco, lerCookie(req))
+        const modo = busca.get('modo') === 'vincular' ? 'vincular' : 'entrar'
+        if (modo === 'vincular' && !atual) throw new Recusa('Entre na sua conta antes de ligar o Google.', 401)
+        const { url, navegador } = google.comecar(banco, {
+          modo, volta: busca.get('volta'), leitorId: atual?.id ?? null, ip: ipDe(req),
+          redirectUri: google.enderecoDeVolta(req.headers.host, SITE),
+        })
+        return para(url, [cookieG(navegador, 600)])
+      } catch (e) { return para(erro(e, 'Não deu para falar com o Google agora.')) }
+    }
+    try {
+      if (busca.get('error')) throw new Recusa(busca.get('error') === 'access_denied' ? 'Você cancelou a entrada pelo Google.' : 'O Google recusou a entrada.')
+      const navegador = (req.headers.cookie ?? '').split(';').map((x) => x.trim()).find((x) => x.startsWith(`${nomeG}=`))?.slice(nomeG.length + 1)
+      const volta = await google.receber({ code: busca.get('code'), state: busca.get('state'), navegador })
+      const atual = contas.deQuemE(banco, lerCookie(req))
+      // vincular só vale se quem voltou é a MESMA conta que começou
+      const leitorId = volta.modo === 'vincular' && atual?.id === volta.leitorId ? atual.id : null
+      const r = await google.resolver(banco, { perfil: volta.perfil, modo: volta.modo, leitorId }, { ip: ipDe(req), agente: req.headers['user-agent'] })
+      const cookies = [cookieG('', 0)]
+      if (r.sessao) cookies.push([`${NOME}=${r.sessao.token}`, 'Path=/', 'HttpOnly', 'SameSite=Lax', `Max-Age=${r.sessao.dias * 24 * 3600}`, ...(SEGURO ? ['Secure'] : [])].join('; '))
+      return para(r.vinculou ? '/conta.html#seguranca' : r.novo ? '/central.html' : volta.volta, cookies)
+    } catch (e) { return para(erro(e, 'Não deu para entrar com o Google agora.'), [cookieG('', 0)]) }
+  }
+
   // ── "abri este livro": conta anônima, e por isso fica fora do mapa ──
   const abrindo = caminho.match(/^\/api\/abri\/(\d+)$/)
   if (abrindo && req.method === 'POST') {
@@ -1166,7 +1234,7 @@ const servidor = createServer(async (req, res) => {
     // série. A imagem das outras pede conta (a página do leitor explica).
     // (as pastas são "01", "ep02", "vol03"…; a capa de cada volume é sempre livre)
     const quadro = caminho.match(/^\/quadrinhos\/[^/]+\/[a-z]*(\d+)\/([^/]+)$/)
-    if (quadro && Number(quadro[1]) > 1 && !/^capa\./.test(quadro[2]) && acesso.amostraLigada(banco) && !contas.deQuemE(banco, lerCookie(req))) {
+    if (quadro && Number(quadro[1]) > 1 && !/^capa\./.test(quadro[2]) && !capasDeQuadrinho().has(caminho) && acesso.amostraLigada(banco) && !contas.deQuemE(banco, lerCookie(req))) {
       res.writeHead(401, { 'content-type': 'text/plain; charset=utf-8', 'cache-control': 'no-store' })
       return res.end('crie uma conta para continuar')
     }

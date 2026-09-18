@@ -41,6 +41,8 @@ const DE_GENTE = [
   // 17/09 (tarde): acesso, esteira, correções, curadoria e as ideias novas.
   'livro_liberado', 'pedido_traducao', 'esteira_pulso', 'correcao', 'revisao_comunitaria',
   'curadoria_obra', 'curadoria_serie', 'meta_leitura', 'quadrinho_progresso', 'publicacao_seguidor',
+  // 18/09: entrar com o Google
+  'leitor_google',
 ]
 
 const entrada = process.argv[2]

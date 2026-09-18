@@ -24,6 +24,7 @@ async function iniciar() {
       el('a', { class: 'botao', href: '/#/entrar' }, 'Entrar ou criar conta'))
     return
   }
+  window.fioDono?.conferir(pessoa.id)
   try { conta = await pedir('/minha-conta') } catch (e) { por(main, recado('ruim', e.message)); return }
   desenhar()
   addEventListener('hashchange', desenhar)
@@ -53,8 +54,8 @@ function desenhar() {
 }
 
 async function sair() {
-  try { sessionStorage.removeItem('fio:barra') } catch {}
   try { await pedir('/sair', {}) } catch {}
+  window.fioDono?.saiu() // estante, marcações e progresso não ficam para a próxima conta
   location.href = '/#/'
 }
 
@@ -166,8 +167,42 @@ function seguranca(alvo) {
       el('div', {}, el('button', { class: 'botao fraco' }, 'Trocar perguntas')), saidaPerg))
   }).catch((e) => aviso(areaPerg, 'ruim', e.message))
 
-  por(alvo,
-    el('section', { class: 'caixa' },
+  // Entrar com o Google (servidor/google.mjs). Conta criada pelo Google não
+  // sabe a própria senha: em vez de "trocar", ela DEFINE a primeira.
+  const caixaGoogle = el('section', { class: 'caixa' }, el('h2', {}, 'Entrar com o Google'), el('p', { class: 'aut' }, 'carregando…'))
+  const caixaSenha = el('section', { class: 'caixa' })
+  const saidaGoogle = el('div')
+  pedir('/google').then((g) => {
+    if (!g.disponivel) { caixaGoogle.remove(); return }
+    por(caixaGoogle, el('h2', {}, 'Entrar com o Google'),
+      g.ligado
+        ? el('p', { class: 'ajuda' }, `Ligada à conta do Google ${g.email ?? ''} desde ${dataBr(g.desde)}. Você entra com um clique em qualquer aparelho.`)
+        : el('p', { class: 'ajuda' }, 'Ligue sua conta do Google para entrar com um clique, sem digitar senha. O Fio recebe só seu nome e e-mail.'),
+      g.ligado
+        ? el('button', { class: 'botao fraco', type: 'button', onclick: async () => {
+            if (!confirm('Desligar o Google desta conta? Você passa a entrar só com usuário e senha.')) return
+            try { await pedir('/google/desligar', {}); aviso(saidaGoogle, 'bom', 'Google desligado.'); setTimeout(desenhar, 800) } catch (e) { aviso(saidaGoogle, 'ruim', e.message) }
+          } }, 'Desligar o Google')
+        : el('a', { class: 'botao', href: '/api/google/entrar?modo=vincular' }, 'Ligar minha conta do Google'),
+      saidaGoogle)
+    if (g.semSenha) {
+      const n1 = el('input', { type: 'password', autocomplete: 'new-password', minlength: '10' })
+      const n2 = el('input', { type: 'password', autocomplete: 'new-password' })
+      const saida = el('div')
+      por(caixaSenha, el('h2', {}, 'Criar uma senha'),
+        el('p', { class: 'ajuda' }, 'Sua conta nasceu pelo Google e ainda não tem senha. Crie uma para poder entrar também com usuário e senha (e para poder desligar o Google).'),
+        el('form', { class: 'form', onsubmit: async (ev) => {
+          ev.preventDefault()
+          if (n1.value !== n2.value) return aviso(saida, 'ruim', 'As duas senhas não são iguais.')
+          try { await pedir('/google/senha', { nova: n1.value }); n1.value = n2.value = ''; aviso(saida, 'bom', 'Senha criada.'); setTimeout(desenhar, 900) } catch (e) { aviso(saida, 'ruim', e.message) }
+        } },
+        el('label', {}, el('span', {}, 'Senha nova'), n1),
+        el('label', {}, el('span', {}, 'Repita a senha'), n2),
+        el('div', {}, el('button', { class: 'botao' }, 'Criar senha')), saida))
+    }
+  }).catch(() => caixaGoogle.remove())
+
+  por(caixaSenha,
       el('h2', {}, 'Trocar a senha'),
       el('p', { class: 'ajuda' }, 'Ao trocar, todos os outros aparelhos saem da conta. Este continua entrado.'),
       el('form', { class: 'form', onsubmit: async (ev) => {
@@ -179,7 +214,10 @@ function seguranca(alvo) {
       el('label', {}, el('span', {}, 'Senha atual'), atual),
       el('label', {}, el('span', {}, 'Senha nova'), nova, el('div', { class: 'medidor' }, medidor), dica),
       el('label', {}, el('span', {}, 'Repita a senha nova'), repete),
-      el('div', {}, el('button', { class: 'botao' }, 'Trocar senha')), saidaSenha)),
+      el('div', {}, el('button', { class: 'botao' }, 'Trocar senha')), saidaSenha))
+  por(alvo,
+    caixaGoogle,
+    caixaSenha,
     el('section', { class: 'caixa' },
       el('h2', {}, 'Perguntas de recuperação'),
       el('p', { class: 'ajuda' }, 'É com elas que você recupera a conta se esquecer a senha — o Fio não usa e-mail para isso. Escolha respostas que só você sabe.'),
@@ -233,7 +271,7 @@ function dados(alvo) {
       el('p', { class: 'ajuda' }, 'Apaga no servidor o progresso, as marcações e a estante sincronizados. A conta continua. Neste aparelho, apague também pelo caderno do app.'),
       el('button', { class: 'botao fraco', type: 'button', onclick: async () => {
         if (!confirm('Apagar progresso, marcações e estante guardados no servidor?')) return
-        try { await pedir('/apagar-dados', {}); aviso(saida, 'bom', 'Apagado no servidor.') } catch (x) { aviso(saida, 'ruim', x.message) }
+        try { await pedir('/apagar-dados', {}); window.fioDono?.saiu(); window.fioDono?.conferir(conta.conta.id); aviso(saida, 'bom', 'Apagado no servidor e neste navegador.') } catch (x) { aviso(saida, 'ruim', x.message) }
       } }, 'Apagar dados guardados')),
     el('section', { class: 'caixa perigo' },
       el('h2', {}, 'Apagar a conta'),
@@ -243,7 +281,7 @@ function dados(alvo) {
         el('div', {}, el('button', { class: 'botao', type: 'button', onclick: async () => {
           if (confirma.value.trim().toLowerCase() !== conta.conta.usuario.toLowerCase()) return aviso(saida, 'ruim', 'Digite o seu nome de usuário exatamente.')
           if (!confirm('Última chance: apagar a conta para sempre?')) return
-          try { await pedir('/apagar-conta', { usuario: confirma.value.trim() }); location.href = '/#/' } catch (x) { aviso(saida, 'ruim', x.message) }
+          try { await pedir('/apagar-conta', { usuario: confirma.value.trim() }); window.fioDono?.saiu(); location.href = '/#/' } catch (x) { aviso(saida, 'ruim', x.message) }
         } }, 'Apagar minha conta')))),
     saida)
 }

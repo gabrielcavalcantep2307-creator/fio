@@ -33,6 +33,7 @@ let pendenteConta = null, relogioConta = null
 async function puxarDaConta() {
   const r = await fetch('/api/quadrinhos/progresso', { credentials: 'same-origin' }).then((x) => (x.ok ? x.json() : null)).catch(() => null)
   if (!r?.series) return false
+  window.fioDono?.conferir(r.dono) // dados de outra conta saem antes de misturar
   const todos = ler('fio:quadrinhos', {})
   for (const s of r.series) {
     const local = todos[s.serie]
@@ -125,6 +126,8 @@ async function iniciar() {
   addEventListener('scroll', aoRolar, { passive: true })
 
   desenhar()
+  // começando o volume do início: a página de créditos, como nos sites de scan
+  if (!params.get('p')) mostrarCreditos(s, c)
   if (estado.sentido === 'rtl' && !ler('fio:quadrinhos:vi-dica-rtl', false)) {
     dica('Mangá: lê-se da direita para a esquerda ←'); guardar('fio:quadrinhos:vi-dica-rtl', true)
   }
@@ -418,3 +421,56 @@ function dica(texto) {
 }
 
 iniciar().catch((e) => { document.body.textContent = `Não consegui abrir: ${e.message}` })
+
+// ─────────────────────────────────────────────────────────────
+// A página de créditos (18/09)
+//
+// Todo site de quadrinhos traduzidos abre o capítulo com uma página dizendo
+// de onde a obra veio e quem traduziu. Aqui ela diz a verdade inteira: autor,
+// quando foi publicada, por que é livre, de onde veio a digitalização e como
+// foi traduzida. Aparece ao abrir um volume do começo; qualquer toque, tecla
+// ou o botão fecha.
+// ─────────────────────────────────────────────────────────────
+function mostrarCreditos(s, c) {
+  const n = (tag, estilo, texto) => { const e = document.createElement(tag); if (estilo) e.setAttribute('style', estilo); if (texto != null) e.textContent = texto; return e }
+  const fundo = n('div', 'position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;padding:20px;background:radial-gradient(circle at 50% 30%,#2a1f1c 0,#0c0a09 70%);color:#eee;font:15px/1.55 Inter,system-ui,sans-serif;text-align:center;overflow:auto')
+  fundo.setAttribute('role', 'dialog'); fundo.setAttribute('aria-label', 'Créditos deste volume')
+  const caixa = n('div', 'max-width:460px;width:100%')
+  const selo = n('div', 'display:inline-block;letter-spacing:.3em;font-size:11px;color:#c96a5c;border:1px solid #c96a5c55;border-radius:999px;padding:4px 12px;margin-bottom:18px', 'FIO APRESENTA')
+  const titulo = n('h1', 'font:600 30px/1.15 Literata,Georgia,serif;margin:0 0 6px', s.titulo)
+  const vol = n('div', 'color:#c9b8a8;margin-bottom:22px', c.titulo)
+  const linha = (rot, valor, link) => {
+    if (!valor) return null
+    const d = n('div', 'display:grid;grid-template-columns:120px 1fr;gap:10px;text-align:left;padding:9px 0;border-top:1px solid #ffffff14')
+    const v = n('div', 'color:#eee')
+    if (link && /^https:\/\//.test(link)) { const a = n('a', 'color:#e3a497', valor); a.href = link; a.target = '_blank'; a.rel = 'noopener noreferrer'; v.append(a) } else v.textContent = valor
+    d.append(n('div', 'color:#9d8f84;font-size:13px', rot), v)
+    return d
+  }
+  const traduzido = estado.traducao && c.paginas.some((p) => estado.traducao.paginas?.[p]?.blocos?.length)
+  const motor = estado.traducao?.motor ? ` (${estado.traducao.motor})` : ''
+  const lista = [
+    linha('Obra', `${s.autor}${s.ano ? ` · ${s.ano}` : ''}`),
+    linha('Por que é livre', s.licenca?.nome, s.licenca?.url),
+    linha('Crédito', s.licenca?.credito),
+    linha('Digitalização', c.fonte ? new URL(c.fonte).hostname.replace(/^www\./, '') : null, c.fonte),
+    linha('Tradução', traduzido
+      ? `Fio — os balões foram lidos por OCR e traduzidos automaticamente${motor}. Pode ter erro: use PT/original (tecla T) para comparar.`
+      : s.traducao ? `A tradução dos balões deste volume ainda está a caminho. Por enquanto, no original (${String(s.idioma ?? '').split(',')[0].toLowerCase() || 'língua original'}).`
+        : s.idioma ? `No original: ${s.idioma}.` : null),
+    linha('Sentido', s.sentido === 'rtl' ? 'Mangá — lê-se da direita para a esquerda ←' : 'Lê-se da esquerda para a direita →'),
+  ].filter(Boolean)
+  const lista_ = n('div', 'margin:0 auto 24px')
+  lista_.append(...lista)
+  const ir = n('button', 'background:#c96a5c;color:#fff;border:0;border-radius:10px;padding:12px 26px;font:600 15px Inter,system-ui,sans-serif;cursor:pointer', 'Começar a ler →')
+  const rodape = n('div', 'margin-top:18px;font-size:12px;color:#7d7069', 'Obra livre, servida sem anúncio. Obrigado por ler no Fio.')
+  caixa.append(selo, titulo, vol, lista_, ir, rodape)
+  fundo.append(caixa)
+  const fechar = () => { fundo.remove(); removeEventListener('keydown', tecla, true) }
+  const tecla = (e) => { e.stopPropagation(); e.preventDefault(); fechar() }
+  ir.addEventListener('click', fechar)
+  fundo.addEventListener('click', (e) => { if (e.target === fundo) fechar() })
+  addEventListener('keydown', tecla, true)
+  document.body.append(fundo)
+  ir.focus()
+}

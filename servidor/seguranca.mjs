@@ -110,6 +110,8 @@ export const LIMITES = {
   // Cinco era pouco — dois enganos e a pessoa ficava trancada uma hora com um
   // convite VÁLIDO na mão. Doze, e acerto zera o contador.
   'criar': { quantas: 12, minutos: 60 },
+  // começar a entrar com o Google: cada clique guarda um pedido na memória
+  'google': { quantas: 30, minutos: 15 },
   // Trocar a senha sabendo a antiga seria um jeito de chutar a senha atual
   // sem passar pelo freio de "entrar". Fecha essa porta.
   'senha': { quantas: 6, minutos: 60 },

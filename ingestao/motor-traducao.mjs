@@ -29,14 +29,98 @@
 // Conferido contra uma chamada real em 09/09/2026: responde
 // {"translation": "...", "model": "nllb200-600M"}. O modelo é o NLLB-200 da
 // Meta, de 600 milhões de parâmetros, servido pela Wikimedia sem chave.
+import { readFileSync } from 'node:fs'
+
 const SERVICO = 'https://translate.wmcloud.org/api/translate'
+
+// ─────────────────────────────────────────────────────────────
+// DeepL (18/09/2026): melhor e mais rápido, mas com cota
+//
+// A conta grátis do dono dá 1 milhão de caracteres por mês. Um romance tem de
+// 400 mil a 1 milhão. Então a escolha é POR LIVRO, antes de começar: se o livro
+// inteiro cabe no saldo do mês, guardando uma reserva para os balões dos
+// quadrinhos (DEEPL_RESERVA, 200 mil por padrão), vai todo pelo DeepL; senão,
+// todo pelo MinT. Livro com dois estilos misturados é pior que qualquer um dos
+// dois. Livro já começado continua no motor em que começou (o caderno é do MinT).
+//
+// A chave mora em DEEPL_CHAVE (variável de ambiente ou `.env` na raiz, que o
+// git ignora). Sem chave, tudo segue como sempre foi: MinT.
+// ─────────────────────────────────────────────────────────────
+
+let motorAtual = 'mint'
+
+function chaveDeepL() {
+  if (process.env.DEEPL_CHAVE) return process.env.DEEPL_CHAVE.trim()
+  try {
+    const env = readFileSync(new URL('../.env', import.meta.url), 'utf8')
+    return env.match(/^DEEPL_CHAVE=(.+)$/m)?.[1].trim() || null
+  } catch { return null }
+}
+const baseDeepL = (k) => (k.endsWith(':fx') ? 'https://api-free.deepl.com' : 'https://api.deepl.com')
+// línguas de origem que o DeepL aceita (o resto fica com o MinT)
+const DEEPL_ORIGENS = new Set(['bg', 'cs', 'da', 'de', 'el', 'en', 'es', 'et', 'fi', 'fr', 'hu', 'id', 'it', 'ja', 'ko', 'lt', 'lv', 'nb', 'nl', 'pl', 'ro', 'ru', 'sk', 'sl', 'sv', 'tr', 'uk', 'zh'])
+
+/** Quanto do mês já foi. `null` sem chave ou sem resposta. */
+export async function saldoDeepL() {
+  const k = chaveDeepL()
+  if (!k) return null
+  try {
+    const r = await fetch(`${baseDeepL(k)}/v2/usage`, { headers: { Authorization: `DeepL-Auth-Key ${k}` }, signal: AbortSignal.timeout(15_000) })
+    if (!r.ok) return null
+    const u = await r.json()
+    return { usado: u.character_count, limite: u.character_limit, sobra: u.character_limit - u.character_count }
+  } catch { return null }
+}
+
+/**
+ * Decide o motor deste livro. `caracteres` é o tamanho do que vai ser
+ * traduzido; `jaComecado`, se o caderno já tem trechos de antes.
+ */
+export async function escolherMotor({ caracteres, de, jaComecado }) {
+  motorAtual = 'mint'
+  if (jaComecado) return { motor: 'mint', porque: 'livro já começado no MinT' }
+  if (!DEEPL_ORIGENS.has(de)) return { motor: 'mint', porque: `o DeepL não traduz do ${de}` }
+  const saldo = await saldoDeepL()
+  if (!saldo) return { motor: 'mint', porque: 'sem chave do DeepL (ou ele não respondeu)' }
+  const reserva = Number(process.env.DEEPL_RESERVA ?? 200_000)
+  const precisa = Math.ceil(caracteres * 1.05)
+  if (saldo.sobra - reserva < precisa) {
+    return { motor: 'mint', porque: `não cabe no mês do DeepL (precisa ${precisa.toLocaleString('pt-BR')}, sobram ${Math.max(0, saldo.sobra - reserva).toLocaleString('pt-BR')} fora a reserva)` }
+  }
+  motorAtual = 'deepl'
+  return { motor: 'deepl', porque: `cabe no mês (${precisa.toLocaleString('pt-BR')} de ${saldo.sobra.toLocaleString('pt-BR')})` }
+}
+
+/** Um trecho pelo DeepL, em português do Brasil. */
+export async function traduzirDeepL(texto, de, { contexto } = {}) {
+  const k = chaveDeepL()
+  if (!k) throw new Error('DEEPL_CHAVE ausente')
+  const corpo = { text: Array.isArray(texto) ? texto : [texto], target_lang: 'PT-BR' }
+  if (de && DEEPL_ORIGENS.has(de)) corpo.source_lang = de.toUpperCase()
+  if (contexto) corpo.context = contexto
+  const r = await fetch(`${baseDeepL(k)}/v2/translate`, {
+    method: 'POST',
+    headers: { Authorization: `DeepL-Auth-Key ${k}`, 'content-type': 'application/json' },
+    body: JSON.stringify(corpo),
+    signal: AbortSignal.timeout(60_000),
+  })
+  // 456 = cota do mês acabou; 429 = devagar. As duas voltam como erro para
+  // quem chamou decidir (a esteira tenta de novo; o livro não troca de motor).
+  if (!r.ok) throw new Error(`DeepL devolveu ${r.status}`)
+  const j = await r.json()
+  const saida = (j.translations ?? []).map((t) => t.text)
+  if (saida.length !== corpo.text.length || saida.some((t) => typeof t !== 'string')) throw new Error('DeepL devolveu resposta fora do formato')
+  return Array.isArray(texto) ? saida : saida[0]
+}
 
 /**
  * Não há chave para faltar, então não há por que ele não rodar. Esta função
  * existe para o resto da ingestão poder perguntar sem saber de MinT nenhum —
  * no dia em que o motor virar um que cobra, é aqui que a resposta muda.
  */
-export const motorDisponivel = () => ({ nome: 'MinT (Wikimedia)', custo: 0, instruivel: false })
+export const motorDisponivel = () => (motorAtual === 'deepl'
+  ? { nome: 'DeepL', custo: 0, instruivel: false }
+  : { nome: 'MinT (Wikimedia)', custo: 0, instruivel: false })
 
 /** `null` quer dizer "roda". Qualquer texto aqui é o que impede. */
 export const porQueNaoRoda = () => null
@@ -254,6 +338,12 @@ export async function traduzir(bruto, { de = 'en', para = 'pt', glossario = {} }
   // toa. O que ainda vale é o glossário e a norma brasileira, que são nossos
   // e não dependem de tradutor nenhum.
   if (de === para) return refazer(abrasileirar(aplicarGlossario(entrada, glossario)))
+
+  if (motorAtual === 'deepl') {
+    const t = await traduzirDeepL(entrada, de)
+    if (!t.trim()) throw new Error('DeepL devolveu resposta vazia')
+    return refazer(abrasileirar(aplicarGlossario(t, glossario)))
+  }
 
   const r = await fetch(`${SERVICO}/${de}/${para}`, {
     method: 'POST',

@@ -27,6 +27,7 @@ const main = document.getElementById('main')
 const progressoDaConta = fetch('/api/quadrinhos/progresso', { credentials: 'same-origin' })
   .then((r) => (r.ok ? r.json() : null)).then((r) => {
     if (!r?.series) return
+    window.fioDono?.conferir(r.dono) // dados de outra conta saem antes de misturar
     const todos = lerProgresso()
     for (const s of r.series) if (!todos[s.serie] || (todos[s.serie].em ?? 0) < s.em) todos[s.serie] = { cap: s.cap, pag: s.pag, lidos: s.lidos, em: s.em }
     try { localStorage.setItem('fio:quadrinhos', JSON.stringify(todos)) } catch {}
@@ -270,6 +271,59 @@ function ondeParou(s) {
   return cap ? { cap, pagina: p.pag } : null
 }
 
+// ── a vitrine (18/09) ──
+const hojeDia = Math.floor(Date.now() / 86_400_000)
+const haQuanto = (ms) => {
+  const d = Math.floor((Date.now() - ms) / 86_400_000)
+  return d <= 0 ? 'hoje' : d === 1 ? 'ontem' : d < 30 ? `há ${d} dias` : d < 365 ? `há ${Math.floor(d / 30)} ${d < 60 ? 'mês' : 'meses'}` : 'há mais de um ano'
+}
+const linkSerie = (id) => `/quadrinhos.html?aba=aqui&serie=${encodeURIComponent(id)}`
+
+/** A série em destaque: a que a curadoria marcou, senão uma diferente a cada dia. */
+function destaqueDoDia(series) {
+  const marcadas = series.filter((s) => s.destaque)
+  const escolha = (marcadas.length ? marcadas : series)[hojeDia % (marcadas.length || series.length)]
+  if (!escolha) return null
+  const fundo = el('div', { class: 'fundo' })
+  fundo.style.backgroundImage = `url("${String(escolha.capa).replace(/["\\]/g, '')}")`
+  return el('a', { class: 'destaque', href: linkSerie(escolha.id) },
+    fundo,
+    el('img', { src: escolha.capa, alt: `Capa de ${escolha.titulo}` }),
+    el('div', {},
+      el('div', { class: 'tag' }, marcadas.length ? 'DESTAQUE DA CURADORIA' : 'DESTAQUE DE HOJE'),
+      el('h2', {}, escolha.titulo),
+      el('div', { style: 'color:#c9b8a8;font-size:13.5px;margin-bottom:10px' }, `${escolha.autor} · ${escolha.ano}`),
+      el('p', {}, escolha.resumo),
+      el('span', { class: 'botao' }, 'Ler agora')))
+}
+
+function faixaNovidades(v) {
+  if (!v?.novidades?.length || !catalogo) return null
+  const cards = v.novidades.map((n) => {
+    const s = catalogo.series.find((x) => x.id === n.serie)
+    const c = s?.capitulos.find((x) => x.n === n.cap)
+    if (!s || !c) return null
+    return el('a', { class: 'novo', href: `/quadrinho.html?serie=${encodeURIComponent(s.id)}&cap=${c.n}` },
+      el('img', { src: c.capa, alt: '', loading: 'lazy', onerror: (e) => { e.target.style.visibility = 'hidden' } }),
+      Date.now() - n.em < 7 * 86_400_000 ? el('span', { class: 'marca' }, 'NOVO') : null,
+      el('div', { class: 't' }, s.titulo),
+      el('div', { class: 'q' }, `${c.titulo} · ${haQuanto(n.em)}`))
+  }).filter(Boolean)
+  return cards.length ? el('section', { class: 'faixa' },
+    el('div', { class: 'faixa-topo' }, el('h2', {}, 'Novidades no Fio'), el('span', {}, 'os volumes que chegaram por último')),
+    el('div', { class: 'rolo' }, cards)) : null
+}
+
+function faixaRanking(v) {
+  const r = (v?.ranking ?? []).map((x) => ({ ...x, s: catalogo?.series.find((s) => s.id === x.serie) })).filter((x) => x.s)
+  if (r.length < 3) return null // ranking de duas séries não é ranking
+  return el('section', { class: 'faixa' },
+    el('div', { class: 'faixa-topo' }, el('h2', {}, 'Mais lidos'), el('span', {}, 'pelas contas que estão lendo')),
+    el('div', { class: 'ranking' }, r.map((x) => el('a', { href: linkSerie(x.s.id) },
+      el('img', { src: x.s.capa, alt: '', loading: 'lazy' }),
+      el('div', {}, el('b', {}, x.s.titulo), el('small', {}, `${x.leitores} ${x.leitores === 1 ? 'leitor' : 'leitores'} · ${x.s.capitulos.length} ${x.s.formato === 'quadrinho' ? 'episódios' : 'volumes'}`))))))
+}
+
 async function mostrarAqui() {
   catalogo ??= await fetch('/dados/quadrinhos.json').then((r) => r.json())
   const serie = catalogo.series.find((x) => x.id === new URLSearchParams(location.search).get('serie'))
@@ -294,18 +348,25 @@ async function mostrarAqui() {
   const area = el('div', {})
   function desenharListaAqui() {
     const l = catalogo.series.filter(passa)
-    area.replaceChildren(l.length ? el('div', { class: 'series' }, l.map((s) => {
+    area.replaceChildren(l.length ? el('div', { class: 'grade' }, l.map((s) => {
       const parou = ondeParou(s)
-      return el('a', { class: 'serie', href: `/quadrinhos.html?aba=aqui&serie=${encodeURIComponent(s.id)}` },
-        el('img', { src: s.capa, alt: `Capa de ${s.titulo}`, loading: 'lazy' }),
-        el('div', {}, el('h2', {}, s.titulo), el('div', { class: 'aut' }, `${s.autor} · ${s.ano}`), selos(s),
-          el('p', { class: 'resumo' }, s.resumo), parou ? el('span', { class: 'continuar' }, `continuar: ${parou.cap.titulo} →`) : null))
+      return el('a', { class: 'capa-serie', href: `/quadrinhos.html?aba=aqui&serie=${encodeURIComponent(s.id)}`, title: s.resumo },
+        el('div', { class: 'img' },
+          el('img', { src: s.capa, alt: `Capa de ${s.titulo}`, loading: 'lazy', onerror: (e) => { e.target.style.visibility = 'hidden' } }),
+          el('span', { class: 'tipo' }, s.sentido === 'rtl' ? 'mangá' : s.formato),
+          el('span', { class: 'vols' }, `${s.capitulos.length} ${s.formato === 'quadrinho' ? 'ep.' : 'vol.'}${s.estilo === 'colorido' ? ' · cor' : ''}`),
+          parou ? el('span', { class: 'marca' }, 'lendo') : null),
+        el('div', { class: 't' }, s.titulo), el('div', { class: 'a' }, `${s.autor} · ${s.ano}`))
     })) : el('p', { class: 'estado-m' }, 'Nada com esses filtros.'))
   }
-  const continuar = await prateleiraContinuar()
+  const [continuar, vitrine] = await Promise.all([prateleiraContinuar(), fetch('/api/quadrinhos/vitrine').then((r) => (r.ok ? r.json() : null)).catch(() => null)])
   main.replaceChildren(...[
     cabecalho(),
+    destaqueDoDia(catalogo.series),
     continuar,
+    faixaNovidades(vitrine),
+    faixaRanking(vitrine),
+    el('div', { class: 'faixa-topo' }, el('h2', {}, 'Todas as séries')),
     el('p', { class: 'sub' }, `${catalogo.series.length} séries livres para ler aqui dentro, com leitor próprio: domínio público ou licença livre, sempre com crédito.`),
     el('div', { class: 'painel-filtros' },
       el('div', { class: 'linha-filtro' }, busca),

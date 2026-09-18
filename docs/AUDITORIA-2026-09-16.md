@@ -150,3 +150,17 @@ capítulo com páginas JPG/PNG/WebP, enviar, aprovar no painel, filtrar, ler).
 - O teto de fluxo é por IP: muita gente atrás do mesmo NAT (uma escola) divide os 300/min. Folgado para leitura; rever se aparecer 429 legítimo no log.
 - A revisão do dia fica no navegador (não sincroniza entre aparelhos) — escolha consciente para não guardar trecho marcado no servidor.
 - Quadrinhos do Internet Archive: 3 páginas de *Plish and Plum* (Busch) dão 404 lá; como só volume inteiro é publicado, ele ficou de fora (Busch saiu com Max und Moritz, Fipps e Julchen).
+
+## Adendo 5 — dados que passavam de uma conta para outra, Google, DeepL (18/09, tarde)
+
+101 testes (1 novo: Google — conta nova, nunca juntar pelo e-mail, vincular, senha, desligar, `state` de uso único e preso ao navegador).
+
+| # | Gravidade | Achado | Correção |
+|---|---|---|---|
+| 31 | **alta** (privacidade) | Sair da conta não limpava a estante, o progresso e as marcações guardados no navegador; a sincronia mandava tudo para a PRÓXIMA conta que entrasse. O dono saiu da conta A, criou a B, e a B nasceu com os livros lidos da A (no servidor). As duas contas de administração têm os mesmos 17 itens: aconteceu antes também. Mesmo defeito no progresso dos quadrinhos. | `/fio-dono.js` guarda de quem são os dados do navegador; conta diferente (ou dados de antes da correção, marcados "legado") → apaga antes da primeira sincronia. Sair apaga. Remendos no bundle (sincronia e `sair`), no leitor e na lista de quadrinhos (`/api/quadrinhos/progresso` diz o dono), na barra das páginas soltas, na página de conta e no painel. Testado com duas contas. |
+| 32 | média | "Apagar dados de leitura" na página de conta apagava no servidor, e a sincronia seguinte trazia tudo de volta do navegador. | Apaga os dois lados. |
+| 33 | média | A pasta `Sen Apis/` (chave do DeepL) estava dentro do repositório e fora do `.gitignore`. | Ignorada antes de qualquer commit; chave movida para `.env` (local e VPS, 600). |
+| 34 | baixa | "Onde encontrar" na ficha era `<a href="#onde">`: no app o `#` é a rota, e o clique ia para uma tela inexistente. | Rola até a lista, que ganhou `id`. |
+| 35 | baixa | Capas dos volumes 2+ dos quadrinhos davam 401 sem conta (só `capa.*` era livre), e a vitrine/lista mostrava quadrados vazios. | As imagens usadas como capa (série, volume, curadoria) são públicas; as páginas continuam fechadas (conferido no ar: capa 200, página 401). |
+
+**Entrar com o Google** (`servidor/google.mjs`): código de autorização com PKCE; `state` na memória do servidor, de uso único, preso a um cookie do navegador (contra login CSRF); id_token pelo canal de trás, conferidos emissor, público e validade. Nunca junta com conta existente pelo e-mail (o e-mail do Fio não é verificado: quem cadastrasse o e-mail de outra pessoa antes ficaria com a conta do Google dela). Vincular só com a pessoa entrada e a mesma conta na ida e na volta. Conta criada pelo Google nasce com senha sorteada e define a primeira pela página de conta; só desliga o Google depois de ter senha. Respeita o cadastro aberto/fechado. **Desligado** (`FIO_GOOGLE`) até os endereços de volta serem cadastrados no console do Google — conferido: hoje o Google responde `redirect_uri_mismatch`.

@@ -38,7 +38,7 @@ import { createHash } from 'node:crypto'
 import { mkdirSync, existsSync, readFileSync, writeFileSync, appendFileSync } from 'node:fs'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { traduzir, motorDisponivel } from './motor-traducao.mjs'
+import { traduzir, motorDisponivel, escolherMotor } from './motor-traducao.mjs'
 
 const RAIZ = join(dirname(fileURLToPath(import.meta.url)), '..')
 const PASTA = join(RAIZ, 'dados', 'traducoes')
@@ -424,9 +424,6 @@ async function principal() {
     process.exit(1)
   }
 
-  const motor = motorDisponivel()
-  console.log(`motor: ${motor.nome}, custo ${motor.custo}`)
-
   console.log(`baixando ${fonte}`)
   const bruto = await baixarFonte(fonte)
 
@@ -448,6 +445,10 @@ async function principal() {
 
   const caderno = abrirCaderno(nome)
   console.log(`caderno: ${caderno.feito.size} unidades já traduzidas de antes`)
+
+  const escolha = await escolherMotor({ caracteres: fila.reduce((n, u) => n + u.length, 0), de, jaComecado: caderno.feito.size > 0 })
+  const motor = motorDisponivel()
+  console.log(`motor: ${motor.nome} — ${escolha.porque}`)
 
   const comeco = Date.now()
   const traduzidas = await traduzirTudo(fila, { de, glossario: {} }, caderno, (feitas, total) => {

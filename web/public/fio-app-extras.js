@@ -174,7 +174,16 @@
     if (e && !e.dataset.montado) montarMeta(e)
     const c = document.getElementById('fio-extra-caderno')
     if (c && !c.dataset.montado) montarRevisao(c)
+    // "Continuar com o Google" na tela de entrar: só aparece se o servidor
+    // estiver com o Google ligado (servidor/google.mjs)
+    const g = document.getElementById('fio-google')
+    if (g && !g.dataset.visto) {
+      g.dataset.visto = '1'
+      googleLigado ??= fetch('/api/google/ligado').then((r) => (r.ok ? r.json() : null)).then((r) => !!r?.disponivel).catch(() => false)
+      googleLigado.then((sim) => { if (sim) g.style.display = '' })
+    }
   }
+  let googleLigado = null
   new MutationObserver(procurar).observe(document.body, { childList: true, subtree: true })
   addEventListener('hashchange', procurar)
   procurar()
