@@ -12,3 +12,4 @@ web/dist/
 /Sen Apis/
 *.chave
 .chave-*
+.env.*
