@@ -76,13 +76,14 @@ export async function saldoDeepL() {
  * Decide o motor deste livro. `caracteres` é o tamanho do que vai ser
  * traduzido; `jaComecado`, se o caderno já tem trechos de antes.
  */
-export async function escolherMotor({ caracteres, de, jaComecado }) {
+export async function escolherMotor({ caracteres, de, jaComecado, reserva: reservaPedida }) {
   motorAtual = 'mint'
   if (jaComecado) return { motor: 'mint', porque: 'livro já começado no MinT' }
   if (!DEEPL_ORIGENS.has(de)) return { motor: 'mint', porque: `o DeepL não traduz do ${de}` }
   const saldo = await saldoDeepL()
   if (!saldo) return { motor: 'mint', porque: 'sem chave do DeepL (ou ele não respondeu)' }
-  const reserva = Number(process.env.DEEPL_RESERVA ?? 200_000)
+  // os balões dos quadrinhos passam reserva 0: a reserva existe para eles
+  const reserva = reservaPedida ?? Number(process.env.DEEPL_RESERVA ?? 200_000)
   const precisa = Math.ceil(caracteres * 1.05)
   if (saldo.sobra - reserva < precisa) {
     return { motor: 'mint', porque: `não cabe no mês do DeepL (precisa ${precisa.toLocaleString('pt-BR')}, sobram ${Math.max(0, saldo.sobra - reserva).toLocaleString('pt-BR')} fora a reserva)` }
