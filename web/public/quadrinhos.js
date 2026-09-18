@@ -70,6 +70,8 @@ const GENEROS = [['', 'Todos os gêneros'], ['Action', 'Ação'], ['Adventure', 
 const filtros = {
   q: url.get('q') ?? '', tipo: url.get('tipo') ?? 'todos', cor: url.get('cor') ?? 'todos', genero: url.get('genero') ?? '',
   status: url.get('status') ?? 'todos', ordem: url.get('ordem') ?? 'populares', pt: url.get('pt') === '1',
+  // o padrão é de 2010 para cá, os mais populares primeiro (pedido do dono, 18/09)
+  desde: url.get('desde') ?? '2010',
 }
 let resultados = [], proxima = 1, carregando = false, pedidoAtual = 0
 
@@ -176,6 +178,7 @@ function montarDescobrir() {
       el('span', { class: 'rot' }, 'Mais'),
       seletor('genero', GENEROS),
       seletor('status', [['todos', 'Qualquer status'], ['lancando', 'Em lançamento'], ['finalizado', 'Finalizado'], ['hiato', 'Em hiato']]),
+      seletor('desde', [['2010', 'De 2010 para cá'], ['2015', 'De 2015 para cá'], ['2020', 'De 2020 para cá'], ['todas', 'Todas as épocas']]),
       seletor('ordem', [['populares', 'Mais populares'], ['alta', 'Em alta agora'], ['nota', 'Mais bem avaliados'], ['novos', 'Mais novos']]),
       el('label', { class: 'chave' },
         el('input', { type: 'checkbox', ...(filtros.pt ? { checked: '' } : {}), onchange: (e) => { filtros.pt = e.target.checked; buscar(true) } }),

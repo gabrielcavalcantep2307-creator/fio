@@ -31,6 +31,8 @@ export const ORDENS = {
   populares: ['POPULARITY_DESC'], alta: ['TRENDING_DESC', 'POPULARITY_DESC'],
   nota: ['SCORE_DESC'], novos: ['START_DATE_DESC'],
 }
+// Época: o dono quer o que saiu de 2010 para cá (18/09), e esse é o padrão.
+export const EPOCAS = { 2010: 20100000, 2015: 20150000, 2020: 20200000, todas: null }
 export const STATUS = { todos: null, lancando: 'RELEASING', finalizado: 'FINISHED', hiato: 'HIATUS' }
 export const GENEROS = {
   Action: 'Ação', Adventure: 'Aventura', Comedy: 'Comédia', Drama: 'Drama', Fantasy: 'Fantasia',
@@ -68,6 +70,7 @@ const CAMPOS = `id title{romaji english native} format countryOfOrigin status st
 const ARGUMENTOS = {
   sort: ['[MediaSort]', 'sort'], country: ['CountryCode', 'countryOfOrigin'], genre: ['[String]', 'genre_in'],
   tagIn: ['[String]', 'tag_in'], tagNotIn: ['[String]', 'tag_not_in'], status: ['MediaStatus', 'status'], search: ['String', 'search'],
+  desde: ['FuzzyDateInt', 'startDate_greater'],
 }
 function consultaDaLista(variaveis) {
   const usadas = Object.entries(variaveis).filter(([k, v]) => ARGUMENTOS[k] && v != null)
@@ -187,6 +190,7 @@ export function filtros(busca) {
   const q = pega('q').replace(/[^\p{L}\p{N}\s:'!?.,&-]/gu, '').slice(0, 60)
   const pagina = Math.min(200, Math.max(1, Number.parseInt(pega('pagina'), 10) || 1))
   const pt = pega('pt') === '1'
+  const epoca = Object.hasOwn(EPOCAS, pega('desde')) ? pega('desde') : '2010'
   return {
     pt, pagina,
     variaveis: {
@@ -197,6 +201,8 @@ export function filtros(busca) {
       tagNotIn: cor === 'pb' ? ['Full Color'] : null,
       status: STATUS[status],
       search: q || null,
+      // quem busca pelo nome acha em qualquer época
+      desde: q ? null : EPOCAS[epoca],
     },
   }
 }
