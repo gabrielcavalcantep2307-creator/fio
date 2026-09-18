@@ -13,3 +13,4 @@ web/dist/
 *.chave
 .chave-*
 .env.*
+!.env.exemplo
