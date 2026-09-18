@@ -42,6 +42,9 @@ services:
       FIO_HOSTS_GOOGLE: ${FIO_HOSTS_GOOGLE:-fio.142-93-57-2.sslip.io}
       # 'ligado' depois de cadastrar os endereços de volta no console do Google
       FIO_GOOGLE: ${FIO_GOOGLE:-}
+      # Gmail(s) do dono: entram direto na conta FIO_GOOGLE_DONO_CONTA (curador)
+      FIO_GOOGLE_DONO: ${FIO_GOOGLE_DONO:-}
+      FIO_GOOGLE_DONO_CONTA: ${FIO_GOOGLE_DONO_CONTA:-curador}
     volumes:
       # O banco: catálogo, contas e sessões. É o único estado que importa.
       - dados:/dados

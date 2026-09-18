@@ -29,7 +29,8 @@
 // ─────────────────────────────────────────────────────────────
 
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs'
-import { join, dirname } from 'node:path'
+import { join, dirname, resolve } from 'node:path'
+import { tmpdir } from 'node:os'
 import { fileURLToPath } from 'node:url'
 import { execFileSync } from 'node:child_process'
 import { traduzir, escolherMotor, motorDisponivel } from './motor-traducao.mjs'
@@ -122,8 +123,16 @@ function dimensoes(bytes) {
 async function ocrSpace(arquivo) {
   const chave = chaveOcrSpace()
   if (!chave) throw new Error('sem chave do OCR.space (OCRSPACE_CHAVE no .env) — a grátis sai em https://ocr.space/ocrapi/freekey')
-  const bytes = readFileSync(arquivo)
-  if (bytes.length > 1024 * 1024) throw new Error(`imagem de ${Math.round(bytes.length / 1024)} KB: a chave grátis aceita até 1 MB`)
+  let bytes = readFileSync(arquivo)
+  // acima de 1 MB (o teto da chave grátis): o mesmo JPEG, mesmo tamanho em
+  // pixels, com qualidade menor — as posições dos balões não mudam
+  if (bytes.length > 1024 * 1024) {
+    const menor = join(tmpdir(), `fio-ocr-${process.pid}.jpg`)
+    execFileSync('powershell', ['-NoProfile', '-Command',
+      `Add-Type -AssemblyName System.Drawing; $i=[System.Drawing.Image]::FromFile('${resolve(arquivo).replace(/'/g, "''")}'); $c=[System.Drawing.Imaging.ImageCodecInfo]::GetImageEncoders()|?{$_.MimeType -eq 'image/jpeg'}; $p=New-Object System.Drawing.Imaging.EncoderParameters 1; $p.Param[0]=New-Object System.Drawing.Imaging.EncoderParameter([System.Drawing.Imaging.Encoder]::Quality,[long]70); $i.Save('${menor}',$c,$p); $i.Dispose()`])
+    bytes = readFileSync(menor)
+    if (bytes.length > 1024 * 1024) throw new Error(`imagem de ${Math.round(bytes.length / 1024)} KB mesmo reduzida: a chave grátis aceita até 1 MB`)
+  }
   const { largura, altura } = dimensoes(bytes)
   const form = new FormData()
   form.append('apikey', chave)
@@ -223,7 +232,10 @@ for (const [caminho, arquivo] of lista) {
   if (dados.paginas[caminho]) continue
   if (feitas >= limite) break
   const t0 = Date.now()
-  const lido = motor === 'windows' ? ocrWindows(arquivo) : motor === 'google' ? await ocrGoogle(arquivo) : await ocrSpace(arquivo)
+  let lido
+  // uma página que falha não derruba a rodada: fica de fora e a próxima rodada tenta de novo
+  try { lido = motor === 'windows' ? ocrWindows(arquivo) : motor === 'google' ? await ocrGoogle(arquivo) : await ocrSpace(arquivo) }
+  catch (e) { console.log(`${caminho}: FALHOU (${e.message}) — fica para a próxima rodada`); continue }
   const blocos = []
   for (const b of lido.blocos) {
     const original = limparTexto(b.linhas)

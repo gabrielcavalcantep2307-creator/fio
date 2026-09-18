@@ -162,6 +162,20 @@ export async function resolver(banco, { perfil, modo, leitorId }, ctx = {}) {
     return { leitorId: l.id, sessao: abrirSessao(banco, l.id, ctx) }
   }
 
+  // O Gmail do DONO entra direto na conta dele, sem o passo de "ligar": a lista
+  // vem do .env da VPS (FIO_GOOGLE_DONO, e-mails separados por vírgula) e o
+  // e-mail tem de vir verificado pelo Google. Não é a regra "juntar pelo
+  // e-mail do Fio" (que é recusada no topo): quem decide é o servidor.
+  const donos = String(process.env.FIO_GOOGLE_DONO ?? '').toLowerCase().split(',').map((e) => e.trim()).filter(Boolean)
+  if (perfil.email && donos.includes(perfil.email)) {
+    const conta = banco.prepare('SELECT id FROM leitor WHERE usuario = ? AND desativado = 0').get(process.env.FIO_GOOGLE_DONO_CONTA || 'curador')
+    if (conta && !banco.prepare('SELECT 1 FROM leitor_google WHERE leitor_id = ?').get(conta.id)) {
+      banco.prepare('INSERT INTO leitor_google (sub, leitor_id, email) VALUES (?,?,?)').run(perfil.sub, conta.id, perfil.email)
+      banco.prepare(`UPDATE leitor SET visto_em = datetime('now') WHERE id = ?`).run(conta.id)
+      return { leitorId: conta.id, sessao: abrirSessao(banco, conta.id, ctx) }
+    }
+  }
+
   // conta nova — a mesma porta do cadastro comum
   if (!cadastroAberto(banco)) throw new Recusa('O cadastro está fechado: só entra quem tem convite. Se você já tem conta, entre com a senha e ligue o Google na página da conta.', 403)
   if (!freio(banco, 'criar', dicaDeIp(ctx.ip) ?? 'sem-ip').passa) throw new Recusa('Muitas contas criadas daqui. Tente mais tarde.', 429)

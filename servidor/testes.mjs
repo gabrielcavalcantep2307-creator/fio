@@ -1742,3 +1742,18 @@ test('google: conta nova, entrar de novo, nunca juntar pelo e-mail, vincular, se
     assert.equal(g.enderecoDeVolta('fio.142-93-57-2.sslip.io', 'https://fiolib.duckdns.org'), 'https://fio.142-93-57-2.sslip.io/api/google/volta')
   } finally { delete process.env.GOOGLE_CLIENT_ID; delete process.env.GOOGLE_CLIENT_SECRET; delete process.env.FIO_GOOGLE }
 })
+
+test('google: o Gmail do dono entra direto na conta configurada, e só com e-mail verificado', async () => {
+  const g = await import('./google.mjs')
+  const b = bd(); g.garantirTabelas(b)
+  const curadoria = leitorDeTeste('curadorteste')
+  process.env.FIO_GOOGLE_DONO = 'Dono@Gmail.com, outro@gmail.com'; process.env.FIO_GOOGLE_DONO_CONTA = 'curadorteste'
+  try {
+    // e-mail não verificado chega como null e não liga nada
+    await assert.rejects(g.resolver(b, { perfil: { sub: 'g-dono-x', email: null, nome: 'X' }, modo: 'entrar' }, {}), /cadastro está fechado/)
+    const r = await g.resolver(b, { perfil: { sub: 'g-dono', email: 'dono@gmail.com', nome: 'Dono' }, modo: 'entrar' }, {})
+    assert.equal(r.leitorId, curadoria); assert.ok(r.sessao?.token); assert.ok(!r.novo)
+    // o segundo e-mail do dono não toma a conta que já tem Google ligado
+    await assert.rejects(g.resolver(b, { perfil: { sub: 'g-dono-2', email: 'outro@gmail.com', nome: 'Dono 2' }, modo: 'entrar' }, {}), /cadastro está fechado/)
+  } finally { delete process.env.FIO_GOOGLE_DONO; delete process.env.FIO_GOOGLE_DONO_CONTA }
+})
