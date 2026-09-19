@@ -89,7 +89,7 @@ const Q_DETALHE = `query($id:Int){Media(id:$id,type:MANGA,isAdult:false){${CAMPO
   recommendations(perPage:12,sort:RATING_DESC){nodes{mediaRecommendation{id isAdult genres title{romaji english} coverImage{large} countryOfOrigin format}}}}}`
 
 /** Erro que pode ir para a tela. */
-export class ErroManga extends Error { constructor(m, status) { super(m); this.status = status } }
+export class ErroManga extends Error { constructor(m, status) { super(m); this.status = status; this.publica = true } }
 
 // ── cache e teto de chamadas ──
 const cache = new Map() // chave → { em, valor }

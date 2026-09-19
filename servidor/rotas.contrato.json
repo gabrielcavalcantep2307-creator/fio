@@ -2269,13 +2269,13 @@
   }
  },
  "admin :: leitora POST /api/convite": {
-  "status": 403,
+  "status": 404,
   "tipo": "application/json",
   "cache": "no-store",
   "local": null,
   "cookie": null,
   "corpo": {
-   "erro": "Não pode."
+   "erro": "Não existe."
   }
  },
  "admin :: dona POST /api/convite": {
@@ -2340,13 +2340,13 @@
   }
  },
  "método errado :: leitora DELETE /api/eu": {
-  "status": 404,
+  "status": 405,
   "tipo": "application/json",
   "cache": "no-store",
   "local": null,
   "cookie": null,
   "corpo": {
-   "erro": "Não existe."
+   "erro": "Método não permitido."
   }
  },
  "livro POST :: leitora POST /api/livro/1": {
@@ -2356,7 +2356,7 @@
   "local": null,
   "cookie": null,
   "corpo": {
-   "erro": "Só GET."
+   "erro": "Método não permitido."
   }
  },
  "upload :: anon POST /api/meu-livro": {
@@ -2386,7 +2386,7 @@
   "local": null,
   "cookie": null,
   "corpo": {
-   "erro": "Origem não confere."
+   "erro": "Origem não autorizada."
   }
  },
  "upload :: leitora POST /api/meu-livro": {
@@ -2416,7 +2416,7 @@
   "local": null,
   "cookie": null,
   "corpo": {
-   "erro": "Origem não confere."
+   "erro": "Origem não autorizada."
   }
  },
  "upload :: leitora POST /api/publicacao/imagem?id=999&uso=capa": {
@@ -2446,7 +2446,7 @@
   "local": null,
   "cookie": null,
   "corpo": {
-   "erro": "Origem não confere."
+   "erro": "Origem não autorizada."
   }
  },
  "upload :: leitora POST /api/admin/curadoria/capa?tipo=obra&id=1": {
@@ -2476,7 +2476,7 @@
   "local": null,
   "cookie": null,
   "corpo": {
-   "erro": "Origem não confere."
+   "erro": "Origem não autorizada."
   }
  },
  "upload :: dona POST /api/admin/curadoria/capa?tipo=obra&id=1": {
@@ -2506,7 +2506,7 @@
   "local": null,
   "cookie": null,
   "corpo": {
-   "erro": "Origem não confere."
+   "erro": "Origem não autorizada."
   }
  },
  "estático :: anon GET /": {
