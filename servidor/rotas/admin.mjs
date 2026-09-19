@@ -156,6 +156,7 @@ export default function rotasDoPainel({ rota, banco, estatico }) {
     cadastro_aberto: ajustes.ler(banco, 'cadastro_aberto') === 'sim',
     amostra: acesso.amostraLigada(banco),
     gratis_livros_mes: acesso.livrosGratis(banco),
+    manutencao: ajustes.ler(banco, 'manutencao') === 'sim',
     // contexto, só leitura: vem do ambiente, não se muda por aqui.
     esteira_paralelo: Number(process.env.FIO_PARALELO || 8),
     jurisdicao: process.env.FIO_JURISDICAO || 'BR',
@@ -171,6 +172,11 @@ export default function rotasDoPainel({ rota, banco, estatico }) {
     if (dado.amostra !== undefined) {
       ajustes.escrever(banco, 'portao_ativo', dado.amostra ? 'sim' : 'nao')
       mudou.amostra = !!dado.amostra
+    }
+    // o site "desligado" para quem não é admin (servidor/manutencao.mjs)
+    if (dado.manutencao !== undefined) {
+      ajustes.escrever(banco, 'manutencao', dado.manutencao === true ? 'sim' : 'nao')
+      mudou.manutencao = dado.manutencao === true
     }
     if (dado.gratis_livros_mes !== undefined) {
       const n = Math.round(Number(dado.gratis_livros_mes))

@@ -11,6 +11,7 @@
 
 import { readFileSync, writeFileSync } from 'node:fs'
 import { traduzir } from '../servidor/servicos/motor-traducao.mjs'
+import { nomeDoGutenberg } from '../servidor/nomes.mjs'
 
 const arg = (n, p = null) => { const i = process.argv.indexOf(`--${n}`); return i > 0 && process.argv[i + 1] ? process.argv[i + 1] : p }
 const jaTemos = JSON.parse(readFileSync(arg('ja-temos'), 'utf8'))
@@ -41,7 +42,7 @@ while (pagina && escolhidos.length < quantos) {
     if (titulos.has(normal(titulo))) continue
     // fora: coletâneas de leis, dicionários, índices, livros de receitas e "complete works" gigantes
     if (/dictionary|index of|complete works|works of|collected|encyclop|cookbook|volume \d+.*of|bible/i.test(l.title)) continue
-    escolhidos.push({ gutenberg: l.id, titulo, autor: autor.name.split(', ').reverse().join(' '), morte: autor.death_year, idioma: lingua, downloads: l.download_count })
+    escolhidos.push({ gutenberg: l.id, titulo, autor: nomeDoGutenberg(autor.name), morte: autor.death_year, idioma: lingua, downloads: l.download_count })
   }
   pagina = r.next
 }

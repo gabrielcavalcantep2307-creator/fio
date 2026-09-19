@@ -93,6 +93,14 @@ export function criarEstatico({ banco, estatico, quemE }) {
         res.writeHead(302, { location: `/#${encodeURI(caminho)}` })
         return res.end()
       }
+      // Arquivo que não existe é 404, e não o app. Até 19/09/2026 a ficha de
+      // uma obra inexistente (/dados/fichas/999.json), uma capa que faltava ou
+      // /.env respondiam 200 com o index.html: o app recebia HTML achando que
+      // era JSON, e quem varre o site por arquivos esquecidos via "200" em tudo.
+      if (/\.[a-z0-9]{1,8}$/i.test(caminho) || /^\/(dados|capas|quadrinhos|ativos|fontes|pub-arquivo)\//.test(caminho)) {
+        res.writeHead(404, { 'content-type': 'text/plain; charset=utf-8', 'cache-control': 'no-store' })
+        return res.end('não achei')
+      }
       // rota do app: devolve o index e deixa o navegador resolver
       if (servirArquivo(req, res, '/index.html')) return
     } catch (e) {

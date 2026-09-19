@@ -2050,3 +2050,125 @@ test('usar uma sessão renova ESSA sessão, e não outra', async () => {
   assert.ok(prazo(sb.token) > antesA, 'a sessão usada não foi renovada')
   assert.equal(prazo(sa.token), antesA, 'renovou a sessão de outro aparelho')
 })
+
+// ── 19/09/2026: a varredura de bugs e as seis ideias ──
+
+test('nome de autor do Gutenberg vira nome de gente', async () => {
+  const { nomeDoGutenberg, limparNome } = await import('./nomes.mjs')
+  assert.equal(nomeDoGutenberg('Chesterton, G. K. (Gilbert Keith)'), 'G. K. Chesterton')
+  assert.equal(nomeDoGutenberg('La Motte-Fouqué, Friedrich Heinrich Karl, Freiherr de'), 'Friedrich Heinrich Karl La Motte-Fouqué')
+  assert.equal(nomeDoGutenberg('Lytton, Edward Bulwer Lytton, Baron'), 'Edward Bulwer Lytton')
+  assert.equal(nomeDoGutenberg('Tolstoy, Leo, graf'), 'Leo Tolstoy')
+  assert.equal(nomeDoGutenberg('King, Martin Luther, Jr.'), 'Martin Luther King Jr.')
+  assert.equal(limparNome('Fernanda Soares Andrade (página não existe)'), 'Fernanda Soares Andrade')
+  assert.equal(limparNome('H. Rider (Henry Rider) Haggard'), 'H. Rider Haggard')
+  // o que é nome de verdade fica
+  assert.equal(limparNome('Anônimo (cantar de gesta)'), 'Anônimo (cantar de gesta)')
+  assert.equal(limparNome('Conde de Penha Garcia'), 'Conde de Penha Garcia')
+  assert.equal(limparNome('Lord Byron'), 'Lord Byron')
+})
+
+test('o livro começa no capítulo I, e não na página de epígrafes', async () => {
+  const { ondeComecaOLivro } = await import('./folha-de-rosto.mjs')
+  const cap = (ordem, titulo, palavras) => ({ ordem, titulo, palavras, corpo: '<p>texto</p>' })
+  // O Cortiço: epígrafes e índice antes do I
+  assert.equal(ondeComecaOLivro([cap(1, 'PARIS', 162), cap(2, 'INDICE', 46), cap(3, 'I', 5001), cap(4, 'II', 3649)]), 3)
+  // peça de teatro: "1.º Tamborileiro" é personagem, não capítulo
+  assert.equal(ondeComecaOLivro([cap(1, 'COMEDIA EM TRÊS ACTOS', 1130), cap(2, '1.º Tamborileiro', 37), cap(3, 'Pantaleão', 82)]), 1)
+  // seções numeradas desde o começo: não pula nada
+  assert.equal(ondeComecaOLivro([cap(1, 'I', 207), cap(2, 'II', 87), cap(3, 'I', 282)]), 1)
+  // prefácio longo é livro
+  assert.equal(ondeComecaOLivro([cap(1, 'Prefácio', 4000), cap(2, 'Capítulo I', 3000)]), 1)
+})
+
+test('cadastro: nome em branco, e-mail errado e nome invisível', async () => {
+  const b = bd()
+  b.exec('DELETE FROM tentativa')
+  const base = { nome: 'X', senha: BOA, perguntas: PERGUNTAS }
+  await assert.rejects(contas.criar(b, { ...base, email: '    ', convite: contas.criarConvite(b).codigo }), /Escolha um nome de usuário/)
+  await assert.rejects(contas.criar(b, { ...base, email: 'fulano@', convite: contas.criarConvite(b).codigo }), /e-mail não parece válido/)
+  const invisivel = String.fromCharCode(0x200b).repeat(3)
+  assert.equal(contas.limparNomeDeTela(`  Ana${invisivel}\n\nClara  `), 'Ana Clara')
+  assert.equal(contas.limparNomeDeTela(invisivel), '')
+})
+
+test('errar a senha no cadastro não tranca a pessoa', async () => {
+  const b = bd()
+  b.exec('DELETE FROM tentativa')
+  for (let i = 0; i < 20; i++) {
+    await assert.rejects(contas.criar(b, { usuario: 'desastrada', nome: 'D', senha: '123', perguntas: PERGUNTAS, convite: contas.criarConvite(b).codigo }), /8 caracteres/)
+  }
+  const { pessoa } = await contas.criar(b, { usuario: 'desastrada', nome: 'D', senha: BOA, perguntas: PERGUNTAS, convite: contas.criarConvite(b).codigo })
+  assert.equal(pessoa.usuario, 'desastrada')
+})
+
+test('entrar de um aparelho novo avisa; o mesmo aparelho não avisa de novo', async () => {
+  const b = bd()
+  b.exec('DELETE FROM tentativa')
+  await contas.criar(b, { usuario: 'viajante', nome: 'V', senha: BOA, perguntas: PERGUNTAS, convite: contas.criarConvite(b).codigo },
+    { ip: '200.10.1.1', agente: 'Mozilla/5.0 (Windows NT 10.0) Chrome/120' })
+  const id = b.prepare("SELECT id FROM leitor WHERE usuario = 'viajante'").get().id
+  const avisos = () => b.prepare("SELECT COUNT(*) n FROM aviso WHERE leitor_id = ? AND tipo = 'seguranca'").get(id).n
+  assert.equal(avisos(), 0, 'criar a conta não é entrada estranha')
+  await contas.entrar(b, { usuario: 'viajante', senha: BOA }, { ip: '200.10.1.1', agente: 'Mozilla/5.0 (Windows NT 10.0) Chrome/120' })
+  assert.equal(avisos(), 0, 'mesmo aparelho, mesma rede')
+  await contas.entrar(b, { usuario: 'viajante', senha: BOA }, { ip: '177.20.3.4', agente: 'Mozilla/5.0 (iPhone) Safari/604' })
+  assert.equal(avisos(), 1, 'aparelho novo avisa')
+})
+
+test('"você quis dizer": uma letra errada ainda acha o livro', async () => {
+  const b = bd()
+  const { criarQuisDizer } = await import('./quis-dizer.mjs')
+  b.prepare("INSERT INTO obra (id, titulo, publicada) VALUES (9301, 'Dom Casmurro', 1)").run()
+  const pid = Number(b.prepare("INSERT INTO pessoa (nome, nome_ordem) VALUES ('Machado de Assis', 'Assis, Machado de')").run().lastInsertRowid)
+  b.prepare("INSERT INTO obra_pessoa (obra_id, pessoa_id, papel) VALUES (9301, ?, 'autor')").run(pid)
+  const tid = Number(b.prepare("INSERT INTO texto (obra_id, idioma, fonte, normalizado, palavras) VALUES (9301, 'pt', 'gutenberg', 1, 100)").run().lastInsertRowid)
+  b.prepare("INSERT INTO capitulo (texto_id, ordem, titulo, corpo, palavras) VALUES (?, 1, 'I', '<p>x</p>', 100)").run(tid)
+  b.prepare("INSERT INTO direito (texto_id, jurisdicao, estado, motivo) VALUES (?, 'BR', 'dominio_publico', 'teste')").run(tid)
+  const quis = criarQuisDizer(b)
+  const r = quis('dom casmuro')
+  assert.equal(r[0]?.obra, 9301)
+  assert.match(r[0].trecho, /Você quis dizer <mark>Dom Casmurro<\/mark>/)
+  assert.equal(quis('machdo de asis')[0]?.obra, 9301, 'erro no autor também')
+  assert.deepEqual(quis('dom casmurro'), [], 'escrito certo, a busca normal resolve')
+  assert.deepEqual(quis('xyzzy'), [])
+})
+
+test('minha lista de mangás: guarda, valida e tira', async () => {
+  const b = bd()
+  const lista = await import('./manga-lista.mjs')
+  const id = leitorDeTeste('leitoramanga')
+  lista.por(b, id, { id: 30013, titulo: 'One Piece', capa: '/api/capa-manga/large/bx30013.jpg', tipo: 'mangá' })
+  const r = lista.por(b, id, { id: 105398, titulo: 'Solo Leveling', capa: 'https://mal.example/x.jpg', tipo: 'script' })
+  assert.equal(r.itens.length, 2)
+  const solo = r.itens.find((i) => i.id === 105398)
+  assert.equal(solo.capa, null, 'capa de fora não entra')
+  assert.equal(solo.tipo, null)
+  assert.throws(() => lista.por(b, id, { id: 'abc', titulo: 'x' }), /inválido/)
+  assert.throws(() => lista.por(b, id, { id: 5, titulo: '   ' }), /sem título/)
+  assert.equal(lista.tirar(b, id, { id: 30013 }).itens.length, 1)
+})
+
+test('o diário do painel não guarda senha', async () => {
+  const { resumir } = await import('./diario.mjs')
+  const r = resumir({ pausada: true, senha: 'segredo123', livros: [1, 2, 3], nota: 'x'.repeat(200) })
+  assert.match(r, /pausada=true/)
+  assert.match(r, /senha=•••/)
+  assert.doesNotMatch(r, /segredo123/)
+  assert.match(r, /livros=\[3 itens\]/)
+  assert.ok(r.length < 200)
+})
+
+test('a previsão da fila sai do ritmo dos últimos livros', async () => {
+  const b = bd()
+  const { previsao, garantirTabelas } = await import('./esteira.mjs')
+  garantirTabelas(b)
+  b.exec("DELETE FROM fila_traducao")
+  b.prepare("INSERT INTO fila_traducao (titulo, autor, fonte, estado, bytes) VALUES ('A', 'x', 'https://www.gutenberg.org/ebooks/1.txt.utf-8', 'espera', 600000)").run()
+  b.prepare("INSERT INTO fila_traducao (titulo, autor, fonte, estado, bytes) VALUES ('B', 'x', 'https://www.gutenberg.org/ebooks/2.txt.utf-8', 'na_esteira', 600000)").run()
+  const p = previsao(b, { ultimos: [{ ok: true, palavras: 100_000, min: 20 }, { ok: false, titulo: 'falhou' }] })
+  assert.equal(p.livros, 2)
+  assert.equal(p.porMinuto, 5000)
+  assert.equal(p.palavras, 200_000)
+  assert.equal(previsao(b, { ultimos: [] }), null, 'sem livro feito, sem previsão')
+})

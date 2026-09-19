@@ -567,7 +567,16 @@
   "corpo": {
    "assinatura": "null",
    "avaliacoes": [],
-   "avisos": [],
+   "avisos": [
+    {
+     "corpo": "string",
+     "criado_em": "string",
+     "lido_em": "null",
+     "link": "string",
+     "tipo": "string",
+     "titulo": "string"
+    }
+   ],
    "conta": {
     "criado_em": "string",
     "email": "null",
@@ -714,7 +723,17 @@
   "local": null,
   "cookie": null,
   "corpo": {
-   "avisos": [],
+   "avisos": [
+    {
+     "corpo": "string",
+     "criado_em": "string",
+     "id": "number",
+     "lido": "number",
+     "link": "string",
+     "tipo": "string",
+     "titulo": "string"
+    }
+   ],
    "naoLidos": "number"
   }
  },
@@ -1661,6 +1680,7 @@
     "pronto": "number"
    },
    "pausada": "boolean",
+   "previsao": "null",
    "publicadas": "number",
    "pulso": "null",
    "viva": "boolean"
@@ -1702,6 +1722,15 @@
    ],
    "backup": "null",
    "copiaPc": "null",
+   "diario": [
+    {
+     "acao": "string",
+     "de": "string",
+     "quando": "string",
+     "resumo": "string",
+     "usuario": "string"
+    }
+   ],
    "esteira": {
     "estado": "null",
     "fila": {
@@ -1711,6 +1740,7 @@
      "pronto": "number"
     },
     "pausada": "boolean",
+    "previsao": "null",
     "viva": "boolean"
    },
    "maquina": {
@@ -1746,6 +1776,7 @@
    },
    "site": {
     "desde": "string",
+    "manutencao": "boolean",
     "memoria": "number",
     "versao": "null"
    },
@@ -1993,7 +2024,8 @@
    "cadastro_aberto": "boolean",
    "esteira_paralelo": "number",
    "gratis_livros_mes": "number",
-   "jurisdicao": "string"
+   "jurisdicao": "string",
+   "manutencao": "boolean"
   }
  },
  "admin :: anon POST /api/fila": {
@@ -2122,6 +2154,7 @@
     "pronto": "number"
    },
    "pausada": "boolean",
+   "previsao": "null",
    "publicadas": "number",
    "pulso": "null",
    "viva": "boolean"
@@ -2373,6 +2406,348 @@
   "corpo": {
    "codigo": "string",
    "dias": "number"
+  }
+ },
+ "painel :: anon GET /painel-do-contrato-1234": {
+  "status": 200,
+  "tipo": "text/html",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": "texto"
+ },
+ "painel :: leitora GET /painel-do-contrato-1234": {
+  "status": 200,
+  "tipo": "text/html",
+  "cache": "no-cache",
+  "local": null,
+  "cookie": null,
+  "corpo": "texto"
+ },
+ "painel :: dona GET /painel-do-contrato-1234": {
+  "status": 200,
+  "tipo": "text/html",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": "texto"
+ },
+ "painel :: anon GET /painel-do-contrato-1234/painel.js": {
+  "status": 200,
+  "tipo": "text/javascript",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": "texto"
+ },
+ "painel :: leitora GET /painel-do-contrato-1234/painel.js": {
+  "status": 404,
+  "tipo": "text/plain",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": "não achei"
+ },
+ "painel :: dona GET /painel-do-contrato-1234/painel.js": {
+  "status": 200,
+  "tipo": "text/javascript",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": "texto"
+ },
+ "painel :: anon GET /admin.html": {
+  "status": 404,
+  "tipo": "text/plain",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": "não achei"
+ },
+ "painel :: leitora GET /admin.html": {
+  "status": 404,
+  "tipo": "text/plain",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": "não achei"
+ },
+ "painel :: dona GET /admin.html": {
+  "status": 302,
+  "tipo": null,
+  "cache": "no-store",
+  "local": "/painel-do-contrato-1234",
+  "cookie": null,
+  "corpo": ""
+ },
+ "painel :: anon GET /admin": {
+  "status": 200,
+  "tipo": "text/html",
+  "cache": "no-cache",
+  "local": null,
+  "cookie": null,
+  "corpo": "texto"
+ },
+ "painel :: leitora GET /admin": {
+  "status": 200,
+  "tipo": "text/html",
+  "cache": "no-cache",
+  "local": null,
+  "cookie": null,
+  "corpo": "texto"
+ },
+ "painel :: dona GET /admin": {
+  "status": 302,
+  "tipo": null,
+  "cache": "no-store",
+  "local": "/painel-do-contrato-1234",
+  "cookie": null,
+  "corpo": ""
+ },
+ "painel :: anon GET /painel-errado-do-contrato": {
+  "status": 200,
+  "tipo": "text/html",
+  "cache": "no-cache",
+  "local": null,
+  "cookie": null,
+  "corpo": "texto"
+ },
+ "painel :: leitora GET /painel-errado-do-contrato": {
+  "status": 200,
+  "tipo": "text/html",
+  "cache": "no-cache",
+  "local": null,
+  "cookie": null,
+  "corpo": "texto"
+ },
+ "painel :: dona GET /painel-errado-do-contrato": {
+  "status": 200,
+  "tipo": "text/html",
+  "cache": "no-cache",
+  "local": null,
+  "cookie": null,
+  "corpo": "texto"
+ },
+ "manutenção liga :: dona POST /api/ajustes": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "mudou": {
+    "manutencao": "boolean"
+   },
+   "ok": "boolean"
+  }
+ },
+ "em manutenção :: anon GET /": {
+  "status": 503,
+  "tipo": "text/html",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": "<!doctype html><html lang=\"pt-BR\"><head><meta charset=\"utf-8\">\n<meta name=\"viewp"
+ },
+ "em manutenção :: anon GET /api/livro/1": {
+  "status": 503,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "O Fio está em manutenção. Volta em alguns minutos."
+  }
+ },
+ "em manutenção :: anon GET /api/saude": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "convite": "string",
+   "ok": "boolean",
+   "versao": "number"
+  }
+ },
+ "em manutenção :: anon GET /api/eu": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "em manutenção :: leitora GET /": {
+  "status": 503,
+  "tipo": "text/html",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": "<!doctype html><html lang=\"pt-BR\"><head><meta charset=\"utf-8\">\n<meta name=\"viewp"
+ },
+ "em manutenção :: leitora GET /api/livro/1": {
+  "status": 503,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "O Fio está em manutenção. Volta em alguns minutos."
+  }
+ },
+ "em manutenção :: leitora GET /api/saude": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "convite": "string",
+   "ok": "boolean",
+   "versao": "number"
+  }
+ },
+ "em manutenção :: leitora GET /api/eu": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "pessoa": {
+    "email": "null",
+    "id": "number",
+    "nome": "string",
+    "papel": "string",
+    "usuario": "string"
+   }
+  }
+ },
+ "em manutenção :: dona GET /": {
+  "status": 200,
+  "tipo": "text/html",
+  "cache": "no-cache",
+  "local": null,
+  "cookie": null,
+  "corpo": "texto"
+ },
+ "em manutenção :: dona GET /api/livro/1": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "ano": "null",
+   "autor": "string",
+   "autorId": "number",
+   "aviso": "null",
+   "capa": "null",
+   "capaOL": "null",
+   "capitulos": [
+    {
+     "corpo": "string",
+     "ordem": "number",
+     "palavras": "number",
+     "titulo": "string"
+    }
+   ],
+   "comecaEm": "number",
+   "id": "number",
+   "limitado": "null",
+   "minutos": "null",
+   "temas": [],
+   "textoId": "number",
+   "titulo": "string",
+   "traducao": "null",
+   "trilho": "string"
+  }
+ },
+ "em manutenção :: dona GET /api/saude": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "convite": "string",
+   "ok": "boolean",
+   "versao": "number"
+  }
+ },
+ "em manutenção :: dona GET /api/eu": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "pessoa": {
+    "email": "null",
+    "id": "number",
+    "nome": "string",
+    "papel": "string",
+    "usuario": "string"
+   }
+  }
+ },
+ "em manutenção :: anon POST /api/entrar": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Usuário ou senha não conferem."
+  }
+ },
+ "manutenção desliga :: dona POST /api/ajustes": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "mudou": {
+    "manutencao": "boolean"
+   },
+   "ok": "boolean"
+  }
+ },
+ "depois da manutenção :: anon GET /api/livro/1": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "ano": "null",
+   "autor": "string",
+   "autorId": "number",
+   "aviso": "null",
+   "capa": "null",
+   "capaOL": "null",
+   "capitulos": [
+    {
+     "corpo": "string",
+     "ordem": "number",
+     "palavras": "number",
+     "titulo": "string"
+    }
+   ],
+   "comecaEm": "number",
+   "id": "number",
+   "limitado": "string",
+   "minutos": "null",
+   "temas": [],
+   "textoId": "number",
+   "titulo": "string",
+   "traducao": "null",
+   "trilho": "string"
   }
  },
  "sem x-fio :: leitora POST /api/meu-nome": {
@@ -2692,12 +3067,12 @@
   "corpo": "texto"
  },
  "estático :: anon GET /nao/existe.png": {
-  "status": 200,
-  "tipo": "text/html",
-  "cache": "no-cache",
+  "status": 404,
+  "tipo": "text/plain",
+  "cache": "no-store",
   "local": null,
   "cookie": null,
-  "corpo": "texto"
+  "corpo": "não achei"
  },
  "estático :: anon GET /%E0%A4%A": {
   "status": 400,
@@ -2821,23 +3196,23 @@
   "vazou": false
  },
  "cru :: anon GET /dados/..%5c..%5c..%5cwindows%5cwin.ini": {
-  "status": 200,
+  "status": 404,
   "vazou": false
  },
  "cru :: anon GET /..\\..\\servidor\\api.mjs": {
-  "status": 200,
+  "status": 404,
   "vazou": false
  },
  "cru :: anon GET /%2e%2e/servidor/api.mjs": {
-  "status": 200,
+  "status": 404,
   "vazou": false
  },
  "cru :: anon GET /ativos/../../contrato.db": {
-  "status": 200,
+  "status": 404,
   "vazou": false
  },
  "cru :: anon GET /api/../../contrato.db": {
-  "status": 200,
+  "status": 404,
   "vazou": false
  }
 }

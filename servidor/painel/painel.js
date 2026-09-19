@@ -1,9 +1,11 @@
 // O painel do Fio, do lado do navegador.
 //
-// Página separada do app (cujo fonte se perdeu), como a estante particular. Ela
-// não guarda segredo nenhum: tudo que mostra vem de rotas que exigem sessão de
-// ADMIN no servidor. Um leitor comum que abrir /admin.html recebe "sem acesso"
-// e as rotas respondem 404 para ele — o painel nem se revela.
+// Página separada do app (cujo fonte se perdeu). Desde 19/09/2026 ela NÃO mora
+// na pasta pública do site: fica em servidor/painel/ e é servida num endereço
+// secreto (FIO_PAINEL no .env), só para sessão de administração — ver
+// servidor/http/painel.mjs. Para qualquer outra pessoa o endereço é igual a
+// um endereço que não existe, e /admin.html também. As rotas /api/admin/*
+// continuam respondendo 404 a quem não é admin.
 
 // a conversa com a API é a de todas as páginas (/fio-api.js)
 const pedir = (caminho, corpo) => fioApi.pedir(caminho, corpo)
@@ -65,7 +67,7 @@ function telaEntrar() {
   // Desde 19/09/2026 a conta de administração entra só pelo Google (o servidor
   // recusa a senha dela quando o Google está ligado — contas.adminSoPeloGoogle).
   // A senha fica escondida em "outra forma" para a saída de emergência.
-  const google = el('a', { href: '/api/google/entrar?volta=' + encodeURIComponent('/admin.html'),
+  const google = el('a', { href: '/api/google/entrar?volta=' + encodeURIComponent(location.pathname),
     style: 'display:inline-block;background:var(--acento);color:#fff;border-radius:7px;padding:10px 18px;text-decoration:none;font-family:ui-sans-serif,system-ui,sans-serif' },
     'Entrar com o Google')
   const outra = el('details', { style: 'margin-top:18px' }, el('summary', { class: 'ajuda', style: 'cursor:pointer' }, 'entrar com senha'), form)
@@ -355,6 +357,8 @@ function esteiraAoVivo() {
         el('div', {}, el('b', {}, `Plano inteiro: ${num(plano.traduzidos)} de ${num(plano.total)} livros`),
           el('span', { class: 'ajuda' }, `  · ${Math.round(pctPlano * 100)}% feito, faltam ${num(plano.total - plano.traduzidos)}`)),
         barra(pctPlano, '#3aa55d')) : null,
+      e.previsao?.livros ? el('div', { class: 'ajuda', style: 'margin-top:8px' },
+        `Previsão: no ritmo dos últimos livros (~${num(e.previsao.porMinuto)} palavras por minuto), os ${num(e.previsao.livros)} livros da fila acabam em ~${e.previsao.dias < 1 ? 'menos de um dia' : `${num(Math.round(e.previsao.dias))} dia${Math.round(e.previsao.dias) === 1 ? '' : 's'}`}.`) : null,
       pu?.rodada?.total ? el('div', { class: 'ajuda', style: 'margin-top:8px' },
         `Nesta rodada: ${pu.rodada.feitos} prontos, ${pu.rodada.falhas} falharam, de ${pu.rodada.total}.`) : null,
       el('div', { class: 'cartoes', style: 'margin-top:14px' },
@@ -736,9 +740,36 @@ function secaoControle() {
       catch (x) { sair.disabled = false; s.prepend(recado('ruim', x.message)) }
     } }, 'Sair de todos os outros aparelhos')
 
+    // Os dois interruptores. Nenhum deles mexe na máquina: o site "desligado"
+    // mostra a página de manutenção a quem não é admin (servidor/manutencao.mjs),
+    // e a esteira desligada termina o livro em curso e para.
+    const interruptor = (rotulo, estadoTexto, ligado, textoBotao, confirmar, acao) => {
+      const b = el('button', { class: ligado ? 'fraco' : '', onclick: async () => {
+        if (confirmar && !confirm(confirmar)) return
+        b.disabled = true
+        try { await acao(); await atualizar() } catch (x) { b.disabled = false; s.prepend(recado('ruim', x.message)) }
+      } }, textoBotao)
+      return el('div', { class: 'liga' },
+        el('span', {}, el('b', {}, rotulo), ' ', el('span', { class: 'ajuda' }, estadoTexto)), b)
+    }
+    const siteNoAr = !r.site.manutencao
+    const esteiraLigada = !r.esteira.pausada
+
     s.replaceChildren(
       el('h2', {}, 'Controle'),
       recado(...topo),
+      el('div', { class: 'grupo' }, el('h3', {}, 'Ligar e desligar'),
+        interruptor('Site', siteNoAr ? 'no ar para todo mundo' : 'desligado: os leitores veem "voltamos já"; só você vê o site',
+          siteNoAr, siteNoAr ? 'Desligar para os leitores' : 'Religar o site',
+          siteNoAr ? 'Desligar o site para os leitores? Eles verão uma página de "voltamos já" até você religar.' : null,
+          () => pedir('/ajustes', { manutencao: siteNoAr })),
+        interruptor('Esteira de tradução', (!esteiraLigada ? 'desligada' : !r.esteira.viva ? 'ligada, mas sem sinal (veja abaixo)'
+          : r.esteira.estado === 'ociosa' ? 'ligada, em dia' : 'ligada, traduzindo')
+          + (r.esteira.previsao?.livros ? ` · fila de ${num(r.esteira.previsao.livros)} livros, acaba em ~${Math.max(1, Math.round(r.esteira.previsao.dias))} dia(s)` : ''),
+          esteiraLigada, esteiraLigada ? 'Desligar a esteira' : 'Ligar a esteira',
+          esteiraLigada ? 'Desligar a esteira? O livro que está sendo traduzido termina, e ela para.' : null,
+          () => pedir('/admin/esteira/pausa', { pausada: esteiraLigada })),
+        el('p', { class: 'ajuda', style: 'margin:8px 0 0' }, 'Se o site inteiro sair do ar e este painel não abrir, os comandos de emergência estão em docs/COMANDOS.md.')),
       el('div', { class: 'grupo' }, el('h3', {}, 'O que está rodando'),
         el('ul', { style: 'list-style:none;margin:8px 0 0;padding:0' }, r.avisos.map((a) =>
           el('li', { style: 'display:flex;gap:10px;align-items:baseline;padding:7px 0;border-top:1px solid var(--linha);flex-wrap:wrap' },
@@ -748,10 +779,10 @@ function secaoControle() {
 
       el('div', { class: 'grupo' }, el('h3', {}, 'Onde cada coisa roda'),
         el('p', { class: 'ajuda', style: 'margin:6px 0 4px' }, 'Na VPS, sempre, com o seu PC ligado ou não: o site, a esteira de tradução e o backup do banco (todo dia às 03:20). Se um deles cair, volta sozinho.'),
-        el('p', { class: 'ajuda', style: 'margin:0 0 8px' }, 'No seu PC: só a cópia do site, todo dia às 12:30 (ou quando o notebook liga, se estava desligado nessa hora). Roda escondida e não precisa de nada seu.'),
+        el('p', { class: 'ajuda', style: 'margin:0 0 8px' }, 'No seu PC: nada. Nenhum programa da Fiolib roda no computador.'),
         linha('Versão do servidor no ar', r.site.versao ? `${r.site.versao.commit} · ${quando(r.site.versao.quando)}` : '—'),
         linha('Último backup do banco', r.backup ? `${quando(r.backup.quando)} · ${mb(r.backup.bytes)}` : '—'),
-        linha('Última cópia no seu PC', r.copiaPc ? `${quando(r.copiaPc.quando)} · ${num(r.copiaPc.arquivos)} arquivos novos` : '—')),
+        r.copiaPc ? linha('Última cópia feita à mão no PC', quando(r.copiaPc.quando)) : null),
 
       el('div', { class: 'grupo' }, el('h3', {}, 'A máquina'),
         el('div', { class: 'cartoes', style: 'margin-top:10px' },
@@ -780,7 +811,14 @@ function secaoControle() {
           el('td', {}, x.aparelho, x.esta ? el('b', {}, ' (este)') : ''),
           el('td', { class: 'mono' }, x.de ?? ''),
           el('td', { class: 'mono' }, `desde ${quando(x.desde)}`))))),
-        el('div', { style: 'margin-top:10px' }, sair)))
+        el('div', { style: 'margin-top:10px' }, sair)),
+
+      el('div', { class: 'grupo' }, el('h3', {}, 'Diário do painel'),
+        el('p', { class: 'ajuda', style: 'margin:4px 0 10px' }, 'Tudo que foi feito com a conta de administração: entradas e mudanças, com o aparelho ou a faixa de rede de onde veio.'),
+        r.diario.length ? el('table', {}, el('tbody', {}, r.diario.map((d) => el('tr', {},
+          el('td', { class: 'mono', style: 'white-space:nowrap' }, quando(d.quando)),
+          el('td', {}, el('b', {}, d.usuario ?? '—'), ' ', d.acao, d.resumo ? el('div', { class: 'ajuda mono' }, d.resumo) : null),
+          el('td', { class: 'mono' }, d.de ?? ''))))) : el('p', { class: 'vazio' }, 'Nada registrado ainda.')))
   }
   setTimeout(atualizar, 0)
   clearInterval(relogioControle)

@@ -17,6 +17,21 @@
 ;(function () {
   if (window.fioApi) return
 
+  // `append(null)` e `replaceChildren(null)` escrevem a PALAVRA "null" na tela
+  // (o navegador converte em texto). As páginas montam listas com
+  // `cond ? el(...) : null` o tempo todo, e na varredura de 19/09/2026 a aba
+  // Descobrir mostrou "nullnull" quando o catálogo de mangás não respondeu.
+  // Aqui, uma vez para todas as páginas: nulo, indefinido e false somem.
+  for (const P of [Element.prototype, DocumentFragment.prototype]) {
+    for (const m of ['append', 'prepend', 'replaceChildren']) {
+      const original = P[m]
+      if (!original || original.semNulo) continue
+      const semNulo = function (...filhos) { return original.apply(this, filhos.filter((f) => f != null && f !== false)) }
+      semNulo.semNulo = true
+      P[m] = semNulo
+    }
+  }
+
   async function pedir(caminho, corpo, { bruto = null, cabecalhos = {}, manter = false } = {}) {
     const escrita = corpo != null || bruto != null
     const r = await fetch('/api' + caminho, {

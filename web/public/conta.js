@@ -125,7 +125,7 @@ function plano(alvo) {
 // ── senha e perguntas ──
 function seguranca(alvo) {
   const atual = el('input', { type: 'password', autocomplete: 'current-password' })
-  const nova = el('input', { type: 'password', autocomplete: 'new-password', minlength: '10' })
+  const nova = el('input', { type: 'password', autocomplete: 'new-password', minlength: '8' })
   const repete = el('input', { type: 'password', autocomplete: 'new-password' })
   const medidor = el('i')
   const dica = el('div', { class: 'aut' })
@@ -134,7 +134,7 @@ function seguranca(alvo) {
     const pontos = [v.length >= 10, v.length >= 14, /[a-z]/.test(v) && /[A-Z]/.test(v), /\d/.test(v), /[^A-Za-z0-9]/.test(v), new Set(v.toLowerCase()).size >= 8].filter(Boolean).length
     medidor.style.width = `${Math.round(pontos / 6 * 100)}%`
     medidor.style.background = pontos < 3 ? 'var(--acento)' : pontos < 5 ? 'var(--ouro)' : 'var(--bom)'
-    dica.textContent = v.length && v.length < 10 ? 'Pelo menos 10 caracteres.' : pontos >= 5 ? 'Forte.' : v ? 'Dá para melhorar: misture palavras, números e símbolos.' : ''
+    dica.textContent = v.length && v.length < 8 ? 'A senha precisa de pelo menos 8 caracteres.' : pontos >= 5 ? 'Forte.' : v ? 'Dá para melhorar: misture palavras, números e símbolos.' : ''
   })
   const saidaSenha = el('div')
 
@@ -186,7 +186,7 @@ function seguranca(alvo) {
         : el('a', { class: 'botao', href: '/api/google/entrar?modo=vincular' }, 'Ligar minha conta do Google'),
       saidaGoogle)
     if (g.semSenha) {
-      const n1 = el('input', { type: 'password', autocomplete: 'new-password', minlength: '10' })
+      const n1 = el('input', { type: 'password', autocomplete: 'new-password', minlength: '8' })
       const n2 = el('input', { type: 'password', autocomplete: 'new-password' })
       const saida = el('div')
       por(caixaSenha, el('h2', {}, 'Criar uma senha'),

@@ -222,11 +222,58 @@ function montarDescobrir() {
   main.replaceChildren(
     cabecalho(),
     el('p', { class: 'sub' }, 'Milhares de mangás, manhwas e manhuas para descobrir. O Fio não hospeda essas obras — elas têm dono —, então cada ficha mostra onde ler oficialmente, muitas vezes de graça e em português.'),
+    (areaMinhaLista = el('div', { hidden: '' })),
     (vitrineEl = vitrineDescobrir()),
     painel,
     (tituloRanking = el('h3', { style: 'font:500 19px Literata,Georgia,serif;margin:6px 0 12px' }, 'Os mais lidos de 2010 para cá')),
     areaResultados,
     el('p', { class: 'credito-m' }, 'Dados e capas: AniList (anilist.co). As obras pertencem aos seus autores e editoras — leia nas plataformas oficiais.'))
+  desenharMinhaLista()
+}
+
+// ── "Minha lista" (19/09/2026, servidor/manga-lista.mjs) ──
+//
+// O Fio não hospeda os mangás modernos; a lista guarda os que a pessoa quer
+// ler, com a ficha (e os links oficiais) a um toque. É da conta: sem conta, o
+// botão leva a entrar.
+let minhaLista = null // Map id → item, ou null quando ninguém está entrado
+fioApi.eu().then((eu) => eu ? fioApi.pedir('/mangas/lista') : null)
+  .then((r) => { minhaLista = r ? new Map(r.itens.map((i) => [i.id, i])) : null; desenharMinhaLista() })
+  .catch(() => { minhaLista = null })
+
+function botaoLista(d) {
+  const b = el('button', { class: 'filtro', type: 'button', style: 'margin-top:12px' })
+  const pintar = () => {
+    b.textContent = !minhaLista ? 'Entrar para guardar na minha lista' : minhaLista.has(d.id) ? '✓ Na minha lista · tirar' : '＋ Guardar na minha lista'
+    b.setAttribute('aria-pressed', String(!!minhaLista?.has(d.id)))
+  }
+  b.addEventListener('click', async () => {
+    if (!minhaLista) { location.href = '/#/entrar'; return }
+    b.disabled = true
+    try {
+      const r = minhaLista.has(d.id)
+        ? await fioApi.pedir('/mangas/lista/tirar', { id: d.id })
+        : await fioApi.pedir('/mangas/lista', { id: d.id, titulo: d.titulo, capa: d.capa, tipo: d.tipo })
+      minhaLista = new Map(r.itens.map((i) => [i.id, i]))
+      pintar()
+      desenharMinhaLista()
+    } catch (e) { b.textContent = e.message } finally { b.disabled = false }
+  })
+  pintar()
+  return b
+}
+
+let areaMinhaLista = null
+function desenharMinhaLista() {
+  if (!areaMinhaLista) return
+  const itens = minhaLista ? [...minhaLista.values()] : []
+  areaMinhaLista.hidden = !itens.length
+  areaMinhaLista.replaceChildren(itens.length ? el('section', { class: 'faixa-m' },
+    el('h3', {}, `Minha lista (${itens.length})`),
+    el('div', { class: 'rolo-m' }, itens.map((o) => el('button', { class: 'card', type: 'button', onclick: () => abrirFicha(o.id) },
+      el('div', { class: 'cap' }, o.capa ? el('img', { src: o.capa, alt: `Capa de ${o.titulo}`, loading: 'lazy' }) : null,
+        o.tipo ? el('span', { class: `tipo-m ${o.tipo}` }, o.tipo) : null),
+      el('div', { class: 't' }, o.titulo))))) : null)
 }
 
 // ── a ficha ──
@@ -262,7 +309,8 @@ async function abrirFicha(id) {
           [d.status, d.ano, d.capitulos ? `${d.capitulos} capítulos` : null, d.volumes ? `${d.volumes} volumes` : null, d.nota ? `nota ${d.nota}/100` : null]
             .filter(Boolean).map((t) => el('span', {}, t))),
         d.autores.length ? el('div', { class: 'aut' }, d.autores.map((a) => a.nome).join(', ')) : null,
-        d.generos.length ? el('div', { class: 'dados' }, [...d.generos, ...d.temas].map((g) => el('span', { class: 'selo' }, g))) : null)),
+        d.generos.length ? el('div', { class: 'dados' }, [...d.generos, ...d.temas].map((g) => el('span', { class: 'selo' }, g))) : null,
+        botaoLista(d))),
     el('div', { class: 'onde' },
       el('h3', {}, 'Onde ler oficialmente'),
       d.ondeLer.length

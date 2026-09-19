@@ -49,6 +49,12 @@ services:
       # Gmail(s) do dono: entram direto na conta FIO_GOOGLE_DONO_CONTA (curador)
       FIO_GOOGLE_DONO: ${FIO_GOOGLE_DONO:-}
       FIO_GOOGLE_DONO_CONTA: ${FIO_GOOGLE_DONO_CONTA:-curador}
+      # O endereço secreto do painel (servidor/http/painel.mjs). Vazio = painel
+      # desligado. Mora só no .env da VPS, nunca no git.
+      FIO_PAINEL: ${FIO_PAINEL:-}
+      # Saída de emergência: 'permitida' deixa a administração entrar com senha
+      # mesmo com o Google ligado (servidor/contas.mjs, adminSoPeloGoogle).
+      FIO_ADMIN_SENHA: ${FIO_ADMIN_SENHA:-}
     volumes:
       # O banco: catálogo, contas e sessões. É o único estado que importa.
       - dados:/dados

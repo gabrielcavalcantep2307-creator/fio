@@ -28,6 +28,7 @@ import { Recusa } from '../contas.mjs'
 import * as contas from '../contas.mjs'
 import { freio, dicaDeIp } from '../seguranca.mjs'
 import { origemOk, lerCookie, lerJson, bytesDoPedido, responder, ipDe } from './pedido.mjs'
+import * as diario from '../diario.mjs'
 
 // Parâmetros de caminho: `:id` é sempre número; `:nome` é um pedaço sem barra.
 // Um parâmetro pode trazer o próprio padrão: `:arquivo(\w+\.jpg)`.
@@ -123,6 +124,14 @@ export function criarRoteador({ banco }) {
         bytes: r.corpo === 'binario' ? await bytesDoPedido(req, r.teto) : null,
       }
       const valor = await r.fn(ctx)
+      // O diário do painel (servidor/diario.mjs): toda escrita de admin que
+      // DEU CERTO fica registrada, sem cada rota precisar lembrar.
+      if (r.acesso === 'admin' && req.method === 'POST') {
+        try {
+          diario.registrar(banco, { pessoa, acao: diario.nomeDaAcao(caminho),
+            resumo: r.corpo === 'binario' ? '(imagem)' : diario.resumir(ctx.dado), de: dicaDeIp(ip) })
+        } catch (e) { console.error('[fio] diário do painel', e.message) }
+      }
       if (r.cru) return true // a rota já escreveu a resposta
       responder(res, 200, valor, { cache: r.cache })
     } catch (e) {

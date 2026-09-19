@@ -11,6 +11,7 @@ import * as extras from '../extras.mjs'
 import { montarEpub, nomeDeArquivo } from '../epub.mjs'
 import { ondeComecaOLivro } from '../folha-de-rosto.mjs'
 import { criarBuscaNoTexto } from '../busca-no-texto.mjs'
+import { criarQuisDizer } from '../quis-dizer.mjs'
 import { redirecionar } from '../http/pedido.mjs'
 
 const CASA = process.env.FIO_JURISDICAO || 'BR'
@@ -27,6 +28,7 @@ const O_TEXTO_QUE_VALE = `t.id = (
 
 export default function rotasDeLeitura({ rota, banco }) {
   const buscarNoTexto = criarBuscaNoTexto(banco)
+  const quisDizer = criarQuisDizer(banco, { jurisdicao: CASA })
 
   const doLivro = banco.prepare(`
     SELECT o.id, o.titulo, o.titulo_pt, t.id texto_id, t.fonte, t.fonte_url, t.normalizado,
@@ -166,7 +168,13 @@ export default function rotasDeLeitura({ rota, banco }) {
   // cara, com freio por faixa de IP — sem ele, um laço na busca é a maneira
   // mais barata de derrubar o site.
   rota({ caminho: '/api/procurar', freio: { acao: 'procurar', por: 'ip', msg: 'Muitas buscas seguidas. Espere um instante.' } },
-    ({ busca }) => buscarNoTexto(busca.get('q') ?? '', { jurisdicao: CASA }))
+    ({ busca }) => {
+      const termo = busca.get('q') ?? ''
+      const r = buscarNoTexto(termo, { jurisdicao: CASA })
+      // achou pouco: talvez um erro de digitação no título ou no autor (quis-dizer.mjs)
+      if (r.achados.length < 3) r.achados = [...quisDizer(termo, { fora: new Set(r.achados.map((a) => a.obra)) }), ...r.achados]
+      return r
+    })
 
   rota({ caminho: '/api/populares' }, () => ({
     semana: contas.maisLidos(banco, { dias: 7, quantos: 10 }),

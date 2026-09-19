@@ -15,7 +15,8 @@ import {
 import { conferirUsuario, chaveDe, estaTomado } from './usuario.mjs'
 import { avaliarSenha } from './seguranca.mjs'
 import { cadastroAberto } from './ajustes.mjs'
-import { marcarContaNova } from './gosto.mjs'
+import { marcarContaNova, avisar } from './gosto.mjs'
+import * as diario from './diario.mjs'
 
 // ── derivar um nome de usuário quando a tela só mandou e-mail ──
 //
@@ -82,6 +83,19 @@ export class Recusa extends Error {
   constructor(mensagem, status = 400) { super(mensagem); this.status = status }
 }
 
+/**
+ * O nome de tela, limpo: sem caractere invisível (espaço de largura zero,
+ * marcas de direção), sem quebra de linha e sem espaços repetidos. Na
+ * varredura de 19/09/2026 dava para se chamar com três espaços de largura zero (U+200B) e
+ * assinar resenhas sem nome nenhum na tela.
+ */
+export function limparNomeDeTela(bruto) {
+  if (typeof bruto !== 'string') return ''
+  return bruto.normalize('NFC')
+    .replace(/[\u0000-\u001f\u007f-\u009f\u00ad\u200b-\u200f\u2028-\u202e\u2060-\u2064\u206a-\u206f\ufeff]/g, ' ')
+    .replace(/\s+/g, ' ').trim().slice(0, 80).trim()
+}
+
 const publico = (l) => ({ id: l.id, usuario: l.usuario, nome: l.nome, email: l.email, papel: l.papel })
 
 // ─────────────────────────────────────────────────────────────
@@ -139,8 +153,10 @@ function fundarCasa(banco) {
 }
 
 export async function criar(banco, { usuario, nome, email, senha, convite, perguntas }, ctx = {}) {
-  const emLimite = freio(banco, 'criar', dicaDeIp(ctx.ip) ?? 'sem-ip')
-  if (!emLimite.passa) throw new Recusa('Muitas tentativas. Tente daqui a pouco.', 429)
+  // O freio vem DEPOIS das conferências baratas (nome, e-mail, senha): até
+  // 19/09/2026 ele vinha primeiro, e quem errava a senha doze vezes no
+  // cadastro — gente de verdade, não robô — ficava uma hora trancado. O que o
+  // freio protege é o que vem depois: o scrypt das respostas e o convite.
 
   // O campo do site é "e-mail OU usuário": o que a pessoa digita chega em
   // `email`. Se tem cara de e-mail, é e-mail; senão, é o nome de usuário — não
@@ -148,12 +164,20 @@ export async function criar(banco, { usuario, nome, email, senha, convite, pergu
   // recuperação virou pergunta: não há link para mandar.
   let usuarioLimpo = String(usuario ?? '').trim()
   let limpo = null
-  if (email) {
-    const talvez = conferirEmail(email)
+  const emailDigitado = typeof email === 'string' ? email.trim() : ''
+  if (emailDigitado) {
+    const talvez = conferirEmail(emailDigitado)
     if (talvez) limpo = talvez
-    else if (!usuarioLimpo) usuarioLimpo = String(email).trim()
+    // tem arroba: a pessoa quis um e-mail e errou — dizer isso, e não as
+    // regras do nome de usuário (varredura de 19/09: "fulano@" ouvia que só
+    // pode letra sem acento)
+    else if (emailDigitado.includes('@')) throw new Recusa('Esse e-mail não parece válido.')
+    else if (!usuarioLimpo) usuarioLimpo = emailDigitado
     else throw new Recusa('Esse e-mail não parece válido.')
   }
+  // Nada digitado (ou só espaços): a conta nascia "leitor2", um nome que a
+  // pessoa nunca viu e não saberia usar para entrar.
+  if (!usuarioLimpo && !limpo) throw new Recusa('Escolha um nome de usuário (ou use seu e-mail).')
 
   if (usuarioLimpo) {
     const problemaUsuario = conferirUsuario(usuarioLimpo)
@@ -171,7 +195,10 @@ export async function criar(banco, { usuario, nome, email, senha, convite, pergu
 
   // O nome de tela é como a pessoa assina; o de usuário é como ela entra.
   // Quem não quiser inventar dois usa o mesmo, e isso é o padrão.
-  const nomeLimpo = String(nome ?? '').trim().slice(0, 80) || usuarioLimpo
+  const nomeLimpo = limparNomeDeTela(nome) || usuarioLimpo
+
+  const emLimite = freio(banco, 'criar', dicaDeIp(ctx.ip) ?? 'sem-ip')
+  if (!emLimite.passa) throw new Recusa('Muitas tentativas. Tente daqui a pouco.', 429)
 
   // As perguntas de segurança são OBRIGATÓRIAS, e são conferidas antes de a
   // conta existir. Sem elas não há recuperação nenhuma — não há link de
@@ -346,7 +373,45 @@ export function abrirSessao(banco, leitorId, ctx = {}) {
     String(ctx.agente ?? '').slice(0, 160) || null, dicaDeIp(ctx.ip))
 
   limparVencidos(banco)
+  try { avisarSeAparelhoNovo(banco, leitorId, ctx) } catch (e) { console.error('[fio] aparelho novo', e.message) }
+  if (admin) {
+    try { diario.registrar(banco, { pessoa: { id: leitorId, usuario: banco.prepare('SELECT usuario FROM leitor WHERE id = ?').get(leitorId)?.usuario },
+      acao: 'entrou no painel', resumo: apelidoDeAgente(ctx.agente), de: dicaDeIp(ctx.ip) }) } catch {}
+  }
   return { token, dias }
+}
+
+/**
+ * "Entraram na sua conta de um aparelho novo" (19/09/2026).
+ *
+ * O aparelho é o navegador + sistema ("Chrome no Windows") e o começo do IP.
+ * A primeira entrada de uma conta não avisa (é a própria pessoa criando), e um
+ * aparelho que já entrou uma vez não avisa de novo. Aparelho novo vira aviso
+ * na central, com o caminho para agir se não foi a pessoa.
+ */
+function avisarSeAparelhoNovo(banco, leitorId, ctx) {
+  banco.exec(`CREATE TABLE IF NOT EXISTS aparelho_visto (
+    leitor_id INTEGER NOT NULL, marca TEXT NOT NULL,
+    primeiro_em TEXT NOT NULL DEFAULT (datetime('now')), visto_em TEXT NOT NULL DEFAULT (datetime('now')),
+    PRIMARY KEY (leitor_id, marca))`)
+  const aparelho = apelidoDeAgente(ctx.agente)
+  const de = dicaDeIp(ctx.ip)
+  const marca = `${aparelho}|${de ?? ''}`
+  const ja = banco.prepare('UPDATE aparelho_visto SET visto_em = datetime(\'now\') WHERE leitor_id = ? AND marca = ?').run(leitorId, marca).changes
+  if (ja) return
+  const conhecidos = banco.prepare('SELECT COUNT(*) n FROM aparelho_visto WHERE leitor_id = ?').get(leitorId).n
+  banco.prepare('INSERT INTO aparelho_visto (leitor_id, marca) VALUES (?,?)').run(leitorId, marca)
+  // guarda os 30 mais recentes por conta
+  banco.prepare(`DELETE FROM aparelho_visto WHERE leitor_id = ? AND marca NOT IN (
+    SELECT marca FROM aparelho_visto WHERE leitor_id = ? ORDER BY visto_em DESC LIMIT 30)`).run(leitorId, leitorId)
+  if (!conhecidos) return
+  const quando = new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo', dateStyle: 'short', timeStyle: 'short' })
+  avisar(banco, leitorId, {
+    chave: `entrada-${marca}-${Date.now()}`, tipo: 'seguranca',
+    titulo: `Entrada nova na sua conta: ${aparelho}`,
+    corpo: `Em ${quando}${de ? `, de uma rede ${de}` : ''}. Se foi você, está tudo certo. Se não foi, troque a senha e use "Sair dos outros aparelhos" na sua conta.`,
+    link: '/conta.html#aparelhos',
+  })
 }
 
 /**
@@ -559,8 +624,8 @@ export async function trocarMinhaSenha(banco, leitorId, { atual, nova }, ctx = {
 
 /** Como a pessoa quer ser chamada. É o único campo de perfil que ela edita. */
 export function mudarNome(banco, leitorId, { nome }) {
-  const limpo = String(nome ?? '').trim().slice(0, 80)
-  if (limpo.length < 2) throw new Recusa('Diga como quer ser chamado.')
+  const limpo = limparNomeDeTela(nome)
+  if ([...limpo].length < 2) throw new Recusa('Diga como quer ser chamado.')
   banco.prepare('UPDATE leitor SET nome = ? WHERE id = ?').run(limpo, leitorId)
   return { pessoa: publico(banco.prepare('SELECT * FROM leitor WHERE id = ?').get(leitorId)) }
 }

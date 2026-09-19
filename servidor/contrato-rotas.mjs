@@ -74,6 +74,7 @@ const srv = spawn(process.execPath, [join(AQUI, 'api.mjs')], {
     ...process.env, FIO_BANCO: BANCO, FIO_ESTATICO: site, FIO_PORTA: String(porta), FIO_INSEGURO: '1',
     FIO_CONVITE: 'aberto', FIO_SITE: BASE, FIO_ESTEIRA_CHAVE: 'chave-do-contrato-com-mais-de-24-letras',
     GOOGLE_CLIENT_ID: '', GOOGLE_CLIENT_SECRET: '', FIO_GOOGLE: '',
+    FIO_PAINEL: '/painel-do-contrato-1234',
   },
   stdio: ['ignore', 'pipe', 'pipe'],
 })
@@ -181,6 +182,22 @@ const DE_ADMIN_POST = [
   ['/api/ajustes', { gratis_livros_mes: 3 }], ['/api/convite', { nota: 'teste' }],
 ]
 for (const [c, corpo] of DE_ADMIN_POST) for (const q of ['anon', 'leitora', 'dona']) await caso('admin', q, 'POST', c, { corpo })
+
+// ── o painel no endereço secreto (http/painel.mjs): só a dona o recebe ──
+for (const c of ['/painel-do-contrato-1234', '/painel-do-contrato-1234/painel.js', '/admin.html', '/admin', '/painel-errado-do-contrato'])
+  for (const q of ['anon', 'leitora', 'dona']) await caso('painel', q, 'GET', c)
+
+// ── o site "desligado" pelo painel (manutencao.mjs) ──
+await caso('manutenção liga', 'dona', 'POST', '/api/ajustes', { corpo: { manutencao: true } })
+for (const q of ['anon', 'leitora', 'dona']) {
+  await caso('em manutenção', q, 'GET', '/')
+  await caso('em manutenção', q, 'GET', '/api/livro/1')
+  await caso('em manutenção', q, 'GET', '/api/saude')
+  await caso('em manutenção', q, 'GET', '/api/eu')
+}
+await caso('em manutenção', 'anon', 'POST', '/api/entrar', { corpo: { usuario: 'leitora', senha: 'errada' } })
+await caso('manutenção desliga', 'dona', 'POST', '/api/ajustes', { corpo: { manutencao: false } })
+await caso('depois da manutenção', 'anon', 'GET', '/api/livro/1')
 
 // ── CSRF e tamanho: escrita sem x-fio, de outra origem, e corpo gigante ──
 await caso('sem x-fio', 'leitora', 'POST', '/api/meu-nome', { corpo: { nome: 'x' }, semFio: true })

@@ -17,6 +17,7 @@
 //   http/pedido.mjs      corpo com teto, JSON, cookies, IP, origem
 //   http/roteador.mjs    a ORDEM das travas, igual para toda rota
 //   http/estatico.mjs    os arquivos do site
+//   http/painel.mjs      o painel, num endereço secreto (FIO_PAINEL)
 //   rotas/*.mjs          as rotas, por assunto; cada uma declara acesso
 //                        ('livre' | 'conta' | 'admin'), freio e corpo
 //   <assunto>.mjs        as regras (contas, planos, publicações…)
@@ -44,8 +45,12 @@ import * as correcoes from './correcoes.mjs'
 import * as curadoria from './curadoria.mjs'
 import * as extras from './extras.mjs'
 import * as google from './google.mjs'
+import * as diario from './diario.mjs'
+import * as mangaLista from './manga-lista.mjs'
 import { criarRoteador } from './http/roteador.mjs'
 import { criarEstatico } from './http/estatico.mjs'
+import { criarPainel, caminhoDoPainel } from './http/painel.mjs'
+import * as manutencao from './manutencao.mjs'
 import { cors, ipDe, ORIGENS, SEGURO } from './http/pedido.mjs'
 import rotasDeConta from './rotas/contas.mjs'
 import rotasDoGoogle from './rotas/google.mjs'
@@ -60,7 +65,7 @@ const SITE = process.env.FIO_SITE || `http://localhost:${PORTA}`
 const ESTATICO = process.env.FIO_ESTATICO || join(RAIZ, 'web', 'dist')
 
 const banco = abrir()
-for (const m of [gosto, planos, publicacoes, acesso, esteira, correcoes, curadoria, extras, google]) m.garantirTabelas(banco)
+for (const m of [gosto, planos, publicacoes, acesso, esteira, correcoes, curadoria, extras, google, diario, mangaLista]) m.garantirTabelas(banco)
 // marca a fundação num banco que já tem dona (ver contas.casaFundada)
 contas.casaFundada(banco)
 
@@ -73,6 +78,9 @@ const roteador = criarRoteador({ banco })
 const app = { rota: roteador.rota, quemE: roteador.quemE, banco, estatico: ESTATICO, site: SITE }
 for (const rotas of [rotasDeConta, rotasDoGoogle, rotasDeLeitura, rotasDoLeitor, rotasDePublicacoes, rotasDeQuadrinhos, rotasDoPainel]) rotas(app)
 const site = criarEstatico({ banco, estatico: ESTATICO, quemE: roteador.quemE })
+// o painel num endereço secreto, só para admin (http/painel.mjs)
+const painel = criarPainel({ quemE: roteador.quemE })
+const PAINEL = caminhoDoPainel()
 
 const servidor = createServer(async (req, res) => {
   cors(req, res)
@@ -89,7 +97,10 @@ const servidor = createServer(async (req, res) => {
   let caminho
   try { caminho = decodeURIComponent(new URL(req.url, 'http://x').pathname) } catch { res.writeHead(400); return res.end() }
 
+  // "desligado" pelo painel: quem não é admin vê a página de manutenção
+  if (manutencao.barrar(banco, req, res, caminho, { quemE: roteador.quemE, painel: PAINEL })) return
   if (await roteador.atender(req, res, caminho)) return
+  if (painel(req, res, caminho)) return
   site(req, res, caminho)
 })
 
@@ -99,6 +110,7 @@ servidor.listen(PORTA, () => {
   console.log(`  estático . ${ESTATICO}${existsSync(ESTATICO) ? '' : '  (não existe — rode o build)'}`)
   console.log(`  rotas .... ${roteador.rotas().length}`)
   if (ORIGENS.length) console.log(`  origens .. ${ORIGENS.join(', ')}`)
+  console.log(`  painel ... ${PAINEL ? 'ligado (endereço secreto)' : 'DESLIGADO: falta FIO_PAINEL'}`)
   if (!SEGURO) console.log('  ATENÇÃO: cookie sem Secure (FIO_INSEGURO=1). Só em localhost.')
 })
 

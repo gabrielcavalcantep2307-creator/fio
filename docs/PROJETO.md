@@ -55,7 +55,7 @@ A resposta curta para pedido de livro protegido: dizer em uma frase por que não
           ├── dados/catalogo.json, dados/fichas/*.json, dados/quadrinhos.json
           ├── capas/  (jpg, lei-*.svg, des-*.svg)
           ├── quadrinhos/<série>/<volume>/<página>.jpg
-          └── admin.html, central.html, quadrinhos.html, quadrinho.html, meus-livros.html  (+ .js)
+          └── central.html, quadrinhos.html, quadrinho.html, meus-livros.html  (+ .js)
 
  VPS, container infra-esteira-1 (mesma imagem, mesmo banco)
     └── esteira de tradução, para sempre (servidor/esteira-trabalhador.mjs) → MinT / DeepL
@@ -198,7 +198,7 @@ vídeo) sai na mesma velocidade. O que acelera de verdade:
 - **Cadastro:** o e-mail é opcional. Se a tela manda só o e-mail, deriva-se um nome de usuário válido e livre.
 - **LGPD:** exportar tudo (inclui gosto e avisos); apagar a conta digitando o nome de usuário ou o e-mail, com cascata.
 - **Barra superior única:** `fio-cabecalho.js` + `fio-cabecalho.css` + `fio-tema.js` repetem nas páginas soltas (quadrinhos, comunidade, publicar, planos, para você, painel) a mesma barra do app, com o mesmo tema (lido de `fio.estante.v1`). "buscar" marca `fio:abrir-busca` e o app abre a busca. Comunidade e "para você" têm sub-barra.
-- **Painel** (`/admin.html`, conta `curador`):
+- **Painel** (endereço secreto `FIO_PAINEL`, só para a conta `curador` entrada pelo Google; `/admin.html` leva o admin até lá e é 404 para o resto; arquivos em `servidor/painel/`, fora da pasta pública — ver `servidor/http/painel.mjs` e docs/COMANDOS.md). Aba **Controle**: ligar/desligar site e esteira, o que roda, máquina, segurança, diário do painel:
   - Panorama e Esteira com **a esteira ao vivo**: livro de agora, % dos trechos, tempo restante, % do plano inteiro, últimos livros e log. A esteira manda um pulso (`ingestao/pulso.mjs` → `POST /api/esteira/pulso`, chave `FIO_ESTEIRA_CHAVE` no `.env` da VPS e em `dados/traducoes/.chave-esteira` no PC). Pulso com mais de 2 min = parada.
   - Publicações, Correções, Assinaturas.
   - Configurações: cadastro aberto; "sem conta, só o 1º capítulo"; livros por mês do plano grátis.

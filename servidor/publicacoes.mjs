@@ -654,6 +654,22 @@ export function filaDeRevisao(banco) {
 }
 
 /**
+ * Quem denunciou fica sabendo do que aconteceu (19/09/2026). Antes a denúncia
+ * sumia na fila: a pessoa não sabia se alguém tinha olhado, e denúncia que
+ * não volta resposta ensina a não denunciar. `so`: uma denúncia só (a que foi
+ * resolvida sem tirar a obra); sem ele, todas as abertas daquela obra.
+ */
+function responderDenuncias(banco, publicacaoId, titulo, desfecho, { so = null } = {}) {
+  const abertas = so
+    ? banco.prepare('SELECT id, leitor_id FROM publicacao_denuncia WHERE id = ? AND resolvida_em IS NULL AND leitor_id IS NOT NULL').all(so)
+    : banco.prepare('SELECT id, leitor_id FROM publicacao_denuncia WHERE publicacao_id = ? AND resolvida_em IS NULL AND leitor_id IS NOT NULL').all(publicacaoId)
+  for (const d of abertas) {
+    avisar(banco, d.leitor_id, { chave: `denuncia-resposta-${d.id}`, tipo: 'denuncia',
+      titulo: `Sua denúncia sobre ${titulo} foi analisada`, corpo: desfecho, link: '/publicacoes.html' })
+  }
+}
+
+/**
  * Uma decisão da administração. `alvo`: obra, parte, capa ou denúncia.
  * Obra: aprovar | recusar | suspender | reativar. Parte: aprovar | recusar.
  * Capa: aprovar | recusar. Denúncia: resolver.
@@ -682,6 +698,10 @@ export function decidir(banco, admin, { alvo, id, acao, motivo }) {
         banco.prepare("UPDATE publicacao_parte SET estado='recusada', motivo=? WHERE publicacao_id = ? AND estado = 'revisao'").run(porque, o.id)
       }
       banco.prepare('UPDATE publicacao SET estado=?, motivo=? WHERE id = ?').run(acao === 'recusar' ? 'recusada' : 'suspensa', porque, o.id)
+      if (acao === 'suspender') {
+        responderDenuncias(banco, o.id, o.titulo, 'Obrigado. A obra saiu do ar e o autor foi avisado do motivo.')
+        banco.prepare("UPDATE publicacao_denuncia SET resolvida_em = datetime('now') WHERE publicacao_id = ? AND resolvida_em IS NULL").run(o.id)
+      }
       avisarAutor(o.autor_id, `${acao === 'recusar' ? 'Não aprovada' : 'Suspensa'}: ${o.titulo}`, porque)
     } else throw new Recusa('Ação desconhecida.')
     return { ok: true }
@@ -726,6 +746,8 @@ export function decidir(banco, admin, { alvo, id, acao, motivo }) {
   }
 
   if (alvo === 'denuncia' && acao === 'resolver') {
+    const d = banco.prepare('SELECT d.id, p.id pub, p.titulo FROM publicacao_denuncia d JOIN publicacao p ON p.id = d.publicacao_id WHERE d.id = ?').get(Number(id))
+    if (d) responderDenuncias(banco, d.pub, d.titulo, 'Olhamos com cuidado e a obra continua no ar: não achamos nela o problema apontado. Obrigado por avisar.', { so: d.id })
     const r = banco.prepare("UPDATE publicacao_denuncia SET resolvida_em = datetime('now') WHERE id = ? AND resolvida_em IS NULL").run(Number(id))
     if (!r.changes) throw new Recusa('Denúncia não encontrada.', 404)
     return { ok: true }

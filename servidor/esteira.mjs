@@ -16,6 +16,7 @@
 
 import { Recusa } from './contas.mjs'
 import { avisar } from './gosto.mjs'
+import { nomeDoGutenberg, limparNome } from './nomes.mjs'
 
 export function garantirTabelas(banco) {
   banco.exec(`CREATE TABLE IF NOT EXISTS esteira_pulso (
@@ -80,7 +81,28 @@ export function estado(banco) {
     configurada: true,
     publicadas: banco.prepare("SELECT COUNT(*) n FROM texto WHERE fonte = 'fio_traducao'").get().n,
     fila: { espera: fila.espera ?? 0, na_esteira: fila.na_esteira ?? 0, pronto: fila.pronto ?? 0, erro: fila.erro ?? 0 },
+    previsao: previsao(banco, pulso),
   }
+}
+
+/**
+ * Quando a fila acaba, no ritmo de verdade (19/09/2026).
+ *
+ * O ritmo sai dos últimos livros que a esteira terminou (palavras ÷ minutos,
+ * que o pulso já traz); o tamanho da fila sai do `bytes` de cada livro, que a
+ * esteira mede antes de escolher. Uma palavra dá uns 6 bytes com o espaço. Os
+ * livros ainda sem tamanho entram pela média dos medidos.
+ */
+export function previsao(banco, pulso) {
+  const feitos = (pulso?.ultimos ?? []).filter((u) => u.ok && u.palavras > 0 && u.min > 0)
+  if (!feitos.length) return null
+  const porMinuto = feitos.reduce((n, u) => n + u.palavras, 0) / feitos.reduce((n, u) => n + u.min, 0)
+  const fila = banco.prepare("SELECT bytes FROM fila_traducao WHERE estado IN ('espera','na_esteira')").all()
+  if (!fila.length) return { livros: 0, palavras: 0, porMinuto: Math.round(porMinuto), dias: 0 }
+  const medidos = fila.map((f) => f.bytes).filter((b) => b > 0 && b < 1e9)
+  const media = medidos.length ? medidos.reduce((a, b) => a + b, 0) / medidos.length : 400_000
+  const palavras = fila.reduce((n, f) => n + (f.bytes > 0 && f.bytes < 1e9 ? f.bytes : media), 0) / 6
+  return { livros: fila.length, palavras: Math.round(palavras), porMinuto: Math.round(porMinuto), dias: Math.round(palavras / porMinuto / 60 / 24 * 10) / 10 }
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -146,7 +168,7 @@ export function avaliar(livro) {
   const morte = autores.some((a) => a.death_year == null) ? null : Math.max(...autores.map((a) => a.death_year))
   const idioma = livro.languages?.[0] ?? null
   const tradutor = (livro.translators ?? []).find((t) => t.death_year == null || t.death_year > ANO_LIMITE)
-  const nomeDe = (a) => a.name.split(', ').reverse().join(' ')
+  const nomeDe = (a) => nomeDoGutenberg(a.name)
   let problema = null
   if (!autor) problema = 'sem autor identificado'
   else if (morte == null) problema = autores.length > 1 ? 'não se sabe quando um dos autores morreu' : 'não se sabe quando o autor morreu'
@@ -264,10 +286,13 @@ export function promover(banco) {
   banco.exec('BEGIN')
   try {
     for (const f of esperando) {
-      let obraId = achaObra.get(f.titulo, f.autor)?.id
+      // o nome como se escreve (servidor/nomes.mjs): pedidos antigos da fila
+      // ainda trazem "G. K. (Gilbert Keith) Chesterton"
+      const autor = limparNome(f.autor) || f.autor
+      let obraId = achaObra.get(f.titulo, autor)?.id
       if (!obraId) {
-        const pessoa = achaPessoa.get(f.autor)
-          ?? { id: Number(poePessoa.run(f.autor, f.autor, f.morte).lastInsertRowid) }
+        const pessoa = achaPessoa.get(autor)
+          ?? { id: Number(poePessoa.run(autor, autor, f.morte).lastInsertRowid) }
         if (f.morte) poMorte.run(f.morte, pessoa.id)
         obraId = Number(poeObra.run(f.titulo, f.titulo, f.idioma).lastInsertRowid)
         liga.run(obraId, pessoa.id)

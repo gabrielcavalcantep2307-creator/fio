@@ -17,13 +17,16 @@
 //
 // O que NÃO tem, de propósito: acesso ao Docker. Dar o socket do Docker ao
 // site seria dar a VPS inteira a quem invadisse o site. O painel MOSTRA o
-// estado e mexe só no que já é do banco (pausar a esteira, sessões).
+// estado e mexe só no que já é do banco (ligar e desligar a esteira, o modo
+// manutenção, as sessões).
 
 import { readFileSync, statSync, statfsSync } from 'node:fs'
 import { join } from 'node:path'
 import { loadavg, cpus } from 'node:os'
 import * as esteira from './esteira.mjs'
 import { minhasSessoes, adminSoPeloGoogle } from './contas.mjs'
+import * as manutencao from './manutencao.mjs'
+import * as diario from './diario.mjs'
 
 const ESTADO = process.env.FIO_ESTADO || '/estado'
 const INICIO = new Date()
@@ -81,7 +84,9 @@ export function retrato(banco, { pessoa, token }) {
   const avisos = []
   const diz = (nivel, assunto, texto) => avisos.push({ nivel, assunto, texto })
 
-  diz('ok', 'Site', `no ar desde ${INICIO.toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' })}`)
+  const emManutencao = manutencao.ligada(banco)
+  if (emManutencao) diz('problema', 'Site', 'DESLIGADO para os leitores (manutenção). Só você vê o site. Religue abaixo.')
+  else diz('ok', 'Site', `no ar desde ${INICIO.toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' })}`)
 
   if (e.pausada) diz('atencao', 'Esteira', 'pausada pelo painel. Nada se traduz até você retomar.')
   else if (e.viva) diz('ok', 'Esteira', e.pulso?.estado === 'ociosa' ? 'em dia, esperando livros novos' : 'trabalhando')
@@ -93,10 +98,8 @@ export function retrato(banco, { pessoa, token }) {
   else if (hB > 36) diz('problema', 'Backup do banco', `o último é de ${Math.round(hB)} h atrás. O backup diário falhou.`)
   else diz('ok', 'Backup do banco', `feito há ${Math.round(hB)} h`)
 
-  const hP = horasDesde(copiaPc?.quando)
-  if (hP == null) diz('atencao', 'Cópia no seu PC', 'nenhuma cópia registrada ainda.')
-  else if (hP > 72) diz('atencao', 'Cópia no seu PC', `a última é de ${Math.round(hP / 24)} dias atrás. Ela roda quando o notebook está ligado.`)
-  else diz('ok', 'Cópia no seu PC', `feita há ${hP < 1 ? 'menos de 1' : Math.round(hP)} h`)
+  // A cópia no PC deixou de ser automática em 19/09 (o dono quer nada rodando
+  // no computador): ela só aparece no painel quando alguém roda à mão.
 
   if (mem) {
     const pct = mem.livre / mem.total
@@ -113,8 +116,9 @@ export function retrato(banco, { pessoa, token }) {
 
   return {
     avisos,
-    site: { desde: INICIO.toISOString(), versao, memoria: process.memoryUsage().rss },
-    esteira: { viva: e.viva, pausada: e.pausada, estado: e.pulso?.estado ?? null, fila: e.fila },
+    site: { desde: INICIO.toISOString(), versao, memoria: process.memoryUsage().rss, manutencao: emManutencao },
+    esteira: { viva: e.viva, pausada: e.pausada, estado: e.pulso?.estado ?? null, fila: e.fila, previsao: e.previsao },
+    diario: diario.ultimos(banco, 20),
     maquina: { memoria: mem, disco: hd, carga: loadavg(), nucleos: cpus().length, banco: tamanhoDoBanco() },
     backup, copiaPc, vps,
     seguranca: {

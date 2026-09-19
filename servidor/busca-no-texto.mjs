@@ -134,7 +134,9 @@ export function criarBuscaNoTexto(banco) {
       if (porObra.has(l.obra_id)) { porObra.get(l.obra_id).outros++; continue }
       porObra.set(l.obra_id, {
         obra: l.obra_id,
-        titulo: l.titulo_pt || l.titulo,
+        // 134 títulos do acervo trazem o subtítulo depois de uma quebra de
+        // linha ("Iracema↵com uma noticia biographica…"): na busca, só a 1ª
+        titulo: String(l.titulo_pt || l.titulo).split(/[\r\n]+/)[0].trim(),
         autor: l.autor ?? 'autoria não identificada',
         capitulo: l.capitulo,
         capituloTitulo: l.capitulo_titulo,

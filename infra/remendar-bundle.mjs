@@ -318,6 +318,26 @@ const REMENDOS = [
     de: 'h===`dados`&&(0,N.jsxs)(`section`,{className:`mt-8 pt-8`',
     para: '!1&&(0,N.jsxs)(`section`,{className:`mt-8 pt-8`',
   },
+  // ── varredura de bugs de 19/09/2026 ──
+  {
+    nome: 'cadastro: o piso da senha é 8, como no servidor',
+    // O servidor desceu o piso de 10 para 8 de propósito (servidor/seguranca.mjs,
+    // avaliarSenha); a tela continuava recusando 8 e 9 com "Pelo menos 10".
+    de: 'function xe(e){return e.length<10?{ok:!1,aviso:`Pelo menos 10 caracteres.`}',
+    para: 'function xe(e){return e.length<8?{ok:!1,aviso:`A senha precisa de pelo menos 8 caracteres.`}',
+  },
+  {
+    nome: 'cadastro: a dica da senha',
+    de: 'children:[`Dez caracteres, e comprimento vale mais que símbolo: `,',
+    para: 'children:[`Oito caracteres ou mais, e comprimento vale mais que símbolo: `,',
+  },
+  {
+    nome: 'cadastro: a pergunta de segurança é da lista',
+    // O servidor recusa pergunta escrita à mão (ela entregaria que a conta
+    // existe); a tela convidava a escrever a sua e depois dava erro.
+    de: 'placeholder:`escolha uma da lista ou escreva a sua`',
+    para: 'placeholder:`toque para escolher uma pergunta da lista`',
+  },
 ]
 
 let s = readFileSync(arg('base'), 'utf8')

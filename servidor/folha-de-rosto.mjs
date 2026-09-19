@@ -25,6 +25,15 @@ const PARECE_LIVRO = 200
 /** Quantos capítulos do começo podem ser aparato antes de a gente desistir. */
 const ATE_O_CAPITULO = 4
 
+/** O título do capítulo um. Sem prefixo, só "I" ou "1" (um título "Um dia" não conta). */
+const CAPITULO_UM = /^(?:(?:cap[íi]tulo|chapter|parte|livro|canto|book|part)\s+(?:i|1|um|primeiro|primeira|one|first)|(?:primeira|first)\s+(?:parte|part)|(?:parte|livro|canto)\s+primeir[ao]|i|1)(?:\s*(?:[—–-]|[.:](?=\s|$|[—–-])).*)?$/i
+
+/** Título que já é número de seção ("II", "3."): antes do "I", o livro já começou. */
+const NUMERAL = /^(?:[ivxlc]+|\d+)\.?$/i
+
+/** O que vem antes do capítulo um só é pulado se for curto: prefácio longo é livro. */
+const ANTES_DO_UM = 1500
+
 /**
  * @param caps capítulos em ordem, cada um com `{ ordem, palavras, corpo?, titulo? }`.
  *             `corpo` é opcional: sem ele decide-se só por tamanho e título,
@@ -33,6 +42,17 @@ const ATE_O_CAPITULO = 4
  */
 export function ondeComecaOLivro(caps) {
   if (!caps?.length) return 1
+
+  // O jeito mais seguro de achar o começo: um capítulo que SE CHAMA o
+  // primeiro ("I", "Capítulo I", "Chapter 1", "Primeira parte") logo no
+  // início, com só coisa curta antes dele. Achado na varredura de 19/09/2026:
+  // O Cortiço abria numa página de epígrafes ("PARIS", com Cícero e o Jornal
+  // de Timon) seguida do índice — nenhuma das duas tem palavra de editora, e
+  // a regra de baixo deixava passar.
+  const primeiro = caps.findIndex((c, k) => k > 0 && k <= ATE_O_CAPITULO && CAPITULO_UM.test(String(c.titulo ?? '').trim()))
+  const tituloDe = (c) => String(c.titulo ?? '').trim()
+  if (primeiro > 0 && caps.slice(0, primeiro).every((c) => (c.palavras ?? 0) < ANTES_DO_UM
+    && !NUMERAL.test(tituloDe(c)) && !CAPITULO_UM.test(tituloDe(c)))) return caps[primeiro].ordem
 
   let i = 0
   while (i < caps.length && i < ATE_O_CAPITULO) {

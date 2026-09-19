@@ -14,6 +14,8 @@ export const CHAVES = {
   // 17/09: o portão por páginas deu lugar à amostra (portao_ativo = sem conta
   // lê só o 1º capítulo) e ao limite do plano grátis, em livros por mês.
   gratis_livros_mes: 'int',
+  // 19/09: "desligar o site" pelo painel (servidor/manutencao.mjs)
+  manutencao: 'bool',
 }
 
 // A régua editorial de sempre: 300 palavras por página é o meio-termo entre
