@@ -57,8 +57,8 @@ A resposta curta para pedido de livro protegido: dizer em uma frase por que não
           ├── quadrinhos/<série>/<volume>/<página>.jpg
           └── admin.html, central.html, quadrinhos.html, quadrinho.html, meus-livros.html  (+ .js)
 
- PC do dono
-    └── esteira de tradução (node ingestao/esteira.mjs --subir) → MinT (Wikimedia, grátis)
+ VPS, container infra-esteira-1 (mesma imagem, mesmo banco)
+    └── esteira de tradução, para sempre (servidor/esteira-trabalhador.mjs) → MinT / DeepL
 ```
 
 ### O site no ar é um bundle remendado — nunca rode `infra/publicar.sh`
@@ -152,14 +152,32 @@ navegador.
 Não é "IA do Claude": é o **MinT**, o serviço de tradução automática da
 Wikimedia, grátis e sem chave.
 
-1. Livro entra pelo painel (aba Esteira), no formato `Título | Autor | id-gutenberg | língua`.
-2. `node ingestao/puxar-fila.mjs` (no PC) transforma a fila em obra "a caminho" e acrescenta em `dados/traducoes/esteira.json`.
-3. `node ingestao/esteira.mjs --subir` baixa o original, divide em capítulos, traduz parágrafo por parágrafo (8 em paralelo) e guarda um **caderno** para retomar de onde parou.
-4. A cada 5 livros, `infra/subir-traducoes.sh` instala na VPS, reindexa a busca e republica o catálogo.
-5. O livro aparece com o aviso "tradução automática, sem revisão humana" e o original ao lado.
+**Desde 18/09/2026 a esteira é um serviço da API, na VPS, e roda para sempre.**
+É o serviço `esteira` do `infra/docker-compose.yml`: mesma imagem e mesmo
+banco da API, container à parte (448 MB, 0,8 CPU, `restart: unless-stopped`),
+comando `node servidor/esteira-trabalhador.mjs`. À parte porque `node:sqlite`
+é síncrono (instalar e republicar dentro da API travariam o site) e para um
+livro pesado derrubar a esteira, nunca o site. O PC não participa mais.
 
-**Limitação:** a esteira roda no **PC do dono**. PC dormindo mata a esteira;
-rodar de novo retoma.
+A fila do banco (`fila_traducao`) é a única lista de trabalho. A cada volta:
+1. promove o que o painel e os assinantes pediram (`espera` → obra → `na_esteira`);
+2. se pausada no painel, espera;
+3. mede o tamanho de todas as fontes novas (HEAD com `accept-encoding: identity`; com gzip o Gutenberg não diz o tamanho);
+4. escolhe: pedido de assinante → livro já começado (tradução pronta ou caderno) → do menor para o maior;
+5. traduz com `ingestao/traduzir-obra.mjs` num processo filho (caderno em `/dados/esteira`, 8 em paralelo, freio adaptativo); filho sem avançar 1 h é morto;
+6. instala (`instalarTraducao`), põe na busca **só aquele livro** (`indexarTexto`/`indexarObra`, menos de 1 s) e marca pronto (quem pediu recebe aviso);
+7. republica `catalogo.json` e `fichas/` (`ingestao/publicar.mjs`, ~30 s, troca por `rename`; recusa catálogo com menos de 90% das obras).
+
+Falha: volta sozinha em 30 min, 2 h, 8 h, 1 dia e 3 dias; depois vira `erro`,
+e o painel tem "tentar de novo". Fonte que não é livro e 404 vão direto para
+`erro`. Serviço de tradução fora do ar: espera 10 min sem gastar tentativa.
+Vigia: nada avançou em 3 h, o processo sai e o Docker religa.
+
+O pulso vai direto para `esteira_pulso` (sem HTTP); o painel mostra ao vivo e
+tem **Pausar/Retomar**. `ingestao/esteira.mjs` e `puxar-fila.mjs` (do PC) só
+rodam com `--aqui`, para não traduzir em dobro.
+
+Logs: `docker logs -f infra-esteira-1` na VPS.
 
 **Como acelerar (estudo de 18/09):** mandar vários parágrafos numa chamada só
 ao MinT **não ajuda** (1,37 s por parágrafo em lote contra 0,44 s com 8 em
@@ -229,15 +247,15 @@ node infra/remendar-bundle.mjs --base index-DBmeFHaL.js --index index.html --sai
 #   (fio-comum.js e fio-paginas.css são dividas pelas três páginas novas)
 
 # testes
-node --test servidor/testes.mjs        # 101 testes
+node --test servidor/testes.mjs        # 105 testes
 
 # seções de descoberta e catálogo (dentro do container)
 node /app/ingestao/secoes.mjs --banco /dados/catalogo.db --gravar
 node /app/ingestao/publicar.mjs --saida /tmp/dados   # depois copiar catalogo.json e fichas/
 
-# esteira (PC) — manda o pulso ao painel sozinha
-node ingestao/puxar-fila.mjs
-node ingestao/esteira.mjs --subir --minutos 100000
+# esteira (VPS, sozinha) — acompanhar e mexer
+docker logs -f infra-esteira-1
+docker exec infra-esteira-1 node servidor/esteira-trabalhador.mjs --importar /dados/esteira/plano.json
 
 # quadrinhos do Commons (Little Nemo): catálogo + downloads; o download roda no host
 node ingestao/quadrinhos-commons.mjs --completo quadrinhos-completo.json --baixar commons-downloads.tsv
@@ -272,7 +290,6 @@ Antes de rodar um script de ingestão no container, copie-o de novo.
   - o fim dos remendos.
 - **Chave do Google Vision** para a tradução dos balões de Little Nemo (e depois Krazy Kat, Tokyo Puck): sem ela, o OCR do Windows não dá qualidade.
 - **Mais "Antes de ler"** (28 livros hoje) e mais "Você gostou de…".
-- **Esteira independente do PC:** mover para a VPS ou para uma máquina que não dorme.
 - **Quadrinho brasileiro em domínio público:** Angelo Agostini e *O Tico-Tico* estão na Hemeroteca da Biblioteca Nacional, sem API simples.
 - **"Say Hello to Black Jack"** (licença livre de uso secundário, em japonês) exigiria traduzir os balões.
 
