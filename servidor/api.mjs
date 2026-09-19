@@ -33,6 +33,7 @@ import { createServer } from 'node:http'
 import { existsSync } from 'node:fs'
 import { join } from 'node:path'
 import { abrir, RAIZ } from './banco/base.mjs'
+import * as contas from './contas.mjs'
 import { fluxoPassa } from './seguranca.mjs'
 import * as gosto from './gosto.mjs'
 import * as planos from './planos.mjs'
@@ -60,6 +61,8 @@ const ESTATICO = process.env.FIO_ESTATICO || join(RAIZ, 'web', 'dist')
 
 const banco = abrir()
 for (const m of [gosto, planos, publicacoes, acesso, esteira, correcoes, curadoria, extras, google]) m.garantirTabelas(banco)
+// marca a fundação num banco que já tem dona (ver contas.casaFundada)
+contas.casaFundada(banco)
 
 // A faxina das imagens de publicação: na subida e de hora em hora.
 const faxina = () => { try { publicacoes.faxina(banco) } catch (e) { console.error('[fio] faxina', e) } }

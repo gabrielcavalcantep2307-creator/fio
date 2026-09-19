@@ -85,6 +85,33 @@ const publico = (l) => ({ id: l.id, usuario: l.usuario, nome: l.nome, email: l.e
  */
 export const portaAberta = () => process.env.FIO_CONVITE === 'aberto'
 
+/**
+ * A casa já teve dona? Uma vez que existiu uma conta de administração, a
+ * regra da "primeira conta vira admin" não vale nunca mais.
+ *
+ * Até 19/09/2026 a regra era só "é a única conta do banco": se todas as
+ * contas fossem apagadas (a dona inclusive), a PRÓXIMA pessoa a se cadastrar
+ * — qualquer uma, com o cadastro aberto — ganhava o painel inteiro. Agora a
+ * fundação fica marcada em `ajuste` e só acontece uma vez na vida do banco.
+ */
+export function casaFundada(banco) {
+  banco.exec('CREATE TABLE IF NOT EXISTS ajuste (chave TEXT PRIMARY KEY, valor TEXT NOT NULL)')
+  const marcada = banco.prepare("SELECT 1 FROM ajuste WHERE chave = 'casa_fundada'").get()
+  if (marcada) return true
+  if (banco.prepare("SELECT 1 FROM leitor WHERE papel = 'admin' LIMIT 1").get()) {
+    banco.prepare("INSERT OR IGNORE INTO ajuste (chave, valor) VALUES ('casa_fundada', datetime('now'))").run()
+    return true
+  }
+  return false
+}
+
+/** Esta conta nova (a única do banco) funda a casa? Se sim, marca e responde true. */
+function fundarCasa(banco) {
+  if (casaFundada(banco) || banco.prepare('SELECT COUNT(*) q FROM leitor').get().q !== 1) return false
+  banco.prepare("INSERT OR IGNORE INTO ajuste (chave, valor) VALUES ('casa_fundada', datetime('now'))").run()
+  return true
+}
+
 export async function criar(banco, { usuario, nome, email, senha, convite, perguntas }, ctx = {}) {
   const emLimite = freio(banco, 'criar', dicaDeIp(ctx.ip) ?? 'sem-ip')
   if (!emLimite.passa) throw new Recusa('Muitas tentativas. Tente daqui a pouco.', 429)
@@ -163,9 +190,7 @@ export async function criar(banco, { usuario, nome, email, senha, convite, pergu
   // A primeira conta da casa é a administradora. Sem isto, uma instalação
   // nova não tem ninguém que possa convidar ou revisar, e a única saída seria
   // mexer no banco por fora.
-  if (banco.prepare('SELECT COUNT(*) q FROM leitor').get().q === 1) {
-    banco.prepare("UPDATE leitor SET papel = 'admin' WHERE id = ?").run(id)
-  }
+  if (fundarCasa(banco)) banco.prepare("UPDATE leitor SET papel = 'admin' WHERE id = ?").run(id)
 
   if (conv) {
     banco.prepare(`UPDATE convite SET usado_por = ?, usado_em = datetime('now') WHERE id = ?`)

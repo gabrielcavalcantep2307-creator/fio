@@ -1976,3 +1976,16 @@ test('catálogo: publicar UMA obra dá o mesmo que refazer o catálogo inteiro',
   // o catálogo encolhido não substitui o que está no ar
   assert.equal(publicarCatalogo(b, inteiro, { minimo: 100 }).trocou, false)
 })
+
+test('a primeira conta só vira admin uma vez na vida do banco', async () => {
+  const { DatabaseSync } = await import('node:sqlite')
+  const { casaFundada } = await import('./contas.mjs')
+  const b = new DatabaseSync(':memory:')
+  b.exec("CREATE TABLE leitor (id INTEGER PRIMARY KEY, papel TEXT NOT NULL DEFAULT 'leitor')")
+  assert.equal(casaFundada(b), false, 'banco novo ainda não tem dona')
+  b.exec("INSERT INTO leitor (papel) VALUES ('admin')")
+  assert.equal(casaFundada(b), true)
+  // a dona e todo mundo apagam a conta: a casa continua fundada
+  b.exec('DELETE FROM leitor')
+  assert.equal(casaFundada(b), true, 'banco esvaziado voltou a dar o painel ao próximo cadastro')
+})

@@ -14,8 +14,12 @@
 # 04/09/2026, com 2,2 GB de catalogo sem copia nenhuma.
 
 set -euo pipefail
+# O backup tem as contas (resumos de senha, e-mails): só o root lê. Até
+# 19/09/2026 saía 644, legível por qualquer usuário da máquina.
+umask 077
 PASTA="${1:-/opt/fio/backups}"
 mkdir -p "$PASTA"
+chmod 700 "$PASTA"
 QUANDO=$(date +%Y%m%d-%H%M)
 
 docker compose -f /opt/fio/infra/docker-compose.yml exec -T fio \

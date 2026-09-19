@@ -16,7 +16,7 @@
 set -euo pipefail
 
 MAQUINA="${MAQUINA:-root@142.93.57.2}"
-CHAVE="${CHAVE_SSH:-$HOME/.ssh/picord-deploy}"
+CHAVE="${CHAVE_SSH:-$HOME/.ssh/fiolib-deploy}"
 SITE_REMOTO=/opt/fio/site
 ENDERECO="${ENDERECO:-https://fiolib.com.br}"
 

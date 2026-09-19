@@ -20,7 +20,7 @@
 set -euo pipefail
 
 MAQUINA="${MAQUINA:-root@142.93.57.2}"
-CHAVE="${CHAVE_SSH:-$HOME/.ssh/picord-deploy}"
+CHAVE="${CHAVE_SSH:-$HOME/.ssh/fiolib-deploy}"
 DOMINIO="${DOMINIO:-fio.142-93-57-2.sslip.io}"
 CASA=/opt/fio
 

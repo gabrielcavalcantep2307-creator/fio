@@ -51,7 +51,7 @@ testes novos cobrem a busca, que antes não tinha nenhum. (commit `710a8ef`)
 
 ## 2. O backup do Fio não funcionava — corrigido
 
-O cron da madrugada copiava só o Picord. O backup do Fio existia como script no
+O cron da madrugada copiava só o Wallt (que ainda se chamava Picord). O backup do Fio existia como script no
 repositório e **nunca tinha sido agendado**. Pior: quando fui agendá-lo, ele
 quebrou na segunda linha —
 

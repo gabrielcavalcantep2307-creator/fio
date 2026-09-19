@@ -150,7 +150,7 @@ que "as contas sobreviveram" seja um número na tela e não uma esperança.
 ## Rodando na mão, na máquina
 
 ```bash
-ssh -i ~/.ssh/picord-deploy root@142.93.57.2
+ssh -i ~/.ssh/fiolib-deploy root@142.93.57.2
 cd /opt/fio/infra
 
 docker compose ps                       # de pé?
@@ -274,7 +274,7 @@ sido reescrito até alcançar o que está no ar — e, mesmo assim, guarde antes
 uma cópia do que está lá:
 
 ```bash
-ssh -i ~/.ssh/picord-deploy root@142.93.57.2 'cp -r /opt/fio/site /opt/fio/site.antes'
+ssh -i ~/.ssh/fiolib-deploy root@142.93.57.2 'cp -r /opt/fio/site /opt/fio/site.antes'
 ```
 
 Dois defeitos que estavam no caminho e foram consertados junto:

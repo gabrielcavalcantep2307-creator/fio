@@ -14,3 +14,7 @@ web/dist/
 .chave-*
 .env.*
 !.env.exemplo
+
+# a cópia do que está no ar (infra/copiar-do-ar.mjs): tem o banco com as contas
+/site-no-ar/
+/backups-do-ar/
