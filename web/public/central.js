@@ -5,16 +5,8 @@
 // Todo texto entra por nó de texto — título de livro e corpo de aviso nunca
 // viram HTML — e link de aviso só é seguido se for caminho da própria casa.
 
-const pedir = (caminho, corpo) => fetch('/api' + caminho, {
-  method: corpo ? 'POST' : 'GET',
-  headers: corpo ? { 'content-type': 'application/json', 'x-fio': '1' } : {},
-  body: corpo ? JSON.stringify(corpo) : undefined,
-  credentials: 'include',
-}).then(async (r) => {
-  const j = await r.json().catch(() => ({}))
-  if (!r.ok) { const e = new Error(j.erro || `erro ${r.status}`); e.status = r.status; throw e }
-  return j
-})
+// a conversa com a API é a de todas as páginas (/fio-api.js)
+const pedir = (caminho, corpo) => fioApi.pedir(caminho, corpo)
 
 const el = (tag, attrs = {}, ...filhos) => {
   const e = document.createElement(tag)

@@ -101,12 +101,12 @@
   if (lembrado && Date.now() - lembrado.em < 10_000) {
     eu = lembrado.eu; avisos = lembrado.avisos; desenhar()
   } else {
-    fetch('/api/eu', { credentials: 'same-origin' }).then((r) => (r.ok ? r.json() : null)).then(async (r) => {
+    fioApi.eu().then((p) => (p ? { pessoa: p } : null)).then(async (r) => {
       eu = r?.pessoa ?? null
       if (eu) window.fioDono?.conferir(eu.id)
       desenhar()
       if (eu) {
-        const x = await fetch('/api/avisos/contagem', { credentials: 'same-origin' }).then((y) => (y.ok ? y.json() : null)).catch(() => null)
+        const x = await fioApi.pedir('/avisos/contagem').catch(() => null)
         avisos = x?.naoLidos || 0; desenhar()
       }
       try { sessionStorage.setItem('fio:barra', JSON.stringify({ eu, avisos, em: Date.now() })) } catch {}

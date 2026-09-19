@@ -31,7 +31,7 @@ let escondeTimer = null
 // cada 15 s e ao sair da página. Ao abrir, o que for mais novo vence.
 let pendenteConta = null, relogioConta = null
 async function puxarDaConta() {
-  const r = await fetch('/api/quadrinhos/progresso', { credentials: 'same-origin' }).then((x) => (x.ok ? x.json() : null)).catch(() => null)
+  const r = await fioApi.pedir('/quadrinhos/progresso').catch(() => null)
   if (!r?.series) return false
   window.fioDono?.conferir(r.dono) // dados de outra conta saem antes de misturar
   const todos = ler('fio:quadrinhos', {})
@@ -44,10 +44,9 @@ async function puxarDaConta() {
 }
 function mandarParaConta(agora = false) {
   if (!pendenteConta) return
-  const corpo = JSON.stringify({ itens: [pendenteConta] })
+  const corpo = { itens: [pendenteConta] }
   pendenteConta = null
-  fetch('/api/quadrinhos/progresso', { method: 'POST', credentials: 'same-origin', keepalive: agora,
-    headers: { 'content-type': 'application/json', 'x-fio': '1' }, body: corpo }).catch(() => {})
+  fioApi.pedir('/quadrinhos/progresso', corpo, { manter: agora }).catch(() => {})
 }
 addEventListener('pagehide', () => mandarParaConta(true))
 
@@ -63,8 +62,8 @@ async function iniciar() {
   // Sem conta, só o primeiro volume de cada série (o servidor recusa as
   // imagens dos outros). Em vez de páginas quebradas, o convite.
   if (c.n > 1) {
-    const eu = await fetch('/api/eu', { credentials: 'same-origin' }).then((r) => (r.ok ? r.json() : null)).catch(() => null)
-    if (!eu?.pessoa) {
+    const eu = await fioApi.eu()
+    if (!eu) {
       const caixa = document.createElement('div')
       caixa.setAttribute('style', 'position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:20px;background:#111;color:#eee;font:16px/1.5 Inter,system-ui,sans-serif;text-align:center')
       const dentro = document.createElement('div')

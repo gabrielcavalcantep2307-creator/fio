@@ -16,24 +16,9 @@ function el(tag, attrs = {}, ...filhos) {
   return e
 }
 
-async function pedir(caminho, corpo, { bruto = null } = {}) {
-  const r = await fetch('/api' + caminho, {
-    method: corpo || bruto ? 'POST' : 'GET',
-    headers: bruto ? { 'x-fio': '1', 'content-type': 'application/octet-stream' }
-      : corpo ? { 'content-type': 'application/json', 'x-fio': '1' } : {},
-    body: bruto ?? (corpo ? JSON.stringify(corpo) : undefined),
-    credentials: 'same-origin',
-  })
-  const j = await r.json().catch(() => ({}))
-  if (!r.ok) { const e = new Error(j.erro || `erro ${r.status}`); e.status = r.status; throw e }
-  return j
-}
-
-let _eu
-function eu() {
-  _eu ??= pedir('/eu').then((r) => r.pessoa).catch(() => null)
-  return _eu
-}
+// A conversa com a API é a de todas as páginas (/fio-api.js, carregado antes).
+const pedir = (caminho, corpo, opcoes) => fioApi.pedir(caminho, corpo, opcoes)
+const eu = () => fioApi.eu()
 
 // `replaceChildren(null)` escreve "null" na tela (já apareceu na central em
 // 16/09 e na ficha em 17/09). Todo redesenho passa por aqui.

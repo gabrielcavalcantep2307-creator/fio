@@ -5,17 +5,8 @@
 // ADMIN no servidor. Um leitor comum que abrir /admin.html recebe "sem acesso"
 // e as rotas respondem 404 para ele — o painel nem se revela.
 
-const API = '/api'
-const pedir = (caminho, corpo) => fetch(API + caminho, {
-  method: corpo ? 'POST' : 'GET',
-  headers: corpo ? { 'content-type': 'application/json', 'x-fio': '1' } : {},
-  body: corpo ? JSON.stringify(corpo) : undefined,
-  credentials: 'include',
-}).then(async (r) => {
-  const j = await r.json().catch(() => ({}))
-  if (!r.ok) throw new Error(j.erro || `erro ${r.status}`)
-  return j
-})
+// a conversa com a API é a de todas as páginas (/fio-api.js)
+const pedir = (caminho, corpo) => fioApi.pedir(caminho, corpo)
 
 const el = (tag, attrs = {}, ...filhos) => {
   const e = document.createElement(tag)
@@ -205,8 +196,7 @@ async function acervoLivros(alvo) {
           el('button', { class: 'fraco', onclick: async () => {
             const arq = arquivoCapa.files[0]; if (!arq) return saida.replaceChildren(recado('ruim', 'Escolha a imagem da capa.'))
             try {
-              const r = await fetch(`/api/admin/curadoria/capa?tipo=obra&id=${o.id}`, { method: 'POST', credentials: 'include', headers: { 'x-fio': '1' }, body: arq })
-              const j = await r.json(); if (!r.ok) throw new Error(j.erro)
+              await fioApi.pedir(`/admin/curadoria/capa?tipo=obra&id=${o.id}`, null, { bruto: arq })
               baseLivros = null; abrirLivro(o.id)
             } catch (e) { saida.replaceChildren(recado('ruim', e.message)) }
           } }, 'Enviar capa nova'),
@@ -280,8 +270,7 @@ async function acervoQuadrinhos(alvo) {
           el('div', { style: 'display:flex;gap:8px;align-items:center;flex-wrap:wrap' }, arquivo, el('button', { class: 'fraco', onclick: async () => {
             const arq = arquivo.files[0]; if (!arq) return
             try {
-              const r = await fetch(`/api/admin/curadoria/capa?tipo=serie&id=${encodeURIComponent(s.id)}`, { method: 'POST', credentials: 'include', headers: { 'x-fio': '1' }, body: arq })
-              const j = await r.json(); if (!r.ok) throw new Error(j.erro)
+              await fioApi.pedir(`/admin/curadoria/capa?tipo=serie&id=${encodeURIComponent(s.id)}`, null, { bruto: arq })
               saida.replaceChildren(recado('bom', 'Capa enviada.')); acervoQuadrinhos(alvo)
             } catch (e) { saida.replaceChildren(recado('ruim', e.message)) }
           } }, 'ou enviar imagem')),
@@ -372,7 +361,10 @@ function esteiraAoVivo() {
       pu?.log?.length ? el('details', { style: 'margin-top:12px' }, el('summary', { class: 'ajuda', style: 'cursor:pointer' }, 'últimas linhas do log'),
         el('pre', { class: 'mono', style: 'white-space:pre-wrap;background:var(--fundo);padding:10px;border-radius:8px;max-height:220px;overflow:auto' }, pu.log.join('\n'))) : null)
   }
-  atualizar()
+  // A primeira leitura espera a caixa entrar na página: chamada aqui, na hora,
+  // ela ainda não está no documento e `atualizar` desistia — o painel ficava
+  // 10 s em "Perguntando à esteira…".
+  setTimeout(atualizar, 0)
   clearInterval(relogioEsteira)
   relogioEsteira = setInterval(atualizar, 10_000)
   return caixa

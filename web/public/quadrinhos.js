@@ -24,8 +24,7 @@ const lerProgresso = () => { try { return JSON.parse(localStorage.getItem('fio:q
 const main = document.getElementById('main')
 
 // Progresso da conta chega aqui antes de desenhar "continuar lendo" (17/09).
-const progressoDaConta = fetch('/api/quadrinhos/progresso', { credentials: 'same-origin' })
-  .then((r) => (r.ok ? r.json() : null)).then((r) => {
+const progressoDaConta = fioApi.pedir('/quadrinhos/progresso').catch(() => null).then((r) => {
     if (!r?.series) return
     window.fioDono?.conferir(r.dono) // dados de outra conta saem antes de misturar
     const todos = lerProgresso()
@@ -140,7 +139,7 @@ const filtrosPadrao = () => !filtros.q && filtros.tipo === 'todos' && filtros.co
 let emAlta = null
 function vitrineDescobrir() {
   const caixa = el('div', { class: 'vitrine-m' })
-  emAlta ??= fetch('/api/mangas?ordem=alta').then((r) => (r.ok ? r.json() : null)).then((r) => r?.obras ?? []).catch(() => [])
+  emAlta ??= fioApi.pedir('/mangas?ordem=alta').then((r) => r?.obras ?? []).catch(() => [])
   emAlta.then((lista) => {
     if (!lista.length) return
     const d = lista[Math.floor(Date.now() / 86_400_000) % Math.min(5, lista.length)]
@@ -172,9 +171,7 @@ async function buscar(recomecar) {
   espelharNaUrl()
   desenharDescobrir()
   try {
-    const r = await fetch(`/api/mangas?${queryDosFiltros(proxima)}`).then(async (x) => {
-      const j = await x.json().catch(() => ({})); if (!x.ok) throw new Error(j.erro || `erro ${x.status}`); return j
-    })
+    const r = await fioApi.pedir(`/mangas?${queryDosFiltros(proxima)}`)
     if (meu !== pedidoAtual) return
     const vistos = new Set(resultados.map((o) => o.id))
     resultados.push(...r.obras.filter((o) => !vistos.has(o.id)))
@@ -243,8 +240,7 @@ async function abrirFicha(id) {
   document.addEventListener('keydown', escFecha)
   let d
   try {
-    const x = await fetch(`/api/mangas/${Number(id)}`)
-    d = await x.json(); if (!x.ok) throw new Error(d.erro || 'não abriu')
+    d = await fioApi.pedir(`/mangas/${Number(id)}`)
   } catch (e) { caixa.replaceChildren(el('button', { class: 'fechar', onclick: fecharFicha, 'aria-label': 'Fechar' }, '×'), el('p', { class: 'estado-m' }, e.message)); return }
 
   const emPt = d.ondeLer.filter((l) => l.pt), outros = d.ondeLer.filter((l) => !l.pt)
@@ -404,7 +400,7 @@ async function mostrarAqui() {
         el('div', { class: 't' }, s.titulo), el('div', { class: 'a' }, `${s.autor} · ${s.ano}`))
     })) : el('p', { class: 'estado-m' }, 'Nada com esses filtros.'))
   }
-  const [continuar, vitrine] = await Promise.all([prateleiraContinuar(), fetch('/api/quadrinhos/vitrine').then((r) => (r.ok ? r.json() : null)).catch(() => null)])
+  const [continuar, vitrine] = await Promise.all([prateleiraContinuar(), fioApi.pedir('/quadrinhos/vitrine').catch(() => null)])
   main.replaceChildren(...[
     cabecalho(),
     destaqueDoDia(catalogo.series),

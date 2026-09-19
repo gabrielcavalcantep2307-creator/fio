@@ -3,15 +3,8 @@
 // Sem framework, porque não precisa e porque esta página tem que continuar
 // funcionando no dia em que o resto do site for reescrito.
 
-const api = async (caminho, opcoes = {}) => {
-  const r = await fetch(caminho, {
-    ...opcoes,
-    headers: { 'x-fio': '1', ...(opcoes.headers ?? {}) },
-  })
-  const corpo = await r.json().catch(() => ({}))
-  if (!r.ok) throw new Error(corpo.erro ?? `deu ${r.status}`)
-  return corpo
-}
+// a conversa com a API é a de todas as páginas (/fio-api.js)
+const api = (caminho, corpo, opcoes) => fioApi.pedir(caminho, corpo, opcoes)
 
 const $ = (id) => document.getElementById(id)
 const mostrar = (id, sim) => { $(id).hidden = !sim }
@@ -28,7 +21,7 @@ function recado(texto, ruim = false) {
 let livros = []
 
 async function carregar() {
-  const { livros: lista } = await api('/api/meus-livros')
+  const { livros: lista } = await api('/meus-livros')
   livros = lista
   const ul = $('lista')
   ul.replaceChildren()
@@ -67,11 +60,7 @@ async function carregar() {
     tirar.addEventListener('click', async () => {
       // Apagar é o único passo sem volta desta página.
       if (!confirm(`Tirar "${l.titulo}" da estante? Some o texto e o que você marcou nele.`)) return
-      await api('/api/apagar-meu-livro', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ obra: l.id }),
-      })
+      await api('/apagar-meu-livro', { obra: l.id })
       await carregar()
     })
 
@@ -89,14 +78,10 @@ async function mandar(arquivo) {
   }
   recado(`Lendo ${arquivo.name}…`)
   try {
-    const r = await api('/api/meu-livro', {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/epub+zip',
-        // o nome vai no cabeçalho porque o corpo é o arquivo cru
-        'x-arquivo': encodeURIComponent(arquivo.name),
-      },
-      body: arquivo,
+    // o nome vai no cabeçalho porque o corpo é o arquivo cru
+    const r = await api('/meu-livro', null, {
+      bruto: arquivo,
+      cabecalhos: { 'content-type': 'application/epub+zip', 'x-arquivo': encodeURIComponent(arquivo.name) },
     })
     recado(r.repetido
       ? 'Esse livro já estava na sua estante.'
@@ -124,7 +109,7 @@ let aberto = null
 let capitulo = 0
 
 async function ler(obraId) {
-  aberto = await api(`/api/livro/${obraId}`)
+  aberto = await api(`/livro/${obraId}`)
   capitulo = Number(localStorage.getItem(`fio-c-${obraId}`) ?? 0)
   if (capitulo >= aberto.capitulos.length) capitulo = 0
   mostrar('estante', false)
@@ -164,7 +149,7 @@ document.addEventListener('keydown', (e) => {
 // ── começo ───────────────────────────────────────────────────
 
 try {
-  await api('/api/eu')
+  if (!(await fioApi.eu())) throw new Error('sem conta')
   mostrar('mandar', true)
   mostrar('estante', true)
   await carregar()

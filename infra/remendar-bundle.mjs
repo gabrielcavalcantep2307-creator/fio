@@ -348,6 +348,10 @@ let index = readFileSync(arg('index'), 'utf8').replace(/\/ativos\/index-[\w-]+\.
 // sincronia começa, `window.fioDono` já existe.
 if (!index.includes('/fio-dono.js')) index = index.replace(/<meta charset="UTF-8" \/>/i, (m) => `${m}\n    <script src="/fio-dono.js"></script>`)
 if (!index.includes('/fio-dono.js')) throw new Error('index.html sem /fio-dono.js')
+// /fio-api.js: a conversa com a API de todas as páginas (19/09), antes dos
+// scripts que a usam (fio-leitor.js e fio-app-extras.js, com defer).
+if (!index.includes('/fio-api.js')) index = index.replace('<script src="/fio-dono.js"></script>', (m) => `${m}\n    <script src="/fio-api.js"></script>`)
+if (!index.includes('/fio-api.js')) throw new Error('index.html sem /fio-api.js')
 // /fio-visual.css: a cara dos sites de leitura (18/09), DEPOIS do CSS do app
 if (!index.includes('/fio-visual.css')) index = index.replace('</head>', '    <link rel="stylesheet" href="/fio-visual.css">\n  </head>')
 if (!index.includes('/fio-leitor.js')) index = index.replace('</head>', '    <script defer src="/fio-leitor.js"></script>\n  </head>')

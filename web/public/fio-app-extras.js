@@ -21,11 +21,8 @@
     for (const f of filhos.flat()) if (f != null && f !== false) e.append(f.nodeType ? f : document.createTextNode(String(f)))
     return e
   }
-  const api = (c, corpo) => fetch('/api' + c, {
-    method: corpo ? 'POST' : 'GET', credentials: 'same-origin',
-    headers: corpo ? { 'content-type': 'application/json', 'x-fio': '1' } : {},
-    body: corpo ? JSON.stringify(corpo) : undefined,
-  }).then(async (r) => { const j = await r.json().catch(() => ({})); if (!r.ok) throw Object.assign(new Error(j.erro || `erro ${r.status}`), { status: r.status }); return j })
+  // a conversa com a API é a de todas as páginas (/fio-api.js, carregado antes)
+  const api = (c, corpo) => window.fioApi.pedir(c, corpo)
 
   const guardado = () => { try { return JSON.parse(localStorage.getItem('fio.estante.v1') || '{}') } catch { return {} } }
   let catalogo = null
@@ -213,7 +210,7 @@
     const g = document.getElementById('fio-google')
     if (g && !g.dataset.visto) {
       g.dataset.visto = '1'
-      googleLigado ??= fetch('/api/google/ligado').then((r) => (r.ok ? r.json() : null)).then((r) => !!r?.disponivel).catch(() => false)
+      googleLigado ??= api('/google/ligado').then((r) => !!r?.disponivel).catch(() => false)
       googleLigado.then((sim) => { if (sim) g.style.display = '' })
     }
   }
