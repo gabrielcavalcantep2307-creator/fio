@@ -1,0 +1,2793 @@
+{
+ "entrar :: leitora POST /api/entrar": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": "fio=…; Path=/; HttpOnly; SameSite=Lax; Max-Age=n",
+  "corpo": {
+   "pessoa": {
+    "email": "null",
+    "id": "number",
+    "nome": "string",
+    "papel": "string",
+    "usuario": "string"
+   }
+  }
+ },
+ "entrar :: dona POST /api/entrar": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": "fio=…; Path=/; HttpOnly; SameSite=Lax; Max-Age=n",
+  "corpo": {
+   "pessoa": {
+    "email": "null",
+    "id": "number",
+    "nome": "string",
+    "papel": "string",
+    "usuario": "string"
+   }
+  }
+ },
+ "entrar :: apagavel POST /api/entrar": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": "fio=…; Path=/; HttpOnly; SameSite=Lax; Max-Age=n",
+  "corpo": {
+   "pessoa": {
+    "email": "null",
+    "id": "number",
+    "nome": "string",
+    "papel": "string",
+    "usuario": "string"
+   }
+  }
+ },
+ "senha errada :: anon POST /api/entrar": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Usuário ou senha não conferem."
+  }
+ },
+ "público :: anon GET /api/saude": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "convite": "string",
+   "ok": "boolean",
+   "versao": "number"
+  }
+ },
+ "público :: anon GET /api/sugestoes": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "quantas": "number",
+   "sugestoes": [
+    "string"
+   ]
+  }
+ },
+ "público :: anon GET /api/nome-livre?u=leitora": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "livre": "boolean",
+   "motivo": "string"
+  }
+ },
+ "público :: anon GET /api/nome-livre?u=livre_nome": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "livre": "boolean"
+  }
+ },
+ "público :: anon GET /api/populares": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "mes": [],
+   "semana": []
+  }
+ },
+ "público :: anon GET /api/planos": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "aviso": "string",
+   "disponivel": "boolean",
+   "meu": "null",
+   "planos": [
+    {
+     "chave": "string",
+     "destaques": [
+      "string"
+     ],
+     "frase": "string",
+     "nivel": "number",
+     "nome": "string",
+     "preco": "number",
+     "precoAno": "number"
+    }
+   ],
+   "recursos": [
+    {
+     "grupo": "string",
+     "itens": [
+      {
+       "leitor": "string",
+       "nome": "string",
+       "novelo": "string",
+       "tear": "string",
+       "trama": "string"
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "público :: anon GET /api/novidades": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "obras": []
+  }
+ },
+ "público :: anon GET /api/quadrinhos/vitrine": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "novidades": [],
+   "ranking": []
+  }
+ },
+ "público :: anon GET /api/google/ligado": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "disponivel": "boolean"
+  }
+ },
+ "público :: anon GET /api/correcoes/resumo?obra=1": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "revisao": "null"
+  }
+ },
+ "público :: anon GET /api/publicacoes": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "obras": [],
+   "opcoes": {
+    "classificacoes": {
+     "10": "string",
+     "12": "string",
+     "14": "string",
+     "16": "string",
+     "18": "string",
+     "livre": "string"
+    },
+    "formatos": {
+     "livro": {
+      "contos": "string",
+      "cronicas": "string",
+      "ensaio": "string",
+      "light_novel": "string",
+      "nao_ficcao": "string",
+      "novela": "string",
+      "poesia": "string",
+      "romance": "string",
+      "web_novel": "string"
+     },
+     "quadrinho": {
+      "hq": "string",
+      "manga": "string",
+      "manhua": "string",
+      "manhwa": "string",
+      "tirinha": "string",
+      "webtoon": "string"
+     }
+    },
+    "generos": {
+     "acao": "string",
+     "artes_marciais": "string",
+     "aventura": "string",
+     "biografia": "string",
+     "comedia": "string",
+     "cotidiano": "string",
+     "direito": "string",
+     "distopia": "string",
+     "drama": "string",
+     "esporte": "string",
+     "fantasia": "string",
+     "ficcao_cientifica": "string",
+     "filosofia": "string",
+     "historico": "string",
+     "humor": "string",
+     "infantojuvenil": "string",
+     "isekai": "string",
+     "mecha": "string",
+     "misterio": "string",
+     "poesia": "string",
+     "policial": "string",
+     "politica": "string",
+     "progressao": "string",
+     "psicologico": "string",
+     "romance": "string",
+     "sobrenatural": "string",
+     "suspense": "string",
+     "terror": "string"
+    },
+    "motivos": {
+     "direitos": "string",
+     "menor": "string",
+     "odio": "string",
+     "outro": "string",
+     "sexual": "string",
+     "spam": "string",
+     "violencia": "string"
+    },
+    "tipos": {
+     "livro": "string",
+     "quadrinho": "string"
+    }
+   },
+   "proximaPagina": "null"
+  }
+ },
+ "público :: anon GET /api/publicacao?id=999": {
+  "status": 404,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Publicação não encontrada."
+  }
+ },
+ "público :: anon GET /api/publicacao/parte?id=999&ordem=1": {
+  "status": 404,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Publicação não encontrada."
+  }
+ },
+ "público :: anon GET /api/procurar?q=palavra": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "achados": [],
+   "termo": "string"
+  }
+ },
+ "público :: anon GET /api/obra/1/avaliacoes": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "media": "null",
+   "minha": "null",
+   "quantas": "number",
+   "resenhas": []
+  }
+ },
+ "público :: anon GET /api/livro/1": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "ano": "null",
+   "autor": "string",
+   "autorId": "number",
+   "aviso": "null",
+   "capa": "null",
+   "capaOL": "null",
+   "capitulos": [
+    {
+     "corpo": "string",
+     "ordem": "number",
+     "palavras": "number",
+     "titulo": "string"
+    }
+   ],
+   "comecaEm": "number",
+   "id": "number",
+   "limitado": "string",
+   "minutos": "null",
+   "temas": [],
+   "textoId": "number",
+   "titulo": "string",
+   "traducao": "null",
+   "trilho": "string"
+  }
+ },
+ "público :: anon GET /api/livro/999": {
+  "status": 404,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não temos o texto desta obra."
+  }
+ },
+ "público :: anon GET /api/livro/1/epub": {
+  "status": 302,
+  "tipo": null,
+  "cache": "no-store",
+  "local": "/assinaturas.html?por=epub",
+  "cookie": null,
+  "corpo": ""
+ },
+ "público :: anon GET /api/mangas/abc": {
+  "status": 404,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não existe."
+  }
+ },
+ "público :: anon GET /api/pub-arquivo/nada.jpg": {
+  "status": 404,
+  "tipo": "text/plain",
+  "cache": null,
+  "local": null,
+  "cookie": null,
+  "corpo": "não achei"
+ },
+ "público :: anon GET /api/nao-existe": {
+  "status": 404,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não existe."
+  }
+ },
+ "público :: anon GET /api/eu": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "abri sem x-fio :: anon POST /api/abri/1": {
+  "status": 403,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Pedido sem identificação."
+  }
+ },
+ "abri :: anon POST /api/abri/1": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "ok": "boolean"
+  }
+ },
+ "google entrar :: anon GET /api/google/entrar": {
+  "status": 302,
+  "tipo": null,
+  "cache": "no-store",
+  "local": "/entrar-google.html?erro=Entrar%20com%20o%20Google%20ainda%20n%C3%A3o%20est%C3%A1%20ligado.",
+  "cookie": null,
+  "corpo": ""
+ },
+ "google volta :: anon GET /api/google/volta?error=access_denied": {
+  "status": 302,
+  "tipo": null,
+  "cache": "no-store",
+  "local": "/entrar-google.html?erro=Voc%C3%AA%20cancelou%20a%20entrada%20pelo%20Google.",
+  "cookie": "fio-g=; Path=…; HttpOnly; SameSite=Lax; Max-Age=n",
+  "corpo": ""
+ },
+ "pulso sem chave :: anon POST /api/esteira/pulso": {
+  "status": 404,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não existe."
+  }
+ },
+ "pulso com chave :: anon POST /api/esteira/pulso": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "ok": "boolean"
+  }
+ },
+ "conta :: anon GET /api/eu": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "conta :: leitora GET /api/eu": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "pessoa": {
+    "email": "null",
+    "id": "number",
+    "nome": "string",
+    "papel": "string",
+    "usuario": "string"
+   }
+  }
+ },
+ "conta :: anon GET /api/minhas-perguntas": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "conta :: leitora GET /api/minhas-perguntas": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "perguntas": [
+    {
+     "ordem": "number",
+     "pergunta": "string"
+    }
+   ]
+  }
+ },
+ "conta :: anon GET /api/meus-aparelhos": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "conta :: leitora GET /api/meus-aparelhos": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "sessoes": [
+    {
+     "aparelho": "string",
+     "de": "string",
+     "desde": "string",
+     "esta": "boolean",
+     "expira": "string",
+     "id": "number",
+     "visto": "string"
+    }
+   ]
+  }
+ },
+ "conta :: anon GET /api/exportar": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "conta :: leitora GET /api/exportar": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "assinatura": "null",
+   "avaliacoes": [],
+   "avisos": [],
+   "conta": {
+    "criado_em": "string",
+    "email": "null",
+    "id": "number",
+    "jurisdicao": "string",
+    "nome": "string",
+    "papel": "string",
+    "usuario": "string",
+    "visto_em": "string"
+   },
+   "correcoes": [],
+   "exportadoEm": "string",
+   "google": [],
+   "gosto": "null",
+   "guardado": [],
+   "livros_liberados": [],
+   "meta_leitura": [],
+   "pedidos_traducao": [],
+   "publicacoes": [],
+   "quadrinhos": [],
+   "seguindo": []
+  }
+ },
+ "conta :: anon GET /api/meus-livros": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "conta :: leitora GET /api/meus-livros": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "livros": []
+  }
+ },
+ "conta :: anon GET /api/meus-dados": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "conta :: leitora GET /api/meus-dados": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "itens": []
+  }
+ },
+ "conta :: anon GET /api/gosto": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "conta :: leitora GET /api/gosto": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "opcoes": {
+    "autores": [
+     "string"
+    ],
+    "evitar": [
+     "string"
+    ],
+    "humores": [
+     {
+      "chave": "string",
+      "rotulo": "string"
+     }
+    ],
+    "tempos": [
+     {
+      "chave": "string",
+      "rotulo": "string"
+     }
+    ],
+    "vitrine": [
+     "number"
+    ]
+   },
+   "pedir": "boolean",
+   "respostas": {}
+  }
+ },
+ "conta :: anon GET /api/recomendacoes": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "conta :: leitora GET /api/recomendacoes": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "obras": [],
+   "pedir": "boolean",
+   "semSinais": "boolean"
+  }
+ },
+ "conta :: anon GET /api/avisos": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "conta :: leitora GET /api/avisos": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "avisos": [],
+   "naoLidos": "number"
+  }
+ },
+ "conta :: anon GET /api/avisos/contagem": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "conta :: leitora GET /api/avisos/contagem": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "naoLidos": "number"
+  }
+ },
+ "conta :: anon GET /api/pedidos-traducao": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "conta :: leitora GET /api/pedidos-traducao": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "limite": "number",
+   "pedidos": [],
+   "plano": "string",
+   "usados": "number"
+  }
+ },
+ "conta :: anon GET /api/pedidos-traducao/buscar?q=ab": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "conta :: leitora GET /api/pedidos-traducao/buscar?q=ab": {
+  "status": 400,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Digite ao menos 3 letras."
+  }
+ },
+ "conta :: anon GET /api/meta": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "conta :: leitora GET /api/meta": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "ano": "number",
+   "lendo": "number",
+   "lidos": [],
+   "meta": "null",
+   "porMes": [
+    "number"
+   ]
+  }
+ },
+ "conta :: anon GET /api/quadrinhos/progresso": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "conta :: leitora GET /api/quadrinhos/progresso": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "dono": "number",
+   "series": []
+  }
+ },
+ "conta :: anon GET /api/google": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "conta :: leitora GET /api/google": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "desde": "null",
+   "disponivel": "boolean",
+   "email": "null",
+   "ligado": "boolean",
+   "semSenha": "boolean"
+  }
+ },
+ "conta :: anon GET /api/minha-conta": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "conta :: leitora GET /api/minha-conta": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "conta": {
+    "desde": "string",
+    "email": "null",
+    "id": "number",
+    "nome": "string",
+    "papel": "string",
+    "usuario": "string"
+   },
+   "numeros": {
+    "correcoes": "number",
+    "lendo": "number",
+    "lidos": "number",
+    "marcacoes": "number",
+    "publicacoes": "number",
+    "queroLer": "number",
+    "resenhas": "number",
+    "seguindo": "number"
+   },
+   "plano": {
+    "chave": "string",
+    "nome": "string",
+    "uso": {
+     "livros": {
+      "limite": "number",
+      "renovaEm": "null",
+      "usados": "number"
+     },
+     "pedidos": {
+      "limite": "number",
+      "usados": "number"
+     }
+    }
+   }
+  }
+ },
+ "conta :: anon GET /api/minhas-publicacoes": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "conta :: leitora GET /api/minhas-publicacoes": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "obras": [],
+   "opcoes": {
+    "classificacoes": {
+     "10": "string",
+     "12": "string",
+     "14": "string",
+     "16": "string",
+     "18": "string",
+     "livre": "string"
+    },
+    "formatos": {
+     "livro": {
+      "contos": "string",
+      "cronicas": "string",
+      "ensaio": "string",
+      "light_novel": "string",
+      "nao_ficcao": "string",
+      "novela": "string",
+      "poesia": "string",
+      "romance": "string",
+      "web_novel": "string"
+     },
+     "quadrinho": {
+      "hq": "string",
+      "manga": "string",
+      "manhua": "string",
+      "manhwa": "string",
+      "tirinha": "string",
+      "webtoon": "string"
+     }
+    },
+    "generos": {
+     "acao": "string",
+     "artes_marciais": "string",
+     "aventura": "string",
+     "biografia": "string",
+     "comedia": "string",
+     "cotidiano": "string",
+     "direito": "string",
+     "distopia": "string",
+     "drama": "string",
+     "esporte": "string",
+     "fantasia": "string",
+     "ficcao_cientifica": "string",
+     "filosofia": "string",
+     "historico": "string",
+     "humor": "string",
+     "infantojuvenil": "string",
+     "isekai": "string",
+     "mecha": "string",
+     "misterio": "string",
+     "poesia": "string",
+     "policial": "string",
+     "politica": "string",
+     "progressao": "string",
+     "psicologico": "string",
+     "romance": "string",
+     "sobrenatural": "string",
+     "suspense": "string",
+     "terror": "string"
+    },
+    "motivos": {
+     "direitos": "string",
+     "menor": "string",
+     "odio": "string",
+     "outro": "string",
+     "sexual": "string",
+     "spam": "string",
+     "violencia": "string"
+    },
+    "tipos": {
+     "livro": "string",
+     "quadrinho": "string"
+    }
+   },
+   "plano": {
+    "chave": "string",
+    "limites": "null",
+    "nome": "string"
+   },
+   "uso": {
+    "bytes": "number",
+    "obras": "number"
+   }
+  }
+ },
+ "conta :: anon POST /api/meu-nome": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "conta :: leitora POST /api/meu-nome": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "pessoa": {
+    "email": "null",
+    "id": "number",
+    "nome": "string",
+    "papel": "string",
+    "usuario": "string"
+   }
+  }
+ },
+ "conta :: anon POST /api/meus-dados": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "conta :: leitora POST /api/meus-dados": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "itens": []
+  }
+ },
+ "conta :: anon POST /api/avaliar": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "conta :: leitora POST /api/avaliar": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "media": "number",
+   "minha": {
+    "nota": "number",
+    "resenha": "string",
+    "revela": "number"
+   },
+   "quantas": "number",
+   "resenhas": [
+    {
+     "minha": "boolean",
+     "nota": "number",
+     "quando": "string",
+     "quem": "string",
+     "revela": "boolean",
+     "texto": "string"
+    }
+   ]
+  }
+ },
+ "conta :: anon POST /api/desavaliar": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "conta :: leitora POST /api/desavaliar": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "media": "null",
+   "minha": "null",
+   "quantas": "number",
+   "resenhas": []
+  }
+ },
+ "conta :: anon POST /api/apagar-meu-livro": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "conta :: leitora POST /api/apagar-meu-livro": {
+  "status": 404,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Esse livro não é seu."
+  }
+ },
+ "conta :: anon POST /api/gosto": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "conta :: leitora POST /api/gosto": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "obras": [],
+   "ok": "boolean",
+   "pedir": "boolean",
+   "respostas": {
+    "autores": [],
+    "evitar": [],
+    "favoritos": [],
+    "humores": [],
+    "tempo": "string"
+   },
+   "semSinais": "boolean"
+  }
+ },
+ "conta :: anon POST /api/avisos/lido": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "conta :: leitora POST /api/avisos/lido": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "marcados": "number"
+  }
+ },
+ "conta :: anon POST /api/meta": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "conta :: leitora POST /api/meta": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "ano": "number",
+   "lendo": "number",
+   "lidos": [],
+   "meta": "number",
+   "porMes": [
+    "number"
+   ]
+  }
+ },
+ "conta :: anon POST /api/quadrinhos/progresso": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "conta :: leitora POST /api/quadrinhos/progresso": {
+  "status": 400,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Formato inesperado."
+  }
+ },
+ "conta :: anon POST /api/publicacao/seguir": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "conta :: leitora POST /api/publicacao/seguir": {
+  "status": 404,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Publicação não encontrada."
+  }
+ },
+ "conta :: anon POST /api/pedidos-traducao": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "conta :: leitora POST /api/pedidos-traducao": {
+  "status": 403,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Pedir tradução faz parte dos planos Novelo, Trama e Tear."
+  }
+ },
+ "conta :: anon POST /api/correcoes": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "conta :: leitora POST /api/correcoes": {
+  "status": 404,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Só dá para sugerir correção nos livros traduzidos pelo Fio."
+  }
+ },
+ "conta :: anon POST /api/publicacao": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "conta :: leitora POST /api/publicacao": {
+  "status": 403,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Publicar faz parte dos planos Trama e Tear. O seu plano hoje é Grátis."
+  }
+ },
+ "conta :: anon POST /api/publicacao/apagar": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "conta :: leitora POST /api/publicacao/apagar": {
+  "status": 404,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Publicação não encontrada."
+  }
+ },
+ "conta :: anon POST /api/publicacao/parte": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "conta :: leitora POST /api/publicacao/parte": {
+  "status": 403,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Publicar faz parte dos planos Trama e Tear. O seu plano hoje é Grátis."
+  }
+ },
+ "conta :: anon POST /api/publicacao/enviar": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "conta :: leitora POST /api/publicacao/enviar": {
+  "status": 403,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Publicar faz parte dos planos Trama e Tear. O seu plano hoje é Grátis."
+  }
+ },
+ "conta :: anon POST /api/publicacao/denunciar": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "conta :: leitora POST /api/publicacao/denunciar": {
+  "status": 404,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Publicação não encontrada."
+  }
+ },
+ "conta :: anon POST /api/publicacao/partes/ordem": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "conta :: leitora POST /api/publicacao/partes/ordem": {
+  "status": 404,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Publicação não encontrada."
+  }
+ },
+ "conta :: anon POST /api/sair-do-aparelho": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "conta :: leitora POST /api/sair-do-aparelho": {
+  "status": 404,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Aparelho não encontrado."
+  }
+ },
+ "conta :: anon POST /api/meu-email": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "conta :: leitora POST /api/meu-email": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "A senha atual não confere."
+  }
+ },
+ "conta :: anon POST /api/google/senha": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "conta :: leitora POST /api/google/senha": {
+  "status": 409,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Sua conta já tem senha: use \"trocar a senha\"."
+  }
+ },
+ "conta :: anon POST /api/google/desligar": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "conta :: leitora POST /api/google/desligar": {
+  "status": 404,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Sua conta não está ligada ao Google."
+  }
+ },
+ "conta :: anon POST /api/minhas-perguntas": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "conta :: leitora POST /api/minhas-perguntas": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "A senha atual não confere."
+  }
+ },
+ "conta :: anon POST /api/minha-senha": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "conta :: leitora POST /api/minha-senha": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "A senha atual não confere."
+  }
+ },
+ "conta :: anon POST /api/sair-dos-outros": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "conta :: leitora POST /api/sair-dos-outros": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "encerradas": "number"
+  }
+ },
+ "admin :: anon GET /api/painel": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "admin :: leitora GET /api/painel": {
+  "status": 404,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não existe."
+  }
+ },
+ "admin :: dona GET /api/painel": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "acervo": {
+    "autores": "number",
+    "capitulos": "number",
+    "legiveis": "number",
+    "nossas": "number",
+    "obras": "number",
+    "palavras": "number"
+   },
+   "fila": {
+    "erro": "number",
+    "espera": "number",
+    "na_esteira": "number",
+    "pronto": "number"
+   },
+   "leitores": {
+    "contas": "number",
+    "sessoes": "number"
+   },
+   "recentes": []
+  }
+ },
+ "admin :: anon GET /api/fila": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "admin :: leitora GET /api/fila": {
+  "status": 404,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não existe."
+  }
+ },
+ "admin :: dona GET /api/fila": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "itens": []
+  }
+ },
+ "admin :: anon GET /api/admin/esteira": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "admin :: leitora GET /api/admin/esteira": {
+  "status": 404,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não existe."
+  }
+ },
+ "admin :: dona GET /api/admin/esteira": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "configurada": "boolean",
+   "fila": {
+    "erro": "number",
+    "espera": "number",
+    "na_esteira": "number",
+    "pronto": "number"
+   },
+   "pausada": "boolean",
+   "publicadas": "number",
+   "pulso": {
+    "atual": "null",
+    "enviado": "string",
+    "estado": "string",
+    "idadeSegundos": "number",
+    "log": [],
+    "plano": {
+     "total": "null",
+     "traduzidos": "null"
+    },
+    "recebidoEm": "string",
+    "rodada": {
+     "falhas": "null",
+     "feitos": "null",
+     "inicio": "string",
+     "total": "null"
+    },
+    "ultimos": []
+   },
+   "viva": "boolean"
+  }
+ },
+ "admin :: anon GET /api/admin/curadoria": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "admin :: leitora GET /api/admin/curadoria": {
+  "status": 404,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não existe."
+  }
+ },
+ "admin :: dona GET /api/admin/curadoria": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "editados": {
+    "obras": [],
+    "series": []
+   }
+  }
+ },
+ "admin :: anon GET /api/admin/curadoria/base?tipo=obra": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "admin :: leitora GET /api/admin/curadoria/base?tipo=obra": {
+  "status": 404,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não existe."
+  }
+ },
+ "admin :: dona GET /api/admin/curadoria/base?tipo=obra": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "obras": [
+    {
+     "edicao": "null",
+     "id": "number",
+     "minutos": "number",
+     "titulo": "string",
+     "trilho": "string"
+    }
+   ],
+   "temas": []
+  }
+ },
+ "admin :: anon GET /api/admin/curadoria/ficha?id=1": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "admin :: leitora GET /api/admin/curadoria/ficha?id=1": {
+  "status": 404,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não existe."
+  }
+ },
+ "admin :: dona GET /api/admin/curadoria/ficha?id=1": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "edicao": {
+    "campos": {},
+    "id": "number",
+    "oculta": "boolean"
+   },
+   "original": {
+    "capitulos": "number",
+    "id": "number",
+    "titulo": "string"
+   }
+  }
+ },
+ "admin :: anon GET /api/admin/correcoes": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "admin :: leitora GET /api/admin/correcoes": {
+  "status": 404,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não existe."
+  }
+ },
+ "admin :: dona GET /api/admin/correcoes": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "livros": [],
+   "pendentes": []
+  }
+ },
+ "admin :: anon GET /api/admin/assinaturas": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "admin :: leitora GET /api/admin/assinaturas": {
+  "status": 404,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não existe."
+  }
+ },
+ "admin :: dona GET /api/admin/assinaturas": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "assinaturas": [],
+   "planos": [
+    {
+     "chave": "string",
+     "nome": "string"
+    }
+   ]
+  }
+ },
+ "admin :: anon GET /api/admin/publicacoes": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "admin :: leitora GET /api/admin/publicacoes": {
+  "status": 404,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não existe."
+  }
+ },
+ "admin :: dona GET /api/admin/publicacoes": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "denuncias": [],
+   "obras": [],
+   "publicadas": []
+  }
+ },
+ "admin :: anon GET /api/ajustes": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "admin :: leitora GET /api/ajustes": {
+  "status": 404,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não existe."
+  }
+ },
+ "admin :: dona GET /api/ajustes": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "amostra": "boolean",
+   "cadastro_aberto": "boolean",
+   "esteira_paralelo": "number",
+   "gratis_livros_mes": "number",
+   "jurisdicao": "string"
+  }
+ },
+ "admin :: anon POST /api/fila": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "admin :: leitora POST /api/fila": {
+  "status": 404,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não existe."
+  }
+ },
+ "admin :: dona POST /api/fila": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "aceitos": "number",
+   "recusados": []
+  }
+ },
+ "admin :: anon POST /api/fila/remover": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "admin :: leitora POST /api/fila/remover": {
+  "status": 404,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não existe."
+  }
+ },
+ "admin :: dona POST /api/fila/remover": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "removidos": "number"
+  }
+ },
+ "admin :: anon POST /api/fila/retentar": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "admin :: leitora POST /api/fila/retentar": {
+  "status": 404,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não existe."
+  }
+ },
+ "admin :: dona POST /api/fila/retentar": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "mudados": "number"
+  }
+ },
+ "admin :: anon POST /api/admin/esteira/pausa": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "admin :: leitora POST /api/admin/esteira/pausa": {
+  "status": 404,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não existe."
+  }
+ },
+ "admin :: dona POST /api/admin/esteira/pausa": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "configurada": "boolean",
+   "fila": {
+    "erro": "number",
+    "espera": "number",
+    "na_esteira": "number",
+    "pronto": "number"
+   },
+   "pausada": "boolean",
+   "publicadas": "number",
+   "pulso": {
+    "atual": "null",
+    "enviado": "string",
+    "estado": "string",
+    "idadeSegundos": "number",
+    "log": [],
+    "plano": {
+     "total": "null",
+     "traduzidos": "null"
+    },
+    "recebidoEm": "string",
+    "rodada": {
+     "falhas": "null",
+     "feitos": "null",
+     "inicio": "string",
+     "total": "null"
+    },
+    "ultimos": []
+   },
+   "viva": "boolean"
+  }
+ },
+ "admin :: anon POST /api/admin/correcao": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "admin :: leitora POST /api/admin/correcao": {
+  "status": 404,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não existe."
+  }
+ },
+ "admin :: dona POST /api/admin/correcao": {
+  "status": 404,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Correção não encontrada (ou já decidida)."
+  }
+ },
+ "admin :: anon POST /api/admin/correcoes/revisado": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "admin :: leitora POST /api/admin/correcoes/revisado": {
+  "status": 404,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não existe."
+  }
+ },
+ "admin :: dona POST /api/admin/correcoes/revisado": {
+  "status": 404,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Livro não encontrado."
+  }
+ },
+ "admin :: anon POST /api/admin/assinatura": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "admin :: leitora POST /api/admin/assinatura": {
+  "status": 404,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não existe."
+  }
+ },
+ "admin :: dona POST /api/admin/assinatura": {
+  "status": 400,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Plano desconhecido."
+  }
+ },
+ "admin :: anon POST /api/admin/publicacao": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "admin :: leitora POST /api/admin/publicacao": {
+  "status": 404,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não existe."
+  }
+ },
+ "admin :: dona POST /api/admin/publicacao": {
+  "status": 400,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Pedido desconhecido."
+  }
+ },
+ "admin :: anon POST /api/admin/curadoria/obra": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "admin :: leitora POST /api/admin/curadoria/obra": {
+  "status": 404,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não existe."
+  }
+ },
+ "admin :: dona POST /api/admin/curadoria/obra": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "campos": {},
+   "id": "number",
+   "mudouEm": "string",
+   "nota": "null",
+   "oculta": "boolean"
+  }
+ },
+ "admin :: anon POST /api/admin/curadoria/serie": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "admin :: leitora POST /api/admin/curadoria/serie": {
+  "status": 404,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não existe."
+  }
+ },
+ "admin :: dona POST /api/admin/curadoria/serie": {
+  "status": 400,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Série inválida."
+  }
+ },
+ "admin :: anon POST /api/ajustes": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "admin :: leitora POST /api/ajustes": {
+  "status": 404,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não existe."
+  }
+ },
+ "admin :: dona POST /api/ajustes": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "mudou": {
+    "gratis_livros_mes": "number"
+   },
+   "ok": "boolean"
+  }
+ },
+ "admin :: anon POST /api/convite": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "admin :: leitora POST /api/convite": {
+  "status": 403,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não pode."
+  }
+ },
+ "admin :: dona POST /api/convite": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "codigo": "string",
+   "dias": "number"
+  }
+ },
+ "sem x-fio :: leitora POST /api/meu-nome": {
+  "status": 403,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Pedido sem identificação."
+  }
+ },
+ "outra origem :: leitora POST /api/meu-nome": {
+  "status": 403,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Origem não autorizada."
+  }
+ },
+ "outra origem GET :: leitora GET /api/eu": {
+  "status": 403,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Origem não autorizada."
+  }
+ },
+ "corpo gigante :: leitora POST /api/meu-nome": {
+  "status": 413,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Pedido grande demais."
+  }
+ },
+ "json quebrado :: leitora POST /api/meu-nome": {
+  "status": 400,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não entendi o pedido."
+  }
+ },
+ "método errado :: leitora DELETE /api/eu": {
+  "status": 404,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não existe."
+  }
+ },
+ "livro POST :: leitora POST /api/livro/1": {
+  "status": 405,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Só GET."
+  }
+ },
+ "upload :: anon POST /api/meu-livro": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "upload sem x-fio :: anon POST /api/meu-livro": {
+  "status": 403,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Pedido sem identificação."
+  }
+ },
+ "upload outra origem :: anon POST /api/meu-livro": {
+  "status": 403,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Origem não confere."
+  }
+ },
+ "upload :: leitora POST /api/meu-livro": {
+  "status": 400,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não consegui abrir este EPUB: não parece um arquivo zip"
+  }
+ },
+ "upload sem x-fio :: leitora POST /api/meu-livro": {
+  "status": 403,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Pedido sem identificação."
+  }
+ },
+ "upload outra origem :: leitora POST /api/meu-livro": {
+  "status": 403,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Origem não confere."
+  }
+ },
+ "upload :: leitora POST /api/publicacao/imagem?id=999&uso=capa": {
+  "status": 403,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Publicar faz parte dos planos Trama e Tear. O seu plano hoje é Grátis."
+  }
+ },
+ "upload sem x-fio :: leitora POST /api/publicacao/imagem?id=999&uso=capa": {
+  "status": 403,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Pedido sem identificação."
+  }
+ },
+ "upload outra origem :: leitora POST /api/publicacao/imagem?id=999&uso=capa": {
+  "status": 403,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Origem não confere."
+  }
+ },
+ "upload :: leitora POST /api/admin/curadoria/capa?tipo=obra&id=1": {
+  "status": 404,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não existe."
+  }
+ },
+ "upload sem x-fio :: leitora POST /api/admin/curadoria/capa?tipo=obra&id=1": {
+  "status": 403,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Pedido sem identificação."
+  }
+ },
+ "upload outra origem :: leitora POST /api/admin/curadoria/capa?tipo=obra&id=1": {
+  "status": 403,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Origem não confere."
+  }
+ },
+ "upload :: dona POST /api/admin/curadoria/capa?tipo=obra&id=1": {
+  "status": 415,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Só aceitamos imagem JPG, PNG ou WebP."
+  }
+ },
+ "upload sem x-fio :: dona POST /api/admin/curadoria/capa?tipo=obra&id=1": {
+  "status": 403,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Pedido sem identificação."
+  }
+ },
+ "upload outra origem :: dona POST /api/admin/curadoria/capa?tipo=obra&id=1": {
+  "status": 403,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Origem não confere."
+  }
+ },
+ "estático :: anon GET /": {
+  "status": 200,
+  "tipo": "text/html",
+  "cache": "no-cache",
+  "local": null,
+  "cookie": null,
+  "corpo": "texto"
+ },
+ "estático :: anon GET /index.html": {
+  "status": 200,
+  "tipo": "text/html",
+  "cache": "no-cache",
+  "local": null,
+  "cookie": null,
+  "corpo": "texto"
+ },
+ "estático :: anon GET /ativos/app-abc.js": {
+  "status": 200,
+  "tipo": "text/javascript",
+  "cache": "public, max-age=31536000, immutable",
+  "local": null,
+  "cookie": null,
+  "corpo": "texto"
+ },
+ "estático :: anon GET /dados/catalogo.json": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-cache",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "autores": [],
+   "colecoes": [],
+   "geradoEm": "string",
+   "obras": [
+    {
+     "id": "number",
+     "minutos": "number",
+     "titulo": "string",
+     "trilho": "string"
+    }
+   ],
+   "temas": []
+  }
+ },
+ "estático :: anon GET /dados/fichas/1.json": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-cache",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "id": "number",
+   "titulo": "string"
+  }
+ },
+ "estático :: anon GET /../../etc/passwd": {
+  "status": 200,
+  "tipo": "text/html",
+  "cache": "no-cache",
+  "local": null,
+  "cookie": null,
+  "corpo": "texto"
+ },
+ "estático :: anon GET /%2e%2e/%2e%2e/etc/passwd": {
+  "status": 200,
+  "tipo": "text/html",
+  "cache": "no-cache",
+  "local": null,
+  "cookie": null,
+  "corpo": "texto"
+ },
+ "estático :: anon GET /obra/1": {
+  "status": 302,
+  "tipo": null,
+  "cache": null,
+  "local": "/#/obra/1",
+  "cookie": null,
+  "corpo": ""
+ },
+ "estático :: anon GET /quadrinhos/serie-teste/02/002.jpg": {
+  "status": 401,
+  "tipo": "text/plain",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": "crie uma conta para continuar"
+ },
+ "estático :: anon GET /quadrinhos/serie-teste/02/001.jpg": {
+  "status": 200,
+  "tipo": "image/jpeg",
+  "cache": "no-cache",
+  "local": null,
+  "cookie": null,
+  "corpo": "texto"
+ },
+ "estático :: anon GET /nao/existe.png": {
+  "status": 200,
+  "tipo": "text/html",
+  "cache": "no-cache",
+  "local": null,
+  "cookie": null,
+  "corpo": "texto"
+ },
+ "estático :: anon GET /%E0%A4%A": {
+  "status": 400,
+  "tipo": null,
+  "cache": null,
+  "local": null,
+  "cookie": null,
+  "corpo": ""
+ },
+ "estático com conta :: leitora GET /quadrinhos/serie-teste/02/002.jpg": {
+  "status": 200,
+  "tipo": "image/jpeg",
+  "cache": "no-cache",
+  "local": null,
+  "cookie": null,
+  "corpo": "texto"
+ },
+ "estático POST :: anon POST /index.html": {
+  "status": 405,
+  "tipo": null,
+  "cache": null,
+  "local": null,
+  "cookie": null,
+  "corpo": ""
+ },
+ "perguntas :: anon POST /api/perguntas": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "perguntas": [
+    {
+     "ordem": "number",
+     "pergunta": "string"
+    }
+   ]
+  }
+ },
+ "responder errado :: anon POST /api/responder": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "As respostas não conferem."
+  }
+ },
+ "apagar conta sem confirmar :: apagavel POST /api/apagar-conta": {
+  "status": 400,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Digite o seu nome de usuário (ou o e-mail da conta) para confirmar."
+  }
+ },
+ "apagar dados :: apagavel POST /api/apagar-dados": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "apagados": "number"
+  }
+ },
+ "apagar conta :: apagavel POST /api/apagar-conta": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": "fio=; Path=…; HttpOnly; SameSite=Lax; Max-Age=n",
+  "corpo": {
+   "ok": "boolean"
+  }
+ },
+ "depois de apagar :: apagavel GET /api/eu": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "sair :: leitora POST /api/sair": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": "fio=; Path=…; HttpOnly; SameSite=Lax; Max-Age=n",
+  "corpo": {
+   "ok": "boolean"
+  }
+ },
+ "depois de sair :: leitora GET /api/eu": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "cru :: anon GET /../../../../etc/passwd": {
+  "status": 200,
+  "vazou": false
+ },
+ "cru :: anon GET /..%2f..%2f..%2fetc%2fpasswd": {
+  "status": 200,
+  "vazou": false
+ },
+ "cru :: anon GET /%2e%2e%2f%2e%2e%2fetc%2fpasswd": {
+  "status": 200,
+  "vazou": false
+ },
+ "cru :: anon GET /dados/..%5c..%5c..%5cwindows%5cwin.ini": {
+  "status": 200,
+  "vazou": false
+ },
+ "cru :: anon GET /..\\..\\servidor\\api.mjs": {
+  "status": 200,
+  "vazou": false
+ },
+ "cru :: anon GET /%2e%2e/servidor/api.mjs": {
+  "status": 200,
+  "vazou": false
+ },
+ "cru :: anon GET /ativos/../../contrato.db": {
+  "status": 200,
+  "vazou": false
+ },
+ "cru :: anon GET /api/../../contrato.db": {
+  "status": 200,
+  "vazou": false
+ }
+}
