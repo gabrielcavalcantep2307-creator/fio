@@ -6,7 +6,7 @@
 import {
   guardarSenha, conferirSenha, gastarTempoAtoa, sortearToken, resumo,
   sortearConvite, normalizarConvite, freio, perdoar, freioDuplo, perdoarDuplo,
-  conferirEmail, conferirSenha_, dicaDeIp,
+  conferirEmail, conferirSenha_, dicaDeIp, chaveDeIp,
 } from './seguranca.mjs'
 import {
   prepararConjunto, gravarConjunto, perguntasDe, conferirConjunto, fingirTrabalho,
@@ -197,7 +197,7 @@ export async function criar(banco, { usuario, nome, email, senha, convite, pergu
   // Quem não quiser inventar dois usa o mesmo, e isso é o padrão.
   const nomeLimpo = limparNomeDeTela(nome) || usuarioLimpo
 
-  const emLimite = freio(banco, 'criar', dicaDeIp(ctx.ip) ?? 'sem-ip')
+  const emLimite = freio(banco, 'criar', chaveDeIp(ctx.ip))
   if (!emLimite.passa) throw new Recusa('Muitas tentativas. Tente daqui a pouco.', 429)
 
   // As perguntas de segurança são OBRIGATÓRIAS, e são conferidas antes de a
@@ -250,7 +250,7 @@ export async function criar(banco, { usuario, nome, email, senha, convite, pergu
       .run(id, conv.id)
   }
   // deu certo: o histórico de tentativas daquele IP some
-  perdoar(banco, 'criar', dicaDeIp(ctx.ip) ?? 'sem-ip')
+  perdoar(banco, 'criar', chaveDeIp(ctx.ip))
 
   const leitor = banco.prepare('SELECT * FROM leitor WHERE id = ?').get(id)
   return {
@@ -912,7 +912,7 @@ export function registrarAbertura(banco, obraId, ctx = {}) {
   // Freio por IP para que um laço de script não invente popularidade. O IP
   // NÃO é gravado: serve só para contar as tentativas, na tabela de freio,
   // que se limpa sozinha em 24 h.
-  if (!freio(banco, 'abrir', dicaDeIp(ctx.ip) ?? 'sem-ip').passa) return { ok: true }
+  if (!freio(banco, 'abrir', chaveDeIp(ctx.ip)).passa) return { ok: true }
 
   const existe = banco.prepare('SELECT 1 FROM obra WHERE id = ? AND publicada = 1').get(obraId)
   if (!existe) return { ok: true }

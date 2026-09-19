@@ -1,0 +1,19 @@
+# O Caddy da VPS — desde 19/09/2026 ele é DA FIOLIB.
+#
+# Ele atende as portas 80 e 443 e renova os certificados sozinho. Até esse dia
+# pertencia ao Wallt (/opt/picord) e a Fiolib era convidada; o dono decidiu que
+# a Fiolib é o projeto principal, então o arranjo virou: o Caddy mora em
+# /opt/fio/infra/docker-compose.yml (serviço `caddy`) e o Wallt é o convidado.
+#
+# Na VPS esta pasta é /opt/fio/caddy, montada só leitura em /etc/caddy:
+#
+#   Caddyfile                  este arquivo (infra/Caddyfile)
+#   fiolib.caddy               os blocos da Fiolib (infra/Caddyfile.fiolib)
+#   convidados/wallt.caddy     os blocos do Wallt (infra/convidado-wallt.caddy)
+#
+# Publicar qualquer um dos três: `bash infra/publicar-caddy.sh` (valida antes).
+# Quando o Wallt morrer: apagar convidados/wallt.caddy e publicar. A Fiolib
+# nem percebe.
+
+import /etc/caddy/fiolib.caddy
+import /etc/caddy/convidados/*.caddy

@@ -1,0 +1,46 @@
+# O Wallt, CONVIDADO no Caddy da Fiolib (desde 19/09/2026).
+#
+# Cópia dos blocos de /opt/picord/Caddyfile, com o domínio escrito por extenso
+# (o Caddy da Fiolib não recebe as variáveis do .env do Wallt). O site do Wallt
+# continua em /opt/picord/site, montado só leitura em /srv/wallt; o LiveKit
+# (7880) e o emissor de crachá (3000) continuam sendo containers do Wallt.
+#
+# O dono avisou que não vai mais usar o Wallt. Para tirá-lo do ar: apagar este
+# arquivo da VPS (/opt/fio/caddy/convidados/wallt.caddy), publicar o Caddy, e
+# `docker compose -f /opt/picord/docker-compose.yml stop`.
+
+(wallt-servicos) {
+	handle /rtc* {
+		reverse_proxy 127.0.0.1:7880
+	}
+	handle /api/* {
+		uri strip_prefix /api
+		reverse_proxy 127.0.0.1:3000 {
+			flush_interval -1
+		}
+	}
+}
+
+waltt.duckdns.org {
+	encode zstd gzip
+	import wallt-servicos
+
+	handle {
+		root * /srv/wallt
+		try_files {path} /index.html
+		file_server
+	}
+
+	header {
+		Content-Security-Policy "default-src 'self'; script-src 'self' https://accounts.google.com https://apis.google.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://lh3.googleusercontent.com; media-src 'self' blob:; connect-src 'self' wss://waltt.duckdns.org https://accounts.google.com; frame-src https://accounts.google.com; frame-ancestors 'none'"
+		Strict-Transport-Security "max-age=63072000; includeSubDomains"
+		Referrer-Policy "no-referrer"
+		X-Content-Type-Options "nosniff"
+		Permissions-Policy "camera=(self), microphone=(self), display-capture=(self), geolocation=()"
+	}
+}
+
+picordi.duckdns.org {
+	encode zstd gzip
+	redir https://waltt.duckdns.org{uri}
+}

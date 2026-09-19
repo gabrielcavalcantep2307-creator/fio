@@ -411,6 +411,62 @@
    "erro": "Não está entrado."
   }
  },
+ "vitrine :: anon GET /robots.txt": {
+  "status": 200,
+  "tipo": "text/plain",
+  "cache": "public, max-age=3600",
+  "local": null,
+  "cookie": null,
+  "corpo": "texto"
+ },
+ "vitrine :: anon GET /sitemap.xml": {
+  "status": 200,
+  "tipo": "application/xml",
+  "cache": "public, max-age=3600",
+  "local": null,
+  "cookie": null,
+  "corpo": "texto"
+ },
+ "vitrine :: anon GET /livros": {
+  "status": 200,
+  "tipo": "text/html",
+  "cache": "public, max-age=600",
+  "local": null,
+  "cookie": null,
+  "corpo": "texto"
+ },
+ "vitrine :: anon GET /autores": {
+  "status": 200,
+  "tipo": "text/html",
+  "cache": "public, max-age=600",
+  "local": null,
+  "cookie": null,
+  "corpo": "texto"
+ },
+ "vitrine :: anon GET /livro/1": {
+  "status": 301,
+  "tipo": null,
+  "cache": "public, max-age=86400",
+  "local": "/livro/1-livro-de-teste",
+  "cookie": null,
+  "corpo": ""
+ },
+ "vitrine :: anon GET /livro/999999": {
+  "status": 404,
+  "tipo": "text/html",
+  "cache": "public, max-age=600",
+  "local": null,
+  "cookie": null,
+  "corpo": "<!doctype html>\n<html lang=\"pt-BR\">\n<head>\n<meta charset=\"utf-8\">\n<meta name=\"vi"
+ },
+ "vitrine :: anon GET /autor/1": {
+  "status": 404,
+  "tipo": "text/html",
+  "cache": "public, max-age=600",
+  "local": null,
+  "cookie": null,
+  "corpo": "<!doctype html>\n<html lang=\"pt-BR\">\n<head>\n<meta charset=\"utf-8\">\n<meta name=\"vi"
+ },
  "abri sem x-fio :: anon POST /api/abri/1": {
   "status": 403,
   "tipo": "application/json",

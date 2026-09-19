@@ -143,6 +143,10 @@ for (const c of ['/api/saude', '/api/sugestoes', '/api/nome-livre?u=leitora', '/
   '/api/nao-existe', '/api/eu']) {
   await caso('público', 'anon', 'GET', c)
 }
+// a vitrine para o Google (http/vitrine.mjs, 19/09/2026)
+for (const c of ['/robots.txt', '/sitemap.xml', '/livros', '/autores', '/livro/1', '/livro/999999', '/autor/1']) {
+  await caso('vitrine', 'anon', 'GET', c)
+}
 await caso('abri sem x-fio', 'anon', 'POST', '/api/abri/1', { semFio: true })
 await caso('abri', 'anon', 'POST', '/api/abri/1')
 await caso('google entrar', 'anon', 'GET', '/api/google/entrar')

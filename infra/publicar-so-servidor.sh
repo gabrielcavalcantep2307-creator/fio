@@ -66,7 +66,7 @@ tar czf "$PACOTE" ingestao && enviar "rm -rf $CASA/ingestao && tar xzf - -C $CAS
 # Só servidor/ e ingestao/ entram no contexto do build — sem isto o Docker
 # empacotava site/ e backups/ (gigabytes) a cada reconstrução.
 remoto "printf '%s\n' '*' '!servidor/' '!ingestao/' > $CASA/.dockerignore"
-tar czf "$PACOTE" -C infra Dockerfile docker-compose.yml backup.sh Caddyfile.fiolib \
+tar czf "$PACOTE" -C infra Dockerfile docker-compose.yml backup.sh Caddyfile Caddyfile.fiolib convidado-wallt.caddy \
   && enviar "rm -f $CASA/infra/Caddyfile.fio && tar xzf - -C $CASA/infra"
 
 # A versão que vai ao ar, para a aba Controle do painel dizer qual é.

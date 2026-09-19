@@ -330,6 +330,31 @@ test('a busca NÃO devolve obra que o direito não deixa ler', () => {
     'achar o trecho e não poder abrir o livro é pior que não achar')
 })
 
+test('a busca no trabalhador à parte acha o mesmo, e lembra a busca repetida', async () => {
+  const { criarBuscaParalela } = await import('./busca-paralela.mjs')
+  const buscar = criarBuscaParalela(banco, { caminho: join(pasta, 'teste.db') })
+  const r = await buscar('palácio')
+  assert.equal(r.achados.length, 1)
+  assert.equal(r.achados[0].obra, 9101)
+  // o resultado lembrado é cópia: quem chama pode mexer sem estragar o próximo
+  r.achados.length = 0
+  assert.equal((await buscar('PALÁCIO')).achados.length, 1)
+  assert.deepEqual((await buscar('  ')).achados, [])
+  await buscar.parar()
+})
+
+test('o freio separa dois endereços do mesmo pedaço de operadora', async () => {
+  const { chaveDeIp } = await import('./seguranca.mjs')
+  const a = chaveDeIp('177.12.34.56'), b = chaveDeIp('177.12.99.1')
+  assert.notEqual(a, b, 'CGNAT: vizinhos de operadora não dividem o freio')
+  assert.equal(a, chaveDeIp('177.12.34.56'))
+  assert.match(a, /^177\.12\.x\.x#/, 'o começo legível continua para o painel')
+  assert.ok(!a.includes('34.56'), 'o IP inteiro não aparece')
+  assert.equal(chaveDeIp('::ffff:177.12.34.56'), a)
+  assert.equal(chaveDeIp('2804:14c:1:2:aaaa::1'), chaveDeIp('2804:14c:1:2:bbbb::9'), 'IPv6: o /64 é um aparelho')
+  assert.equal(chaveDeIp(null), 'sem-ip')
+})
+
 test('a consulta limpa os operadores do FTS antes de chegar ao índice', () => {
   // um usuário digitando dois-pontos ou aspa solta não pode produzir erro de
   // SQL nem consulta cara — vira termo literal
@@ -2171,4 +2196,45 @@ test('a previsão da fila sai do ritmo dos últimos livros', async () => {
   assert.equal(p.porMinuto, 5000)
   assert.equal(p.palavras, 200_000)
   assert.equal(previsao(b, { ultimos: [] }), null, 'sem livro feito, sem previsão')
+})
+
+// ── diagramação (19/09/2026): o capítulo como página de livro ──
+test('diagramar: emenda a frase cortada, tira página e cabeçalho, conserta o OCR', async () => {
+  const { diagramar } = await import('./diagramar.mjs')
+  const [c] = diagramar([{ ordem: 1, titulo: '', palavras: 0, corpo:
+    '<p>João Romão foi, dos treze aos vinte e cinco annos, empregado de um</p>' +
+    '<p>36</p><p>314 ESTUDOS DA EDADE MEDIA</p>' +
+    '<p>vendeiro que enriqueceu entre as quatro paredes de uma suja e com-</p>' +
+    '<p>mercial taverna. E a noite nSo acabava, entSo veio d^entre as casas.</p>' +
+    '<p>Outro parágrafo, que começa depois de um ponto final e fica sozinho.</p>' }], { fonte: 'archive' })
+  assert.equal(c.corpo,
+    '<p>João Romão foi, dos treze aos vinte e cinco annos, empregado de um vendeiro que enriqueceu entre as quatro paredes de uma suja e commercial taverna. E a noite não acabava, então veio d\'entre as casas.</p>' +
+    '<p>Outro parágrafo, que começa depois de um ponto final e fica sozinho.</p>')
+})
+
+test('diagramar: título, epígrafe, pausa, nota e fala separada por <br>', async () => {
+  const { diagramar } = await import('./diagramar.mjs')
+  const [a, b] = diagramar([
+    { ordem: 1, titulo: 'I', palavras: 0, corpo: '<p> «Periculum dicendi non recuso.» </p><p>(CICERO.)</p><p>Texto do capítulo.[1]</p><p>* * * * *</p><p>Depois.</p>' },
+    { ordem: 2, titulo: 'CAPITULO II', palavras: 0, corpo: '<p>CAPITULO II</p><p>Ele escutou em silencio.<br> Quando acabou, repetiu:<br> — Quem?</p><p>Tu que me deste o teu cuidado,<br>e o teu amor, e a tua mão<br>no inverno escuro</p>' },
+  ])
+  assert.match(a.corpo, /^<p class="fio-cap" aria-hidden="true" data-rot="Capítulo" data-titulo="I"><\/p>/, 'o título entra sem virar texto')
+  assert.match(a.corpo, /<p class="epigrafe">«Periculum dicendi non recuso.»<\/p><p class="atribuicao">\(CICERO.\)<\/p>/)
+  assert.match(a.corpo, /capítulo.<sup class="nota">1<\/sup>/)
+  assert.match(a.corpo, /<p class="pausa">\* \* \*<\/p>/)
+  assert.match(b.corpo, /^<p class="fio-cap">CAPITULO II<\/p>/, 'o título que já está no texto vira o título')
+  assert.match(b.corpo, /<p>Ele escutou em silencio.<\/p><p>Quando acabou, repetiu:<\/p><p>— Quem\?<\/p>/, 'prosa: uma fala por parágrafo')
+  assert.match(b.corpo, /<p class="estrofe">Tu que me deste o teu cuidado,<br>e o teu amor/, 'verso continua verso')
+  // sem título no EPUB, que escreve o seu
+  assert.doesNotMatch(diagramar([{ ordem: 1, titulo: 'I', palavras: 0, corpo: '<p>a.</p>' }], { titulo: false })[0].corpo, /fio-cap/)
+})
+
+test('diagramar: fala entre aspas no começo NÃO vira epígrafe, e o texto do muro vira parágrafos', async () => {
+  const { diagramar } = await import('./diagramar.mjs')
+  const [a, b] = diagramar([
+    { ordem: 1, titulo: '', palavras: 0, corpo: '<p>“Vem cá”, disse ela.</p><p>E ele foi.</p>' },
+    { ordem: 2, titulo: '', palavras: 0, corpo: 'Este foi o primeiro capítulo.\n\nCrie uma conta.' },
+  ])
+  assert.doesNotMatch(a.corpo, /epigrafe/)
+  assert.equal(b.corpo, '<p>Este foi o primeiro capítulo.</p><p>Crie uma conta.</p>')
 })

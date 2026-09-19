@@ -1,21 +1,10 @@
-# O Caddy da Fiolib — o arquivo é NOSSO, o Caddy é emprestado.
+# Os blocos da Fiolib. Na VPS: /opt/fio/caddy/fiolib.caddy.
 #
-# A VPS tem um Caddy só (portas 80 e 443 não se dividem), e ele pertence ao
-# Wallt (/opt/picord). Até 19/09/2026 os blocos da Fiolib moravam DENTRO do
-# Caddyfile do Wallt: mexer num site era editar o arquivo do outro projeto.
-#
-# Agora este arquivo mora em /opt/fio/caddy/fiolib.caddy, e o Wallt só tem uma
-# linha no fim do dele:
-#
-#     import /etc/caddy/fiolib/*.caddy
-#
-# com a pasta /opt/fio/caddy montada ali (só leitura) e /opt/fio/logs montada
-# em /var/log/fiolib para o registro de acesso. Mudar a Fiolib é mexer AQUI e
-# recarregar; o Wallt nem percebe:
+# Desde 19/09/2026 o Caddy é da própria Fiolib (serviço `caddy` em
+# infra/docker-compose.yml); ver infra/Caddyfile, que importa este arquivo e os
+# convidados. Mudar a Fiolib é mexer AQUI e rodar:
 #
 #     bash infra/publicar-caddy.sh
-#
-# Se a pasta sumir, o import não acha nada e o Wallt continua de pé sozinho.
 
 # Endereços antigos e o www levam ao endereço oficial (308 mantém POST).
 www.fiolib.com.br, fiolib.duckdns.org, fio.142-93-57-2.sslip.io {

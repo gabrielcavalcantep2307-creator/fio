@@ -24,6 +24,7 @@
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs'
 import { join } from 'node:path'
 import { createHash } from 'node:crypto'
+import { cabecaParaOGoogle } from './cabeca-google.mjs'
 
 const arg = (n) => { const i = process.argv.indexOf(`--${n}`); return i > 0 ? process.argv[i + 1] : null }
 
@@ -376,6 +377,8 @@ if (!index.includes('/fio-api.js')) throw new Error('index.html sem /fio-api.js'
 if (!index.includes('/fio-visual.css')) index = index.replace('</head>', '    <link rel="stylesheet" href="/fio-visual.css">\n  </head>')
 if (!index.includes('/fio-leitor.js')) index = index.replace('</head>', '    <script defer src="/fio-leitor.js"></script>\n  </head>')
 if (!index.includes('/fio-app-extras.js')) index = index.replace('</head>', '    <script defer src="/fio-app-extras.js"></script>\n  </head>')
+// título, descrição e dados estruturados para o Google (19/09/2026)
+index = cabecaParaOGoogle(index)
 if (!index.includes(nome)) throw new Error('index.html não aponta para o bundle novo')
 if (!index.includes('/fio-leitor.js')) throw new Error('index.html sem /fio-leitor.js')
 writeFileSync(join(saida, 'index.html'), index)

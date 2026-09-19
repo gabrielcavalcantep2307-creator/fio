@@ -25,7 +25,7 @@
 
 import { randomBytes, createHash, timingSafeEqual } from 'node:crypto'
 import { Recusa, abrirSessao } from './contas.mjs'
-import { guardarSenha, freio, dicaDeIp, avaliarSenha } from './seguranca.mjs'
+import { guardarSenha, freio, dicaDeIp, chaveDeIp, avaliarSenha } from './seguranca.mjs'
 import { conferirUsuario, chaveDe, estaTomado } from './usuario.mjs'
 import { cadastroAberto } from './ajustes.mjs'
 import { marcarContaNova } from './gosto.mjs'
@@ -70,7 +70,7 @@ export function enderecoDeVolta(host, site) {
 
 export function comecar(banco, { modo, volta, leitorId, redirectUri, ip }) {
   if (!configurado()) throw new Recusa('Entrar com o Google ainda não está ligado.', 404)
-  if (!freio(banco, 'google', dicaDeIp(ip) ?? 'sem-ip').passa) throw new Recusa('Muitas tentativas. Tente daqui a pouco.', 429)
+  if (!freio(banco, 'google', chaveDeIp(ip)).passa) throw new Recusa('Muitas tentativas. Tente daqui a pouco.', 429)
   faxina()
   if (pendentes.size > 5000) throw new Recusa('Muita gente entrando agora. Tente em instantes.', 503)
   const state = b64url(randomBytes(24))
@@ -178,7 +178,7 @@ export async function resolver(banco, { perfil, modo, leitorId }, ctx = {}) {
 
   // conta nova — a mesma porta do cadastro comum
   if (!cadastroAberto(banco)) throw new Recusa('O cadastro está fechado: só entra quem tem convite. Se você já tem conta, entre com a senha e ligue o Google na página da conta.', 403)
-  if (!freio(banco, 'criar', dicaDeIp(ctx.ip) ?? 'sem-ip').passa) throw new Recusa('Muitas contas criadas daqui. Tente mais tarde.', 429)
+  if (!freio(banco, 'criar', chaveDeIp(ctx.ip)).passa) throw new Recusa('Muitas contas criadas daqui. Tente mais tarde.', 429)
   const usuario = usuarioLivre(banco, perfil.email ? perfil.email.split('@')[0] : perfil.nome || 'leitor')
   // e-mail só se ninguém usa (não juntamos contas pelo e-mail — ver o topo)
   const email = perfil.email && !banco.prepare('SELECT 1 FROM leitor WHERE email = ? COLLATE NOCASE').get(perfil.email) ? perfil.email : null

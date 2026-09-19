@@ -1,12 +1,40 @@
 # O Fio na VPS.
 #
-# Dois serviços da mesma imagem: `fio` (a API e o site) e `esteira` (o
-# trabalhador que traduz a fila para sempre). O Caddy que já roda para o Wallt fica na frente e cuida do
-# TLS — não subimos um segundo servidor web para brigar pelas portas 80 e 443.
+# Três serviços: `caddy` (portas 80/443 e os certificados), e dois da mesma
+# imagem — `fio` (a API e o site) e `esteira` (o trabalhador que traduz a
+# fila para sempre).
+#
+# O Caddy é NOSSO desde 19/09/2026. Antes ele era do Wallt e a Fiolib era
+# convidada; agora o Wallt é que entra como convidado (infra/Caddyfile).
 #
 # Antes de subir: copie `.env.exemplo` para `.env` e preencha.
 
 services:
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    # Rede do host: o Caddy fala com o site em 127.0.0.1:8787 e, enquanto o
+    # Wallt existir, com o LiveKit dele (7880) e o crachá (3000).
+    network_mode: host
+    mem_limit: 192m
+    # Se ele cair, cai tudo: fica ao lado do site no fim da fila do OOM.
+    oom_score_adj: -500
+    volumes:
+      # Caddyfile, fiolib.caddy e convidados/ (bash infra/publicar-caddy.sh)
+      - /opt/fio/caddy:/etc/caddy:ro
+      - /opt/fio/logs:/var/log/fiolib
+      # O site do Wallt, convidado. Apagar esta linha quando o Wallt morrer.
+      - /opt/picord/site:/srv/wallt:ro
+      # Os certificados. Na troca vieram copiados do volume do Wallt, para
+      # não pedir todos de novo ao Let's Encrypt de uma vez.
+      - caddy_data:/data
+      - caddy_config:/config
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '3'
+
   fio:
     build:
       context: ..
@@ -17,8 +45,8 @@ services:
     # sem TLS ao lado do que tem TLS, e alguém acharia.
     ports:
       - '127.0.0.1:8787:8787'
-    # Teto de memória. A VPS tem 2 GB e o Wallt divide ela conosco: um
-    # processo que estoure tem que morrer sozinho, não levar o LiveKit junto.
+    # Teto de memória: um processo que estoure tem que morrer e voltar
+    # sozinho, não levar a máquina (2 GB) junto.
     mem_limit: 320m
     # PRIORIDADE DA FIOLIB (19/09/2026). A máquina é dividida com o Wallt e
     # a soma dos tetos passa da memória real. Se faltar memória para todo
@@ -114,3 +142,5 @@ services:
 
 volumes:
   dados:
+  caddy_data:
+  caddy_config:

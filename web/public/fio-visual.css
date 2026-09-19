@@ -49,3 +49,43 @@
 .fio-novidades .t{font:500 .82rem/1.3 Literata,Georgia,serif;margin-top:.5rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .fio-novidades .q{font-size:.68rem;color:var(--tinta-2);margin-top:.1rem}
 .fio-novidades .novo{position:absolute;z-index:2;top:6px;left:6px;background:var(--acento);color:#fff;font:700 9.5px/1.2 Inter,system-ui,sans-serif;letter-spacing:.08em;border-radius:4px;padding:3px 6px}
+
+/* ── o leitor como página de livro (19/09/2026) ──
+ * O texto chega arrumado por servidor/diagramar.mjs (título do capítulo,
+ * epígrafe, separador de cena, frase cortada emendada). Aqui, o desenho.
+ *
+ * 1. O parágrafo CONTINUA na página seguinte, como em todo livro impresso. O
+ *    bundle mandava cada parágrafo inteiro para a próxima página
+ *    (break-inside: avoid-column) e deixava um buraco em branco embaixo — o
+ *    "espaço que não vai até lá embaixo". Viúva e órfã: no mínimo 2 linhas. */
+.colunas>p,.colunas>blockquote,.colunas>ul,.colunas>ol{break-inside:auto}
+.colunas>.estrofe,.colunas>.fio-cap,.colunas>.epigrafe,.colunas>.atribuicao{break-inside:avoid-column}
+.pagina p{orphans:2;widows:2;text-wrap:pretty}
+
+/* 2. O título do capítulo: centralizado, em serifa, com ar em volta. Quando o
+ *    título não está no texto, ele vem em atributos e o CSS desenha (não vira
+ *    texto: não desloca marcação nem entra na voz). */
+.pagina .fio-cap{text-align:center;text-indent:0;-webkit-hyphens:none;hyphens:none;margin:2.4em 0 2.2em;font-family:var(--familia);font-size:1.5em;font-weight:500;line-height:1.25;letter-spacing:.01em;color:var(--tinta);break-after:avoid-column}
+.pagina .fio-cap:empty::before{content:attr(data-rot);display:block;font:500 .46em/1.5 Inter,system-ui,sans-serif;letter-spacing:.3em;text-transform:uppercase;color:var(--tinta-2);margin-bottom:.5em}
+.pagina .fio-cap:empty:not([data-rot])::before{content:none}
+.pagina .fio-cap:empty::after{content:attr(data-titulo)}
+.pagina .fio-cap:not(:empty)::after{content:'';display:block;width:2.2em;height:1px;background:var(--linha);margin:.9em auto 0}
+.pagina .fio-cap:empty::after{display:block}
+/* o primeiro parágrafo depois do título, da epígrafe ou da pausa: sem recuo,
+ * e a primeira linha em versalete, como nos livros impressos */
+.pagina .fio-cap+p,.pagina .atribuicao+p,.pagina .pausa+p,.pagina h3+p{text-indent:0}
+.pagina .fio-cap+p:not([class])::first-line{font-variant:small-caps;letter-spacing:.03em}
+
+/* 3. Epígrafe: bloco recuado, itálico e menor; quem disse, à direita */
+.pagina .epigrafe{margin:0 0 .25em 20%;text-indent:0;text-align:left;font-style:italic;font-size:.9em;line-height:1.55;-webkit-hyphens:none;hyphens:none}
+.pagina .epigrafe em{font-style:normal}
+.pagina .atribuicao{margin:0 0 1.5em 20%;text-indent:0;text-align:right;font-size:.8em;font-variant:small-caps;letter-spacing:.03em;color:var(--tinta-2)}
+
+/* 4. Subtítulo dentro do capítulo: serifa em versalete, não etiqueta de app */
+.pagina h3{font-family:var(--familia);font-size:1.02em;font-weight:600;font-variant:small-caps;text-transform:none;letter-spacing:.05em;color:var(--tinta);margin:2em 0 1.1em;break-after:avoid-column}
+
+/* 5. Nota de rodapé "[1]" vira número elevado */
+.pagina sup.nota{font-size:.62em;line-height:0;vertical-align:super;color:var(--acento);font-family:Inter,system-ui,sans-serif}
+
+/* 6. O índice do livro impresso (capítulo "Índice"/"Sumário"): centralizado */
+.pagina .indice{text-align:center;text-indent:0;padding-left:0;font-size:.86em;letter-spacing:.03em;line-height:1.9;color:var(--tinta-2);-webkit-hyphens:none;hyphens:none;margin:0 0 1em}

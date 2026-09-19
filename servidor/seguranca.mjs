@@ -19,7 +19,7 @@
 //   comparação em tempo fixo  medir quanto demora a resposta não pode
 //                             entregar quantos caracteres estavam certos.
 
-import { randomBytes, scrypt, createHash, timingSafeEqual } from 'node:crypto'
+import { randomBytes, scrypt, createHash, createHmac, timingSafeEqual } from 'node:crypto'
 import { promisify } from 'node:util'
 
 const scryptAsync = promisify(scrypt)
@@ -105,11 +105,10 @@ export function normalizarConvite(bruto) {
  */
 export const LIMITES = {
   'entrar': { quantas: 8, minutos: 15 },
-  // Criar conta já é limitado pelo convite, que é de uso único: o freio aqui
-  // existe só contra quem varre códigos, não contra quem erra de digitação.
-  // Cinco era pouco — dois enganos e a pessoa ficava trancada uma hora com um
-  // convite VÁLIDO na mão. Doze, e acerto zera o contador.
-  'criar': { quantas: 12, minutos: 60 },
+  // Criar conta, por endereço (chaveDeIp). Com o cadastro aberto, o freio é
+  // contra fábrica de contas, não contra quem erra de digitação: vinte por
+  // hora cabe uma sala de aula atrás do mesmo Wi-Fi.
+  'criar': { quantas: 20, minutos: 60 },
   // começar a entrar com o Google: cada clique guarda um pedido na memória
   'google': { quantas: 30, minutos: 15 },
   // Trocar a senha sabendo a antiga seria um jeito de chutar a senha atual
@@ -191,7 +190,7 @@ export const LIMITES_IP = {
  * é negação de serviço de graça para o atacante.
  */
 export function freioDuplo(banco, acao, email, ip) {
-  const dica = dicaDeIp(ip) ?? 'sem-ip'
+  const dica = chaveDeIp(ip)
   const limiteIp = LIMITES_IP[acao]
   if (limiteIp) {
     const alvo = `${acao}@ip:${dica}`
@@ -206,9 +205,9 @@ export function freioDuplo(banco, acao, email, ip) {
 
 /** Deu certo: limpa o balde do e-mail E o do IP daquela ação. */
 export function perdoarDuplo(banco, acao, email, ip) {
-  perdoar(banco, acao, email ?? (dicaDeIp(ip) ?? 'sem-ip'))
+  perdoar(banco, acao, email ?? chaveDeIp(ip))
   banco.prepare('DELETE FROM tentativa WHERE chave = ?')
-    .run(`${acao}@ip:${dicaDeIp(ip) ?? 'sem-ip'}`)
+    .run(`${acao}@ip:${chaveDeIp(ip)}`)
 }
 
 let ultimaFaxina = 0
@@ -349,6 +348,31 @@ export function dicaDeIp(ip) {
   const v4 = ip.match(/(\d+)\.(\d+)\./)
   if (v4) return `${v4[1]}.${v4[2]}.x.x`
   return ip.split(':').slice(0, 3).join(':') + '::'
+}
+
+/**
+ * A chave dos freios por IP (19/09/2026): o pedaço da operadora E uma marca
+ * do endereço inteiro.
+ *
+ * Os freios contavam por `dicaDeIp` (187.45.x.x). No celular, no Brasil, um
+ * /16 é um pedaço de operadora com dezenas de milhares de pessoas atrás do
+ * mesmo CGNAT: com o site divulgado, as 12 primeiras contas criadas numa hora
+ * pela Vivo de uma região trancariam a 13ª, a 14ª... e a busca (30 por
+ * minuto) seria dividida entre todas elas.
+ *
+ * A marca é um HMAC do IP inteiro (do /64, no IPv6 — um aparelho tem o /64
+ * todo) com um sal sorteado quando o processo sobe e que nunca sai da
+ * memória. Dá para separar um endereço do outro, não dá para voltar ao IP, e
+ * a marca muda a cada reinício. O começo legível continua na frente, para o
+ * painel e para quem investiga ("187.45.x.x#Qm3k9ZpA").
+ */
+const SAL_DOS_FREIOS = randomBytes(16)
+export function chaveDeIp(ip) {
+  const dica = dicaDeIp(ip)
+  if (!dica) return 'sem-ip'
+  const v4 = String(ip).match(/(\d+\.\d+\.\d+\.\d+)$/)
+  const base = v4 ? v4[1] : String(ip).toLowerCase().split(':').slice(0, 4).join(':')
+  return `${dica}#${createHmac('sha256', SAL_DOS_FREIOS).update(base).digest('base64url').slice(0, 8)}`
 }
 
 // ─────────────────────────────────────────────────────────────

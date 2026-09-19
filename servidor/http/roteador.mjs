@@ -26,7 +26,7 @@
 
 import { Recusa } from '../contas.mjs'
 import * as contas from '../contas.mjs'
-import { freio, dicaDeIp } from '../seguranca.mjs'
+import { freio, dicaDeIp, chaveDeIp } from '../seguranca.mjs'
 import { origemOk, lerCookie, lerJson, bytesDoPedido, responder, ipDe } from './pedido.mjs'
 import * as diario from '../diario.mjs'
 
@@ -107,7 +107,7 @@ export function criarRoteador({ banco }) {
         if (r.acesso === 'admin' && pessoa.papel !== 'admin') throw new Recusa('Não existe.', 404)
       }
       if (r.freio) {
-        const chave = r.freio.por === 'ip' ? (dicaDeIp(ip) ?? 'sem-ip') : `leitor-${pessoa.id}`
+        const chave = r.freio.por === 'ip' ? chaveDeIp(ip) : `leitor-${pessoa.id}`
         if (!freio(banco, r.freio.acao, chave).passa) {
           throw new Recusa(r.freio.msg ?? 'Muitas ações seguidas. Espere um pouco.', 429)
         }

@@ -81,67 +81,48 @@ um usuário sem poder sobre a máquina.
 
 ---
 
-## O que a Fiolib tem no Wallt, e por quê
+## O Caddy é da Fiolib (desde 19/09/2026, fim da tarde)
 
-Desde 19/09/2026, **uma linha e duas pastas**. O Caddy é um só (as portas 80 e
-443 não se dividem) e pertence ao Wallt; os blocos da Fiolib moram no arquivo
-DA FIOLIB:
+O Caddy atende as portas 80 e 443 e renova os certificados. Até 19/09 ele era
+do Wallt (`/opt/picord`) e a Fiolib entrava como convidada; o dono decidiu
+que a Fiolib é o projeto principal (o Wallt não vai mais ser usado), e o
+arranjo virou:
 
 ```
-/opt/fio/caddy/fiolib.caddy   ← infra/Caddyfile.fiolib (este repositório)
-/opt/fio/logs/acesso.log      ← registro de acesso da Fiolib (IP mascarado)
+/opt/fio/infra/docker-compose.yml   serviço `caddy` (container infra-caddy-1)
+/opt/fio/caddy/Caddyfile            ← infra/Caddyfile (só dois import)
+/opt/fio/caddy/fiolib.caddy         ← infra/Caddyfile.fiolib
+/opt/fio/caddy/convidados/wallt.caddy ← infra/convidado-wallt.caddy
+/opt/fio/logs/acesso.log            registro de acesso da Fiolib (IP mascarado)
 ```
 
-No Wallt, o `docker-compose.yml` monta essas pastas no container do Caddy
-(`/etc/caddy/fiolib`, só leitura, e `/var/log/fiolib`) e o `Caddyfile`
-termina com `import /etc/caddy/fiolib/*.caddy`. As duas mudanças estão no
-repositório do Wallt também.
+Os certificados vieram copiados do volume do Wallt (`picord_caddy_data` →
+`infra_caddy_data`) para não pedir todos de novo ao Let's Encrypt. O Caddy
+velho foi parado e removido; no compose do Wallt ele só sobe com
+`--profile caddy-proprio`, para um `docker compose up -d` lá não brigar pelas
+portas.
 
-Mexer no Caddy da Fiolib:
+Mexer no Caddy (qualquer um dos três arquivos):
 
 ```bash
-bash infra/publicar-caddy.sh   # valida o conjunto antes; se falhar, nada muda
+bash infra/publicar-caddy.sh   # valida num container descartável; se falhar, nada muda
 ```
 
-Até 18/09 o bloco era colado no fim do Caddyfile do Wallt, e cada mudança na
-Fiolib era uma edição no arquivo do outro projeto — e foi um `sed -i` num
-arquivo montado por ARQUIVO que deixou o container lendo uma versão velha, sem
-a Fiolib (ver AUDITORIA-2026-09-19.md). Montar a PASTA acaba com isso.
+Tirar o Wallt do ar de vez: apagar `/opt/fio/caddy/convidados/wallt.caddy`,
+publicar o Caddy, `docker compose -f /opt/picord/docker-compose.yml stop`.
 
-Antes de aplicar, `caddy validate` conferiu a sintaxe. Um Caddyfile inválido
-recarregado derruba **os dois sites** — validar não é zelo, é o que separa uma
-mudança de um incidente.
+O Caddy monta a PASTA `/opt/fio/caddy`, não arquivos soltos — ver a armadilha
+abaixo, que é o motivo.
 
-> ### A armadilha que custou meia hora: bind mount de ARQUIVO segue o inode
+> ### A armadilha que custou meia hora (18/09): bind mount de ARQUIVO segue o inode
 >
-> O Caddy monta `./Caddyfile` como **arquivo**, não como pasta. O Docker
-> resolve isso pelo inode — e `sed -i`, `mv` e quase todo editor **não editam
-> o arquivo: escrevem outro e trocam o nome**. O inode muda, o vínculo com o
-> container quebra, e o container continua vendo o conteúdo antigo.
->
-> O pior é o silêncio: no host o arquivo está certo, `caddy validate` diz
-> "Valid configuration" (porque valida o que o container tem), o `reload`
-> responde "adapted config to JSON", e **nada muda**. Duas mudanças minhas
-> sumiram assim antes de eu conferir por dentro:
->
-> ```bash
-> docker exec picord-caddy-1 grep -c fiolib /etc/caddy/Caddyfile   # → 0
-> ```
->
-> Para editar sem quebrar, escreva **por dentro do arquivo**:
->
-> ```bash
-> cat novo > /opt/picord/Caddyfile     # trunca o mesmo inode: o vínculo sobrevive
-> cat trecho >> /opt/picord/Caddyfile  # idem
-> mv novo /opt/picord/Caddyfile        # QUEBRA
-> sed -i 's/a/b/' /opt/picord/Caddyfile # QUEBRA
-> ```
->
-> Depois de quebrado, só recriar o container conserta:
-> `docker compose up -d --force-recreate caddy` — dois segundos, e o LiveKit
-> não é tocado, então quem está numa chamada não sente.
->
-> **Confira sempre por dentro do container**, e não no host.
+> Quando o Caddy montava `./Caddyfile` como **arquivo**, `sed -i`, `mv` e quase
+> todo editor escreviam OUTRO arquivo e trocavam o nome: o inode mudava e o
+> container continuava vendo o conteúdo antigo, com `caddy validate` e
+> `reload` dizendo que estava tudo bem. Montando a pasta, isso acabou; mas
+> vale a regra: **confira por dentro do container**
+> (`docker exec infra-caddy-1 cat /etc/caddy/fiolib.caddy`).
+
 
 ---
 
@@ -244,7 +225,7 @@ Ficam em `/opt/fio/infra/.env`, com permissão `600`.
 | Site fora do ar | `docker compose ps` — o healthcheck bate em `/api/saude` a cada 30 s |
 | "unable to open database file" | dono do volume. `docker compose run --rm --user root fio chown -R 1717:1717 /dados` |
 | Login não gruda | cookie sem `Secure` em HTTPS, ou `FIO_ORIGENS` com barra no fim |
-| Caddy não sobe depois de editar | `docker exec picord-caddy-1 caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile` |
+| Caddy não sobe depois de editar | `docker logs infra-caddy-1 --tail 30`; a última configuração boa está em `/opt/fio/caddy.antes` |
 | Falta memória | a VPS tem 2 GB e o LiveKit come 900 MB. `mem_limit: 320m` no Fio existe para ele morrer sozinho em vez de levar o Wallt junto |
 | Publicar levou o site ao ar mas o JS é o velho | `index.html` é `no-cache`, `/ativos/*` é imutável. Se o velho persiste, o `index.html` ficou em cache do lado do Caddy — `docker compose restart` no Fio resolve |
 

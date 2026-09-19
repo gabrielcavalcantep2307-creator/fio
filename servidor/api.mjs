@@ -50,6 +50,7 @@ import * as mangaLista from './manga-lista.mjs'
 import { criarRoteador } from './http/roteador.mjs'
 import { criarEstatico } from './http/estatico.mjs'
 import { criarPainel, caminhoDoPainel } from './http/painel.mjs'
+import { criarVitrine } from './http/vitrine.mjs'
 import * as manutencao from './manutencao.mjs'
 import { cors, ipDe, ORIGENS, SEGURO } from './http/pedido.mjs'
 import rotasDeConta from './rotas/contas.mjs'
@@ -78,6 +79,8 @@ const roteador = criarRoteador({ banco })
 const app = { rota: roteador.rota, quemE: roteador.quemE, banco, estatico: ESTATICO, site: SITE }
 for (const rotas of [rotasDeConta, rotasDoGoogle, rotasDeLeitura, rotasDoLeitor, rotasDePublicacoes, rotasDeQuadrinhos, rotasDoPainel]) rotas(app)
 const site = criarEstatico({ banco, estatico: ESTATICO, quemE: roteador.quemE })
+// uma página de verdade por livro e por autor, para o Google (http/vitrine.mjs)
+const vitrine = criarVitrine({ banco, estatico: ESTATICO, site: SITE })
 // o painel num endereço secreto, só para admin (http/painel.mjs)
 const painel = criarPainel({ quemE: roteador.quemE })
 const PAINEL = caminhoDoPainel()
@@ -101,6 +104,7 @@ const servidor = createServer(async (req, res) => {
   if (manutencao.barrar(banco, req, res, caminho, { quemE: roteador.quemE, painel: PAINEL })) return
   if (await roteador.atender(req, res, caminho)) return
   if (painel(req, res, caminho)) return
+  if (vitrine(req, res, caminho)) return
   site(req, res, caminho)
 })
 

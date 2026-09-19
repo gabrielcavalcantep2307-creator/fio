@@ -10,7 +10,8 @@ import * as correcoes from '../correcoes.mjs'
 import * as extras from '../extras.mjs'
 import { montarEpub, nomeDeArquivo } from '../epub.mjs'
 import { ondeComecaOLivro } from '../folha-de-rosto.mjs'
-import { criarBuscaNoTexto } from '../busca-no-texto.mjs'
+import { criarBuscaParalela } from '../busca-paralela.mjs'
+import { diagramar } from '../diagramar.mjs'
 import { criarQuisDizer } from '../quis-dizer.mjs'
 import { redirecionar } from '../http/pedido.mjs'
 
@@ -27,7 +28,7 @@ const O_TEXTO_QUE_VALE = `t.id = (
      ORDER BY (idioma = 'pt') DESC, normalizado DESC, id LIMIT 1)`
 
 export default function rotasDeLeitura({ rota, banco }) {
-  const buscarNoTexto = criarBuscaNoTexto(banco)
+  const buscarNoTexto = criarBuscaParalela(banco)
   const quisDizer = criarQuisDizer(banco, { jurisdicao: CASA })
 
   const doLivro = banco.prepare(`
@@ -83,6 +84,34 @@ export default function rotasDeLeitura({ rota, banco }) {
     return [...ate, { ordem: (ate.at(-1)?.ordem ?? 0) + 1, titulo: muro.titulo, corpo: muro.corpo, palavras: 0 }]
   }
 
+  // O livro diagramado, guardado na memória. Arrumar um livro leva de 20 ms a
+  // meio segundo (os maiores), no processo que atende todo mundo: um livro
+  // popular aberto por mil pessoas é arrumado uma vez só. Teto de 64 MB
+  // (o container tem 320 MB) e validade de 30 minutos (a esteira pode
+  // republicar um texto).
+  const guardados = new Map()
+  let bytesGuardados = 0
+  const TETO_GUARDADO = 64 * 1024 * 1024
+  function diagramado(o, meu, brutos) {
+    const chave = `${meu ? 'meu' : 'casa'}:${o.texto_id}`
+    const g = guardados.get(chave)
+    if (g && Date.now() - g.em < 30 * 60_000) { guardados.delete(chave); guardados.set(chave, g); return g.caps }
+    if (g) { guardados.delete(chave); bytesGuardados -= g.bytes }
+    const caps = new Map(diagramar(brutos, { fonte: o.fonte }).map((c) => [c.ordem, c]))
+    // texto em português cabe em 1 byte por letra na memória do V8 (Latin-1)
+    let bytes = 0
+    for (const c of caps.values()) bytes += c.corpo.length
+    if (bytes < TETO_GUARDADO / 2) {
+      guardados.set(chave, { em: Date.now(), caps, bytes })
+      bytesGuardados += bytes
+      for (const [k, v] of guardados) {
+        if (bytesGuardados <= TETO_GUARDADO) break
+        guardados.delete(k); bytesGuardados -= v.bytes
+      }
+    }
+    return caps
+  }
+
   // ── o livro inteiro, para o leitor ──
   //
   // O direito é conferido AQUI de novo. `obra.trilho` é rótulo de tela; a
@@ -106,6 +135,16 @@ export default function rotasDeLeitura({ rota, banco }) {
       const decisao = acesso.decidir(banco, pessoa, o.id, { ehLei: o.fonte === 'planalto' })
       if (!decisao.pode) { capitulos = amostra(capitulos, decisao); limitado = decisao.motivo }
     }
+    const comecaEm = ondeComecaOLivro(capitulos)
+    // o texto como página de livro: frase cortada emendada, título, epígrafe
+    // (diagramar.mjs), arrumado uma vez por livro e guardado
+    // A amostra arruma só o que mostra: um livro de 18 MB não pode custar
+    // segundos para entregar um capítulo a quem nem tem conta.
+    if (limitado) capitulos = diagramar(capitulos, { fonte: o.fonte })
+    else {
+      const prontos = diagramado(o, meu, capitulos)
+      capitulos = capitulos.map((c) => prontos.get(c.ordem) ?? diagramar([c], { fonte: o.fonte })[0])
+    }
     return {
       id: o.id,
       titulo: primeiraLinha(o.titulo_pt || o.titulo),
@@ -119,7 +158,7 @@ export default function rotasDeLeitura({ rota, banco }) {
       textoId: o.texto_id,
       // Em que capítulo entrar quando não há marca de onde parou (sem isto o
       // leitor abre na folha de rosto do editor em 582 obras).
-      comecaEm: ondeComecaOLivro(capitulos),
+      comecaEm,
       // O defeito DESTA digitalização, dito antes de o leitor estranhar o texto.
       aviso: o.aviso ?? null,
       // O rótulo viaja com o TEXTO: quem abre direto pelo endereço vê o aviso.
@@ -147,7 +186,7 @@ export default function rotasDeLeitura({ rota, banco }) {
       // O arquivo vai viver no aparelho de alguém: o aviso tem que ir junto.
       direito: o.revisao === 'automatica' ? `Tradução automática do Fio, sem revisão humana. ${o.motivo ?? ''}` : o.motivo,
       fonteUrl: o.fonte_url,
-      capitulos: capitulosDo.all(o.texto_id),
+      capitulos: diagramar(capitulosDo.all(o.texto_id), { fonte: o.fonte, titulo: false }),
     }
     if (!livro.capitulos.length) throw new Recusa('Não temos o texto desta obra.', 404)
     const epub = montarEpub(livro)
@@ -168,9 +207,10 @@ export default function rotasDeLeitura({ rota, banco }) {
   // cara, com freio por faixa de IP — sem ele, um laço na busca é a maneira
   // mais barata de derrubar o site.
   rota({ caminho: '/api/procurar', freio: { acao: 'procurar', por: 'ip', msg: 'Muitas buscas seguidas. Espere um instante.' } },
-    ({ busca }) => {
+    async ({ busca }) => {
       const termo = busca.get('q') ?? ''
-      const r = buscarNoTexto(termo, { jurisdicao: CASA })
+      // num trabalhador à parte, com memória das buscas recentes (busca-paralela.mjs)
+      const r = await buscarNoTexto(termo, { jurisdicao: CASA })
       // achou pouco: talvez um erro de digitação no título ou no autor (quis-dizer.mjs)
       if (r.achados.length < 3) r.achados = [...quisDizer(termo, { fora: new Set(r.achados.map((a) => a.obra)) }), ...r.achados]
       return r

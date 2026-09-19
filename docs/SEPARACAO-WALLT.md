@@ -1,8 +1,14 @@
 # Fiolib sem depender do Wallt — o plano
 
 Pedido do dono em 19/09/2026: os dois projetos separados, a Fiolib como a
-principal, e o Wallt podendo morrer sem levar nada junto. Este é o plano;
-**nada daqui foi executado ainda**, porque mexe no que o Wallt usa todo dia.
+principal, e o Wallt podendo morrer sem levar nada junto. Este era o plano.
+
+**EXECUTADO em 19/09/2026, fim da tarde** (o dono avisou que a VPS e os dois
+projetos são só dele e que o Wallt não vai mais ser usado): o Caddy é da
+Fiolib, o Wallt é convidado, os certificados vieram copiados, e a VPS foi
+reiniciada em seguida (kernel 6.8.0-139). A troca levou uns 3 segundos fora
+do ar. O passo 5 (tirar o `caddy` do compose do Wallt) virou um perfil:
+`profiles: [caddy-proprio]`. Ver docs/VPS.md.
 
 ## Onde está hoje
 
