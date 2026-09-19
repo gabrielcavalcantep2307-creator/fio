@@ -17,7 +17,7 @@
 // some daqui também — é um espelho, não um acúmulo.
 
 import { execFileSync, spawn } from 'node:child_process'
-import { existsSync, mkdirSync, readdirSync, statSync, rmSync, utimesSync, createWriteStream } from 'node:fs'
+import { existsSync, mkdirSync, readdirSync, statSync, rmSync, utimesSync, createWriteStream, renameSync } from 'node:fs'
 import { join, dirname } from 'node:path'
 import { homedir } from 'node:os'
 import { fileURLToPath } from 'node:url'
@@ -92,8 +92,18 @@ if (!process.argv.includes('--sem-banco')) {
     await new Promise((pronto, falhou) => {
       const p = spawn('ssh', ['-i', CHAVE, MAQUINA, `cat ${r}`], { stdio: ['ignore', 'pipe', 'inherit'] })
       const tmp = join(BACKUPS, `${nome}.parcial`)
-      p.stdout.pipe(createWriteStream(tmp))
-      p.on('close', (c) => { if (c !== 0) return falhou(new Error(`ssh saiu com ${c}`)); execFileSync('mv', [tmp, join(BACKUPS, nome)]); pronto() })
+      const arquivo = createWriteStream(tmp)
+      p.stdout.pipe(arquivo)
+      // só renomeia quando o ssh terminou E o arquivo foi todo para o disco
+      let codigo = null, gravado = false
+      const talvez = () => {
+        if (codigo === null || !gravado) return
+        if (codigo !== 0) return falhou(new Error(`ssh saiu com ${codigo}`))
+        renameSync(tmp, join(BACKUPS, nome))
+        pronto()
+      }
+      p.on('close', (c) => { codigo = c; talvez() })
+      arquivo.on('finish', () => { gravado = true; talvez() })
     })
   }
   const manter = new Set(lista.map((r) => r.split('/').at(-1)))
