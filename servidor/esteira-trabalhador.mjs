@@ -34,7 +34,7 @@
 // ─────────────────────────────────────────────────────────────
 
 import { spawn } from 'node:child_process'
-import { existsSync, readFileSync, mkdirSync, renameSync, rmSync } from 'node:fs'
+import { existsSync, readFileSync, readdirSync, mkdirSync, renameSync, rmSync } from 'node:fs'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { abrir } from './banco/base.mjs'
@@ -199,18 +199,33 @@ const PERMANENTE = /esta fonte não é um livro|a fonte respondeu (404|410)|Isto
 // As etapas
 // ─────────────────────────────────────────────────────────────
 
-/** O tamanho de cada fonte nova, perguntado antes de baixar. Decide a ordem. */
+/**
+ * O tamanho de cada fonte nova, perguntado antes de baixar. Decide a ordem, e
+ * por isso mede TODAS antes de escolher: medir só uma parte fazia o primeiro
+ * livro sair de uma amostra, e não da fila.
+ *
+ * O `accept-encoding: identity` é o que faz o Gutenberg dizer o tamanho: o
+ * `fetch` do Node pede gzip por padrão, e com gzip o HEAD volta SEM
+ * content-length. Sem ele todos empatavam no "tamanho desconhecido" e a ordem
+ * virava a de cadastro — foi assim que Moby Dick saiu na frente de contos.
+ */
 async function medirTamanhos() {
-  for (const it of esteira.semTamanho(banco)) {
-    if (parar) return
-    let bytes = 2_000_000_000 // sem resposta: vai para o fim da fila, mas vai
-    try {
-      const r = await fetch(it.fonte, { method: 'HEAD', headers: { 'user-agent': UA }, signal: AbortSignal.timeout(15_000) })
-      const n = Number(r.headers.get('content-length'))
-      if (r.ok && n > 0) bytes = n
-    } catch { /* fica no fim */ }
-    esteira.guardarTamanho(banco, it.id, bytes)
+  for (let lote = esteira.semTamanho(banco); lote.length && !parar; lote = esteira.semTamanho(banco)) {
+    for (const it of lote) await medirUm(it)
+    avancou()
   }
+}
+
+async function medirUm(it) {
+  let bytes = 2_000_000_000 // sem resposta: vai para o fim da fila, mas vai
+  try {
+    const r = await fetch(it.fonte, {
+      method: 'HEAD', headers: { 'user-agent': UA, 'accept-encoding': 'identity' }, signal: AbortSignal.timeout(15_000),
+    })
+    const n = Number(r.headers.get('content-length'))
+    if (r.ok && n > 0) bytes = n
+  } catch { /* fica no fim */ }
+  esteira.guardarTamanho(banco, it.id, bytes)
 }
 
 /**
@@ -367,6 +382,29 @@ async function processar(item) {
   if (precisaPublicar) await publicarCatalogo()
 }
 
+/**
+ * O próximo livro. Pedido de assinante vem antes de tudo; depois, o que já
+ * foi começado — tradução pronta esperando instalar, caderno pela metade (o
+ * container caiu, ou veio do PC) —, e só então a ordem normal da fila.
+ * Terminar o que se começou é o que mantém a pasta dos cadernos pequena.
+ */
+function escolher() {
+  const normal = esteira.proximo(banco)
+  if (normal?.prioridade > 0) return normal
+  const comecadas = new Map()
+  for (const f of readdirSync(PASTA)) {
+    const m = f.match(/^obra(\d+)\.(json|caderno\.jsonl)$/)
+    if (m) comecadas.set(Number(m[1]), (comecadas.get(Number(m[1])) ?? false) || m[2] === 'json')
+  }
+  if (!comecadas.size) return normal
+  const pega = banco.prepare(`SELECT * FROM fila_traducao WHERE estado = 'na_esteira' AND obra_id = ?
+      AND (tentar_depois IS NULL OR tentar_depois <= datetime('now'))`)
+  const candidatas = [...comecadas.keys()].map((id) => pega.get(id)).filter(Boolean)
+    .sort((a, b) => Number(comecadas.get(b.obra_id)) - Number(comecadas.get(a.obra_id))
+      || (a.bytes ?? 9e9) - (b.bytes ?? 9e9))
+  return candidatas[0] ?? normal
+}
+
 async function volta() {
   const promovidos = esteira.promover(banco)
   if (promovidos) log(`${promovidos} livro(s) novo(s) do painel entraram na fila`)
@@ -379,7 +417,7 @@ async function volta() {
   }
 
   await medirTamanhos()
-  const item = esteira.proximo(banco)
+  const item = escolher()
   if (!item) {
     if (precisaPublicar) await publicarCatalogo()
     pulsar({ estado: 'ociosa', atual: null, rodada: pulsoRodada() }, true)
