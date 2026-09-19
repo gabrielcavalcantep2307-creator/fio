@@ -49,7 +49,7 @@ printf '{"quando":"%s","arquivo":"%s","bytes":%s}\n' "$(date -u +%FT%TZ)" "$(bas
 mv "$ESTADO/backup.json.novo" "$ESTADO/backup.json"
 
 SSH_BARRADAS=$(journalctl -u ssh -u sshd --since '24 hours ago' 2>/dev/null | grep -cE 'Invalid user|Failed|authentication failure|Connection closed by authenticating' || true)
-BANIDOS=$(fail2ban-client status sshd 2>/dev/null | awk -F: '/Currently banned/ {gsub(/ /,"",$2); print $2}' || true)
+BANIDOS=$(fail2ban-client status sshd 2>/dev/null | awk -F: '/Currently banned/ {gsub(/[ 	]/,"",$2); print $2}' || true)
 ATUALIZACOES=$(apt-get -s -o Debug::NoLocking=1 upgrade 2>/dev/null | grep -c '^Inst.*security' || true)
 REINICIAR=false; [ -f /var/run/reboot-required ] && REINICIAR=true
 printf '{"quando":"%s","ssh_barradas":%s,"banidos":%s,"atualizacoes":%s,"reiniciar":%s}\n' \
