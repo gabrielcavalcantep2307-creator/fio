@@ -12,6 +12,7 @@ import { montarEpub, nomeDeArquivo } from '../epub.mjs'
 import { ondeComecaOLivro } from '../folha-de-rosto.mjs'
 import { criarBuscaParalela } from '../busca-paralela.mjs'
 import { diagramar } from '../diagramar.mjs'
+import { notaDe, avisoDeOcr } from '../qualidade.mjs'
 import { criarQuisDizer } from '../quis-dizer.mjs'
 import { redirecionar } from '../http/pedido.mjs'
 
@@ -160,7 +161,8 @@ export default function rotasDeLeitura({ rota, banco }) {
       // leitor abre na folha de rosto do editor em 582 obras).
       comecaEm,
       // O defeito DESTA digitalização, dito antes de o leitor estranhar o texto.
-      aviso: o.aviso ?? null,
+      // (e, sem aviso escrito à mão, o da nota do OCR: qualidade.mjs)
+      aviso: o.aviso ?? (meu ? null : avisoDeOcr(notaDe(banco, o.id))),
       // O rótulo viaja com o TEXTO: quem abre direto pelo endereço vê o aviso.
       traducao: o.revisao ? { revisao: o.revisao, tradutor: o.tradutor, original: o.base_url } : null,
       // 'conta' | 'limite' quando o texto veio só em amostra

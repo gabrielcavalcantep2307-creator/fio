@@ -23,6 +23,7 @@ import { readFileSync, statSync } from 'node:fs'
 import { join } from 'node:path'
 import { ondeComecaOLivro } from '../folha-de-rosto.mjs'
 import { diagramar } from '../diagramar.mjs'
+import { notas, LIMIAR_GOOGLE } from '../qualidade.mjs'
 
 const CASA = process.env.FIO_JURISDICAO || 'BR'
 const POR_PAGINA = 240
@@ -69,10 +70,17 @@ export function criarVitrine({ banco, estatico, site }) {
   let leg = { em: 0, mapa: new Map() }
   function legiveis() {
     if (Date.now() - leg.em > 10 * 60_000) {
-      try { leg = { em: Date.now(), mapa: new Map(legiveisSql.all(CASA).map((l) => [l.id, l])) } } catch (e) { console.error('[vitrine]', e.message) }
+      // fora do Google também o livro cujo OCR saiu ilegível (qualidade.mjs):
+      // quem chega de uma busca e cai num texto embaralhado não volta
+      try {
+        const n = notas(banco)
+        leg = { em: Date.now(), mapa: new Map(legiveisSql.all(CASA).map((l) => [l.id, { ...l, ruim: n.get(l.id) < LIMIAR_GOOGLE }])) }
+      } catch (e) { console.error('[vitrine]', e.message) }
     }
     return leg.mapa
   }
+  /** Legível E com texto bom o bastante para quem chega do Google. */
+  const vitrinavel = (id) => { const l = legiveis().get(id); return !!l && !l.ruim }
 
   const fichas = new Map()
   function ficha(id) {
@@ -89,13 +97,28 @@ export function criarVitrine({ banco, estatico, site }) {
 
   const capitulosDo = banco.prepare('SELECT ordem, titulo, corpo, palavras FROM capitulo WHERE texto_id = ? ORDER BY ordem')
   /** Os primeiros parágrafos de verdade do livro (depois da folha de rosto). */
+  // guardado: o robô do Google percorre milhares de páginas, e cada começo
+  // leria o livro inteiro do banco
+  const comecos = new Map()
   function comeco(l) {
+    const g = comecos.get(l.texto_id)
+    if (g) return g
+    const r = lerComeco(l)
+    comecos.set(l.texto_id, r)
+    if (comecos.size > 1500) comecos.delete(comecos.keys().next().value)
+    return r
+  }
+  function lerComeco(l) {
     try {
       const caps = capitulosDo.all(l.texto_id)
       const i = Math.max(0, caps.findIndex((c) => c.ordem === ondeComecaOLivro(caps)))
       const [cap] = diagramar([caps[i]], { fonte: l.fonte, titulo: false })
       const pars = [...cap.corpo.matchAll(/<p(?: class="([^"]*)")?>([\s\S]*?)<\/p>/g)]
         .filter((m) => !m[1] || m[1] === 'estrofe').map((m) => semTags(m[2].replace(/<br>/g, ' / '))).filter(Boolean)
+      // folha de rosto que sobrou no capítulo (nome, cidade, editora): linhas
+      // curtas no começo ficam de fora, se depois vier texto de verdade
+      const k = pars.findIndex((p) => p.length >= 80)
+      if (k > 0 && k < 12) pars.splice(0, k)
       const saida = []
       let total = 0
       for (const p of pars) { if (total > 900) break; saida.push(corta(p, 700)); total += p.length }
@@ -185,7 +208,7 @@ ${corpo}
     const capa = capaDe(o)
     const nomeAutor = o.autor ?? 'autoria não identificada'
     const vida = f.autorNasc || f.autorMorte ? ` (${f.autorNasc ?? '?'}–${f.autorMorte ?? '?'})` : ''
-    const doMesmo = autor ? c.obras.filter((x) => x.autorId === o.autorId && x.id !== id && legiveis().has(x.id)).slice(0, 12) : []
+    const doMesmo = autor ? c.obras.filter((x) => x.autorId === o.autorId && x.id !== id && vitrinavel(x.id)).slice(0, 12) : []
     const ld = {
       '@context': 'https://schema.org',
       '@graph': [
@@ -229,7 +252,7 @@ ${corpo}
 ${doMesmo.length ? `<h2>Mais de ${esc(autor.nome)}</h2><ul class="lista-v">${doMesmo.map((x) => `<li><a href="${esc(urlLivro(x))}">${esc(primeiraLinha(x.titulo))}</a></li>`).join('')}</ul>` : ''}`
     return responder(req, res, 200, pagina({
       titulo: `${titulo} — ${nomeAutor} | Ler online grátis na Fiolib`,
-      descricao, canonico: certo, imagem: capa, ld, corpo, indexar: !!l,
+      descricao, canonico: certo, imagem: capa, ld, corpo, indexar: vitrinavel(id),
     }))
   }
 
@@ -240,7 +263,7 @@ ${doMesmo.length ? `<h2>Mais de ${esc(autor.nome)}</h2><ul class="lista-v">${doM
     if (!a) return naoAchei(req, res)
     const certo = urlAutor(a)
     if (`/autor/${id}-${lesmaPedida}` !== certo) return redirecionar(res, certo)
-    const obras = c.obras.filter((o) => o.autorId === id && legiveis().has(o.id))
+    const obras = c.obras.filter((o) => o.autorId === id && vitrinavel(o.id))
       .sort((x, y) => primeiraLinha(x.titulo).localeCompare(primeiraLinha(y.titulo), 'pt'))
     const vida = a.nascimento || a.morte ? ` (${a.nascimento ?? '?'}–${a.morte ?? '?'})` : ''
     const descricao = `${obras.length} ${obras.length === 1 ? 'livro' : 'livros'} de ${a.nome}${vida} para ler online, grátis, na Fiolib.`
@@ -259,10 +282,9 @@ ${doMesmo.length ? `<h2>Mais de ${esc(autor.nome)}</h2><ul class="lista-v">${doM
   // ── /livros e /autores (paginados) ──
   function lista(req, res, tipo, busca) {
     const c = catalogo()
-    const leg = legiveis()
     const itens = tipo === 'livros'
-      ? c.obras.filter((o) => leg.has(o.id)).map((o) => ({ nome: primeiraLinha(o.titulo), url: urlLivro(o), extra: o.autor }))
-      : [...c.autores.values()].filter((a) => c.obras.some((o) => o.autorId === a.id && leg.has(o.id))).map((a) => ({ nome: a.nome, url: urlAutor(a), extra: '' }))
+      ? c.obras.filter((o) => vitrinavel(o.id)).map((o) => ({ nome: primeiraLinha(o.titulo), url: urlLivro(o), extra: o.autor }))
+      : [...c.autores.values()].filter((a) => c.obras.some((o) => o.autorId === a.id && vitrinavel(o.id))).map((a) => ({ nome: a.nome, url: urlAutor(a), extra: '' }))
     itens.sort((x, y) => x.nome.localeCompare(y.nome, 'pt'))
     const paginas = Math.max(1, Math.ceil(itens.length / POR_PAGINA))
     const p = Math.min(paginas, Math.max(1, Number(busca.get('p')) || 1))
@@ -290,12 +312,11 @@ ${paginas > 1 ? `<nav class="paginas-v">${Array.from({ length: paginas }, (_, k)
 
   function sitemap(req, res) {
     const c = catalogo()
-    const leg = legiveis()
     const quando = c.gerado || new Date().toISOString().slice(0, 10)
     const urls = ['/', '/livros', '/autores', '/quadrinhos.html', '/assinaturas.html']
-    for (const o of c.obras) if (leg.has(o.id)) urls.push(urlLivro(o))
-    for (const a of c.autores.values()) if (c.obras.some((o) => o.autorId === a.id && leg.has(o.id))) urls.push(urlAutor(a))
-    const paginas = Math.ceil(leg.size / POR_PAGINA)
+    for (const o of c.obras) if (vitrinavel(o.id)) urls.push(urlLivro(o))
+    for (const a of c.autores.values()) if (c.obras.some((o) => o.autorId === a.id && vitrinavel(o.id))) urls.push(urlAutor(a))
+    const paginas = Math.ceil(c.obras.filter((o) => vitrinavel(o.id)).length / POR_PAGINA)
     for (let k = 2; k <= paginas; k++) urls.push(`/livros?p=${k}`)
     res.writeHead(200, { 'content-type': 'application/xml; charset=utf-8', 'cache-control': 'public, max-age=3600' })
     res.end(`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((u) => `<url><loc>${esc(SITE + u)}</loc><lastmod>${quando}</lastmod></url>`).join('\n')}\n</urlset>\n`)

@@ -2238,3 +2238,15 @@ test('diagramar: fala entre aspas no começo NÃO vira epígrafe, e o texto do m
   assert.doesNotMatch(a.corpo, /epigrafe/)
   assert.equal(b.corpo, '<p>Este foi o primeiro capítulo.</p><p>Crie uma conta.</p>')
 })
+
+test('nota do OCR: aviso só abaixo do limiar, e a nota guardada é lida', async () => {
+  const q = await import('./qualidade.mjs')
+  const b = bd()
+  q.garantirTabelas(b)
+  assert.equal(q.avisoDeOcr(null), null, 'sem nota (livro digitado): sem aviso')
+  assert.equal(q.avisoDeOcr(0.93), null)
+  assert.match(q.avisoDeOcr(0.8), /algumas palavras/)
+  assert.match(q.avisoDeOcr(0.6), /ilegíveis/)
+  b.prepare('INSERT OR REPLACE INTO nota_ocr (obra_id, nota) VALUES (?, ?)').run(424242, 0.61)
+  assert.ok(q.notas(b) instanceof Map)
+})
