@@ -31,6 +31,9 @@ remoto() { ssh -i "$CHAVE" -o StrictHostKeyChecking=accept-new "$MAQUINA" "$@"; 
 
 echo "==> Testes (nenhum deploy sai daqui com teste vermelho)"
 node --test servidor/testes.mjs > /dev/null
+# E o contrato: toda rota responde como respondia, inclusive as recusas
+# (servidor/contrato-rotas.mjs). Mudou de propósito? Grave de novo com --gravar.
+node servidor/contrato-rotas.mjs 2>/dev/null | tail -1
 
 echo "==> Guardando o que está lá, antes de trocar"
 remoto "rm -rf $CASA/servidor.antes && cp -r $CASA/servidor $CASA/servidor.antes"
