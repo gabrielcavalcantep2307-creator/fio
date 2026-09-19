@@ -149,6 +149,11 @@ ${indexar ? '' : '<meta name="robots" content="noindex, follow">\n'}<meta proper
 ${imagem ? `<meta property="og:image" content="${esc(imagem)}">\n<meta name="twitter:card" content="summary_large_image">\n` : ''}<meta name="theme-color" content="#7a2e2e">
 <link rel="icon" type="image/svg+xml" href="/fio.svg">
 <link rel="stylesheet" href="/fio-paginas.css">
+<link rel="stylesheet" href="/fio-temas.css">
+<link rel="stylesheet" href="/fio-cabecalho.css">
+<script src="/fio-dono.js"></script>
+<script src="/fio-api.js"></script>
+<script src="/fio-tema.js"></script>
 <style>
 .topo-v{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:1120px;margin:0 auto;padding:14px 16px;border-bottom:1px solid var(--linha)}
 .topo-v a{text-decoration:none}.marca{font-family:Literata,Georgia,serif;font-size:20px}
@@ -167,11 +172,10 @@ ${imagem ? `<meta property="og:image" content="${esc(imagem)}">\n<meta name="twi
 </style>
 ${ld ? `<script type="application/ld+json">${jsonLd(ld)}</script>\n` : ''}</head>
 <body>
-<header class="topo-v"><a class="marca" href="/">Fiolib</a><nav><a class="botao fraco mini" href="/livros">Livros</a> <a class="botao fraco mini" href="/autores">Autores</a> <a class="botao mini" href="/">Abrir a biblioteca</a></nav></header>
 <main>
 ${corpo}
-<p class="rodape">A Fiolib é uma biblioteca online em português, gratuita, com livros em domínio público e de licença livre. <a href="/termos.html">Termos</a> · <a href="/privacidade.html">Privacidade</a></p>
 </main>
+<script src="/fio-cabecalho.js"></script>
 </body>
 </html>`
   }

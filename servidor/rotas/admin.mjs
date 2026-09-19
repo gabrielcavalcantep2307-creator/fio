@@ -16,6 +16,7 @@ import * as curadoria from '../curadoria.mjs'
 import * as correcoes from '../correcoes.mjs'
 import * as publicacoes from '../publicacoes.mjs'
 import * as controle from '../controle.mjs'
+import * as contato from '../contato.mjs'
 import { lerCookie } from '../http/pedido.mjs'
 
 // A fonte que a esteira vai buscar depois. Só Gutenberg, e só o .txt: a esteira
@@ -145,6 +146,12 @@ export default function rotasDoPainel({ rota, banco, estatico }) {
   rota(admin('/api/admin/assinaturas'), () => ({
     assinaturas: planos.listar(banco), planos: planos.ORDEM.map((k) => ({ chave: k, nome: planos.PLANOS[k].nome })),
   }))
+  // as mensagens do "fale com a gente" (contato.mjs)
+  rota(admin('/api/admin/contatos'), () => ({ mensagens: contato.listar(banco), pendentes: contato.pendentes(banco), tipos: contato.TIPOS }))
+  rota(post('/api/admin/contato/resolver'), ({ dado }) => contato.resolver(banco, dado))
+
+  // todas as contas, com busca e filtro por plano (planos.listarContas)
+  rota(admin('/api/admin/contas'), ({ busca }) => planos.listarContas(banco, { q: busca.get('q'), filtro: busca.get('filtro'), pagina: busca.get('pagina') }))
   rota(post('/api/admin/assinatura'), ({ pessoa, dado }) => planos.conceder(banco, pessoa.id, dado, { chaveDe, Recusa }))
 
   // ── a central de ajustes ──

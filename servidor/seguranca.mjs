@@ -161,6 +161,9 @@ export const LIMITES = {
   'guardar-extra': { quantas: 240, minutos: 60 },
   // trocar e-mail exige senha: o mesmo teto de tentativas da senha
   'senha-extra': { quantas: 6, minutos: 60 },
+  // "fale com a gente" (contato.mjs): aberto a quem não tem conta, então
+  // por endereço — seis mensagens por hora não atrapalha ninguém de verdade
+  'contato': { quantas: 6, minutos: 60 },
 }
 
 /**

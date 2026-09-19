@@ -109,34 +109,68 @@ async function mostrarRecs(recado) {
     el('div', { class: 'grade' }, itens.map((x) => cartaoLivro(x.o, x.motivo)))].filter(Boolean))
 }
 
-// ── Avisos ──
+// ── Notificações (antes "Avisos") ──
+// A página inteira do sino da barra, no jeito das grandes redes (LinkedIn,
+// Facebook, GitHub): "Todas / Não lidas", grupos por data, ícone por tipo,
+// tempo relativo e o ponto no que ainda não foi lido.
+let filtroNotif = 'todas'
+const NOTIF_ICONE = { seguranca: 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z', denuncia: 'M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z M4 22v-7',
+  correcao: 'M12 20h9 M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z', revisao: 'M12 20h9 M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z',
+  boasvindas: 'M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z', titulo: 'M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z',
+  livro: 'M4 19.5A2.5 2.5 0 0 1 6.5 17H20 M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z' }
+function notifIcone(tipo) {
+  const s = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+  for (const [k, v] of Object.entries({ width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': '1.7', 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'aria-hidden': 'true' })) s.setAttribute(k, v)
+  const p = document.createElementNS('http://www.w3.org/2000/svg', 'path'); p.setAttribute('d', NOTIF_ICONE[tipo] || NOTIF_ICONE.livro); s.append(p)
+  return s
+}
+function notifQuando(d) {
+  const seg = (Date.now() - d) / 1000
+  if (seg < 60) return 'agora'
+  if (seg < 3600) return `há ${Math.floor(seg / 60)} min`
+  if (seg < 86400) return `há ${Math.floor(seg / 3600)} h`
+  if (seg < 172800) return 'ontem'
+  if (seg < 7 * 86400) return `há ${Math.floor(seg / 86400)} dias`
+  return d.toLocaleDateString('pt-BR', { day: 'numeric', month: 'long' })
+}
 async function mostrarAvisos() {
   main.replaceChildren(el('p', { class: 'vazio' }, 'abrindo…'))
   let r
   try { r = await pedir('/avisos') } catch (e) { main.replaceChildren(el('p', { class: 'vazio' }, e.message)); return }
-  const lista = el('div', {})
+  const hoje = new Date(); hoje.setHours(0, 0, 0, 0)
+  const grupos = [['Hoje', []], ['Esta semana', []], ['Antes', []]]
   for (const a of r.avisos) {
+    if (filtroNotif === 'nao' && a.lido) continue
+    const d = new Date(a.criado_em.replace(' ', 'T') + 'Z')
+    grupos[d >= hoje ? 0 : Date.now() - d < 7 * 86400000 ? 1 : 2][1].push([a, d])
+  }
+  const item = ([a, d]) => {
     const link = typeof a.link === 'string' && a.link.startsWith('/') && !a.link.startsWith('//') ? a.link : null
-    lista.append(el('div', {
-      class: `aviso${a.lido ? '' : ' novo'}`, role: 'button', tabindex: '0',
-      onclick: async () => {
+    return el('li', { class: `notif${a.lido ? '' : ' novo'}` },
+      el('button', { type: 'button', onclick: async () => {
         if (!a.lido) { try { await pedir('/avisos/lido', { id: a.id }) } catch { /* segue */ } }
         if (link) location.href = link
-        else { atualizarContagem(); mostrarAvisos() }
-      },
-    }, el('i', { class: 'ponto' }),
-    el('div', {}, el('b', {}, a.titulo), a.corpo ? el('span', {}, a.corpo) : null,
-      el('time', {}, new Date(a.criado_em.replace(' ', 'T') + 'Z').toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })))))
+        else mostrarAvisos()
+      } },
+      el('span', { class: `ic ic-${a.tipo}` }, notifIcone(a.tipo)),
+      el('span', { class: 'txt' }, el('b', {}, a.titulo), a.corpo ? el('span', {}, a.corpo) : null,
+        el('time', { datetime: d.toISOString(), title: d.toLocaleString('pt-BR') }, notifQuando(d))),
+      a.lido ? null : el('i', { class: 'ponto', 'aria-label': 'não lida' })))
   }
-  main.replaceChildren(...[
-    el('h1', {}, 'Avisos'),
-    el('p', { class: 'sub' }, 'Quando um livro da sua lista fica pronto, quando uma leitura ficou parada, e as recomendações de cada semana.'),
-    r.naoLidos ? el('p', {}, el('button', { class: 'fraco', onclick: async () => { await pedir('/avisos/lido', {}); atualizarContagem(); mostrarAvisos() } }, 'Marcar todos como lidos')) : null,
-    r.avisos.length ? lista : el('p', { class: 'vazio' }, 'Nada por aqui ainda.')].filter(Boolean))
-  atualizarContagem()
+  const cheios = grupos.filter(([, l]) => l.length)
+  main.replaceChildren(
+    el('div', { class: 'notif-topo' },
+      el('h1', {}, 'Notificações'),
+      r.naoLidos ? el('button', { class: 'fraco', onclick: async () => { await pedir('/avisos/lido', {}); mostrarAvisos() } }, 'Marcar todas como lidas') : null),
+    el('div', { class: 'notif-filtros', role: 'tablist' },
+      [['todas', 'Todas'], ['nao', `Não lidas${r.naoLidos ? ` (${r.naoLidos})` : ''}`]].map(([k, rot]) =>
+        el('button', { type: 'button', role: 'tab', 'aria-selected': String(filtroNotif === k), onclick: () => { filtroNotif = k; mostrarAvisos() } }, rot))),
+    ...(cheios.length
+      ? cheios.map(([t, l]) => el('section', { class: 'notif-grupo' }, el('h2', {}, t), el('ul', {}, l.map(item))))
+      : [el('div', { class: 'notif-vazio' }, el('b', {}, filtroNotif === 'nao' ? 'Tudo lido.' : 'Nenhuma notificação ainda.'),
+        el('p', {}, 'Aqui aparecem os livros que você pediu quando ficam prontos, leituras paradas, respostas às suas publicações e os avisos de segurança da conta.'))]))
 }
 
-// ── Meu gosto ──
 function mostrarGosto() {
   const { opcoes, respostas: antes, pedir: primeiraVez } = estado.gosto
   const r = {

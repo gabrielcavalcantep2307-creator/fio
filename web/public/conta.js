@@ -254,6 +254,18 @@ function dados(alvo) {
   const saida = el('div')
   const confirma = el('input', { type: 'text', placeholder: conta.conta.usuario, autocomplete: 'off' })
   por(alvo,
+    // o que a casa faz, em poucas linhas — o detalhe está nas páginas próprias
+    el('section', { class: 'caixa' },
+      el('h2', {}, 'Como a Fiolib cuida de você e dos livros'),
+      el('ul', { class: 'ajuda', style: 'margin:0;padding-left:18px;line-height:1.7' },
+        el('li', {}, 'Guardamos só o necessário para você ler e continuar de onde parou: sua conta, sua estante, seu progresso e suas marcações. Sem anúncio, sem rastreador, sem venda de dados.'),
+        el('li', {}, 'Sua senha e as respostas das perguntas de recuperação ficam guardadas só como resumo criptográfico: nem nós conseguimos lê-las.'),
+        el('li', {}, 'Os livros daqui são de domínio público no Brasil (Lei 9.610/98), leis, obras de licença livre ou publicadas pelos próprios autores. Traduzimos apenas originais que já são livres. Dos quadrinhos comerciais mostramos só a ficha e o link oficial.'),
+        el('li', {}, 'Você baixa ou apaga tudo aqui mesmo, quando quiser (LGPD, art. 18).')),
+      el('p', { class: 'ajuda', style: 'margin:10px 0 0' },
+        el('a', { href: '/privacidade.html' }, 'Política de privacidade'), ' · ',
+        el('a', { href: '/direitos.html' }, 'Direitos autorais e o acervo'), ' · ',
+        el('a', { href: '/direitos.html#contato' }, 'Fale com a gente'))),
     el('section', { class: 'caixa' },
       el('h2', {}, 'Levar seus dados'),
       el('p', { class: 'ajuda' }, 'Um arquivo com tudo que o Fio guarda sobre você: conta, progresso, marcações, resenhas, gosto, avisos, publicações, correções e pedidos (LGPD, art. 18).'),

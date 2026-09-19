@@ -143,6 +143,13 @@ for (const c of ['/api/saude', '/api/sugestoes', '/api/nome-livre?u=leitora', '/
   '/api/nao-existe', '/api/eu']) {
   await caso('público', 'anon', 'GET', c)
 }
+// contato e planos (19/09/2026)
+await caso('tipos de contato', 'anon', 'GET', '/api/contato/tipos')
+await caso('contato sem nome', 'anon', 'POST', '/api/contato', { corpo: { email: 'a@b.com', mensagem: 'uma mensagem comprida o bastante para passar' } })
+await caso('quero assinar sem conta', 'anon', 'POST', '/api/planos/quero', { corpo: { plano: 'novelo' } })
+await caso('contas sem ser admin', 'leitora', 'GET', '/api/admin/contas')
+await caso('mensagens sem ser admin', 'leitora', 'GET', '/api/admin/contatos')
+
 // a vitrine para o Google (http/vitrine.mjs, 19/09/2026)
 for (const c of ['/robots.txt', '/sitemap.xml', '/livros', '/autores', '/livro/1', '/livro/999999', '/autor/1']) {
   await caso('vitrine', 'anon', 'GET', c)

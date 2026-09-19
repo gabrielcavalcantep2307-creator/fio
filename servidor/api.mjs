@@ -48,6 +48,7 @@ import * as google from './google.mjs'
 import * as diario from './diario.mjs'
 import * as mangaLista from './manga-lista.mjs'
 import * as qualidade from './qualidade.mjs'
+import * as contato from './contato.mjs'
 import { criarRoteador } from './http/roteador.mjs'
 import { criarEstatico } from './http/estatico.mjs'
 import { criarPainel, caminhoDoPainel } from './http/painel.mjs'
@@ -67,7 +68,7 @@ const SITE = process.env.FIO_SITE || `http://localhost:${PORTA}`
 const ESTATICO = process.env.FIO_ESTATICO || join(RAIZ, 'web', 'dist')
 
 const banco = abrir()
-for (const m of [gosto, planos, publicacoes, acesso, esteira, correcoes, curadoria, extras, google, diario, mangaLista, qualidade]) m.garantirTabelas(banco)
+for (const m of [gosto, planos, publicacoes, acesso, esteira, correcoes, curadoria, extras, google, diario, mangaLista, qualidade, contato]) m.garantirTabelas(banco)
 // marca a fundação num banco que já tem dona (ver contas.casaFundada)
 contas.casaFundada(banco)
 

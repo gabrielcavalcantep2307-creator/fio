@@ -1,0 +1,18 @@
+/* Os temas do app, para as páginas soltas (o app tem os seus no próprio CSS).
+   `html[data-tema=…]` vence o `:root` das páginas antigas. */
+@font-face{font-family:Literata;src:url(/fontes/literata-latin.woff2) format('woff2');font-weight:300 700;font-display:swap}
+@font-face{font-family:Inter;src:url(/fontes/inter-latin.woff2) format('woff2');font-weight:400 600;font-display:swap}
+html[data-tema=claro]{--papel:#fbf9f5;--papel2:#f2eee6;--tinta:#1c1815;--tinta2:#6b6157;--linha:#e0d9cd;--acento:#7a2e2e;color-scheme:light}
+html[data-tema=sepia]{--papel:#f4ecd8;--papel2:#ebe0c6;--tinta:#3b2f22;--tinta2:#7a6849;--linha:#ddd0b0;--acento:#7a3b1e;color-scheme:light}
+html[data-tema=cinza]{--papel:#dedbd6;--papel2:#d3cfc9;--tinta:#2b2926;--tinta2:#625e58;--linha:#c2beb7;--acento:#6d3030;color-scheme:light}
+html[data-tema=contraste]{--papel:#fff;--papel2:#f0f0f0;--tinta:#000;--tinta2:#333;--linha:#000;--acento:#a01010;color-scheme:light}
+html[data-tema=pergaminho]{--papel:#e9dfc8;--papel2:#ded2b6;--tinta:#332b1e;--tinta2:#6e6046;--linha:#cdbf9f;--acento:#7e4420;color-scheme:light}
+html[data-tema=linho]{--papel:#eae6de;--papel2:#e0dbd1;--tinta:#24211c;--tinta2:#5f594f;--linha:#cdc7bb;--acento:#71332c;color-scheme:light}
+html[data-tema=noturno]{--papel:#14120f;--papel2:#1d1a16;--tinta:#e6ded2;--tinta2:#9a9086;--linha:#2e2924;--acento:#c96a5c;color-scheme:dark}
+html[data-tema=carvao]{--papel:#000;--papel2:#0d0d0d;--tinta:#c9c4bc;--tinta2:#7d7873;--linha:#232323;--acento:#d3776a;color-scheme:dark}
+html[data-tema=penumbra]{--papel:#24211e;--papel2:#2d2a26;--tinta:#ddd6cb;--tinta2:#948d84;--linha:#3b3630;--acento:#cf7f6d;color-scheme:dark}
+html[data-tema=musgo]{--papel:#161d19;--papel2:#1e2622;--tinta:#d7e0d5;--tinta2:#8b968b;--linha:#2a332d;--acento:#c98a6a;color-scheme:dark}
+html[data-tema=tinta]{--papel:#12161f;--papel2:#1a1f2b;--tinta:#d6dbe6;--tinta2:#8790a1;--linha:#262d3b;--acento:#d08a72;color-scheme:dark}
+html[data-tema=ambar]{--papel:#17120a;--papel2:#1f1810;--tinta:#e8cf9f;--tinta2:#a08a63;--linha:#2e2416;--acento:#d99a4e;color-scheme:dark}
+html[data-tema]{--papel-2:var(--papel2);--tinta-2:var(--tinta2)}
+html[data-tema] body{background:var(--papel);color:var(--tinta)}

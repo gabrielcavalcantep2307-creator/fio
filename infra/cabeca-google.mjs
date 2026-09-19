@@ -47,6 +47,21 @@ export function cabecaParaOGoogle(index) {
     <script type="application/ld+json">${JSON.stringify(LD).replace(/</g, '')}</script>
     ${FIM}`
   s = s.replace(/(<meta name="description"[^>]*>)/, `$1${bloco}`)
+  // A apresentação DENTRO de #raiz: é o que o robô (e a verificação da marca
+  // no Google Cloud, que exige "a página inicial explica a finalidade do app"
+  // e o link da privacidade) lê sem rodar JavaScript. Quando o app monta, o
+  // React troca o conteúdo de #raiz pelo site — a pessoa quase não vê isto.
+  if (!s.includes('class="fio-apresenta"')) {
+    s = s.replace('<div id="raiz"></div>', `<div id="raiz"><section class="fio-apresenta" style="max-width:720px;margin:14vh auto 0;padding:0 20px;font:17px/1.7 Georgia,serif">
+      <h1 style="font-weight:500;font-size:2.2rem;margin:0 0 12px">Fiolib</h1>
+      <p>A Fiolib é uma biblioteca online e gratuita de livros em português: clássicos em domínio público, leis brasileiras, quadrinhos livres e obras publicadas pelos próprios leitores. Você lê no navegador, no celular ou no computador, e continua de onde parou.</p>
+      <p>Criar uma conta é opcional e gratuito. Dá para entrar com nome de usuário e senha ou com a sua conta Google: do Google recebemos só o nome, o e-mail e a foto, usados apenas para identificar você na Fiolib. Não publicamos nada em seu nome e não acessamos nenhum outro dado.</p>
+      <p><a href="/livros">Ver os livros</a> · <a href="/privacidade.html">Política de privacidade</a> · <a href="/termos.html">Termos de uso</a> · <a href="/direitos.html">Direitos autorais</a></p>
+    </section></div>`)
+  }
+  // o cabeçalho, o sino e o rodapé do site inteiro (19/09/2026)
+  if (!s.includes('/fio-cabecalho.css')) s = s.replace('</head>', '    <link rel="stylesheet" href="/fio-cabecalho.css">\n  </head>')
+  if (!s.includes('/fio-cabecalho.js')) s = s.replace('</head>', '    <script defer src="/fio-cabecalho.js"></script>\n  </head>')
   // Para quem chega sem JavaScript (e para o robô, antes de rodar o app): as
   // listas de livros e autores, que são páginas de verdade.
   if (!s.includes('id="sem-js"')) {

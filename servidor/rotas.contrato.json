@@ -411,6 +411,61 @@
    "erro": "Não está entrado."
   }
  },
+ "tipos de contato :: anon GET /api/contato/tipos": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "tipos": {
+    "direito": "string",
+    "erro": "string",
+    "outro": "string",
+    "privacidade": "string"
+   }
+  }
+ },
+ "contato sem nome :: anon POST /api/contato": {
+  "status": 400,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Diga o seu nome, para sabermos com quem falamos."
+  }
+ },
+ "quero assinar sem conta :: anon POST /api/planos/quero": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "contas sem ser admin :: leitora GET /api/admin/contas": {
+  "status": 404,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não existe."
+  }
+ },
+ "mensagens sem ser admin :: leitora GET /api/admin/contatos": {
+  "status": 404,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não existe."
+  }
+ },
  "vitrine :: anon GET /robots.txt": {
   "status": 200,
   "tipo": "text/plain",

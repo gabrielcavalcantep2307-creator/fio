@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Para você — Fio</title>
+<title>Notificações e recomendações — Fiolib</title>
 <link rel="icon" type="image/svg+xml" href="/fio.svg">
 <style>
   @font-face{font-family:Literata;src:url(/fontes/literata-latin.woff2) format('woff2');font-display:swap}
@@ -39,13 +39,29 @@
   .botao{background:var(--acento);color:#fff;border:none;border-radius:8px;padding:12px 22px;font:inherit;font-size:15px;cursor:pointer}
   .botao:disabled{opacity:.5}
   .fraco{background:none;border:1px solid var(--linha);color:var(--tinta);border-radius:8px;padding:8px 14px;font:inherit;font-size:13px;cursor:pointer}
-  .aviso{display:flex;gap:14px;align-items:flex-start;padding:16px 18px;border:1px solid var(--linha);border-radius:10px;margin-bottom:10px;background:var(--papel);text-decoration:none;cursor:pointer}
-  .aviso.novo{background:var(--papel2);border-color:color-mix(in srgb,var(--acento) 45%,var(--linha))}
-  .aviso .ponto{width:8px;height:8px;border-radius:50%;margin-top:8px;flex:none;background:transparent}
-  .aviso.novo .ponto{background:var(--acento)}
-  .aviso b{font-family:Literata,Georgia,serif;font-weight:500;font-size:16px;display:block}
-  .aviso span{color:var(--tinta2);font-size:13.5px}
-  .aviso time{display:block;color:var(--tinta2);font-size:11.5px;margin-top:4px}
+  /* notificações: a página inteira do sino (central.js, mostrarAvisos) */
+  .notif-topo{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  .notif-topo h1{margin:0}
+  .notif-filtros{display:flex;gap:8px;margin:14px 0 6px}
+  .notif-filtros button{border:1px solid var(--linha);background:none;color:var(--tinta2);border-radius:999px;padding:6px 14px;font:inherit;font-size:13px;cursor:pointer}
+  .notif-filtros [aria-selected=true]{background:var(--tinta);border-color:var(--tinta);color:var(--papel)}
+  .notif-grupo h2{font:600 12px Inter,system-ui,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--tinta2);margin:22px 0 8px}
+  .notif-grupo ul{list-style:none;margin:0;padding:0;border:1px solid var(--linha);border-radius:14px;overflow:hidden;background:var(--papel)}
+  .notif{border-bottom:1px solid var(--linha)}
+  .notif:last-child{border-bottom:none}
+  .notif button{display:flex;gap:14px;align-items:flex-start;width:100%;text-align:left;padding:14px 16px;border:none;background:none;color:var(--tinta);font:inherit;cursor:pointer;position:relative}
+  .notif button:hover{background:color-mix(in srgb,var(--tinta) 4%,transparent)}
+  .notif.novo button{background:color-mix(in srgb,var(--acento) 7%,transparent)}
+  .notif .ic{flex:none;width:40px;height:40px;border-radius:999px;display:grid;place-items:center;background:color-mix(in srgb,var(--tinta) 8%,transparent);color:var(--tinta2)}
+  .notif .ic-seguranca{background:color-mix(in srgb,#c0392b 15%,transparent);color:#c0392b}
+  .notif .ic-boasvindas,.notif .ic-titulo{background:color-mix(in srgb,#b08d57 22%,transparent);color:#9a7328}
+  .notif .txt{display:flex;flex-direction:column;gap:3px;min-width:0;padding-right:18px}
+  .notif b{font-weight:600;font-size:15px;line-height:1.35}
+  .notif .txt span{color:var(--tinta2);font-size:14px;line-height:1.45}
+  .notif time{color:var(--acento);font-size:12px}
+  .notif .ponto{position:absolute;right:16px;top:50%;width:10px;height:10px;margin-top:-5px;border-radius:999px;background:var(--acento)}
+  .notif-vazio{border:1px dashed var(--linha);border-radius:14px;padding:34px 22px;text-align:center;color:var(--tinta2);margin-top:18px}
+  .notif-vazio b{display:block;color:var(--tinta);font-size:16px;margin-bottom:6px}
   .contagem{background:var(--acento);color:#fff;border-radius:999px;padding:0 6px;font-size:11px;margin-left:5px}
   .vazio{color:var(--tinta2);padding:28px 0}
   .recado{padding:12px 16px;border-radius:8px;margin-bottom:18px;background:color-mix(in srgb,var(--acento) 12%,transparent);color:var(--acento)}
@@ -53,6 +69,7 @@
     .grade{grid-template-columns:repeat(auto-fill,minmax(128px,1fr))}
   }
 </style>
+<link rel="stylesheet" href="/fio-temas.css">
 <link rel="stylesheet" href="/fio-cabecalho.css">
 <script src="/fio-dono.js"></script>
 <script src="/fio-api.js"></script>

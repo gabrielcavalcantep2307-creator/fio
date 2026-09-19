@@ -106,6 +106,7 @@ export function garantirTabelas(banco) {
       desde         TEXT NOT NULL DEFAULT (datetime('now')),
       ate           TEXT
     );`)
+  garantirInteresse(banco)
 }
 
 /** O plano que vale AGORA para esta pessoa (objeto de `PLANOS`). */
@@ -170,4 +171,83 @@ export function conceder(banco, adminId, { usuario, plano, dias, nota }, { chave
       concedida_por = excluded.concedida_por, nota = excluded.nota, desde = datetime('now'), ate = excluded.ate`)
     .run(alvo.id, plano, adminId, String(nota ?? '').trim().slice(0, 200) || null, ate, ate)
   return { ok: true, usuario: alvo.usuario, plano }
+}
+
+// ── "quero assinar" (19/09/2026) ──
+//
+// O pagamento ainda não existe, mas os convites aos planos já aparecem no
+// site. Um convite que leva a um botão que não compra nada é pior que nenhum;
+// então o botão diz a verdade — "me avise quando abrir" — e guarda o
+// interesse. Serve de termômetro para o dono (painel → Assinaturas) e, quando
+// o pagamento abrir, de lista de quem avisar primeiro.
+export function garantirInteresse(banco) {
+  banco.exec(`CREATE TABLE IF NOT EXISTS plano_interesse (
+    leitor_id  INTEGER PRIMARY KEY REFERENCES leitor(id) ON DELETE CASCADE,
+    plano      TEXT NOT NULL CHECK (plano IN ('novelo','trama','tear')),
+    criado_em  TEXT NOT NULL DEFAULT (datetime('now'))
+  )`)
+}
+
+export function querer(banco, pessoa, plano) {
+  if (!['novelo', 'trama', 'tear'].includes(plano)) plano = 'novelo'
+  banco.prepare(`INSERT INTO plano_interesse (leitor_id, plano) VALUES (?, ?)
+    ON CONFLICT (leitor_id) DO UPDATE SET plano = excluded.plano, criado_em = datetime('now')`).run(pessoa.id, plano)
+  return { ok: true, plano }
+}
+
+export const interesseDe = (banco, leitorId) =>
+  banco.prepare('SELECT plano, criado_em FROM plano_interesse WHERE leitor_id = ?').get(leitorId) ?? null
+
+// ── todas as contas, para o painel (19/09/2026) ──
+//
+// A aba Assinaturas mostrava só quem já tinha plano, e dar um plano era
+// digitar o nome de usuário num formulário. Agora: todas as contas, com
+// busca, filtro por plano e a troca na própria linha.
+const FILTROS = {
+  todos: '1',
+  assinantes: "(l.papel = 'admin' OR (a.plano IS NOT NULL AND (a.ate IS NULL OR a.ate > datetime('now'))))",
+  gratis: "(l.papel <> 'admin' AND (a.plano IS NULL OR a.ate <= datetime('now')))",
+  novelo: "(a.plano = 'novelo' AND (a.ate IS NULL OR a.ate > datetime('now')))",
+  trama: "(a.plano = 'trama' AND (a.ate IS NULL OR a.ate > datetime('now')))",
+  tear: "(l.papel = 'admin' OR (a.plano = 'tear' AND (a.ate IS NULL OR a.ate > datetime('now'))))",
+  vencidos: "(a.ate IS NOT NULL AND a.ate <= datetime('now'))",
+  interessados: 'i.plano IS NOT NULL',
+  admin: "l.papel = 'admin'",
+}
+const POR_PAGINA_CONTAS = 50
+
+export function listarContas(banco, { q = '', filtro = 'todos', pagina = 1 } = {}) {
+  const onde = [FILTROS[filtro] ?? FILTROS.todos, 'l.desativado = 0']
+  const args = []
+  const termo = String(q ?? '').trim().toLowerCase().slice(0, 80)
+  if (termo) {
+    onde.push("(lower(l.usuario) LIKE ? OR lower(l.nome) LIKE ? OR lower(coalesce(l.email, '')) LIKE ?)")
+    const like = `%${termo.replace(/[%_]/g, '')}%`
+    args.push(like, like, like)
+  }
+  const base = `FROM leitor l
+    LEFT JOIN assinatura a ON a.leitor_id = l.id
+    LEFT JOIN plano_interesse i ON i.leitor_id = l.id
+    WHERE ${onde.join(' AND ')}`
+  const total = banco.prepare(`SELECT COUNT(*) n ${base}`).get(...args).n
+  const p = Math.max(1, Math.min(Number(pagina) || 1, Math.ceil(total / POR_PAGINA_CONTAS) || 1))
+  const contas = banco.prepare(`
+    SELECT l.id, l.usuario, l.nome, l.email, l.papel, l.criado_em, l.visto_em,
+           (SELECT 1 FROM leitor_google g WHERE g.leitor_id = l.id) google,
+           a.plano, a.origem, a.desde, a.ate, a.nota, i.plano quer,
+           (SELECT COUNT(*) FROM livro_liberado b WHERE b.leitor_id = l.id AND b.liberado_em > datetime('now', '-30 days')) livros_mes
+      ${base}
+     ORDER BY (l.papel = 'admin') DESC, (a.plano IS NOT NULL) DESC, coalesce(l.visto_em, l.criado_em) DESC
+     LIMIT ? OFFSET ?`).all(...args, POR_PAGINA_CONTAS, (p - 1) * POR_PAGINA_CONTAS)
+  const agora = new Date().toISOString().slice(0, 19).replace('T', ' ')
+  for (const c of contas) {
+    c.vencida = !!(c.ate && c.ate <= agora)
+    c.planoAtual = c.papel === 'admin' ? 'tear' : (c.plano && !c.vencida ? c.plano : 'leitor')
+    c.google = !!c.google
+  }
+  const conta = (sql) => banco.prepare(`SELECT COUNT(*) n FROM leitor l LEFT JOIN assinatura a ON a.leitor_id = l.id
+    LEFT JOIN plano_interesse i ON i.leitor_id = l.id WHERE l.desativado = 0 AND ${sql}`).get().n
+  const resumo = Object.fromEntries(Object.entries(FILTROS).map(([k, sql]) => [k, conta(sql)]))
+  return { contas, total, pagina: p, paginas: Math.max(1, Math.ceil(total / POR_PAGINA_CONTAS)), porPagina: POR_PAGINA_CONTAS, resumo,
+    planos: ORDEM.map((k) => ({ chave: k, nome: PLANOS[k].nome })) }
 }

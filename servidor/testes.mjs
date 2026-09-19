@@ -2250,3 +2250,53 @@ test('nota do OCR: aviso só abaixo do limiar, e a nota guardada é lida', async
   b.prepare('INSERT OR REPLACE INTO nota_ocr (obra_id, nota) VALUES (?, ?)').run(424242, 0.61)
   assert.ok(q.notas(b) instanceof Map)
 })
+
+// ── "fale com a gente" e o termômetro dos planos (19/09/2026) ──
+test('contato: recusa o que não dá para responder, guarda o que dá, e avisa a administração', async () => {
+  const contato = await import('./contato.mjs')
+  const planos = await import('./planos.mjs')
+  const b = bd()
+  contato.garantirTabelas(b)
+  const ruim = (dado, parte) => assert.throws(() => contato.receber(b, dado), (e) => e.message.includes(parte), parte)
+  ruim({ nome: '', email: 'a@b.com', mensagem: 'uma mensagem comprida o bastante' }, 'seu nome')
+  ruim({ nome: 'Ana', email: 'nao-e-email', mensagem: 'uma mensagem comprida o bastante' }, 'e-mail válido')
+  ruim({ nome: 'Ana', email: 'a@b.com', mensagem: 'oi' }, 'um pouco mais')
+  ruim({ tipo: 'direito', nome: 'Ana', email: 'a@b.com', mensagem: 'esta obra é minha e peço a retirada' }, 'qual obra')
+  ruim({ tipo: 'direito', nome: 'Ana', email: 'a@b.com', obra: '/livro/1', mensagem: 'esta obra é minha e peço a retirada' }, 'boa-fé')
+
+  const admin = b.prepare("SELECT id FROM leitor WHERE papel = 'admin'").get()
+  const antes = b.prepare('SELECT COUNT(*) n FROM aviso WHERE leitor_id = ?').get(admin.id).n
+  const r = contato.receber(b, { tipo: 'direito', nome: 'Ana', email: 'ana@exemplo.com', obra: '/livro/1', mensagem: 'esta obra é minha e peço a retirada', boaFe: true }, { ip: '187.1.2.3' })
+  assert.match(r.protocolo, /^FIO-\d{5}$/)
+  assert.equal(contato.pendentes(b) >= 1, true)
+  assert.equal(b.prepare('SELECT COUNT(*) n FROM aviso WHERE leitor_id = ?').get(admin.id).n, antes + 1, 'a administração é avisada')
+  const [m] = contato.listar(b)
+  assert.equal(m.nome, 'Ana')
+  assert.equal(m.ip_dica, undefined, 'a lista do painel não devolve o IP')
+  contato.resolver(b, { id: m.id, resposta: 'respondido' })
+  assert.equal(contato.listar(b).find((x) => x.id === m.id).resolvido_em != null, true)
+  void planos
+})
+
+test('planos: "me avise quando abrir" e a lista de contas do painel', async () => {
+  const planos = await import('./planos.mjs')
+  const b = bd()
+  planos.garantirTabelas(b)
+  const pessoa = b.prepare("SELECT id, usuario FROM leitor WHERE papel <> 'admin' ORDER BY id LIMIT 1").get()
+  planos.querer(b, pessoa, 'trama')
+  assert.equal(planos.interesseDe(b, pessoa.id).plano, 'trama')
+  planos.querer(b, pessoa, 'inventado')
+  assert.equal(planos.interesseDe(b, pessoa.id).plano, 'novelo', 'plano desconhecido vira o básico')
+
+  const todas = planos.listarContas(b, {})
+  assert.ok(todas.total >= 1)
+  assert.ok(todas.contas.every((c) => c.planoAtual))
+  assert.equal(todas.resumo.interessados >= 1, true)
+  const so = planos.listarContas(b, { filtro: 'interessados' })
+  assert.ok(so.contas.some((c) => c.id === pessoa.id))
+  const busca = planos.listarContas(b, { q: pessoa.usuario })
+  assert.ok(busca.contas.some((c) => c.id === pessoa.id))
+  assert.equal(planos.listarContas(b, { q: 'nao-existe-mesmo-zzz' }).total, 0)
+  const admins = planos.listarContas(b, { filtro: 'admin' })
+  assert.ok(admins.contas.every((c) => c.papel === 'admin' && c.planoAtual === 'tear'), 'admin é sempre Tear')
+})

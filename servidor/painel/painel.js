@@ -78,10 +78,10 @@ function telaEntrar() {
 
 async function desenhar() {
   main.replaceChildren(el('p', { class: 'ajuda' }, 'Carregando o panorama…'))
-  let p, fila, aj, ass, pubs, cor
+  let p, fila, aj, pubs, cor, msg
   try {
-    [p, fila, aj, ass, pubs, cor] = await Promise.all([pedir('/painel'), pedir('/fila'), pedir('/ajustes'),
-      pedir('/admin/assinaturas'), pedir('/admin/publicacoes'), pedir('/admin/correcoes')])
+    [p, fila, aj, pubs, cor, msg] = await Promise.all([pedir('/painel'), pedir('/fila'), pedir('/ajustes'),
+      pedir('/admin/publicacoes'), pedir('/admin/correcoes'), pedir('/admin/contatos').catch(() => ({ pendentes: 0 }))])
   } catch (e) { main.replaceChildren(recado('ruim', `Não deu para carregar: ${e.message}`)); return }
 
   const pendencias = pubs.obras.length + pubs.denuncias.length
@@ -93,7 +93,8 @@ async function desenhar() {
       ['publicacoes', `Publicações${pendencias ? ` (${pendencias})` : ''}`, () => [secaoPublicacoes(pubs)]],
       ['correcoes', `Correções${cor.pendentes.length ? ` (${cor.pendentes.length})` : ''}`, () => [secaoCorrecoes(cor)]],
       ['acervo', 'Acervo', () => [secaoAcervo()]],
-      ['assinaturas', 'Assinaturas', () => [secaoAssinaturas(ass)]],
+      ['assinaturas', 'Assinaturas', () => [secaoAssinaturas()]],
+      ['mensagens', `Mensagens${msg.pendentes ? ` (${msg.pendentes})` : ''}`, () => [secaoMensagens()]],
       ['ajustes', 'Configurações', () => [secaoAjustes(aj)]],
     ]),
   )
@@ -427,55 +428,115 @@ function secaoCorrecoes(d) {
   return s
 }
 
-// ── assinaturas: dar, trocar e tirar plano ──
+// ── assinaturas: todas as contas, com filtro, e o plano trocado na linha ──
 //
-// Ninguém assina sozinho ainda (sem pagamento). O dono concede aqui, pelo nome
-// de usuário. Conta de admin já é Tear e não aparece na lista.
-function secaoAssinaturas(a) {
-  const s = el('section', {}, el('h2', {}, 'Assinaturas'))
+// Até 19/09 a aba mostrava só quem já tinha plano, e dar um plano era digitar
+// o nome de usuário num formulário. O dono pediu: ver todas as contas, filtrar
+// por quem assina e por tipo de plano, e delegar dali (planos.listarContas).
+const ROTULO_PLANO = { leitor: 'Grátis', novelo: 'Novelo', trama: 'Trama', tear: 'Tear' }
+const FILTROS_CONTAS = [
+  ['todos', 'Todas'], ['assinantes', 'Assinantes'], ['gratis', 'Grátis'], ['novelo', 'Novelo'], ['trama', 'Trama'],
+  ['tear', 'Tear'], ['interessados', 'Querem assinar'], ['vencidos', 'Plano vencido'], ['admin', 'Administração'],
+]
+const PRAZOS = [['', 'sem prazo'], ['30', '30 dias'], ['90', '90 dias'], ['365', '1 ano']]
+let estadoContas = { q: '', filtro: 'todos', pagina: 1 }
+const dataCurta = (s) => (s ? new Date(s.replace(' ', 'T') + 'Z').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: '2-digit' }) : '—')
+const estiloSelect = 'padding:6px;border-radius:7px;border:1px solid var(--linha);background:var(--fundo);color:var(--tinta)'
+
+function secaoAssinaturas() {
+  const s = el('section', {}, el('h2', {}, 'Assinaturas e contas'))
   s.append(el('p', { class: 'ajuda' },
-    'As assinaturas ainda não estão à venda: quem tem plano é quem você concede aqui. Publicar começa no plano Trama. ',
-    'Contas de administração são sempre Tear. ', el('a', { href: '/assinaturas.html', target: '_blank' }, 'Ver a página de planos')))
+    'Todas as contas do site. Troque o plano na própria linha e clique em "aplicar". O pagamento ainda não existe: quem tem plano é quem você concede aqui (cortesia). ',
+    'Quem clicou em "me avise quando abrir" aparece em "Querem assinar". Contas de administração são sempre Tear. ',
+    el('a', { href: '/assinaturas.html', target: '_blank' }, 'Ver a página de planos')))
+  const resumo = el('div', { class: 'cartoes', style: 'margin:14px 0' })
+  const chips = el('div', { class: 'aba', style: 'flex-wrap:wrap' })
+  const busca = el('input', { type: 'search', placeholder: 'procurar por nome, usuário ou e-mail', value: estadoContas.q, style: 'max-width:340px' })
+  const lista = el('div', {}, el('p', { class: 'ajuda' }, 'Carregando as contas…'))
+  let espera = null
+  busca.addEventListener('input', () => { clearTimeout(espera); espera = setTimeout(() => { estadoContas = { ...estadoContas, q: busca.value, pagina: 1 }; carregar() }, 300) })
+  s.append(resumo, el('div', { style: 'display:flex;gap:10px;align-items:center;flex-wrap:wrap' }, busca), chips, lista)
 
-  const usuario = el('input', { placeholder: 'nome de usuário' })
-  const plano = el('select', { style: 'padding:8px;border-radius:7px;border:1px solid var(--linha);background:var(--fundo);color:var(--tinta)' },
-    a.planos.map((x) => el('option', { value: x.chave }, x.chave === 'leitor' ? 'Leitor (tirar o plano)' : x.nome)))
-  plano.value = 'trama'
-  const dias = el('input', { type: 'number', min: '0', placeholder: 'sem prazo' })
-  const nota = el('input', { placeholder: 'por quê (só você vê)' })
-  s.append(el('form', { class: 'add', onsubmit: async (ev) => {
-    ev.preventDefault()
-    const b = ev.submitter; b.disabled = true
+  async function carregar() {
+    let r
     try {
-      const r = await pedir('/admin/assinatura', { usuario: usuario.value, plano: plano.value, dias: Number(dias.value) || null, nota: nota.value })
-      abaAtual = 'assinaturas'; await desenhar()
-      main.prepend(recado('bom', r.plano === 'leitor' ? `${r.usuario} voltou ao plano Leitor.` : `${r.usuario} agora tem o plano ${r.plano}.`))
-    } catch (e) { b.disabled = false; main.prepend(recado('ruim', e.message)) }
-  } },
-  el('div', { class: 'campos' },
-    el('div', {}, el('label', {}, 'Conta'), usuario),
-    el('div', {}, el('label', {}, 'Plano'), plano),
-    el('div', {}, el('label', {}, 'Dias (vazio = sem prazo)'), dias),
-    el('div', {}, el('label', {}, 'Nota'), nota)),
-  el('div', { style: 'margin-top:12px' }, el('button', {}, 'Conceder'))))
-
-  if (!a.assinaturas.length) { s.append(el('div', { class: 'vazio' }, 'Ninguém tem plano ainda.')); return s }
-  const t = el('table', { style: 'margin-top:16px' }, el('thead', {}, el('tr', {},
-    el('th', {}, 'Conta'), el('th', {}, 'Plano'), el('th', {}, 'Desde'), el('th', {}, 'Até'), el('th', {}, 'Nota'), el('th', {}, ''))))
-  const corpo = el('tbody', {})
-  for (const x of a.assinaturas) {
-    const vencida = x.ate && new Date(x.ate.replace(' ', 'T') + 'Z') < new Date()
-    corpo.append(el('tr', {},
-      el('td', {}, x.usuario), el('td', {}, el('span', { class: `selo ${vencida ? 'erro' : 'pronto'}` }, x.plano + (vencida ? ' (vencida)' : ''))),
-      el('td', { class: 'mono' }, (x.desde || '').slice(0, 10)), el('td', { class: 'mono' }, x.ate ? x.ate.slice(0, 10) : '—'),
-      el('td', {}, x.nota || ''),
-      el('td', {}, el('button', { class: 'fraco', onclick: async () => {
-        if (!confirm(`Tirar o plano de ${x.usuario}? As obras publicadas continuam no ar, mas ele não publica mais.`)) return
-        try { await pedir('/admin/assinatura', { usuario: x.usuario, plano: 'leitor' }); abaAtual = 'assinaturas'; await desenhar() }
-        catch (e) { main.prepend(recado('ruim', e.message)) }
-      } }, 'tirar'))))
+      const p = new URLSearchParams({ q: estadoContas.q, filtro: estadoContas.filtro, pagina: String(estadoContas.pagina) })
+      r = await pedir(`/admin/contas?${p}`)
+    } catch (e) { lista.replaceChildren(recado('ruim', e.message)); return }
+    resumo.replaceChildren(
+      cartao(r.resumo.todos, 'contas'), cartao(r.resumo.assinantes, 'com plano (inclui administração)'),
+      cartao(r.resumo.novelo, 'Novelo'), cartao(r.resumo.trama, 'Trama'), cartao(r.resumo.tear, 'Tear'),
+      cartao(r.resumo.interessados, 'querem assinar'))
+    chips.replaceChildren(...FILTROS_CONTAS.map(([k, rot]) => el('button', { type: 'button', 'aria-selected': String(estadoContas.filtro === k),
+      onclick: () => { estadoContas = { ...estadoContas, filtro: k, pagina: 1 }; carregar() } }, `${rot} (${num(r.resumo[k] ?? 0)})`)))
+    if (!r.contas.length) { lista.replaceChildren(el('div', { class: 'vazio' }, 'Nenhuma conta neste filtro.')); return }
+    const corpo = el('tbody')
+    for (const c of r.contas) {
+      const ehAdmin = c.papel === 'admin'
+      const plano = el('select', { style: estiloSelect, disabled: ehAdmin ? '' : null },
+        r.planos.map((p) => el('option', { value: p.chave }, ROTULO_PLANO[p.chave] ?? p.nome)))
+      plano.value = c.planoAtual
+      const prazo = el('select', { style: estiloSelect, title: 'Por quanto tempo', disabled: ehAdmin ? '' : null },
+        PRAZOS.map(([v, rot]) => el('option', { value: v }, rot)))
+      const aplicar = el('button', { type: 'button', style: 'padding:6px 12px;visibility:hidden', onclick: async () => {
+        aplicar.disabled = true
+        try {
+          await pedir('/admin/assinatura', { usuario: c.usuario, plano: plano.value, dias: Number(prazo.value) || null, nota: 'pelo painel' })
+          await carregar()
+          main.prepend(recado('bom', plano.value === 'leitor' ? `${c.usuario} voltou ao plano Grátis.` : `${c.usuario} agora tem o plano ${ROTULO_PLANO[plano.value]}.`))
+        } catch (e) { aplicar.disabled = false; main.prepend(recado('ruim', e.message)) }
+      } }, 'aplicar')
+      const mudou = () => { aplicar.style.visibility = plano.value !== c.planoAtual || prazo.value ? 'visible' : 'hidden' }
+      plano.addEventListener('change', mudou); prazo.addEventListener('change', mudou)
+      const situacao = ehAdmin ? el('span', { class: 'selo pronto' }, 'administração')
+        : c.vencida ? el('span', { class: 'selo erro' }, `${ROTULO_PLANO[c.plano]} venceu ${dataCurta(c.ate)}`)
+          : c.plano ? el('span', { class: 'selo pronto' }, c.ate ? `até ${dataCurta(c.ate)}` : 'sem prazo')
+            : c.quer ? el('span', { class: 'selo espera' }, `quer o ${ROTULO_PLANO[c.quer]}`) : el('span', { class: 'ajuda' }, '—')
+      corpo.append(el('tr', {},
+        el('td', {}, el('div', {}, c.nome), el('div', { class: 'mono', style: 'color:var(--tinta2)' }, `@${c.usuario}${c.email ? ` · ${c.email}` : ''}${c.google ? ' · Google' : ''}`)),
+        el('td', {}, el('div', { style: 'display:flex;gap:6px;align-items:center;flex-wrap:wrap' }, plano, prazo, aplicar)),
+        el('td', {}, situacao),
+        el('td', { class: 'mono' }, c.planoAtual === 'leitor' ? `${c.livros_mes} livro${c.livros_mes === 1 ? '' : 's'}` : '—'),
+        el('td', { class: 'mono' }, dataCurta(c.visto_em)),
+        el('td', { class: 'mono' }, dataCurta(c.criado_em))))
+    }
+    const tabela = el('table', { style: 'margin-top:12px' },
+      el('thead', {}, el('tr', {}, el('th', {}, 'Conta'), el('th', {}, 'Plano'), el('th', {}, 'Situação'), el('th', {}, 'Livros no mês'), el('th', {}, 'Visto'), el('th', {}, 'Criada'))),
+      corpo)
+    const paginas = r.paginas > 1 ? el('div', { class: 'aba' },
+      el('button', { type: 'button', disabled: r.pagina <= 1 ? '' : null, onclick: () => { estadoContas.pagina = r.pagina - 1; carregar() } }, '← anteriores'),
+      el('span', { class: 'ajuda', style: 'align-self:center' }, `página ${r.pagina} de ${r.paginas} · ${num(r.total)} contas`),
+      el('button', { type: 'button', disabled: r.pagina >= r.paginas ? '' : null, onclick: () => { estadoContas.pagina = r.pagina + 1; carregar() } }, 'próximas →')) : null
+    lista.replaceChildren(el('div', { style: 'overflow-x:auto' }, tabela), paginas ?? '')
   }
-  t.append(corpo); s.append(t)
+  carregar()
+  return s
+}
+
+// ── mensagens: o "fale com a gente" e os avisos de direito autoral ──
+function secaoMensagens() {
+  const s = el('section', {}, el('h2', {}, 'Mensagens'))
+  s.append(el('p', { class: 'ajuda' }, 'O que chega pelo formulário de /direitos.html. Aviso de direito autoral pede resposta rápida: esconda a obra em Acervo enquanto verifica e responda no e-mail da pessoa.'))
+  const lista = el('div', {}, el('p', { class: 'ajuda' }, 'Carregando…'))
+  s.append(lista)
+  async function carregar() {
+    let r
+    try { r = await pedir('/admin/contatos') } catch (e) { lista.replaceChildren(recado('ruim', e.message)); return }
+    if (!r.mensagens.length) { lista.replaceChildren(el('div', { class: 'vazio' }, 'Nenhuma mensagem ainda.')); return }
+    lista.replaceChildren(...r.mensagens.map((m) => el('div', { class: 'grupo', style: m.resolvido_em ? 'opacity:.6' : '' },
+      el('div', { style: 'display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap' },
+        el('h3', {}, r.tipos[m.tipo] ?? m.tipo),
+        el('span', { class: `selo ${m.resolvido_em ? 'pronto' : m.tipo === 'direito' ? 'erro' : 'espera'}` }, m.resolvido_em ? `resolvida ${dataCurta(m.resolvido_em)}` : `FIO-${String(m.id).padStart(5, '0')} · ${dataCurta(m.criado_em)}`)),
+      el('p', { style: 'margin:8px 0 4px' }, el('b', {}, m.nome), ' · ', el('a', { href: `mailto:${m.email}` }, m.email)),
+      m.obra ? el('p', { class: 'mono', style: 'margin:0 0 6px' }, m.obra) : null,
+      el('p', { style: 'white-space:pre-wrap;margin:0 0 10px' }, m.mensagem),
+      m.resposta ? el('p', { class: 'ajuda' }, `Nota: ${m.resposta}`) : null,
+      el('button', { type: 'button', class: m.resolvido_em ? 'fraco' : '', onclick: async () => {
+        const nota = m.resolvido_em ? '' : (prompt('Uma nota para você: o que foi feito?', '') ?? '')
+        try { await pedir('/admin/contato/resolver', { id: m.id, resposta: nota, desfazer: !!m.resolvido_em }); carregar() } catch (e) { main.prepend(recado('ruim', e.message)) }
+      } }, m.resolvido_em ? 'reabrir' : 'marcar como resolvida'))))
+  }
+  carregar()
   return s
 }
 

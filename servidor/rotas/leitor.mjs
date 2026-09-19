@@ -114,9 +114,14 @@ export default function rotasDoLeitor({ rota, banco, estatico }) {
       }
       v.meu.voz = p.voz
       v.meu.epub = p.epub
+      v.meu.quer = planos.interesseDe(banco, pessoa.id)
     }
     return v
   })
+
+  // "me avise quando as assinaturas abrirem" (planos.querer)
+  rota({ metodo: 'POST', caminho: '/api/planos/quero', acesso: 'conta', freio: { acao: 'guardar-extra' } },
+    ({ pessoa, dado }) => planos.querer(banco, pessoa, String(dado.plano ?? '')))
 
   // ── pedidos de tradução (servidor/esteira.mjs) ──
   rota({ caminho: '/api/pedidos-traducao', acesso: 'conta' }, ({ pessoa }) => {

@@ -22,7 +22,16 @@ async function iniciar() {
     let acao
     if (meu === p.chave) acao = el('span', { class: 'botao fraco', 'aria-disabled': 'true' }, v.meu.porAdmin ? 'Seu plano (administração)' : 'Seu plano')
     else if (p.chave === 'leitor') acao = v.meu ? el('span', { class: 'botao fraco', 'aria-disabled': 'true' }, 'Incluído na sua conta') : el('a', { class: 'botao', href: '/#/entrar' }, 'Criar conta grátis')
-    else acao = el('button', { class: `botao${destaque ? '' : ' fraco'}`, disabled: true, title: 'As assinaturas ainda não estão abertas' }, 'Em breve')
+    // Sem pagamento ainda, o botão diz a verdade e guarda o interesse
+    // (planos.querer): vira termômetro no painel e a lista de quem avisar.
+    else if (!v.meu) acao = el('a', { class: `botao${destaque ? '' : ' fraco'}`, href: '/#/entrar' }, 'Criar conta e ser avisado')
+    else if (v.meu.quer?.plano === p.chave) acao = el('span', { class: 'botao fraco', 'aria-disabled': 'true' }, 'Avisaremos quando abrir')
+    else acao = el('button', { class: `botao${destaque ? '' : ' fraco'}`, type: 'button', title: 'As assinaturas ainda não estão abertas', onclick: async (e) => {
+      const b = e.currentTarget
+      b.disabled = true
+      try { await pedir('/planos/quero', { plano: p.chave }); b.textContent = 'Pronto: avisaremos quando abrir'; try { sessionStorage.removeItem('fio:barra') } catch {} }
+      catch (x) { b.disabled = false; b.textContent = x.message }
+    } }, 'Me avise quando abrir')
     return el('div', { class: `plano${destaque ? ' destaque' : ''}` },
       destaque ? el('span', { class: 'fita' }, 'ler sem limite') : null,
       meu === p.chave ? el('span', { class: 'meu' }, 'o seu') : null,

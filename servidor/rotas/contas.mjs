@@ -7,12 +7,18 @@ import * as ajustes from '../ajustes.mjs'
 import * as planos from '../planos.mjs'
 import * as acesso from '../acesso.mjs'
 import * as extras from '../extras.mjs'
+import * as contato from '../contato.mjs'
 import { porCookie, semCookie, lerCookie } from '../http/pedido.mjs'
 
 export default function rotasDeConta({ rota, banco }) {
   rota({ caminho: '/api/saude' }, () => ({ ok: true, versao: 1, convite: ajustes.cadastroAberto(banco) ? 'opcional' : 'obrigatorio' }))
 
   rota({ caminho: '/api/eu', acesso: 'conta' }, ({ pessoa }) => ({ pessoa }))
+
+  // "fale com a gente" e os avisos de direito autoral (contato.mjs)
+  rota({ caminho: '/api/contato/tipos' }, () => ({ tipos: contato.TIPOS }))
+  rota({ metodo: 'POST', caminho: '/api/contato', freio: { acao: 'contato', por: 'ip', msg: 'Muitas mensagens seguidas. Tente de novo mais tarde.' } },
+    ({ dado, ip, quem }) => contato.receber(banco, dado, { pessoa: quem(), ip }))
 
   rota({ metodo: 'POST', caminho: '/api/criar' }, async ({ res, dado, ip, agente }) => {
     const { pessoa, sessao } = await contas.criar(banco, dado, { ip, agente })

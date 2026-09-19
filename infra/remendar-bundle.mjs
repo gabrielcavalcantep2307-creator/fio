@@ -339,6 +339,23 @@ const REMENDOS = [
     de: 'placeholder:`escolha uma da lista ou escreva a sua`',
     para: 'placeholder:`toque para escolher uma pergunta da lista`',
   },
+  // ── um cabeçalho e um rodapé só para o site inteiro (19/09/2026) ──
+  // O dono pediu hierarquia no menu (Buscar · Estante · Quadrinhos ▾ ·
+  // Comunidade ▾, e tema/painel/sino/perfil no canto). O cabeçalho passa a ser
+  // o de /fio-cabecalho.js, o mesmo das páginas soltas. O do app deixa de
+  // desenhar — sempre, então as regras dos hooks do React continuam valendo —
+  // e só entrega as duas coisas que moram dentro dele: abrir a busca e trocar
+  // o tema no estado do app.
+  {
+    nome: 'cabeçalho do app: entrega busca e tema a /fio-cabecalho.js e não desenha',
+    de: 'function Vn({rota:e,abrirBusca:t}){',
+    para: 'function Vn({rota:e,abrirBusca:t}){window.fioAbrirBusca=t;window.fioMudarPrefs=M;return null;',
+  },
+  {
+    nome: 'rodapé do app: o rodapé do site (fio-cabecalho.js) toma o lugar',
+    de: 'function Wn({catalogo:e}){',
+    para: 'function Wn({catalogo:e}){return null;',
+  },
 ]
 
 let s = readFileSync(arg('base'), 'utf8')
