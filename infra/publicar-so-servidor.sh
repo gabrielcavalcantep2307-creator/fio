@@ -27,7 +27,24 @@ CHAVE="${CHAVE_SSH:-$HOME/.ssh/fiolib-deploy}"
 CASA=/opt/fio
 
 cd "$(dirname "$0")/.."
-remoto() { ssh -i "$CHAVE" -o StrictHostKeyChecking=accept-new "$MAQUINA" "$@"; }
+# O sshd da VPS derruba conexões novas quando os robôs que tentam invadir lotam
+# a fila (MaxStartups) — em 19/09 o deploy caiu no meio assim. Código 255 é
+# "a conexão caiu", não "o comando falhou": aí tenta de novo. Os comandos
+# daqui são todos repetíveis (apagar e extrair de novo dá no mesmo).
+remoto() {
+  local t c
+  for t in 1 2 3 4 5; do
+    ssh -i "$CHAVE" -o StrictHostKeyChecking=accept-new -o ConnectTimeout=20 "$MAQUINA" "$@" && return 0
+    c=$?; [[ $c -eq 255 ]] || return $c
+    echo "    (a conexão caiu; tentando de novo)" >&2; sleep $((t * 4))
+  done
+  return 255
+}
+# Para mandar um pacote pela entrada: a entrada é um ARQUIVO, e não um cano,
+# para a nova tentativa mandar tudo de novo desde o começo.
+PACOTE=$(mktemp)
+trap 'rm -f "$PACOTE"' EXIT
+enviar() { local c=$1; remoto "$c" < "$PACOTE"; }
 
 echo "==> Testes (nenhum deploy sai daqui com teste vermelho)"
 node --test servidor/testes.mjs > /dev/null
@@ -42,15 +59,15 @@ echo "==> Enviando servidor/, ingestao/ e infra/"
 # Pasta nova, e não extração por cima: `tar xzf` só acrescenta, e arquivo que
 # saiu do repositório ficava lá para sempre — em 16/09 a VPS ainda carregava o
 # `email.mjs` apagado em 41cb983. A cópia de segurança já está em servidor.antes.
-tar czf - servidor | remoto "rm -rf $CASA/servidor && tar xzf - -C $CASA"
+tar czf "$PACOTE" servidor && enviar "rm -rf $CASA/servidor && tar xzf - -C $CASA"
 # A ingestão entra na imagem desde 18/09/2026: é o que o serviço `esteira`
 # roda. Mesma regra: pasta nova, nada de arquivo velho sobrando.
-tar czf - ingestao | remoto "rm -rf $CASA/ingestao && tar xzf - -C $CASA"
+tar czf "$PACOTE" ingestao && enviar "rm -rf $CASA/ingestao && tar xzf - -C $CASA"
 # Só servidor/ e ingestao/ entram no contexto do build — sem isto o Docker
 # empacotava site/ e backups/ (gigabytes) a cada reconstrução.
 remoto "printf '%s\n' '*' '!servidor/' '!ingestao/' > $CASA/.dockerignore"
-tar czf - -C infra Dockerfile docker-compose.yml backup.sh Caddyfile.fiolib \
-  | remoto "tar xzf - -C $CASA/infra"
+tar czf "$PACOTE" -C infra Dockerfile docker-compose.yml backup.sh Caddyfile.fiolib \
+  && enviar "rm -f $CASA/infra/Caddyfile.fio && tar xzf - -C $CASA/infra"
 
 # A versão que vai ao ar, para a aba Controle do painel dizer qual é.
 VERSAO=$(git rev-parse --short HEAD 2>/dev/null || echo '?')$(git diff --quiet 2>/dev/null || echo '+')

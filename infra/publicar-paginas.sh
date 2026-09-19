@@ -21,7 +21,19 @@ SITE_REMOTO=/opt/fio/site
 ENDERECO="${ENDERECO:-https://fiolib.com.br}"
 
 cd "$(dirname "$0")/../web/public"
-remoto() { ssh -i "$CHAVE" -o StrictHostKeyChecking=accept-new "$MAQUINA" "$@"; }
+# Nova tentativa quando o sshd derruba a conexão (código 255): os robôs de
+# invasão lotam a fila dele (MaxStartups). Ver publicar-so-servidor.sh.
+remoto() {
+  local t c
+  for t in 1 2 3 4 5; do
+    ssh -i "$CHAVE" -o StrictHostKeyChecking=accept-new -o ConnectTimeout=20 "$MAQUINA" "$@" && return 0
+    c=$?; [[ $c -eq 255 ]] || return $c
+    echo "    (a conexão caiu; tentando de novo)" >&2; sleep $((t * 4))
+  done
+  return 255
+}
+PACOTE=$(mktemp)
+trap 'rm -f "$PACOTE"' EXIT
 
 if [[ $# -gt 0 ]]; then ARQUIVOS=("$@"); else
   # as páginas soltas: tudo que é html/js/css aqui, menos o que é do app
@@ -34,7 +46,7 @@ echo "==> guardando o que está no ar em /opt/fio/backups/paginas-$QUANDO"
 remoto "mkdir -p /opt/fio/backups/paginas-$QUANDO && cd $SITE_REMOTO && for f in ${ARQUIVOS[*]}; do [ -f \"\$f\" ] && cp \"\$f\" /opt/fio/backups/paginas-$QUANDO/; done; true"
 
 echo "==> enviando ${#ARQUIVOS[@]} arquivo(s)"
-tar czf - "${ARQUIVOS[@]}" | remoto "tar xzf - -C $SITE_REMOTO"
+tar czf "$PACOTE" "${ARQUIVOS[@]}" && remoto "tar xzf - -C $SITE_REMOTO" < "$PACOTE"
 
 # O app carrega /fio-dono.js e /fio-api.js antes de tudo; sem eles, os
 # scripts de fora do bundle (fio-leitor, fio-app-extras) quebram.
