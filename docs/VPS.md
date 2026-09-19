@@ -81,19 +81,32 @@ um usuário sem poder sobre a máquina.
 
 ---
 
-## O que mudou no Wallt, e por quê
+## O que a Fiolib tem no Wallt, e por quê
 
-Uma linha, e ela foi feita para ser reversível:
+Desde 19/09/2026, **uma linha e duas pastas**. O Caddy é um só (as portas 80 e
+443 não se dividem) e pertence ao Wallt; os blocos da Fiolib moram no arquivo
+DA FIOLIB:
 
-```bash
-# o bloco do Fio foi acrescentado ao fim do Caddyfile do Wallt
-cat /opt/fio/infra/Caddyfile.fio >> /opt/picord/Caddyfile
-docker exec picord-caddy-1 caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile
+```
+/opt/fio/caddy/fiolib.caddy   ← infra/Caddyfile.fiolib (este repositório)
+/opt/fio/logs/acesso.log      ← registro de acesso da Fiolib (IP mascarado)
 ```
 
-`caddy reload` troca a configuração **sem reiniciar o container** — ninguém
-numa chamada do Wallt sentiu nada. A cópia anterior ficou em
-`/opt/picord/Caddyfile.antes-do-fio`; desfazer é trocar de volta e recarregar.
+No Wallt, o `docker-compose.yml` monta essas pastas no container do Caddy
+(`/etc/caddy/fiolib`, só leitura, e `/var/log/fiolib`) e o `Caddyfile`
+termina com `import /etc/caddy/fiolib/*.caddy`. As duas mudanças estão no
+repositório do Wallt também.
+
+Mexer no Caddy da Fiolib:
+
+```bash
+bash infra/publicar-caddy.sh   # valida o conjunto antes; se falhar, nada muda
+```
+
+Até 18/09 o bloco era colado no fim do Caddyfile do Wallt, e cada mudança na
+Fiolib era uma edição no arquivo do outro projeto — e foi um `sed -i` num
+arquivo montado por ARQUIVO que deixou o container lendo uma versão velha, sem
+a Fiolib (ver AUDITORIA-2026-09-19.md). Montar a PASTA acaba com isso.
 
 Antes de aplicar, `caddy validate` conferiu a sintaxe. Um Caddyfile inválido
 recarregado derruba **os dois sites** — validar não é zelo, é o que separa uma

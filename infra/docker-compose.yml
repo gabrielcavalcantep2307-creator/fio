@@ -20,6 +20,12 @@ services:
     # Teto de memória. A VPS tem 2 GB e o Wallt divide ela conosco: um
     # processo que estoure tem que morrer sozinho, não levar o LiveKit junto.
     mem_limit: 320m
+    # PRIORIDADE DA FIOLIB (19/09/2026). A máquina é dividida com o Wallt e
+    # a soma dos tetos passa da memória real. Se faltar memória para todo
+    # mundo, o sistema escolhe quem matar pela nota abaixo: -500 põe o site
+    # no fim da lista. E, na briga pela CPU, ele recebe o dobro da fatia.
+    oom_score_adj: -500
+    cpu_shares: 2048
     environment:
       FIO_PORTA: 8787
       FIO_SITE: ${FIO_SITE}
@@ -48,6 +54,11 @@ services:
       - dados:/dados
       # O site construído. Só leitura — o servidor nunca escreve aqui.
       - /opt/fio/site:/site:ro
+      # O retrato da VPS para a aba Controle do painel (servidor/controle.mjs):
+      # quando foi o backup, a cópia no PC, a versão no ar. Quem escreve é o
+      # root da VPS; o site só lê. NÃO se monta o socket do Docker aqui: seria
+      # dar a máquina inteira a quem invadisse o site.
+      - /opt/fio/estado:/estado:ro
     healthcheck:
       test: ['CMD', 'node', '-e', "fetch('http://127.0.0.1:8787/api/saude').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
       interval: 30s
@@ -71,6 +82,9 @@ services:
     # Deixa sempre CPU para o site: traduzir é esperar a rede, e o que pesa
     # (instalar, republicar) pode levar alguns segundos a mais sem problema.
     cpus: 0.8
+    # Abaixo do site, acima do resto: a esteira retoma sozinha de onde
+    # parou, então é ela que cede primeiro dentro da Fiolib.
+    oom_score_adj: -200
     stop_grace_period: 20s
     environment:
       NODE_ENV: production

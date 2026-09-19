@@ -15,6 +15,8 @@ import * as esteira from '../esteira.mjs'
 import * as curadoria from '../curadoria.mjs'
 import * as correcoes from '../correcoes.mjs'
 import * as publicacoes from '../publicacoes.mjs'
+import * as controle from '../controle.mjs'
+import { lerCookie } from '../http/pedido.mjs'
 
 // A fonte que a esteira vai buscar depois. Só Gutenberg, e só o .txt: a esteira
 // baixa este endereço sem ninguém olhar, então aceitar qualquer URL seria
@@ -63,6 +65,9 @@ export default function rotasDoPainel({ rota, banco, estatico }) {
          ORDER BY t.criado_em DESC LIMIT 15`).all(),
     }
   })
+
+  // ── a sala de controle (servidor/controle.mjs): tudo que roda, num retrato ──
+  rota(admin('/api/admin/controle'), ({ req, pessoa }) => controle.retrato(banco, { pessoa, token: lerCookie(req) }))
 
   // ── a fila de tradução e a esteira ──
   rota(admin('/api/fila'), () => ({

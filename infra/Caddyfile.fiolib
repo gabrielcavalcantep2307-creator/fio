@@ -1,0 +1,73 @@
+# O Caddy da Fiolib — o arquivo é NOSSO, o Caddy é emprestado.
+#
+# A VPS tem um Caddy só (portas 80 e 443 não se dividem), e ele pertence ao
+# Wallt (/opt/picord). Até 19/09/2026 os blocos da Fiolib moravam DENTRO do
+# Caddyfile do Wallt: mexer num site era editar o arquivo do outro projeto.
+#
+# Agora este arquivo mora em /opt/fio/caddy/fiolib.caddy, e o Wallt só tem uma
+# linha no fim do dele:
+#
+#     import /etc/caddy/fiolib/*.caddy
+#
+# com a pasta /opt/fio/caddy montada ali (só leitura) e /opt/fio/logs montada
+# em /var/log/fiolib para o registro de acesso. Mudar a Fiolib é mexer AQUI e
+# recarregar; o Wallt nem percebe:
+#
+#     bash infra/publicar-caddy.sh
+#
+# Se a pasta sumir, o import não acha nada e o Wallt continua de pé sozinho.
+
+# Endereços antigos e o www levam ao endereço oficial (308 mantém POST).
+www.fiolib.com.br, fiolib.duckdns.org, fio.142-93-57-2.sslip.io {
+	redir https://fiolib.com.br{uri} 308
+}
+
+fiolib.com.br {
+	encode zstd gzip
+
+	# Registro de acesso (19/09/2026): o que se precisa para investigar uma
+	# tentativa de invasão, sem virar rastreador. Só o começo do IP (/16), sem
+	# cookie e sem cabeçalho de autorização; 10 arquivos de 20 MB, 30 dias.
+	# Grava em /opt/fio/logs, na pasta da Fiolib — não no volume do Wallt.
+	log {
+		output file /var/log/fiolib/acesso.log {
+			roll_size 20MiB
+			roll_keep 10
+			roll_keep_for 720h
+		}
+		format filter {
+			request>remote_ip ip_mask 16 32
+			request>client_ip ip_mask 16 32
+			request>headers>Cookie delete
+			request>headers>Authorization delete
+			resp_headers>Set-Cookie delete
+		}
+	}
+
+	# Tudo — site e API — vem do mesmo processo. É por isso que o cookie
+	# funciona sem exceção: para o navegador, é uma origem só.
+	reverse_proxy 127.0.0.1:8787
+
+	header {
+		# O site não carrega script de fora. A única coisa externa são as
+		# capas da Open Library, e ela está nomeada em vez de um curinga em
+		# `img-src`: se um dia o site tentar buscar imagem de outro lugar,
+		# quebra na cara em vez de passar batido.
+		#
+		# `archive.org` está aqui porque `covers.openlibrary.org` REDIRECIONA
+		# para lá — e a política vale para o endereço FINAL, não para o que a
+		# página pediu. Sem esta linha, metade das capas some sem erro visível
+		# na tela, só no console.
+		#
+		# `style-src` precisa de 'unsafe-inline' porque os temas são
+		# aplicados por variável em atributo `style`. É uma folga conhecida,
+		# e ela não permite executar código.
+		Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://covers.openlibrary.org https://archive.org https://*.archive.org; font-src 'self'; connect-src 'self'; form-action 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'"
+		Strict-Transport-Security "max-age=63072000; includeSubDomains"
+		Referrer-Policy "no-referrer"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Permissions-Policy "camera=(), microphone=(), geolocation=(), interest-cohort=()"
+		-Server
+	}
+}

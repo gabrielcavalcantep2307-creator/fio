@@ -52,14 +52,28 @@ Compartilhados: a máquina (2 GB, **sem swap** — a soma dos tetos de memória
 passa da memória real), o Caddy (é o do Wallt; os blocos da Fiolib moram no
 Caddyfile dele) e o acesso root por SSH.
 
-## Fica para decidir (com o Nathan, porque é a máquina dos dois)
+## Feito depois, no mesmo dia (separação e controle)
 
-- **Swap de 2 GB**: evita que um pico mate processo dos dois projetos.
-- **Caddyfile da Fiolib em arquivo próprio**, importado pelo do Wallt
-  (`import`, montando uma pasta em vez de um arquivo): cada projeto mexe no seu,
-  e o problema do inode some.
-- **Projeto do Google Cloud**: o login com Google da Fiolib está num projeto
-  chamado "picord". Criar um projeto "fiolib" e mover o cliente OAuth separa as
-  contas dos dois produtos.
-- **Cópia fora da VPS**: `node infra/copiar-do-ar.mjs` mantém neste PC o site
-  inteiro e os 3 últimos backups do banco (fora do git).
+- **Caddyfile da Fiolib em arquivo próprio** (`/opt/fio/caddy/fiolib.caddy`),
+  importado pelo do Wallt; registro de acesso em `/opt/fio/logs`. Os dois
+  sites voltaram 200 depois da troca.
+- **Prioridade da Fiolib** na máquina: `oom_score_adj` -500 no site e -200 na
+  esteira (o sistema mata outros processos antes), e o dobro da fatia de CPU
+  para o site.
+- **Painel → aba Controle**: tudo que roda num retrato (site, esteira, backup,
+  cópia no PC, memória, disco, tentativas de invasão, sessões do painel). Sem
+  acesso ao Docker, de propósito.
+- **A administração entra só pelo Google** quando ele está ligado e vinculado;
+  a senha certa digitada fora dele é barrada e vira alerta no painel. Sessão de
+  administração vale 7 dias, sem renovar. `FIO_ADMIN_SENHA=permitida` reabre a
+  senha em emergência.
+- **Defeito antigo corrigido**: usar uma sessão renovava OUTRA (a de número igual
+  ao da conta), porque `l.*` encobria `s.id` na consulta.
+- **O login com Google já está num projeto separado do Wallt** (números de
+  projeto diferentes nos dois Client IDs). O que falta é só o NOME do projeto e
+  do app na tela de consentimento, no console do Google.
+
+## Fica para decidir
+
+- **Swap de 2 GB** (a VPS não tem nenhuma): precisa ser feito pelo dono.
+- **Acesso root por SSH** continua compartilhado entre os dois projetos.

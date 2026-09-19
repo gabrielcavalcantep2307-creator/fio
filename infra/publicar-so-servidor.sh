@@ -49,8 +49,12 @@ tar czf - ingestao | remoto "rm -rf $CASA/ingestao && tar xzf - -C $CASA"
 # Só servidor/ e ingestao/ entram no contexto do build — sem isto o Docker
 # empacotava site/ e backups/ (gigabytes) a cada reconstrução.
 remoto "printf '%s\n' '*' '!servidor/' '!ingestao/' > $CASA/.dockerignore"
-tar czf - -C infra Dockerfile docker-compose.yml backup.sh Caddyfile.fio \
+tar czf - -C infra Dockerfile docker-compose.yml backup.sh Caddyfile.fiolib \
   | remoto "tar xzf - -C $CASA/infra"
+
+# A versão que vai ao ar, para a aba Controle do painel dizer qual é.
+VERSAO=$(git rev-parse --short HEAD 2>/dev/null || echo '?')$(git diff --quiet 2>/dev/null || echo '+')
+remoto "mkdir -p $CASA/estado && chmod 755 $CASA/estado && printf '{\"commit\":\"%s\",\"quando\":\"%s\"}\n' '$VERSAO' \"$(date -u +%FT%TZ)\" > $CASA/estado/versao.json && chmod 644 $CASA/estado/versao.json"
 
 echo "==> Reconstruindo a imagem"
 # A esteira (usuário 1717 no container) reescreve catalogo.json e fichas/.

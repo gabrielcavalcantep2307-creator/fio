@@ -45,6 +45,32 @@ function usuarioLivre(banco, base) {
 }
 
 const DIAS_DE_SESSAO = 30
+// A sessão de ADMINISTRAÇÃO (19/09/2026) dura sete dias contados da entrada,
+// sem renovar com o uso: quem abre o painel tem a chave da casa inteira, e um
+// cookie roubado não pode viver para sempre só porque continua sendo usado.
+const DIAS_DE_SESSAO_ADMIN = 7
+
+/**
+ * A conta de administração entra SÓ pelo Google quando ele está ligado e a
+ * conta tem um Google vinculado. Aí a senha do painel deixa de ser porta: quem
+ * descobrir a senha do `curador` ainda precisa do celular do dono (o Google
+ * pede a verificação em duas etapas dele). `FIO_ADMIN_SENHA=permitida` no
+ * .env reabre a senha — a saída de emergência se o Google um dia falhar.
+ */
+export function adminSoPeloGoogle(banco, leitorId) {
+  if (process.env.FIO_ADMIN_SENHA === 'permitida') return false
+  if (!(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET && process.env.FIO_GOOGLE === 'ligado')) return false
+  try { return !!banco.prepare('SELECT 1 FROM leitor_google WHERE leitor_id = ?').get(leitorId) } catch { return false }
+}
+
+/** O que o painel precisa saber: alguém acertou a senha da administração. */
+export function alertar(banco, tipo, detalhe) {
+  banco.exec(`CREATE TABLE IF NOT EXISTS alerta_seguranca (
+    id INTEGER PRIMARY KEY, quando TEXT NOT NULL DEFAULT (datetime('now')), tipo TEXT NOT NULL, detalhe TEXT)`)
+  banco.prepare('INSERT INTO alerta_seguranca (tipo, detalhe) VALUES (?,?)').run(tipo, String(detalhe ?? '').slice(0, 300))
+  banco.prepare(`DELETE FROM alerta_seguranca WHERE quando < datetime('now', '-90 days')`).run()
+}
+
 // Sessenta dias, e não catorze. Um convite aqui não é link de confirmação de
 // cadastro: é um código que o dono manda para um amigo e que o amigo usa
 // quando lembrar. Catorze dias venciam antes de a pessoa entrar, e o custo de
@@ -282,6 +308,13 @@ export async function entrar(banco, { usuario, email, senha }, ctx = {}) {
     throw new Recusa('Usuário ou senha não conferem.', 401)
   }
 
+  // Senha CERTA na conta de administração, fora da porta do Google: ou é o
+  // dono esquecido, ou a senha vazou. Não entra, e o painel fica sabendo.
+  if (l.papel === 'admin' && adminSoPeloGoogle(banco, l.id)) {
+    alertar(banco, 'senha-admin-certa', `de ${dicaDeIp(ctx.ip) ?? 'sem ip'} · ${String(ctx.agente ?? '').slice(0, 120)}`)
+    throw new Recusa('A conta de administração entra só pelo botão "Entrar com o Google".', 403)
+  }
+
   perdoarDuplo(banco, 'entrar', limpo, ctx.ip)
   banco.prepare(`UPDATE leitor SET visto_em = datetime('now') WHERE id = ?`).run(l.id)
   return { pessoa: publico(l), sessao: abrirSessao(banco, l.id, ctx) }
@@ -304,14 +337,16 @@ export function abrirSessao(banco, leitorId, ctx = {}) {
   ).run(leitorId, leitorId, TETO_DE_SESSOES - 1)
 
   const token = sortearToken()
+  const admin = banco.prepare('SELECT papel FROM leitor WHERE id = ?').get(leitorId)?.papel === 'admin'
+  const dias = admin ? DIAS_DE_SESSAO_ADMIN : DIAS_DE_SESSAO
   banco.prepare(
     `INSERT INTO sessao (leitor_id, token_hash, expira_em, agente, ip_dica)
      VALUES (?,?, datetime('now', ?), ?, ?)`,
-  ).run(leitorId, resumo(token), `+${DIAS_DE_SESSAO} days`,
+  ).run(leitorId, resumo(token), `+${dias} days`,
     String(ctx.agente ?? '').slice(0, 160) || null, dicaDeIp(ctx.ip))
 
   limparVencidos(banco)
-  return { token, dias: DIAS_DE_SESSAO }
+  return { token, dias }
 }
 
 /**
@@ -321,17 +356,30 @@ export function abrirSessao(banco, leitorId, ctx = {}) {
 export function deQuemE(banco, token) {
   if (!token) return null
   const s = banco.prepare(
-    `SELECT s.id, s.expira_em, l.* FROM sessao s
+    `SELECT l.*, s.id AS sessao_id, s.expira_em, s.criado_em AS sessao_desde FROM sessao s
        JOIN leitor l ON l.id = s.leitor_id
       WHERE s.token_hash = ? AND s.expira_em > datetime('now') AND l.desativado = 0`,
   ).get(resumo(token))
   if (!s) return null
 
+  // `s.id` ficava encoberto pelo `l.id` do `l.*` (a coluna repetida vence a
+  // última): até 19/09/2026 a renovação estendia a sessão cujo número era o
+  // da CONTA, não a do aparelho. Por isso `sessao_id`.
+  //
+  // Administração: prazo fixo desde a entrada, sem renovar (ver
+  // DIAS_DE_SESSAO_ADMIN). Vale também para sessão aberta antes desta regra.
+  if (s.papel === 'admin') {
+    const vencida = banco.prepare(`SELECT ? < datetime('now', ?) v`).get(s.sessao_desde, `-${DIAS_DE_SESSAO_ADMIN} days`).v
+    if (vencida) { banco.prepare('DELETE FROM sessao WHERE id = ?').run(s.sessao_id); return null }
+    banco.prepare(`UPDATE sessao SET visto_em = datetime('now') WHERE id = ?`).run(s.sessao_id)
+    return publico(s)
+  }
+
   banco.prepare(
     `UPDATE sessao SET visto_em = datetime('now'),
             expira_em = datetime('now', ?)
       WHERE id = ? AND expira_em < datetime('now', ?)`,
-  ).run(`+${DIAS_DE_SESSAO} days`, s.id, `+${DIAS_DE_SESSAO / 2} days`)
+  ).run(`+${DIAS_DE_SESSAO} days`, s.sessao_id, `+${DIAS_DE_SESSAO / 2} days`)
 
   return publico(s)
 }

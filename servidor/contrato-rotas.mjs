@@ -170,7 +170,7 @@ const DE_CONTA_POST = [
 for (const [c, corpo] of DE_CONTA_POST) { await caso('conta', 'anon', 'POST', c, { corpo }); await caso('conta', 'leitora', 'POST', c, { corpo }) }
 
 // ── o que é do admin: leitor comum tem de levar o MESMO 404 de rota inexistente ──
-const DE_ADMIN_GET = ['/api/painel', '/api/fila', '/api/admin/esteira', '/api/admin/curadoria', '/api/admin/curadoria/base?tipo=obra',
+const DE_ADMIN_GET = ['/api/painel', '/api/fila', '/api/admin/esteira', '/api/admin/controle', '/api/admin/curadoria', '/api/admin/curadoria/base?tipo=obra',
   '/api/admin/curadoria/ficha?id=1', '/api/admin/correcoes', '/api/admin/assinaturas', '/api/admin/publicacoes', '/api/ajustes']
 for (const c of DE_ADMIN_GET) for (const q of ['anon', 'leitora', 'dona']) await caso('admin', q, 'GET', c)
 const DE_ADMIN_POST = [

@@ -62,10 +62,16 @@ function telaEntrar() {
     el('div', { style: 'margin-top:10px' }, el('label', {}, 'senha'), senha),
     aviso,
     el('div', { style: 'margin-top:12px' }, el('button', {}, 'Entrar no painel')))
+  // Desde 19/09/2026 a conta de administração entra só pelo Google (o servidor
+  // recusa a senha dela quando o Google está ligado — contas.adminSoPeloGoogle).
+  // A senha fica escondida em "outra forma" para a saída de emergência.
+  const google = el('a', { href: '/api/google/entrar?volta=' + encodeURIComponent('/admin.html'),
+    style: 'display:inline-block;background:var(--acento);color:#fff;border-radius:7px;padding:10px 18px;text-decoration:none;font-family:ui-sans-serif,system-ui,sans-serif' },
+    'Entrar com o Google')
+  const outra = el('details', { style: 'margin-top:18px' }, el('summary', { class: 'ajuda', style: 'cursor:pointer' }, 'entrar com senha'), form)
   main.replaceChildren(
-    el('p', { class: 'ajuda' }, 'Painel de administração. Entre com a conta de curadoria.'),
-    form)
-  ident.focus()
+    el('p', { class: 'ajuda' }, 'Painel de administração. A conta de curadoria entra pelo Google do dono.'),
+    google, outra)
 }
 
 async function desenhar() {
@@ -79,6 +85,7 @@ async function desenhar() {
   const pendencias = pubs.obras.length + pubs.denuncias.length
   main.replaceChildren(
     abas([
+      ['controle', 'Controle', () => [secaoControle()]],
       ['panorama', 'Panorama', () => [esteiraAoVivo(), panorama(p), recentes(p.recentes)]],
       ['esteira', 'Esteira', () => [esteiraAoVivo(), secaoFila(fila.itens), secaoAdicionar()]],
       ['publicacoes', `Publicações${pendencias ? ` (${pendencias})` : ''}`, () => [secaoPublicacoes(pubs)]],
@@ -551,7 +558,7 @@ function secaoPublicacoes(d) {
 
 // A navegação do painel: três frentes, uma de cada vez. Guarda a escolha em
 // memória para redesenhos não voltarem sempre ao começo.
-let abaAtual = 'panorama'
+let abaAtual = 'controle'
 function abas(defs) {
   const barra = el('div', { class: 'aba', style: 'margin:0 0 22px' })
   const alvo = el('div', {})
@@ -696,6 +703,89 @@ async function retentar(id) {
 async function remover(id) {
   try { await pedir('/fila/remover', { id }); await desenhar() }
   catch (e) { main.prepend(recado('ruim', e.message)) }
+}
+
+// ── a sala de controle (/api/admin/controle, servidor/controle.mjs) ──
+//
+// Responde "está tudo funcionando, e preciso abrir alguma coisa?". Nada no PC
+// precisa ficar aberto: site, esteira e backup rodam na VPS sozinhos; no PC só
+// a cópia diária, escondida. Atualiza a cada 30 s enquanto está na tela.
+let relogioControle = null
+function secaoControle() {
+  const s = el('section', {}, el('p', { class: 'ajuda' }, 'Olhando tudo…'))
+  const mb = (b) => b == null ? '—' : b >= 1e9 ? `${(b / 1e9).toFixed(1)} GB` : `${Math.round(b / 1e6)} MB`
+  const quando = (iso) => { const d = new Date(String(iso ?? '').replace(' ', 'T') + (/Z|[+-]\d\d:?\d\d$/.test(iso ?? '') ? '' : 'Z')); return isNaN(d) ? '—' : d.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) }
+  const cor = { ok: '#3aa55d', atencao: 'var(--dourado)', problema: 'var(--alerta)' }
+  const texto = (n, r) => el('div', { class: 'cartao' }, el('div', { class: 'n' }, n), el('div', { class: 'r' }, r))
+  const linha = (rotulo, valor) => el('div', { class: 'liga' }, el('span', {}, rotulo), el('span', { class: 'ajuda', style: 'text-align:right' }, valor))
+
+  async function atualizar() {
+    if (!document.body.contains(s)) { clearInterval(relogioControle); relogioControle = null; return }
+    let r
+    try { r = await pedir('/admin/controle') } catch (x) { s.replaceChildren(recado('ruim', x.message)); return }
+    const faltas = r.avisos.filter((a) => a.nivel !== 'ok')
+    const topo = faltas.some((a) => a.nivel === 'problema') ? ['ruim', 'Tem coisa pedindo atenção — veja em vermelho abaixo.']
+      : faltas.length ? ['bom', 'Tudo no ar. Alguns detalhes em amarelo abaixo.']
+      : ['bom', 'Tudo funcionando. Nada precisa ficar aberto no seu PC.']
+    const m = r.maquina, seg = r.seguranca
+
+    const sair = el('button', { class: 'fraco', onclick: async () => {
+      sair.disabled = true
+      // redesenha primeiro: `atualizar` troca o conteúdo e apagaria o recado
+      try { const x = await pedir('/sair-dos-outros', {}); await atualizar(); s.prepend(recado('bom', `${x.encerradas} sessão(ões) encerrada(s).`)) }
+      catch (x) { sair.disabled = false; s.prepend(recado('ruim', x.message)) }
+    } }, 'Sair de todos os outros aparelhos')
+
+    s.replaceChildren(
+      el('h2', {}, 'Controle'),
+      recado(...topo),
+      el('div', { class: 'grupo' }, el('h3', {}, 'O que está rodando'),
+        el('ul', { style: 'list-style:none;margin:8px 0 0;padding:0' }, r.avisos.map((a) =>
+          el('li', { style: 'display:flex;gap:10px;align-items:baseline;padding:7px 0;border-top:1px solid var(--linha);flex-wrap:wrap' },
+            el('span', { style: `flex:none;width:9px;height:9px;border-radius:50%;background:${cor[a.nivel]}` }),
+            el('b', { style: 'flex:none;min-width:150px;font-family:ui-sans-serif,system-ui,sans-serif;font-size:14px' }, a.assunto),
+            el('span', { style: 'flex:1;min-width:200px' }, a.texto))))),
+
+      el('div', { class: 'grupo' }, el('h3', {}, 'Onde cada coisa roda'),
+        el('p', { class: 'ajuda', style: 'margin:6px 0 4px' }, 'Na VPS, sempre, com o seu PC ligado ou não: o site, a esteira de tradução e o backup do banco (todo dia às 03:20). Se um deles cair, volta sozinho.'),
+        el('p', { class: 'ajuda', style: 'margin:0 0 8px' }, 'No seu PC: só a cópia do site, todo dia às 12:30 (ou quando o notebook liga, se estava desligado nessa hora). Roda escondida e não precisa de nada seu.'),
+        linha('Versão do servidor no ar', r.site.versao ? `${r.site.versao.commit} · ${quando(r.site.versao.quando)}` : '—'),
+        linha('Último backup do banco', r.backup ? `${quando(r.backup.quando)} · ${mb(r.backup.bytes)}` : '—'),
+        linha('Última cópia no seu PC', r.copiaPc ? `${quando(r.copiaPc.quando)} · ${num(r.copiaPc.arquivos)} arquivos novos` : '—')),
+
+      el('div', { class: 'grupo' }, el('h3', {}, 'A máquina'),
+        el('div', { class: 'cartoes', style: 'margin-top:10px' },
+          texto(mb(m.memoria?.livre), `memória livre de ${mb(m.memoria?.total)}`),
+          texto(m.memoria?.swapTotal ? mb(m.memoria.swapTotal - m.memoria.swapLivre) : 'sem', m.memoria?.swapTotal ? `reserva usada de ${mb(m.memoria.swapTotal)}` : 'memória de reserva'),
+          texto(mb(m.disco?.livre), `disco livre de ${mb(m.disco?.total)}`),
+          texto(m.carga[0].toFixed(2), `carga (${m.nucleos} núcleo${m.nucleos > 1 ? 's' : ''})`),
+          texto(mb(m.banco), 'o banco'),
+          texto(mb(r.site.memoria), 'memória do site')),
+        r.vps ? el('div', { style: 'margin-top:10px' },
+          linha('Conferida pela última vez', quando(r.vps.quando)),
+          linha('Tentativas de invasão por SSH barradas (24 h)', num(r.vps.ssh_barradas)),
+          linha('Endereços bloqueados agora', num(r.vps.banidos)),
+          linha('Atualizações de segurança pendentes', num(r.vps.atualizacoes)),
+          linha('Reinício pedido pelo sistema', r.vps.reiniciar ? 'sim' : 'não')) : null),
+
+      el('div', { class: 'grupo' }, el('h3', {}, 'Segurança do painel'),
+        linha('Entrada da administração', seg.soGoogle ? 'só pelo Google do dono ✓' : 'com senha (ligue o Google nesta conta)'),
+        linha('Senhas erradas na administração (24 h)', num(seg.tentativas.admin)),
+        linha('Senhas erradas no site todo (24 h)', num(seg.tentativas.total)),
+        seg.alertas.length ? el('div', { style: 'margin-top:10px' }, el('div', { class: 'ajuda' }, 'Alertas:'),
+          el('ul', { style: 'margin:4px 0 0;padding-left:18px;font-size:14px' }, seg.alertas.map((a) =>
+            el('li', {}, quando(a.quando), ' — ', a.tipo === 'senha-admin-certa' ? 'senha CERTA da administração digitada fora do Google (barrada) ' : a.tipo + ' ', el('span', { class: 'ajuda' }, a.detalhe))))) : null,
+        el('div', { class: 'ajuda', style: 'margin:14px 0 6px' }, 'Aparelhos com o painel aberto (cada sessão vale 7 dias):'),
+        el('table', {}, el('tbody', {}, seg.sessoes.map((x) => el('tr', {},
+          el('td', {}, x.aparelho, x.esta ? el('b', {}, ' (este)') : ''),
+          el('td', { class: 'mono' }, x.de ?? ''),
+          el('td', { class: 'mono' }, `desde ${quando(x.desde)}`))))),
+        el('div', { style: 'margin-top:10px' }, sair)))
+  }
+  setTimeout(atualizar, 0)
+  clearInterval(relogioControle)
+  relogioControle = setInterval(atualizar, 30_000)
+  return s
 }
 
 // ── a central de configurações, por seções ──

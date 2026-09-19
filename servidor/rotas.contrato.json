@@ -1666,6 +1666,92 @@
    "viva": "boolean"
   }
  },
+ "admin :: anon GET /api/admin/controle": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "admin :: leitora GET /api/admin/controle": {
+  "status": 404,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não existe."
+  }
+ },
+ "admin :: dona GET /api/admin/controle": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "avisos": [
+    {
+     "assunto": "string",
+     "nivel": "string",
+     "texto": "string"
+    }
+   ],
+   "backup": "null",
+   "copiaPc": "null",
+   "esteira": {
+    "estado": "null",
+    "fila": {
+     "erro": "number",
+     "espera": "number",
+     "na_esteira": "number",
+     "pronto": "number"
+    },
+    "pausada": "boolean",
+    "viva": "boolean"
+   },
+   "maquina": {
+    "banco": "number",
+    "carga": [
+     "number"
+    ],
+    "disco": {
+     "livre": "number",
+     "total": "number"
+    },
+    "memoria": "null",
+    "nucleos": "number"
+   },
+   "seguranca": {
+    "alertas": [],
+    "sessoes": [
+     {
+      "aparelho": "string",
+      "de": "string",
+      "desde": "string",
+      "esta": "boolean",
+      "expira": "string",
+      "id": "number",
+      "visto": "string"
+     }
+    ],
+    "soGoogle": "boolean",
+    "tentativas": {
+     "admin": "number",
+     "total": "number"
+    }
+   },
+   "site": {
+    "desde": "string",
+    "memoria": "number",
+    "versao": "null"
+   },
+   "vps": "null"
+  }
+ },
  "admin :: anon GET /api/admin/curadoria": {
   "status": 401,
   "tipo": "application/json",

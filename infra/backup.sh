@@ -32,3 +32,26 @@ gzip -f "$PASTA/catalogo-$QUANDO.db"
 # que ele existia para proteger.
 find "$PASTA" -name 'catalogo-*.db.gz' -mtime +14 -delete
 echo "$PASTA/catalogo-$QUANDO.db.gz"
+
+# ── o retrato para o painel (aba Controle, servidor/controle.mjs) ──
+#
+# O site não enxerga a VPS: ele não tem (nem deve ter) acesso ao Docker nem aos
+# logs do sistema. Uma vez por dia, aqui, o root deixa em /opt/fio/estado — que
+# o site monta SÓ LEITURA em /estado — dois retratos pequenos: quando foi o
+# backup, e como está a máquina. Só números e datas, nada de segredo; por isso
+# 644 (o site roda sem root e precisa ler).
+ESTADO=/opt/fio/estado
+mkdir -p "$ESTADO"
+chmod 755 "$ESTADO"
+umask 022
+ARQ="$PASTA/catalogo-$QUANDO.db.gz"
+printf '{"quando":"%s","arquivo":"%s","bytes":%s}\n' "$(date -u +%FT%TZ)" "$(basename "$ARQ")" "$(stat -c%s "$ARQ")" > "$ESTADO/backup.json.novo"
+mv "$ESTADO/backup.json.novo" "$ESTADO/backup.json"
+
+SSH_BARRADAS=$(journalctl -u ssh -u sshd --since '24 hours ago' 2>/dev/null | grep -cE 'Invalid user|Failed|authentication failure|Connection closed by authenticating' || true)
+BANIDOS=$(fail2ban-client status sshd 2>/dev/null | awk -F: '/Currently banned/ {gsub(/ /,"",$2); print $2}' || true)
+ATUALIZACOES=$(apt-get -s -o Debug::NoLocking=1 upgrade 2>/dev/null | grep -c '^Inst.*security' || true)
+REINICIAR=false; [ -f /var/run/reboot-required ] && REINICIAR=true
+printf '{"quando":"%s","ssh_barradas":%s,"banidos":%s,"atualizacoes":%s,"reiniciar":%s}\n' \
+  "$(date -u +%FT%TZ)" "${SSH_BARRADAS:-0}" "${BANIDOS:-0}" "${ATUALIZACOES:-0}" "$REINICIAR" > "$ESTADO/maquina.json.novo"
+mv "$ESTADO/maquina.json.novo" "$ESTADO/maquina.json"

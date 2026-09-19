@@ -1989,3 +1989,64 @@ test('a primeira conta só vira admin uma vez na vida do banco', async () => {
   b.exec('DELETE FROM leitor')
   assert.equal(casaFundada(b), true, 'banco esvaziado voltou a dar o painel ao próximo cadastro')
 })
+
+// ── 19/09/2026: a trava do painel ──
+
+test('a administração entra só pelo Google quando ele está ligado, e a senha certa vira alerta', async () => {
+  const b = bd()
+  b.exec('DELETE FROM tentativa')
+  const g = await import('./google.mjs'); g.garantirTabelas(b)
+  const { pessoa } = await contas.criar(b, { usuario: 'chefe', nome: 'Chefe', email: 'chefe@exemplo.com', senha: BOA, perguntas: PERGUNTAS, convite: contas.criarConvite(b).codigo })
+  b.prepare("UPDATE leitor SET papel = 'admin' WHERE id = ?").run(pessoa.id)
+  const env = { GOOGLE_CLIENT_ID: 'x', GOOGLE_CLIENT_SECRET: 'y', FIO_GOOGLE: 'ligado' }
+  try {
+    // sem Google ligado, a senha é a porta
+    assert.ok((await contas.entrar(b, { usuario: 'chefe', senha: BOA })).sessao)
+    Object.assign(process.env, env)
+    // Google ligado mas a conta sem Google vinculado: a senha continua (senão trancava o dono)
+    b.exec('DELETE FROM tentativa')
+    assert.ok((await contas.entrar(b, { usuario: 'chefe', senha: BOA })).sessao)
+    b.prepare('INSERT INTO leitor_google (sub, leitor_id, email) VALUES (?,?,?)').run('g-chefe', pessoa.id, 'chefe@gmail.com')
+    b.exec('DELETE FROM tentativa')
+    await assert.rejects(contas.entrar(b, { usuario: 'chefe', senha: BOA }, { ip: '200.1.2.3' }), /só pelo botão/)
+    assert.equal(b.prepare("SELECT COUNT(*) n FROM alerta_seguranca WHERE tipo = 'senha-admin-certa'").get().n, 1)
+    // senha ERRADA continua a resposta genérica, sem revelar que a conta é de administração
+    b.exec('DELETE FROM tentativa')
+    await assert.rejects(contas.entrar(b, { usuario: 'chefe', senha: 'errada errada' }), /não conferem/)
+    // a saída de emergência
+    process.env.FIO_ADMIN_SENHA = 'permitida'
+    b.exec('DELETE FROM tentativa')
+    assert.ok((await contas.entrar(b, { usuario: 'chefe', senha: BOA })).sessao)
+  } finally {
+    for (const k of [...Object.keys(env), 'FIO_ADMIN_SENHA']) delete process.env[k]
+  }
+})
+
+test('a sessão de administração vence 7 dias depois da entrada, mesmo em uso', async () => {
+  const b = bd()
+  b.exec('DELETE FROM tentativa')
+  const { sessao } = await contas.entrar(b, { usuario: 'chefe', senha: BOA })
+  assert.equal(sessao.dias, 7)
+  const { resumo } = await import('./seguranca.mjs')
+  assert.ok(contas.deQuemE(b, sessao.token))
+  b.prepare(`UPDATE sessao SET criado_em = datetime('now', '-8 days') WHERE token_hash = ?`).run(resumo(sessao.token))
+  assert.equal(contas.deQuemE(b, sessao.token), null)
+  assert.equal(b.prepare('SELECT COUNT(*) n FROM sessao WHERE token_hash = ?').get(resumo(sessao.token)).n, 0)
+})
+
+test('usar uma sessão renova ESSA sessão, e não outra', async () => {
+  const b = bd()
+  b.exec('DELETE FROM tentativa')
+  const { resumo } = await import('./seguranca.mjs')
+  await contas.criar(b, { usuario: 'renova', nome: 'Renova', senha: BOA, perguntas: PERGUNTAS, convite: contas.criarConvite(b).codigo })
+  b.exec('DELETE FROM tentativa')
+  const sa = (await contas.entrar(b, { usuario: 'renova', senha: BOA })).sessao
+  const sb = (await contas.entrar(b, { usuario: 'renova', senha: BOA })).sessao
+  const perto = b.prepare(`UPDATE sessao SET expira_em = datetime('now', '+1 day') WHERE token_hash = ?`)
+  perto.run(resumo(sa.token)); perto.run(resumo(sb.token))
+  const prazo = (t) => b.prepare('SELECT expira_em e FROM sessao WHERE token_hash = ?').get(resumo(t)).e
+  const antesA = prazo(sa.token)
+  assert.ok(contas.deQuemE(b, sb.token))
+  assert.ok(prazo(sb.token) > antesA, 'a sessão usada não foi renovada')
+  assert.equal(prazo(sa.token), antesA, 'renovou a sessão de outro aparelho')
+})

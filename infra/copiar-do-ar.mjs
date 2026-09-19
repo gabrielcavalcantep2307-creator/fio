@@ -110,4 +110,9 @@ if (!process.argv.includes('--sem-banco')) {
   for (const n of readdirSync(BACKUPS)) if (/^catalogo-.*\.db\.gz$/.test(n) && !manter.has(n)) rmSync(join(BACKUPS, n))
   console.log(`banco: ${[...manter].join(', ')}`)
 }
+// Avisa o painel (aba Controle) que a cópia rodou: só a hora e os números.
+try {
+  const marca = JSON.stringify({ quando: new Date().toISOString(), arquivos: faltam.length, mb: Math.round(bytes / 1e6), apagados: sobram.length })
+  ssh('mkdir -p /opt/fio/estado && cat > /opt/fio/estado/copia-pc.json.novo && chmod 644 /opt/fio/estado/copia-pc.json.novo && mv /opt/fio/estado/copia-pc.json.novo /opt/fio/estado/copia-pc.json', { input: marca })
+} catch (e) { console.error('não consegui avisar o painel:', e.message) }
 console.log(`pronto: ${ESPELHO}`)
