@@ -21,6 +21,17 @@ const RAIZ = join(dirname(fileURLToPath(import.meta.url)), '..')
 const PLANO = join(RAIZ, 'dados', 'traducoes', 'esteira.json')
 const arg = (n, p) => { const i = process.argv.indexOf(`--${n}`); return i > 0 && process.argv[i + 1] ? process.argv[i + 1] : p }
 
+// ── desde 18/09/2026 a esteira mora na VPS ──
+//
+// O serviço `esteira` do docker-compose (servidor/esteira-trabalhador.mjs)
+// traduz a fila do painel sozinho, dia e noite. Rodar esta aqui ao mesmo tempo
+// traduziria os mesmos livros duas vezes; por isso ela só anda com --aqui.
+if (!process.argv.includes('--aqui')) {
+  console.error('A esteira agora roda sozinha na VPS (serviço esteira). Veja o andamento no painel, aba Esteira.')
+  console.error('Para rodar esta, do PC, mesmo assim: acrescente --aqui')
+  process.exit(1)
+}
+
 const MAQUINA = process.env.MAQUINA || 'root@142.93.57.2'
 const CHAVE = process.env.CHAVE_SSH || join(homedir(), '.ssh', 'picord-deploy')
 const CONTAINER = 'infra-fio-1'

@@ -1,6 +1,11 @@
-// A esteira vista do servidor: o pulso que ela manda, a fila e os pedidos.
+// A esteira vista do servidor: a fila, o pulso e os pedidos.
 //
-// A esteira roda na máquina do dono e o painel roda aqui. Até 17/09 o painel
+// Desde 18/09/2026 a esteira roda AQUI, na VPS, num container próprio
+// (servidor/esteira-trabalhador.mjs), e a fila deste banco é a única lista de
+// trabalho: o que está 'na_esteira' é o que ela vai traduzir. As funções de
+// fila abaixo (promover, proximo, falhou…) são as que o trabalhador usa.
+//
+// Antes disso a esteira rodava na máquina do dono e o painel rodava aqui. Até 17/09 o painel
 // só sabia o que a fila dizia — e a fila só mudava quando alguém rodava
 // `puxar-fila.mjs`, então mostrava "29 na esteira" com a esteira parada havia
 // dias. Agora:
@@ -27,6 +32,17 @@ export function garantirTabelas(banco) {
     recebido_em TEXT NOT NULL DEFAULT (datetime('now')))`)
   // prioridade: pedido de assinante Tear passa na frente (ver fila-do-painel.mjs)
   try { banco.exec('ALTER TABLE fila_traducao ADD COLUMN prioridade INTEGER NOT NULL DEFAULT 0') } catch {}
+  // As colunas do trabalhador (18/09): o tamanho da fonte decide a ordem, e
+  // as tentativas com hora marcada fazem a falha passageira esperar em vez de
+  // girar em falso.
+  for (const col of ['bytes INTEGER', 'em_trilha INTEGER NOT NULL DEFAULT 0',
+    'tentativas INTEGER NOT NULL DEFAULT 0', 'tentar_depois TEXT']) {
+    try { banco.exec(`ALTER TABLE fila_traducao ADD COLUMN ${col}`) } catch {}
+  }
+  banco.exec(`CREATE TABLE IF NOT EXISTS esteira_controle (
+    id INTEGER PRIMARY KEY CHECK (id = 1),
+    pausada INTEGER NOT NULL DEFAULT 0,
+    mexido_em TEXT NOT NULL DEFAULT (datetime('now')))`)
 }
 
 const resumo = (s) => createHash('sha256').update(String(s)).digest()
@@ -40,10 +56,14 @@ export function chaveConfere(recebida) {
 const txt = (v, n) => String(v ?? '').replace(/[\u0000-\u001f\u007f]/g, ' ').slice(0, n)
 const num = (v) => (Number.isFinite(Number(v)) ? Number(v) : null)
 
+// 'ociosa' = fila em dia, esperando livro novo; 'esperando' = o serviço de
+// tradução não responde e ela aguarda; 'pausada' = o dono pausou no painel.
+const ESTADOS = ['traduzindo', 'publicando', 'instalando', 'medindo', 'ociosa', 'esperando', 'pausada', 'terminou', 'parada']
+
 /** Guarda o pulso, só com os campos conhecidos e com tamanho limitado. */
 export function receberPulso(banco, d) {
   const limpo = {
-    estado: ['traduzindo', 'publicando', 'medindo', 'terminou', 'parada'].includes(d.estado) ? d.estado : 'traduzindo',
+    estado: ESTADOS.includes(d.estado) ? d.estado : 'traduzindo',
     rodada: { total: num(d.rodada?.total), feitos: num(d.rodada?.feitos), falhas: num(d.rodada?.falhas), inicio: txt(d.rodada?.inicio, 40) },
     plano: { total: num(d.plano?.total), traduzidos: num(d.plano?.traduzidos) },
     atual: d.atual ? {
@@ -61,15 +81,7 @@ export function receberPulso(banco, d) {
 
 /** O que o painel mostra da esteira, com a fila reconciliada. */
 export function estado(banco) {
-  banco.exec(`
-    UPDATE fila_traducao SET estado = 'pronto', mexido_em = datetime('now')
-     WHERE estado = 'na_esteira' AND obra_id IN (
-       SELECT t.obra_id FROM texto t WHERE t.fonte = 'fio_traducao' AND t.normalizado = 1)`)
-  // Quem pediu a tradução recebe o aviso (chave única: nunca repete).
-  for (const f of banco.prepare("SELECT id, titulo, obra_id, pedido_por FROM fila_traducao WHERE estado = 'pronto' AND pedido_por IS NOT NULL AND obra_id IS NOT NULL").all()) {
-    avisar(banco, f.pedido_por, { chave: `pedido-pronto-${f.id}`, tipo: 'pronto', titulo: `Pronto para ler: ${f.titulo}`,
-      corpo: 'O livro que você pediu foi traduzido e já está no acervo.', link: `/#/obra/${f.obra_id}` })
-  }
+  reconciliar(banco)
   const p = banco.prepare(`SELECT dados, recebido_em, CAST((julianday('now') - julianday(recebido_em)) * 86400 AS INTEGER) idade
       FROM esteira_pulso WHERE id = 1`).get()
   const fila = Object.fromEntries(banco.prepare('SELECT estado, COUNT(*) n FROM fila_traducao GROUP BY estado').all().map((l) => [l.estado, l.n]))
@@ -78,7 +90,10 @@ export function estado(banco) {
   const viva = !!pulso && pulso.idadeSegundos < 120 && !['terminou', 'parada'].includes(pulso.estado)
   return {
     viva, pulso,
-    configurada: !!process.env.FIO_ESTEIRA_CHAVE,
+    pausada: pausada(banco),
+    // Com o trabalhador na VPS o pulso chega pelo banco, sem chave nenhuma;
+    // a chave só importa para quem ainda manda pulso por HTTP.
+    configurada: true,
     publicadas: banco.prepare("SELECT COUNT(*) n FROM texto WHERE fonte = 'fio_traducao'").get().n,
     fila: { espera: fila.espera ?? 0, na_esteira: fila.na_esteira ?? 0, pronto: fila.pronto ?? 0, erro: fila.erro ?? 0 },
   }
@@ -205,4 +220,191 @@ export function meusPedidos(banco, pessoa) {
   return banco.prepare(`SELECT f.titulo, f.autor, f.estado, f.obra_id, p.criado_em
       FROM pedido_traducao p LEFT JOIN fila_traducao f ON f.id = p.fila_id
      WHERE p.leitor_id = ? ORDER BY p.criado_em DESC LIMIT 50`).all(pessoa.id)
+}
+
+// ─────────────────────────────────────────────────────────────
+// A fila, do ponto de vista de quem trabalha nela (esteira-trabalhador.mjs)
+//
+//   espera ──promover──▶ na_esteira ──(traduz, instala)──▶ pronto
+//                            │  ▲
+//                     falhou │  │ tentar_depois chegou
+//                            ▼  │
+//                  na_esteira com hora marcada ──(esgotou)──▶ erro
+//
+// 'espera' é o que o painel e os pedidos de assinante escrevem: ainda não tem
+// obra. 'na_esteira' tem obra e é trabalho. 'erro' só sai daqui pelo painel
+// ("tentar de novo"), para um livro com defeito não girar para sempre.
+// ─────────────────────────────────────────────────────────────
+
+/**
+ * Quanto esperar depois de cada falha, em minutos. Serviço de tradução fora
+ * do ar e Gutenberg sobrecarregado passam; a espera cresce para não martelar
+ * quem caiu. Esgotada a lista (cerca de 4 dias), vira 'erro'.
+ */
+export const ESPERAS_MIN = [30, 120, 480, 1440, 4320]
+
+/** Tudo que já tem tradução nossa publicada vira 'pronto', e quem pediu é avisado. */
+export function reconciliar(banco) {
+  banco.exec(`
+    UPDATE fila_traducao SET estado = 'pronto', nota = NULL, tentar_depois = NULL, mexido_em = datetime('now')
+     WHERE estado IN ('na_esteira', 'erro') AND obra_id IN (
+       SELECT t.obra_id FROM texto t WHERE t.fonte = 'fio_traducao' AND t.normalizado = 1
+          AND EXISTS (SELECT 1 FROM capitulo c WHERE c.texto_id = t.id))`)
+  // Quem pediu a tradução recebe o aviso (chave única: nunca repete).
+  for (const f of banco.prepare("SELECT id, titulo, obra_id, pedido_por FROM fila_traducao WHERE estado = 'pronto' AND pedido_por IS NOT NULL AND obra_id IS NOT NULL").all()) {
+    avisar(banco, f.pedido_por, { chave: `pedido-pronto-${f.id}`, tipo: 'pronto', titulo: `Pronto para ler: ${f.titulo}`,
+      corpo: 'O livro que você pediu foi traduzido e já está no acervo.', link: `/#/obra/${f.obra_id}` })
+  }
+}
+
+/**
+ * Cada 'espera' vira uma OBRA (ficha em trilho B, autor com ano de morte) e
+ * passa a 'na_esteira'. Sem a obra a esteira traduziria um texto sem ter onde
+ * instalá-lo. Era o `ingestao/fila-do-painel.mjs`, que a máquina do dono
+ * rodava por SSH; agora é uma função que o trabalhador chama a cada volta.
+ */
+export function promover(banco) {
+  const esperando = banco.prepare("SELECT * FROM fila_traducao WHERE estado = 'espera' ORDER BY criado_em").all()
+  if (!esperando.length) return 0
+  const achaPessoa = banco.prepare('SELECT id FROM pessoa WHERE nome = ?')
+  const poePessoa = banco.prepare('INSERT INTO pessoa (nome, nome_ordem, morte) VALUES (?,?,?)')
+  const poMorte = banco.prepare('UPDATE pessoa SET morte = COALESCE(morte, ?) WHERE id = ?')
+  const achaObra = banco.prepare(`
+    SELECT o.id FROM obra o JOIN obra_pessoa op ON op.obra_id = o.id AND op.papel = 'autor'
+      JOIN pessoa p ON p.id = op.pessoa_id
+     WHERE o.titulo = ? COLLATE NOCASE AND p.nome = ?`)
+  const poeObra = banco.prepare(
+    "INSERT INTO obra (titulo, titulo_pt, idioma_original, trilho, publicada) VALUES (?,?,?, 'B', 1)")
+  const liga = banco.prepare("INSERT OR IGNORE INTO obra_pessoa (obra_id, pessoa_id, papel) VALUES (?,?,'autor')")
+  const marcar = banco.prepare("UPDATE fila_traducao SET estado = 'na_esteira', obra_id = ?, em_trilha = 1, mexido_em = datetime('now') WHERE id = ?")
+  banco.exec('BEGIN')
+  try {
+    for (const f of esperando) {
+      let obraId = achaObra.get(f.titulo, f.autor)?.id
+      if (!obraId) {
+        const pessoa = achaPessoa.get(f.autor)
+          ?? { id: Number(poePessoa.run(f.autor, f.autor, f.morte).lastInsertRowid) }
+        if (f.morte) poMorte.run(f.morte, pessoa.id)
+        obraId = Number(poeObra.run(f.titulo, f.titulo, f.idioma).lastInsertRowid)
+        liga.run(obraId, pessoa.id)
+      }
+      marcar.run(obraId, f.id)
+    }
+    banco.exec('COMMIT')
+  } catch (e) { banco.exec('ROLLBACK'); throw e }
+  return esperando.length
+}
+
+/**
+ * O próximo livro: pedido de assinante primeiro, depois do MENOR para o maior
+ * (vinte livros curtos prontos hoje valem mais que um Guerra e Paz a caminho,
+ * e livro curto que falha revela o defeito cedo), e no empate o que está em
+ * prateleira. Livro que falhou só volta quando a hora marcada chega.
+ */
+export function proximo(banco) {
+  return banco.prepare(`
+    SELECT * FROM fila_traducao
+     WHERE estado = 'na_esteira' AND obra_id IS NOT NULL
+       AND (tentar_depois IS NULL OR tentar_depois <= datetime('now'))
+     ORDER BY prioridade DESC, COALESCE(bytes, 9000000000) ASC, em_trilha DESC, id
+     LIMIT 1`).get() ?? null
+}
+
+/** Os que ainda não têm tamanho medido (o trabalhador pergunta com um HEAD). */
+export const semTamanho = (banco, n = 40) => banco.prepare(
+  "SELECT id, fonte FROM fila_traducao WHERE estado = 'na_esteira' AND bytes IS NULL LIMIT ?").all(n)
+
+export function guardarTamanho(banco, id, bytes) {
+  banco.prepare('UPDATE fila_traducao SET bytes = ? WHERE id = ?').run(bytes, id)
+}
+
+/**
+ * Anota uma falha. `permanente` é para o que não melhora esperando — a fonte
+ * que não é livro, o endereço que não existe —, que vai direto para 'erro'.
+ * @returns o estado em que o item ficou e, se volta, quando
+ */
+export function falhou(banco, id, erro, { permanente = false } = {}) {
+  const item = banco.prepare('SELECT tentativas FROM fila_traducao WHERE id = ?').get(id)
+  if (!item) return null
+  const tentativas = item.tentativas + 1
+  const nota = String(erro ?? 'sem mensagem').slice(0, 300)
+  if (permanente || tentativas > ESPERAS_MIN.length) {
+    banco.prepare(`UPDATE fila_traducao SET estado = 'erro', tentativas = ?, nota = ?, tentar_depois = NULL,
+        mexido_em = datetime('now') WHERE id = ?`).run(tentativas, nota, id)
+    return { estado: 'erro', tentativas }
+  }
+  const espera = ESPERAS_MIN[tentativas - 1]
+  banco.prepare(`UPDATE fila_traducao SET tentativas = ?, nota = ?, tentar_depois = datetime('now', ?),
+      mexido_em = datetime('now') WHERE id = ?`).run(tentativas, nota, `+${espera} minutes`, id)
+  return { estado: 'na_esteira', tentativas, esperaMin: espera }
+}
+
+export function marcarPronto(banco, id) {
+  banco.prepare(`UPDATE fila_traducao SET estado = 'pronto', nota = NULL, tentar_depois = NULL,
+      mexido_em = datetime('now') WHERE id = ?`).run(id)
+}
+
+/** "Tentar de novo", do painel: o 'erro' volta para a fila, do zero. */
+export function retentar(banco, id) {
+  return banco.prepare(`UPDATE fila_traducao
+      SET estado = CASE WHEN obra_id IS NULL THEN 'espera' ELSE 'na_esteira' END,
+          tentativas = 0, tentar_depois = NULL, nota = NULL, mexido_em = datetime('now')
+    WHERE id = ? AND estado = 'erro'`).run(Number(id)).changes
+}
+
+export const pausada = (banco) =>
+  banco.prepare('SELECT pausada FROM esteira_controle WHERE id = 1').get()?.pausada === 1
+
+export function pausar(banco, sim) {
+  banco.prepare(`INSERT INTO esteira_controle (id, pausada, mexido_em) VALUES (1, ?, datetime('now'))
+    ON CONFLICT(id) DO UPDATE SET pausada = excluded.pausada, mexido_em = excluded.mexido_em`).run(sim ? 1 : 0)
+}
+
+/** Quantos já foram e quantos faltam — o "plano inteiro" do painel. */
+export function contagem(banco) {
+  const n = Object.fromEntries(banco.prepare('SELECT estado, COUNT(*) n FROM fila_traducao GROUP BY estado').all()
+    .map((l) => [l.estado, l.n]))
+  const total = (n.espera ?? 0) + (n.na_esteira ?? 0) + (n.pronto ?? 0) + (n.erro ?? 0)
+  return { total, traduzidos: n.pronto ?? 0, faltam: (n.espera ?? 0) + (n.na_esteira ?? 0), erro: n.erro ?? 0 }
+}
+
+const mesmoTitulo = (a, b) => {
+  const s = (x) => String(x ?? '').toLowerCase().replace(/[^\p{L}\p{N}]/gu, '')
+  return s(a) !== '' && s(a) === s(b)
+}
+
+/**
+ * Traz para a fila o plano antigo da máquina do dono (`esteira.json`).
+ *
+ * Cada linha já aponta para uma obra (`obra`). Ela só entra se essa obra
+ * existir AQUI com o mesmo título: os ids do plano saíram de um banco, e uma
+ * linha que apontasse para a obra errada instalaria um livro na ficha de
+ * outro — em silêncio, que é o pior jeito.
+ */
+export function importarPlano(banco, plano) {
+  const obra = banco.prepare('SELECT id, titulo, titulo_pt FROM obra WHERE id = ?')
+  const jaNaFila = banco.prepare("SELECT 1 FROM fila_traducao WHERE obra_id = ? OR (fonte = ? AND estado <> 'erro')")
+  const poe = banco.prepare(`INSERT INTO fila_traducao (titulo, autor, morte, fonte, idioma, estado, obra_id, prioridade, em_trilha)
+      VALUES (?,?,?,?,?, 'na_esteira', ?,?,?)`)
+  const r = { entraram: 0, jaEstavam: 0, recusados: [] }
+  banco.exec('BEGIN')
+  try {
+    for (const l of plano) {
+      const o = obra.get(Number(l.obra))
+      if (!o) { r.recusados.push({ obra: l.obra, titulo: l.titulo, porque: 'obra não existe aqui' }); continue }
+      if (!mesmoTitulo(o.titulo, l.titulo) && !mesmoTitulo(o.titulo_pt, l.titulo)) {
+        r.recusados.push({ obra: l.obra, titulo: l.titulo, porque: `aqui a obra ${o.id} é "${o.titulo_pt ?? o.titulo}"` }); continue
+      }
+      if (!/^https:\/\/(www\.)?gutenberg\.(org|net\.au)\//.test(String(l.fonte))) {
+        r.recusados.push({ obra: l.obra, titulo: l.titulo, porque: 'fonte fora do Gutenberg' }); continue
+      }
+      if (jaNaFila.get(o.id, l.fonte)) { r.jaEstavam++; continue }
+      poe.run(String(l.titulo).slice(0, 300), String(l.autor ?? '?').slice(0, 200), Number.isInteger(l.morte) ? l.morte : null,
+        l.fonte, String(l.de ?? 'en').slice(0, 5), o.id, Number(l.prioridade) || 0, Number(l.emTrilha) || 0)
+      r.entraram++
+    }
+    banco.exec('COMMIT')
+  } catch (e) { banco.exec('ROLLBACK'); throw e }
+  reconciliar(banco)
+  return r
 }

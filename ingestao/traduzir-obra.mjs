@@ -41,8 +41,10 @@ import { fileURLToPath } from 'node:url'
 import { traduzir, motorDisponivel, escolherMotor } from './motor-traducao.mjs'
 
 const RAIZ = join(dirname(fileURLToPath(import.meta.url)), '..')
-const PASTA = join(RAIZ, 'dados', 'traducoes')
-const UA = 'fio/0.1 (biblioteca em portugues; contato: toksr12@gmail.com)'
+// Onde ficam cadernos e traduções prontas. Na VPS, dentro do volume do banco
+// (FIO_TRADUCOES=/dados/esteira), para sobreviver a qualquer redeploy.
+const PASTA = process.env.FIO_TRADUCOES || join(RAIZ, 'dados', 'traducoes')
+const UA = 'fio/0.1 (biblioteca em portugues; https://fiolib.com.br)'
 
 // Quantos parágrafos em voo ao mesmo tempo. Era três — conservador demais. O
 // MinT aguentou dez numa rajada; oito é o ponto em que ganha velocidade e

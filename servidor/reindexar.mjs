@@ -84,9 +84,7 @@ export function reindexarCapitulos(banco, aoAndar) {
  * agora existe UM lugar que sabe montá-los, em vez de cinco que repetem a
  * mesma consulta.
  */
-export function reindexarObras(banco) {
-  recriarDerivada(banco, 'busca_obra')
-  const obras = banco.prepare(`
+const OBRAS_PARA_INDICE = `
     SELECT o.id, o.titulo, o.titulo_pt,
            (SELECT group_concat(p.nome, ', ') FROM obra_pessoa op
               JOIN pessoa p ON p.id = op.pessoa_id
@@ -98,7 +96,11 @@ export function reindexarObras(banco) {
              WHERE f.obra_id = o.id AND f.tipo = 'chamada'
                AND (f.gerado_por <> 'ia' OR f.revisado = 1) LIMIT 1) resumo
       FROM obra o
-     WHERE o.publicada = 1`).all()
+     WHERE o.publicada = 1`
+
+export function reindexarObras(banco) {
+  recriarDerivada(banco, 'busca_obra')
+  const obras = banco.prepare(OBRAS_PARA_INDICE).all()
   const poe = banco.prepare(
     'INSERT INTO busca_obra (titulo, titulo_pt, autores, temas, resumo, conteudo_obra_id) VALUES (?,?,?,?,?,?)')
   banco.exec('BEGIN')
@@ -107,6 +109,42 @@ export function reindexarObras(banco) {
   }
   banco.exec('COMMIT')
   return obras.length
+}
+
+// ─────────────────────────────────────────────────────────────
+// Um livro de cada vez (18/09/2026)
+//
+// Refazer tudo leva cinco minutos e reescreve 1 GB de índice — e fez o WAL do
+// banco da VPS passar de 1 GB. Para quem acabou de instalar UM livro, basta
+// pôr no índice os capítulos dele e a linha da obra. É o que a esteira faz
+// agora, a cada livro, em menos de um segundo.
+// ─────────────────────────────────────────────────────────────
+
+/** Põe na busca os capítulos de um texto (que ainda não estavam lá). */
+export function indexarTexto(banco, textoId) {
+  const caps = banco.prepare('SELECT id, corpo FROM capitulo WHERE texto_id = ? ORDER BY ordem').all(textoId)
+  const poe = banco.prepare('INSERT INTO busca_capitulo (corpo, capitulo_id, texto_id) VALUES (?,?,?)')
+  banco.exec('BEGIN')
+  try {
+    for (const c of caps) poe.run(c.corpo, c.id, textoId)
+    banco.exec('COMMIT')
+  } catch (e) { banco.exec('ROLLBACK'); throw e }
+  return caps.length
+}
+
+/** Refaz a linha de uma obra no índice de obras. */
+export function indexarObra(banco, obraId) {
+  const o = banco.prepare(`${OBRAS_PARA_INDICE} AND o.id = ?`).get(obraId)
+  banco.exec('BEGIN')
+  try {
+    banco.prepare('DELETE FROM busca_obra WHERE conteudo_obra_id = ?').run(obraId)
+    if (o) {
+      banco.prepare('INSERT INTO busca_obra (titulo, titulo_pt, autores, temas, resumo, conteudo_obra_id) VALUES (?,?,?,?,?,?)')
+        .run(o.titulo ?? '', o.titulo_pt ?? '', o.autores ?? '', o.temas ?? '', o.resumo ?? '', o.id)
+    }
+    banco.exec('COMMIT')
+  } catch (e) { banco.exec('ROLLBACK'); throw e }
+  return !!o
 }
 
 function main() {

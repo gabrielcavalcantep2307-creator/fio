@@ -35,21 +35,31 @@ node --test servidor/testes.mjs > /dev/null
 echo "==> Guardando o que está lá, antes de trocar"
 remoto "rm -rf $CASA/servidor.antes && cp -r $CASA/servidor $CASA/servidor.antes"
 
-echo "==> Enviando servidor/ e infra/"
+echo "==> Enviando servidor/, ingestao/ e infra/"
 # Pasta nova, e não extração por cima: `tar xzf` só acrescenta, e arquivo que
 # saiu do repositório ficava lá para sempre — em 16/09 a VPS ainda carregava o
 # `email.mjs` apagado em 41cb983. A cópia de segurança já está em servidor.antes.
 tar czf - servidor | remoto "rm -rf $CASA/servidor && tar xzf - -C $CASA"
+# A ingestão entra na imagem desde 18/09/2026: é o que o serviço `esteira`
+# roda. Mesma regra: pasta nova, nada de arquivo velho sobrando.
+tar czf - ingestao | remoto "rm -rf $CASA/ingestao && tar xzf - -C $CASA"
+# Só servidor/ e ingestao/ entram no contexto do build — sem isto o Docker
+# empacotava site/ e backups/ (gigabytes) a cada reconstrução.
+remoto "printf '%s\n' '*' '!servidor/' '!ingestao/' > $CASA/.dockerignore"
 tar czf - -C infra Dockerfile docker-compose.yml backup.sh Caddyfile.fio \
   | remoto "tar xzf - -C $CASA/infra"
 
 echo "==> Reconstruindo a imagem"
+# A esteira (usuário 1717 no container) reescreve catalogo.json e fichas/.
+remoto "chown -R 1717:1717 $CASA/site/dados"
 remoto "cd $CASA/infra && docker compose up -d --build"
 
 echo "==> Conferindo"
 sleep 5
 SAUDE=$(remoto "curl -s --max-time 10 http://127.0.0.1:8787/api/saude" || true)
 echo "    $SAUDE"
+ESTEIRA=$(remoto "docker inspect -f '{{.State.Status}} (reiniciou {{.RestartCount}}x)' infra-esteira-1; docker logs --tail 3 infra-esteira-1 2>&1" || true)
+echo "    esteira: $ESTEIRA"
 
 # A porta da casa é o motivo desta rodada. Se ela não fechou, o deploy não
 # valeu, e é melhor gritar aqui do que descobrir por um cadastro estranho.

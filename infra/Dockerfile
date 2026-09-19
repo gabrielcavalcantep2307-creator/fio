@@ -11,11 +11,14 @@ RUN addgroup -g 1717 fio && adduser -u 1717 -G fio -D fio
 
 WORKDIR /app
 COPY servidor/ ./servidor/
+# A ingestão vai junto desde 18/09/2026: é ela que a esteira (o serviço
+# `esteira` do compose, mesma imagem) roda para traduzir, instalar e publicar.
+COPY ingestao/ ./ingestao/
 
 # A pasta do banco nasce aqui, com dono. Um volume nomeado VAZIO herda o dono
 # do caminho que existe na imagem; sem esta linha, o volume nasce de root e o
 # processo (que não é root) não consegue nem criar o arquivo.
-RUN mkdir -p /dados && chown -R fio:fio /dados /app
+RUN mkdir -p /dados /site-dados && chown -R fio:fio /dados /site-dados /app
 
 USER fio
 VOLUME /dados

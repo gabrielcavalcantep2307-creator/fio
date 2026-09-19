@@ -308,8 +308,9 @@ async function acervoQuadrinhos(alvo) {
 // ── a esteira, ao vivo ──
 //
 // Lê /api/admin/esteira a cada 10 s enquanto a caixa está na tela. O pulso vem
-// da própria esteira (ingestao/pulso.mjs); se ele envelhece, a caixa diz que a
-// esteira parou em vez de fingir que está andando.
+// da própria esteira — desde 18/09 o trabalhador na VPS (servidor/
+// esteira-trabalhador.mjs) —; se ele envelhece, a caixa diz que a esteira
+// parou em vez de fingir que está andando.
 let relogioEsteira = null
 function esteiraAoVivo() {
   const caixa = el('section', { class: 'grupo', style: 'margin-bottom:26px' }, el('p', { class: 'ajuda' }, 'Perguntando à esteira…'))
@@ -325,16 +326,29 @@ function esteiraAoVivo() {
     const plano = pu?.plano ?? {}
     const pctPlano = plano.total ? plano.traduzidos / plano.total : null
     const at = pu?.atual
-    const estadoTexto = !e.configurada ? 'sem chave configurada no servidor'
-      : !pu ? 'nunca mandou sinal (rode a esteira com a chave)'
-      : e.viva ? ({ traduzindo: 'traduzindo agora', publicando: 'publicando no site', medindo: 'preparando a rodada' }[pu.estado] ?? pu.estado)
+    const estadoTexto = !pu ? 'ainda não mandou sinal (o serviço da esteira subiu?)'
+      : e.viva ? ({
+        traduzindo: 'traduzindo agora', publicando: 'atualizando o catálogo do site', instalando: 'instalando no acervo',
+        medindo: 'começando', ociosa: 'em dia: esperando livros novos na fila',
+        esperando: 'o serviço de tradução não responde; tentando de novo em alguns minutos',
+        pausada: 'pausada pelo painel',
+      }[pu.estado] ?? pu.estado)
       : pu.estado === 'terminou' ? `terminou a rodada ${idade(pu.idadeSegundos)}`
-      : `parada — último sinal ${idade(pu.idadeSegundos)} (PC desligado ou dormindo?)`
+      : `parada — último sinal ${idade(pu.idadeSegundos)} (o serviço da esteira na VPS caiu? ele volta sozinho em instantes)`
+    const botaoPausa = el('button', {
+      class: 'fraco', style: 'margin-left:auto',
+      onclick: async () => {
+        botaoPausa.disabled = true
+        try { await pedir('/admin/esteira/pausa', { pausada: !e.pausada }); await atualizar() }
+        catch (x) { caixa.prepend(recado('ruim', x.message)) }
+      },
+    }, e.pausada ? 'Retomar' : 'Pausar')
     caixa.replaceChildren(
       el('div', { style: 'display:flex;align-items:center;gap:10px;flex-wrap:wrap' },
         el('span', { style: `width:10px;height:10px;border-radius:50%;background:${e.viva ? '#3aa55d' : 'var(--alerta)'};${e.viva ? 'box-shadow:0 0 0 4px color-mix(in srgb,#3aa55d 25%,transparent)' : ''}` }),
         el('h3', { style: 'margin:0' }, 'Esteira de tradução'),
-        el('span', { class: 'ajuda' }, estadoTexto)),
+        el('span', { class: 'ajuda' }, e.pausada && pu?.estado !== 'pausada' ? 'pausa pedida: termina o livro atual e para' : estadoTexto),
+        botaoPausa),
       at ? el('div', { style: 'margin-top:14px' },
         el('div', {}, el('b', {}, at.titulo), el('span', { class: 'ajuda' }, `  · do ${at.de}`)),
         at.total ? barra(at.feitas / at.total) : barra(0),
@@ -591,27 +605,32 @@ function secaoFila(itens) {
       el('th', {}, 'Estado'), el('th', {}, ''))))
   const corpo = el('tbody', {})
   for (const it of itens) {
-    const acao = ['espera', 'erro'].includes(it.estado)
-      ? el('button', { class: 'fraco', onclick: () => remover(it.id) }, 'tirar')
-      : ''
+    const acao = el('span', {},
+      it.estado === 'erro' ? el('button', { class: 'fraco', onclick: () => retentar(it.id) }, 'tentar de novo') : '',
+      ['espera', 'erro'].includes(it.estado) ? el('button', { class: 'fraco', onclick: () => remover(it.id) }, 'tirar') : '')
+    // Na esteira depois de uma falha: diz quando volta, em vez de parecer parado.
+    const volta = it.estado === 'na_esteira' && it.tentar_depois
+      ? el('div', { class: 'ajuda', style: 'font-size:12px' }, `falhou ${it.tentativas}× · tenta de novo às ${new Date(it.tentar_depois.replace(' ', 'T') + 'Z').toLocaleString('pt-BR', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' })}`)
+      : null
     corpo.append(el('tr', {},
       el('td', {}, it.titulo),
       el('td', {}, it.autor),
       el('td', { class: 'mono' }, it.idioma),
-      el('td', {}, el('span', { class: `selo ${it.estado}`, title: it.nota || '' }, rotulo(it.estado))),
+      el('td', {}, el('span', { class: `selo ${it.estado}`, title: it.nota || '' }, rotulo(it.estado)), volta,
+        it.estado === 'erro' && it.nota ? el('div', { class: 'ajuda', style: 'font-size:12px;max-width:340px' }, it.nota) : null),
       el('td', {}, acao)))
   }
   t.append(corpo); s.append(t)
   return s
 }
 
-const rotulo = (e) => ({ espera: 'esperando', na_esteira: 'traduzindo', pronto: 'pronto', erro: 'erro' }[e] ?? e)
+const rotulo = (e) => ({ espera: 'esperando', na_esteira: 'na esteira', pronto: 'pronto', erro: 'erro' }[e] ?? e)
 
 function secaoAdicionar() {
   const s = el('section', {}, el('h2', {}, 'Adicionar livros à fila'))
   s.append(el('p', { class: 'ajuda' },
     'Só domínio público, e a fonte tem de ser o original no Project Gutenberg. ',
-    'A esteira, na máquina do dono, puxa esta fila e traduz — os livros aparecem no site quando ficam prontos.'))
+    'A esteira roda sozinha na VPS, dia e noite: pega esta fila, traduz e publica. Os livros aparecem no site quando ficam prontos.'))
 
   const abas = el('div', { class: 'aba' })
   const bUm = el('button', { 'aria-selected': 'true' }, 'Um livro')
@@ -675,6 +694,11 @@ function enviarLote(ev) {
   })
   if (!livros.length) return
   enviar(livros, ev.submitter)
+}
+
+async function retentar(id) {
+  try { await pedir('/fila/retentar', { id }); await desenhar() }
+  catch (e) { main.prepend(recado('ruim', e.message)) }
 }
 
 async function remover(id) {

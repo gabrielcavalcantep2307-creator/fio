@@ -43,6 +43,17 @@ const arg = (n, p = null) => {
   return i > 0 && process.argv[i + 1] ? process.argv[i + 1] : p
 }
 
+// ── desde 18/09/2026 a esteira mora na VPS ──
+//
+// O serviço `esteira` do docker-compose (servidor/esteira-trabalhador.mjs)
+// traduz a fila do painel sozinho, dia e noite. Rodar esta aqui ao mesmo tempo
+// traduziria os mesmos livros duas vezes; por isso ela só anda com --aqui.
+if (!process.argv.includes('--aqui')) {
+  console.error('A esteira agora roda sozinha na VPS (serviço esteira). Veja o andamento no painel, aba Esteira.')
+  console.error('Para rodar esta, do PC, mesmo assim: acrescente --aqui')
+  process.exit(1)
+}
+
 const quantos = Number(arg('quantos', 999))
 const minutos = Number(arg('minutos', 600))
 
@@ -110,7 +121,7 @@ function acharBash() {
   return null
 }
 
-const UA = 'fio/0.1 (biblioteca em portugues; contato: toksr12@gmail.com)'
+const UA = 'fio/0.1 (biblioteca em portugues; https://fiolib.com.br)'
 
 /**
  * O tamanho de cada fonte, perguntado antes de baixar.

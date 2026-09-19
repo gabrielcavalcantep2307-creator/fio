@@ -1,6 +1,7 @@
 # O Fio na VPS.
 #
-# Um serviço só. O Caddy que já roda para o Wallt fica na frente e cuida do
+# Dois serviços da mesma imagem: `fio` (a API e o site) e `esteira` (o
+# trabalhador que traduz a fila para sempre). O Caddy que já roda para o Wallt fica na frente e cuida do
 # TLS — não subimos um segundo servidor web para brigar pelas portas 80 e 443.
 #
 # Antes de subir: copie `.env.exemplo` para `.env` e preencha.
@@ -31,12 +32,12 @@ services:
       FIO_CONVITE: ${FIO_CONVITE:-obrigatorio}
       # Vazio = só a própria origem. É o certo em produção.
       FIO_ORIGENS: ${FIO_ORIGENS:-}
-      # A chave com que a esteira (no PC do dono) manda o pulso ao painel.
-      # Só no .env; sem ela a rota do pulso não existe.
+      # A chave do pulso por HTTP, da época em que a esteira rodava no PC do
+      # dono. O trabalhador na VPS escreve o pulso direto no banco e não a usa.
       FIO_ESTEIRA_CHAVE: ${FIO_ESTEIRA_CHAVE:-}
       # Entrar com o Google (servidor/google.mjs). Vazias = botão leva a um
-      # aviso de "ainda não ligado". A DEEPL_CHAVE fica no .env mas NÃO entra
-      # aqui: quem traduz é o PC, e o servidor não precisa dela.
+      # aviso de "ainda não ligado". A DEEPL_CHAVE NÃO entra aqui: quem
+      # traduz é o serviço `esteira`, abaixo, e só ele a recebe.
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
       FIO_HOSTS_GOOGLE: ${FIO_HOSTS_GOOGLE:-fiolib.com.br}
@@ -56,6 +57,43 @@ services:
       timeout: 5s
       retries: 3
       start_period: 10s
+
+  # A esteira de tradução, para sempre (servidor/esteira-trabalhador.mjs).
+  # Container à parte para um livro pesado nunca travar nem derrubar o site;
+  # mesmo banco (volume `dados`) e a pasta de dados do site com escrita, para
+  # republicar o catálogo quando um livro fica pronto.
+  esteira:
+    build:
+      context: ..
+      dockerfile: infra/Dockerfile
+    command: ['node', 'servidor/esteira-trabalhador.mjs']
+    restart: unless-stopped
+    depends_on:
+      - fio
+    mem_limit: 448m
+    # Deixa sempre CPU para o site: traduzir é esperar a rede, e o que pesa
+    # (instalar, republicar) pode levar alguns segundos a mais sem problema.
+    cpus: 0.8
+    stop_grace_period: 20s
+    environment:
+      NODE_ENV: production
+      FIO_BANCO: /dados/catalogo.db
+      FIO_JURISDICAO: ${FIO_JURISDICAO:-BR}
+      # cadernos e traduções prontas: dentro do volume, sobrevivem a redeploy
+      FIO_TRADUCOES: /dados/esteira
+      FIO_SITE_DADOS: /site-dados
+      DEEPL_CHAVE: ${DEEPL_CHAVE:-}
+      DEEPL_RESERVA: ${DEEPL_RESERVA:-200000}
+      FIO_PARALELO: ${FIO_PARALELO:-8}
+    volumes:
+      - dados:/dados
+      - /opt/fio/site/dados:/site-dados
+    # Roda para sempre: o log não pode crescer para sempre junto.
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '3'
 
 volumes:
   dados:

@@ -1757,3 +1757,133 @@ test('google: o Gmail do dono entra direto na conta configurada, e só com e-mai
     await assert.rejects(g.resolver(b, { perfil: { sub: 'g-dono-2', email: 'outro@gmail.com', nome: 'Dono 2' }, modo: 'entrar' }, {}), /cadastro está fechado/)
   } finally { delete process.env.FIO_GOOGLE_DONO; delete process.env.FIO_GOOGLE_DONO_CONTA }
 })
+
+// ─────────────────────────────────────────────────────────────
+// A esteira na VPS (18/09): a fila no banco, a instalação e a busca livro a livro
+// ─────────────────────────────────────────────────────────────
+
+function obraDeTeste(b, titulo, autor = 'Autor de Teste', morte = 1900) {
+  const pessoa = Number(b.prepare('INSERT INTO pessoa (nome, nome_ordem, morte) VALUES (?,?,?)').run(autor, autor, morte).lastInsertRowid)
+  const obra = Number(b.prepare("INSERT INTO obra (titulo, titulo_pt, trilho, publicada) VALUES (?,?, 'B', 1)").run(titulo, titulo).lastInsertRowid)
+  b.prepare("INSERT INTO obra_pessoa (obra_id, pessoa_id, papel) VALUES (?,?,'autor')").run(obra, pessoa)
+  return obra
+}
+
+const traducaoFalsa = (palavra) => ({
+  fonte: 'https://www.gutenberg.org/ebooks/1.txt.utf-8',
+  capitulos: [1, 2].map((ordem) => ({
+    ordem, titulo: `Capítulo ${ordem}`,
+    corpo: `<p>${`${palavra} `.repeat(300)}</p>`, palavras: 300,
+  })),
+})
+
+test('esteira na VPS: promove, ordena (pedido > menor > prateleira), espera depois de falhar e desiste no fim', async () => {
+  const esteira = await import('./esteira.mjs')
+  const b = bd(); esteira.garantirTabelas(b)
+  b.exec('DELETE FROM fila_traducao')
+  const poe = b.prepare("INSERT INTO fila_traducao (titulo, autor, morte, fonte, idioma, prioridade) VALUES (?,?,?,?, 'en', ?)")
+  poe.run('Livro Grande', 'Fulano Grande', 1900, 'https://www.gutenberg.org/ebooks/11.txt.utf-8', 0)
+  poe.run('Livro Pequeno', 'Fulano Pequeno', 1900, 'https://www.gutenberg.org/ebooks/12.txt.utf-8', 0)
+  poe.run('Pedido de Assinante', 'Fulano Pedido', 1900, 'https://www.gutenberg.org/ebooks/13.txt.utf-8', 1)
+
+  assert.equal(esteira.promover(b), 3)
+  const fila = b.prepare('SELECT titulo, estado, obra_id FROM fila_traducao ORDER BY id').all()
+  assert.ok(fila.every((f) => f.estado === 'na_esteira' && f.obra_id), 'todo pedido virou obra')
+  assert.equal(esteira.promover(b), 0, 'promover de novo não duplica')
+
+  const id = (t) => b.prepare('SELECT id FROM fila_traducao WHERE titulo = ?').get(t).id
+  esteira.guardarTamanho(b, id('Livro Grande'), 900_000)
+  esteira.guardarTamanho(b, id('Livro Pequeno'), 40_000)
+  esteira.guardarTamanho(b, id('Pedido de Assinante'), 2_000_000)
+  assert.equal(esteira.semTamanho(b).length, 0)
+  assert.equal(esteira.proximo(b).titulo, 'Pedido de Assinante', 'pedido de assinante passa na frente')
+
+  // falha passageira: sai da frente até a hora marcada
+  const f1 = esteira.falhou(b, id('Pedido de Assinante'), 'MinT devolveu 503')
+  assert.deepEqual([f1.estado, f1.esperaMin], ['na_esteira', esteira.ESPERAS_MIN[0]])
+  assert.equal(esteira.proximo(b).titulo, 'Livro Pequeno', 'o menor vem antes do maior')
+  // a hora chegou: volta a ser o primeiro
+  b.prepare("UPDATE fila_traducao SET tentar_depois = datetime('now', '-1 minute') WHERE id = ?").run(id('Pedido de Assinante'))
+  assert.equal(esteira.proximo(b).titulo, 'Pedido de Assinante')
+
+  // esgotou as esperas: vira erro, e o painel pode mandar de volta
+  for (let i = 1; i < esteira.ESPERAS_MIN.length; i++) esteira.falhou(b, id('Pedido de Assinante'), 'de novo')
+  assert.equal(esteira.falhou(b, id('Pedido de Assinante'), 'última').estado, 'erro')
+  assert.equal(esteira.proximo(b).titulo, 'Livro Pequeno')
+  assert.equal(esteira.retentar(b, id('Pedido de Assinante')), 1)
+  assert.equal(esteira.proximo(b).titulo, 'Pedido de Assinante')
+  assert.equal(esteira.retentar(b, id('Livro Pequeno')), 0, 'só o que está em erro volta')
+
+  // falha que não melhora esperando vai direto para erro
+  assert.equal(esteira.falhou(b, id('Livro Grande'), 'saíram só 12 palavras — esta fonte não é um livro', { permanente: true }).estado, 'erro')
+
+  // pausa
+  assert.equal(esteira.pausada(b), false)
+  esteira.pausar(b, true); assert.equal(esteira.pausada(b), true)
+  assert.equal(esteira.estado(b).pausada, true)
+  esteira.pausar(b, false); assert.equal(esteira.pausada(b), false)
+
+  const c = esteira.contagem(b)
+  assert.deepEqual([c.total, c.erro, c.faltam], [3, 1, 2])
+  b.exec('DELETE FROM fila_traducao')
+})
+
+test('esteira na VPS: instalar põe o livro no banco e na busca, e reinstalar troca sem deixar o velho na busca', async () => {
+  const esteira = await import('./esteira.mjs')
+  const { instalarTraducao } = await import('../ingestao/instalar-traducao.mjs')
+  const { indexarTexto, indexarObra } = await import('./reindexar.mjs')
+  const b = bd(); esteira.garantirTabelas(b)
+  const obra = obraDeTeste(b, 'O Livro da Esteira', 'Autora Antiga', 1850)
+  b.prepare("INSERT INTO fila_traducao (titulo, autor, fonte, idioma, estado, obra_id) VALUES ('O Livro da Esteira', 'Autora Antiga', 'https://www.gutenberg.org/ebooks/1.txt.utf-8', 'en', 'na_esteira', ?)").run(obra)
+  const acha = (palavra) => b.prepare('SELECT COUNT(*) n FROM busca_capitulo WHERE busca_capitulo MATCH ?').get(palavra).n
+
+  assert.throws(() => instalarTraducao(b, { fonte: 'x', capitulos: [{ ordem: 1, corpo: '<p>curto</p>', palavras: 2 }] }, { obraId: obra }), /não é um livro/)
+  assert.throws(() => instalarTraducao(b, traducaoFalsa('nada'), { obraId: 999999 }), /não existe/)
+
+  const r = instalarTraducao(b, traducaoFalsa('ornitorrinco'), { obraId: obra, morte: 1850 })
+  assert.equal(indexarTexto(b, r.textoId), 2)
+  assert.equal(indexarObra(b, obra), true)
+  assert.equal(acha('ornitorrinco'), 2)
+  assert.equal(b.prepare('SELECT COUNT(*) n FROM busca_obra WHERE busca_obra MATCH ?').get('esteira').n >= 1, true)
+  const o = b.prepare('SELECT trilho FROM obra WHERE id = ?').get(obra)
+  assert.equal(o.trilho, 'A')
+  assert.match(b.prepare('SELECT motivo FROM direito WHERE texto_id = ?').get(r.textoId).motivo, /1850/)
+  assert.match(b.prepare('SELECT corpo FROM capitulo WHERE texto_id = ? LIMIT 1').get(r.textoId).corpo, /^<p>ornitorrinco/)
+
+  // a fila vê que ficou pronto
+  esteira.reconciliar(b)
+  assert.equal(b.prepare('SELECT estado FROM fila_traducao WHERE obra_id = ?').get(obra).estado, 'pronto')
+
+  // reinstalar: um texto só, e a palavra velha some da busca
+  const r2 = instalarTraducao(b, traducaoFalsa('tamanduá'), { obraId: obra })
+  indexarTexto(b, r2.textoId); indexarObra(b, obra)
+  assert.equal(b.prepare("SELECT COUNT(*) n FROM texto WHERE obra_id = ? AND fonte = 'fio_traducao'").get(obra).n, 1)
+  assert.equal(acha('ornitorrinco'), 0, 'a tradução apagada continuou na busca')
+  assert.equal(acha('tamanduá'), 2)
+  // (o id do texto pode ser reaproveitado; o que importa é não sobrar capítulo sem texto)
+  assert.equal(b.prepare('SELECT COUNT(*) n FROM capitulo c WHERE NOT EXISTS (SELECT 1 FROM texto t WHERE t.id = c.texto_id)').get().n, 0, 'capítulos órfãos')
+  assert.equal(b.prepare('SELECT COUNT(*) n FROM capitulo WHERE texto_id = ?').get(r2.textoId).n, 2)
+  assert.equal(b.prepare('SELECT COUNT(*) n FROM busca_obra WHERE conteudo_obra_id = ?').get(obra).n, 1, 'obra duplicada na busca')
+  b.exec('DELETE FROM fila_traducao')
+})
+
+test('esteira na VPS: o plano antigo do PC só entra na obra certa', async () => {
+  const esteira = await import('./esteira.mjs')
+  const b = bd(); esteira.garantirTabelas(b)
+  const certa = obraDeTeste(b, 'Contos da Importação')
+  const outra = obraDeTeste(b, 'Um Título Diferente')
+  const linha = (obra, titulo, fonte = 'https://www.gutenberg.org/ebooks/77.txt.utf-8') =>
+    ({ obra, titulo, autor: 'X', morte: 1900, fonte, de: 'en', saida: `obra${obra}`, emTrilha: 1 })
+  const r = esteira.importarPlano(b, [
+    linha(certa, 'Contos da importação'),                  // entra (caixa e acento não importam)
+    linha(outra, 'Contos da Importação', 'https://www.gutenberg.org/ebooks/78.txt.utf-8'), // id aponta para outro livro
+    linha(999999, 'Não Existe'),
+    linha(certa, 'Contos da Importação', 'https://exemplo.com/livro.txt'),
+  ])
+  assert.equal(r.entraram, 1)
+  assert.equal(r.recusados.length, 3)
+  assert.equal(esteira.importarPlano(b, [linha(certa, 'Contos da Importação')]).jaEstavam, 1, 'importar de novo duplicou')
+  const f = b.prepare('SELECT estado, obra_id, em_trilha FROM fila_traducao WHERE obra_id = ?').get(certa)
+  assert.deepEqual([f.estado, f.em_trilha], ['na_esteira', 1])
+  b.exec('DELETE FROM fila_traducao')
+})

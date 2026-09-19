@@ -496,9 +496,12 @@ const ROTAS = {
     return {
       itens: banco.prepare(`
         SELECT f.id, f.titulo, f.autor, f.morte, f.fonte, f.idioma, f.estado, f.nota,
-               f.obra_id, f.criado_em
+               f.obra_id, f.criado_em, f.tentativas, f.tentar_depois
           FROM fila_traducao f ORDER BY
             CASE f.estado WHEN 'erro' THEN 0 WHEN 'na_esteira' THEN 1 WHEN 'espera' THEN 2 ELSE 3 END,
+            -- na ordem em que a esteira vai pegar (esteira.proximo)
+            CASE WHEN f.estado = 'na_esteira' THEN -f.prioridade END,
+            CASE WHEN f.estado = 'na_esteira' THEN COALESCE(f.bytes, 9000000000) END,
             f.criado_em DESC LIMIT 500`).all(),
     }
   },
@@ -692,6 +695,17 @@ const ROTAS = {
     return esteira.receberPulso(banco, dado)
   },
   'GET /api/admin/esteira': (req) => { exigirAdmin(req); return esteira.estado(banco) },
+  // O trabalhador (esteira-trabalhador.mjs) olha este interruptor a cada volta.
+  // Pausar não interrompe o livro em curso: ele termina, e o próximo espera.
+  'POST /api/admin/esteira/pausa': (req, res, dado) => {
+    exigirAdmin(req)
+    esteira.pausar(banco, dado.pausada === true)
+    return esteira.estado(banco)
+  },
+  'POST /api/fila/retentar': (req, res, dado) => {
+    exigirAdmin(req)
+    return { mudados: esteira.retentar(banco, Number(dado.id)) }
+  },
 
   // ── correções comunitárias (servidor/correcoes.mjs) ──
   'GET /api/correcoes/resumo': (req, res, dado, ctx) => correcoes.resumo(banco, ctx.busca.get('obra')) ?? { revisao: null },
