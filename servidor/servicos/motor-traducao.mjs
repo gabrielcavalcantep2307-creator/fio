@@ -45,14 +45,19 @@ const SERVICO = 'https://translate.wmcloud.org/api/translate'
 //
 // A chave mora em DEEPL_CHAVE (variável de ambiente ou `.env` na raiz, que o
 // git ignora). Sem chave, tudo segue como sempre foi: MinT.
+//
+// O MOTOR É DE QUEM TRADUZ, não do arquivo (19/09/2026). Até aqui havia uma
+// variável solta neste módulo dizendo "o motor agora é o DeepL", que o
+// `escolherMotor` mudava por baixo de todo mundo. Com um livro por processo
+// isso funcionava; com a esteira traduzindo dentro de um processo só, dois
+// trabalhos no mesmo processo se atropelariam. Agora `escolherMotor` DEVOLVE o
+// motor e quem traduz o passa adiante: `traduzir(texto, { motor })`.
 // ─────────────────────────────────────────────────────────────
-
-let motorAtual = 'mint'
 
 function chaveDeepL() {
   if (process.env.DEEPL_CHAVE) return process.env.DEEPL_CHAVE.trim()
   try {
-    const env = readFileSync(new URL('../.env', import.meta.url), 'utf8')
+    const env = readFileSync(new URL('../../.env', import.meta.url), 'utf8')
     return env.match(/^DEEPL_CHAVE=(.+)$/m)?.[1].trim() || null
   } catch { return null }
 }
@@ -77,7 +82,6 @@ export async function saldoDeepL() {
  * traduzido; `jaComecado`, se o caderno já tem trechos de antes.
  */
 export async function escolherMotor({ caracteres, de, jaComecado, reserva: reservaPedida }) {
-  motorAtual = 'mint'
   if (jaComecado) return { motor: 'mint', porque: 'livro já começado no MinT' }
   if (!DEEPL_ORIGENS.has(de)) return { motor: 'mint', porque: `o DeepL não traduz do ${de}` }
   const saldo = await saldoDeepL()
@@ -88,7 +92,6 @@ export async function escolherMotor({ caracteres, de, jaComecado, reserva: reser
   if (saldo.sobra - reserva < precisa) {
     return { motor: 'mint', porque: `não cabe no mês do DeepL (precisa ${precisa.toLocaleString('pt-BR')}, sobram ${Math.max(0, saldo.sobra - reserva).toLocaleString('pt-BR')} fora a reserva)` }
   }
-  motorAtual = 'deepl'
   return { motor: 'deepl', porque: `cabe no mês (${precisa.toLocaleString('pt-BR')} de ${saldo.sobra.toLocaleString('pt-BR')})` }
 }
 
@@ -119,7 +122,7 @@ export async function traduzirDeepL(texto, de, { contexto } = {}) {
  * existe para o resto da ingestão poder perguntar sem saber de MinT nenhum —
  * no dia em que o motor virar um que cobra, é aqui que a resposta muda.
  */
-export const motorDisponivel = () => (motorAtual === 'deepl'
+export const motorDisponivel = (motor = 'mint') => (motor === 'deepl'
   ? { nome: 'DeepL', custo: 0, instruivel: false }
   : { nome: 'MinT (Wikimedia)', custo: 0, instruivel: false })
 
@@ -328,7 +331,7 @@ export function abrasileirar(texto) {
  * conferência abaixo é dura: qualquer coisa que não seja texto com conteúdo
  * levanta erro, e a ingestão para em vez de gravar nada.
  */
-export async function traduzir(bruto, { de = 'en', para = 'pt', glossario = {} } = {}) {
+export async function traduzir(bruto, { de = 'en', para = 'pt', glossario = {}, motor = 'mint' } = {}) {
   const { entrada, refazer } = prepararUnidade(bruto)
   if (!entrada.trim()) return bruto
 
@@ -340,7 +343,7 @@ export async function traduzir(bruto, { de = 'en', para = 'pt', glossario = {} }
   // e não dependem de tradutor nenhum.
   if (de === para) return refazer(abrasileirar(aplicarGlossario(entrada, glossario)))
 
-  if (motorAtual === 'deepl') {
+  if (motor === 'deepl') {
     const t = await traduzirDeepL(entrada, de)
     if (!t.trim()) throw new Error('DeepL devolveu resposta vazia')
     return refazer(abrasileirar(aplicarGlossario(t, glossario)))

@@ -10,7 +10,7 @@
 // no site quando a tradução do livro inteiro fica pronta.
 
 import { readFileSync, writeFileSync } from 'node:fs'
-import { traduzir } from './motor-traducao.mjs'
+import { traduzir } from '../servidor/servicos/motor-traducao.mjs'
 
 const arg = (n, p = null) => { const i = process.argv.indexOf(`--${n}`); return i > 0 && process.argv[i + 1] ? process.argv[i + 1] : p }
 const jaTemos = JSON.parse(readFileSync(arg('ja-temos'), 'utf8'))

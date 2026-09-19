@@ -1038,7 +1038,7 @@ test('nenhum código chama serviço pago', async () => {
 })
 
 test('o tradutor gratuito não precisa de chave nenhuma', async () => {
-  const { motorDisponivel, porQueNaoRoda } = await import('../ingestao/motor-traducao.mjs')
+  const { motorDisponivel, porQueNaoRoda } = await import('./servicos/motor-traducao.mjs')
   const m = motorDisponivel()
   assert.ok(m, 'o motor tem que estar sempre disponível: não há chave para faltar')
   assert.equal(m.custo, 0)
@@ -1046,7 +1046,7 @@ test('o tradutor gratuito não precisa de chave nenhuma', async () => {
 })
 
 test('o glossário força o termo mesmo sem poder instruir o tradutor', async () => {
-  const { aplicarGlossario } = await import('../ingestao/motor-traducao.mjs')
+  const { aplicarGlossario } = await import('./servicos/motor-traducao.mjs')
   // o motor gratuito não lê instrução; a garantia é mecânica
   assert.equal(
     aplicarGlossario('A virtude do príncipe e a Virtude dele', { virtude: 'virtù' }),
@@ -1102,7 +1102,7 @@ test('a ficha com texto ganha de qualquer outra', async () => {
 // ─────────────────────────────────────────────────────────────
 
 test('o cabeçalho perde a cerquilha para traduzir e a recupera depois', async () => {
-  const { prepararUnidade } = await import('../ingestao/motor-traducao.mjs')
+  const { prepararUnidade } = await import('./servicos/motor-traducao.mjs')
   const { entrada, refazer } = prepararUnidade('## Contents')
   // "## Contents" era traduzido como "Contígo"; "Contents", como "Conteúdo"
   assert.equal(entrada, 'Contents')
@@ -1110,7 +1110,7 @@ test('o cabeçalho perde a cerquilha para traduzir e a recupera depois', async (
 })
 
 test('a caixa alta do cabeçalho vira caixa de título, poupando romano', async () => {
-  const { prepararUnidade, emCaixaDeTitulo } = await import('../ingestao/motor-traducao.mjs')
+  const { prepararUnidade, emCaixaDeTitulo } = await import('./servicos/motor-traducao.mjs')
   assert.equal(
     prepararUnidade('## CHAPTER XIII. CONCERNING AUXILIARIES').entrada,
     'Chapter XIII. Concerning Auxiliaries')
@@ -1119,7 +1119,7 @@ test('a caixa alta do cabeçalho vira caixa de título, poupando romano', async 
 })
 
 test('texto corrido não é tocado pelo preparo', async () => {
-  const { prepararUnidade } = await import('../ingestao/motor-traducao.mjs')
+  const { prepararUnidade } = await import('./servicos/motor-traducao.mjs')
   const p = 'Um parágrafo comum, com uma SIGLA no meio, que deve passar inteiro.'
   const { entrada, refazer } = prepararUnidade(p)
   assert.equal(entrada, p)
@@ -1142,21 +1142,21 @@ test('texto corrido não é tocado pelo preparo', async () => {
 // ─────────────────────────────────────────────────────────────
 
 test('"estava a fazer" vira "estava fazendo"', async () => {
-  const { abrasileirar } = await import('../ingestao/motor-traducao.mjs')
+  const { abrasileirar } = await import('./servicos/motor-traducao.mjs')
   assert.equal(abrasileirar('Ele estava a fazer o jantar'), 'Ele estava fazendo o jantar')
   assert.equal(abrasileirar('K. estava a ser julgado'), 'K. estava sendo julgado')
   assert.equal(abrasileirar('Eles continuavam a esperar'), 'Eles continuavam esperando')
 })
 
 test('"está a par" não vira "está pando"', async () => {
-  const { abrasileirar } = await import('../ingestao/motor-traducao.mjs')
+  const { abrasileirar } = await import('./servicos/motor-traducao.mjs')
   // "estar a" + substantivo é outra construção, e sem a lista de exceções
   // esta frase saía destruída
   assert.equal(abrasileirar('Ele está a par do assunto'), 'Ele está a par do assunto')
 })
 
 test('quando o gênero muda, o artigo vai junto', async () => {
-  const { abrasileirar } = await import('../ingestao/motor-traducao.mjs')
+  const { abrasileirar } = await import('./servicos/motor-traducao.mjs')
   // "casa de banho" é feminino e "banheiro" masculino: trocar só o
   // substantivo produzia "na banheiro", que é pior que o problema
   assert.equal(abrasileirar('Estava na casa de banho'), 'Estava no banheiro')
@@ -1164,7 +1164,7 @@ test('quando o gênero muda, o artigo vai junto', async () => {
 })
 
 test('o acento não faz o termo escapar', async () => {
-  const { abrasileirar } = await import('../ingestao/motor-traducao.mjs')
+  const { abrasileirar } = await import('./servicos/motor-traducao.mjs')
   // o \b do JavaScript é ASCII e não reconhece "ã" como letra: "no ecrã"
   // atravessava intacto enquanto "comboio" era trocado
   assert.equal(abrasileirar('A imagem no ecrã'), 'A imagem na tela')
@@ -1519,19 +1519,14 @@ test('acesso: sem conta é amostra; grátis abre 3 livros por mês e livro abert
   assert.match(acesso.capituloDoMuro(quarta).corpo, /planos/)
 })
 
-test('esteira: pulso só com a chave, com campos limpos; fila se reconcilia', async () => {
+test('esteira: o pulso guarda só os campos conhecidos, com tamanho limitado', async () => {
   const esteira = await import('./esteira.mjs')
   const b = bd(); esteira.garantirTabelas(b)
-  process.env.FIO_ESTEIRA_CHAVE = 'chave-de-teste-com-mais-de-24-caracteres'
-  assert.equal(esteira.chaveConfere('errada'), false)
-  assert.equal(esteira.chaveConfere(undefined), false)
-  assert.equal(esteira.chaveConfere('chave-de-teste-com-mais-de-24-caracteres'), true)
-  esteira.receberPulso(b, { estado: '<script>', atual: { titulo: 'x'.repeat(999), feitas: 10, total: 40 }, log: Array(50).fill('linha'), extra: 'não entra' })
+  esteira.guardarPulso(b, { estado: '<script>', atual: { titulo: 'x'.repeat(999), feitas: 10, total: 40 }, log: Array(50).fill('linha'), extra: 'não entra' })
   const e = esteira.estado(b)
   assert.equal(e.pulso.estado, 'traduzindo'); assert.equal(e.pulso.atual.titulo.length, 160); assert.equal(e.pulso.log.length, 12)
   assert.equal(e.pulso.extra, undefined); assert.equal(e.viva, true)
-  delete process.env.FIO_ESTEIRA_CHAVE
-  assert.equal(esteira.chaveConfere('chave-de-teste-com-mais-de-24-caracteres'), false, 'sem variável a rota não pode aceitar nada')
+  assert.equal(esteira.chaveConfere, undefined, 'a rota do pulso por HTTP saiu em 19/09; a chave não pode voltar sozinha')
 })
 
 test('esteira: livro só entra se TODOS os autores e tradutores morreram a tempo', async () => {
@@ -1830,7 +1825,7 @@ test('esteira na VPS: promove, ordena (pedido > menor > prateleira), espera depo
 
 test('esteira na VPS: instalar põe o livro no banco e na busca, e reinstalar troca sem deixar o velho na busca', async () => {
   const esteira = await import('./esteira.mjs')
-  const { instalarTraducao } = await import('../ingestao/instalar-traducao.mjs')
+  const { instalarTraducao } = await import('./servicos/acervo.mjs')
   const { indexarTexto, indexarObra } = await import('./reindexar.mjs')
   const b = bd(); esteira.garantirTabelas(b)
   const obra = obraDeTeste(b, 'O Livro da Esteira', 'Autora Antiga', 1850)
@@ -1886,4 +1881,98 @@ test('esteira na VPS: o plano antigo do PC só entra na obra certa', async () =>
   const f = b.prepare('SELECT estado, obra_id, em_trilha FROM fila_traducao WHERE obra_id = ?').get(certa)
   assert.deepEqual([f.estado, f.em_trilha], ['na_esteira', 1])
   b.exec('DELETE FROM fila_traducao')
+})
+
+// ─────────────────────────────────────────────────────────────
+// Os serviços (19/09): tradução, catálogo e a porta de entrada dos lotes
+// ─────────────────────────────────────────────────────────────
+
+test('esteira: o lote sem obra (formato do gerador de lotes) entra como espera, uma vez só', async () => {
+  const esteira = await import('./esteira.mjs')
+  const b = bd(); esteira.garantirTabelas(b)
+  b.exec('DELETE FROM fila_traducao')
+  const lote = [
+    { titulo: 'Um Conto', autor: 'Fulana', morte: 1900, fonte: 'https://www.gutenberg.org/ebooks/555.txt.utf-8', de: 'en' },
+    { titulo: 'Sem Autor', fonte: 'https://www.gutenberg.org/ebooks/556.txt.utf-8' },
+    { titulo: 'De Fora', autor: 'X', fonte: 'https://exemplo.com/a.txt' },
+  ]
+  const r = esteira.importarPlano(b, lote)
+  assert.deepEqual([r.entraram, r.recusados.length], [1, 2])
+  assert.equal(esteira.importarPlano(b, lote.slice(0, 1)).jaEstavam, 1)
+  assert.equal(b.prepare("SELECT estado FROM fila_traducao WHERE titulo = 'Um Conto'").get().estado, 'espera')
+  assert.equal(esteira.promover(b), 1)
+  assert.equal(esteira.proximo(b).titulo, 'Um Conto')
+  b.exec('DELETE FROM fila_traducao')
+})
+
+test('serviço de tradução: baixa, divide em capítulos, retoma pelo caderno e para quando mandam', async () => {
+  const { createServer } = await import('node:http')
+  const { traduzirLivro, traducaoPronta } = await import('./servicos/traducao.mjs')
+  const { readFileSync: ler, existsSync } = await import('node:fs')
+  const capitulo = (n) => `CAPÍTULO ${['I', 'II', 'III'][n]}\n\n` + Array.from({ length: 12 }, (_, i) =>
+    `Ele estava a pensar no parágrafo ${i + 1} do capítulo ${n + 1}, e o facto é que ` + 'a casa era grande e silenciosa. '.repeat(6)).join('\n\n')
+  const texto = `Cabeçalho do Gutenberg\n*** START OF THE PROJECT GUTENBERG EBOOK TESTE ***\n\n${[0, 1, 2].map(capitulo).join('\n\n')}\n\n*** END OF THE PROJECT GUTENBERG EBOOK TESTE ***\nlicença`
+  const srv = createServer((req, res) => { res.writeHead(200, { 'content-type': 'text/plain; charset=utf-8' }); res.end(texto) })
+  await new Promise((ok) => srv.listen(0, '127.0.0.1', ok))
+  const fonte = `http://127.0.0.1:${srv.address().port}/livro.txt`
+  const pastaT = join(pasta, 'traducoes-servico')
+  try {
+    // parar antes de começar: nenhum parágrafo sai, e o erro diz por quê
+    const parado = new AbortController(); parado.abort(new Error('teste'))
+    await assert.rejects(traduzirLivro({ fonte, de: 'pt', nome: 'parado', pasta: pastaT, sinal: parado.signal }), /parado: teste/)
+
+    const andou = []
+    const r = await traduzirLivro({ fonte, de: 'pt', titulo: 'Teste', nome: 'livro', pasta: pastaT, aoAndar: (f, t) => andou.push([f, t]) })
+    assert.equal(r.livro.capitulos.length, 3)
+    assert.deepEqual(r.livro.capitulos.map((c) => c.titulo), ['Capítulo I', 'Capítulo II', 'Capítulo III'], 'o título em caixa alta sai em caixa de título')
+    assert.ok(!/licença|START OF/.test(JSON.stringify(r.livro)), 'cabeçalho ou rodapé do Gutenberg entrou no livro')
+    assert.match(r.livro.capitulos[0].corpo, /estava pensando/, 'a norma brasileira não foi aplicada')
+    assert.ok(andou.length && andou.at(-1)[0] === andou.at(-1)[1], 'o andamento não chegou ao fim')
+    assert.equal(traducaoPronta(pastaT, 'livro').capitulos.length, 3)
+    const linhas = ler(join(pastaT, 'livro.caderno.jsonl'), 'utf8').trim().split('\n').length
+    assert.equal(linhas, 39, 'cada unidade (3 títulos + 36 parágrafos) vai para o caderno')
+
+    // de novo: tudo sai do caderno, nada é pedido outra vez
+    const r2 = await traduzirLivro({ fonte, de: 'pt', nome: 'livro', pasta: pastaT })
+    assert.deepEqual(r2.livro.capitulos, r.livro.capitulos)
+    assert.equal(ler(join(pastaT, 'livro.caderno.jsonl'), 'utf8').trim().split('\n').length, linhas)
+    assert.ok(!existsSync(join(pastaT, 'parado.json')))
+  } finally { srv.close() }
+})
+
+test('catálogo: publicar UMA obra dá o mesmo que refazer o catálogo inteiro', async () => {
+  const { publicarCatalogo, publicarObra } = await import('./servicos/catalogo.mjs')
+  const { instalarLivro } = await import('./servicos/acervo.mjs')
+  const { readFileSync: ler, mkdirSync: mk } = await import('node:fs')
+  const b = bd()
+  // três obras num tema (prateleira precisa de 3), uma delas ainda sem texto
+  const tema = Number(b.prepare("INSERT INTO tema (nome, resumo) VALUES ('Tema do Catálogo', 'x')").run().lastInsertRowid)
+  const ids = ['Primeira do Tema', 'Segunda do Tema', 'Terceira do Tema'].map((t) => obraDeTeste(b, t))
+  for (const id of ids) b.prepare('INSERT INTO obra_tema (obra_id, tema_id, peso) VALUES (?,?,1)').run(id, tema)
+  const inc = join(pasta, 'cat-incremental'), inteiro = join(pasta, 'cat-inteiro')
+  mk(inc, { recursive: true }); mk(inteiro, { recursive: true })
+
+  assert.equal(publicarCatalogo(b, inc).trocou, true)
+  const antes = JSON.parse(ler(join(inc, 'catalogo.json'), 'utf8'))
+  assert.equal(antes.obras.find((o) => o.id === ids[1]).trilho, 'B')
+
+  // a esteira traduz a segunda: ela vira legível
+  instalarLivro(b, traducaoFalsa('capivara'), { obraId: ids[1] })
+  assert.deepEqual(publicarObra(b, inc, ids[1]), { publicada: true, trilho: 'A' })
+  // uma obra nova, que ainda não estava no catálogo
+  const nova = obraDeTeste(b, 'Aaa Obra Nova no Catálogo', 'Autora Nova do Catálogo')
+  assert.equal(publicarObra(b, inc, nova).publicada, true)
+
+  publicarCatalogo(b, inteiro)
+  const a = JSON.parse(ler(join(inc, 'catalogo.json'), 'utf8')), c = JSON.parse(ler(join(inteiro, 'catalogo.json'), 'utf8'))
+  const porId = (l) => Object.fromEntries(l.map((o) => [o.id, o]))
+  assert.deepEqual(porId(a.obras), porId(c.obras), 'as linhas do catálogo divergem')
+  assert.deepEqual(a.temas.find((t) => t.nome === 'Tema do Catálogo'), c.temas.find((t) => t.nome === 'Tema do Catálogo'))
+  assert.deepEqual(porId(a.autores), porId(c.autores))
+  for (const id of [ids[1], nova]) {
+    assert.equal(ler(join(inc, 'fichas', `${id}.json`), 'utf8'), ler(join(inteiro, 'fichas', `${id}.json`), 'utf8'))
+  }
+
+  // o catálogo encolhido não substitui o que está no ar
+  assert.equal(publicarCatalogo(b, inteiro, { minimo: 100 }).trocou, false)
 })

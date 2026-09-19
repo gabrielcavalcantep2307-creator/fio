@@ -106,7 +106,7 @@ dependência, texto sempre por nó de texto): painel, central, quadrinhos.
 
 ### Seções de descoberta
 A home é por **experiência**, não por gênero. A curadoria mora em
-`ingestao/descoberta.mjs`: seções, ordem e as fichas "Antes de ler", ideias e
+`servidor/servicos/descoberta.mjs`: seções, ordem e as fichas "Antes de ler", ideias e
 conversas de 28 livros centrais. `ingestao/secoes.mjs --gravar` grava no banco e
 aposenta as antigas. `ingestao/publicar.mjs` ordena as seções, esconde coleção
 sem nada legível (não existe mais a vitrine "O que ainda não podemos servir") e

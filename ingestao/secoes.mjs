@@ -11,7 +11,7 @@
 // que ele criou. Se rodá-lo de novo, rode este depois.
 
 import { DatabaseSync } from 'node:sqlite'
-import { SECOES, MANTER, FIXAS, criarResolvedor } from './descoberta.mjs'
+import { SECOES, MANTER, FIXAS, criarResolvedor } from '../servidor/servicos/descoberta.mjs'
 
 const arg = (n, p = null) => { const i = process.argv.indexOf(`--${n}`); return i > 0 && process.argv[i + 1] ? process.argv[i + 1] : p }
 const GRAVAR = process.argv.includes('--gravar')

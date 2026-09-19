@@ -172,7 +172,7 @@ const REMENDOS = [
     nome: 'home sem as prateleiras genéricas por tema',
     // "Romance", "Filosofia", "História": catálogo, não descoberta. Os temas
     // continuam na estante e em /tema; só saem da home, onde as coleções
-    // curadas (ingestao/descoberta.mjs) tomam o lugar.
+    // curadas (servidor/servicos/descoberta.mjs) tomam o lugar.
     trecho: (s) => {
       const i = s.indexOf('var mt=[{tema:`Romance`')
       const f = s.indexOf('];function ht(', i)

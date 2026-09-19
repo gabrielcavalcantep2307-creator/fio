@@ -36,7 +36,7 @@
 // mesmo ano.
 
 import { DatabaseSync } from 'node:sqlite'
-import { traduzir } from './motor-traducao.mjs'
+import { traduzir } from '../servidor/servicos/motor-traducao.mjs'
 import { writeFileSync } from 'node:fs'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'

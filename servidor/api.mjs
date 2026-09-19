@@ -689,11 +689,6 @@ const ROTAS = {
   'POST /api/sair-do-aparelho': (req, res, dado) => extras.sairDoAparelho(banco, exigirEntrada(req), dado),
   'POST /api/meu-email': async (req, res, dado) => extras.mudarEmail(banco, comFreio(req, 'senha-extra'), dado),
 
-  // ── o pulso da esteira: só com a chave da máquina do dono ──
-  'POST /api/esteira/pulso': (req, res, dado) => {
-    if (!esteira.chaveConfere(req.headers['x-esteira-chave'])) throw new Recusa('Não existe.', 404)
-    return esteira.receberPulso(banco, dado)
-  },
   'GET /api/admin/esteira': (req) => { exigirAdmin(req); return esteira.estado(banco) },
   // O trabalhador (esteira-trabalhador.mjs) olha este interruptor a cada volta.
   // Pausar não interrompe o livro em curso: ele termina, e o próximo espera.

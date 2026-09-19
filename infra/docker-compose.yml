@@ -32,9 +32,6 @@ services:
       FIO_CONVITE: ${FIO_CONVITE:-obrigatorio}
       # Vazio = só a própria origem. É o certo em produção.
       FIO_ORIGENS: ${FIO_ORIGENS:-}
-      # A chave do pulso por HTTP, da época em que a esteira rodava no PC do
-      # dono. O trabalhador na VPS escreve o pulso direto no banco e não a usa.
-      FIO_ESTEIRA_CHAVE: ${FIO_ESTEIRA_CHAVE:-}
       # Entrar com o Google (servidor/google.mjs). Vazias = botão leva a um
       # aviso de "ainda não ligado". A DEEPL_CHAVE NÃO entra aqui: quem
       # traduz é o serviço `esteira`, abaixo, e só ele a recebe.

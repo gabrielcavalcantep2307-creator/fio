@@ -458,13 +458,13 @@
   }
  },
  "pulso com chave :: anon POST /api/esteira/pulso": {
-  "status": 200,
+  "status": 404,
   "tipo": "application/json",
   "cache": "no-store",
   "local": null,
   "cookie": null,
   "corpo": {
-   "ok": "boolean"
+   "erro": "Não existe."
   }
  },
  "conta :: anon GET /api/eu": {
@@ -1662,25 +1662,7 @@
    },
    "pausada": "boolean",
    "publicadas": "number",
-   "pulso": {
-    "atual": "null",
-    "enviado": "string",
-    "estado": "string",
-    "idadeSegundos": "number",
-    "log": [],
-    "plano": {
-     "total": "null",
-     "traduzidos": "null"
-    },
-    "recebidoEm": "string",
-    "rodada": {
-     "falhas": "null",
-     "feitos": "null",
-     "inicio": "string",
-     "total": "null"
-    },
-    "ultimos": []
-   },
+   "pulso": "null",
    "viva": "boolean"
   }
  },
@@ -2055,25 +2037,7 @@
    },
    "pausada": "boolean",
    "publicadas": "number",
-   "pulso": {
-    "atual": "null",
-    "enviado": "string",
-    "estado": "string",
-    "idadeSegundos": "number",
-    "log": [],
-    "plano": {
-     "total": "null",
-     "traduzidos": "null"
-    },
-    "recebidoEm": "string",
-    "rodada": {
-     "falhas": "null",
-     "feitos": "null",
-     "inicio": "string",
-     "total": "null"
-    },
-    "ultimos": []
-   },
+   "pulso": "null",
    "viva": "boolean"
   }
  },

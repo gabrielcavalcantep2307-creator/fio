@@ -33,7 +33,7 @@ import { join, dirname, resolve } from 'node:path'
 import { tmpdir } from 'node:os'
 import { fileURLToPath } from 'node:url'
 import { execFileSync } from 'node:child_process'
-import { traduzir, escolherMotor, motorDisponivel } from './motor-traducao.mjs'
+import { traduzir, escolherMotor, motorDisponivel } from '../servidor/servicos/motor-traducao.mjs'
 
 const RAIZ = join(dirname(fileURLToPath(import.meta.url)), '..')
 const arg = (n, p = null) => { const i = process.argv.indexOf(`--${n}`); return i > 0 && process.argv[i + 1] ? process.argv[i + 1] : p }
@@ -220,9 +220,9 @@ const eRuido = (t) => t.replace(/[^A-Za-zÀ-ú]/g, '').length < 2 || /copyright|
 // ── a volta ──
 
 // Os balões vão pelo DeepL quando há saldo no mês: é pouco texto, e é para isso
-// que a esteira de livros guarda a reserva (ingestao/motor-traducao.mjs).
+// que a esteira de livros guarda a reserva (servidor/servicos/motor-traducao.mjs).
 const escolha = await escolherMotor({ caracteres: 60_000, de, jaComecado: false, reserva: 0 })
-dados.motor = motorDisponivel().nome
+dados.motor = motorDisponivel(escolha.motor).nome
 console.log(`tradução: ${dados.motor} — ${escolha.porque}`)
 
 const pct = (v, total) => Math.round((v / total) * 10000) / 100
@@ -241,7 +241,7 @@ for (const [caminho, arquivo] of lista) {
     const original = limparTexto(b.linhas)
     if (eRuido(original)) continue
     let traducao
-    try { traducao = await traduzir(original, { de, para: 'pt' }) } catch (e) { traducao = null; console.log(`   ! não traduziu: ${e.message}`) }
+    try { traducao = await traduzir(original, { de, para: 'pt', motor: escolha.motor }) } catch (e) { traducao = null; console.log(`   ! não traduziu: ${e.message}`) }
     blocos.push({
       x: pct(b.x, lido.largura), y: pct(b.y, lido.altura), w: pct(b.w, lido.largura), h: pct(b.h, lido.altura),
       o: original, t: traducao, ...(b.confianca != null && b.confianca < 0.7 ? { duvida: true } : {}),

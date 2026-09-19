@@ -1,14 +1,14 @@
 // O trabalhador da esteira: traduz a fila para sempre, sozinho, na VPS.
 //
-//   node servidor/esteira-trabalhador.mjs                     # o laço eterno
-//   node servidor/esteira-trabalhador.mjs --importar plano.json  # traz um esteira.json antigo para a fila
+//   node servidor/esteira-trabalhador.mjs                       # o laço eterno
+//   node servidor/esteira-trabalhador.mjs --importar lote.json  # põe um lote na fila e sai
 //
 // Roda num container PRÓPRIO (serviço `esteira` do docker-compose), da mesma
 // imagem da API e no mesmo banco. É um processo à parte, e não uma rota dentro
 // da API, por três razões:
 //
 //   1. `node:sqlite` é síncrono. Instalar um livro de 400 mil palavras e
-//      republicar o catálogo são dezenas de segundos de CPU; dentro da API,
+//      refazer o catálogo são dezenas de segundos de CPU; dentro da API,
 //      seriam dezenas de segundos em que o site não responde a ninguém.
 //   2. Memória. A API vive em 320 MB e é o que o leitor vê. Um livro grande
 //      estourando a memória tem que derrubar a esteira, não o site.
@@ -18,30 +18,36 @@
 //      que falta. Cair no meio de um livro custa só o parágrafo em voo.
 //
 // ─────────────────────────────────────────────────────────────
-// A VOLTA
+// A VOLTA, e quem faz cada passo
 //
-//   1. promove o que o painel e os assinantes pediram ('espera' → obra);
-//   2. se pausada no painel, espera;
-//   3. mede o tamanho das fontes novas (um HEAD, para a ordem menor→maior);
-//   4. pega o próximo livro; se não há, publica o que faltar e dorme;
-//   5. traduz (ingestao/traduzir-obra.mjs, num processo filho — o mesmo de
-//      sempre, com o caderno e o freio que já provaram funcionar);
-//   6. instala no banco, põe na busca (só aquele livro) e marca pronto;
-//   7. republica o catálogo estático do site, para ele aparecer na vitrine.
+//   1. promove o que o painel e os assinantes pediram ('espera' → obra)  esteira.mjs
+//   2. se pausada no painel, espera
+//   3. mede o tamanho das fontes novas (HEAD; ordem menor→maior)
+//   4. escolhe o próximo; se não há, põe o catálogo em dia e dorme
+//   5. traduz                                                             servicos/traducao.mjs
+//   6. instala no banco e na busca, e marca pronto                        servicos/acervo.mjs
+//   7. publica a obra no catálogo do site (só ela, em milissegundos)      servicos/catalogo.mjs
 //
-// E o pulso: o estado vai direto para a tabela `esteira_pulso` a cada ~20 s,
-// e o painel mostra ao vivo, como mostrava a esteira do PC.
+// Tudo no mesmo processo, por chamada de função (19/09/2026). Até então cada
+// livro era um `node traduzir-obra.mjs` à parte, o andamento vinha de uma
+// expressão regular sobre o texto que ele imprimia, e o catálogo era outro
+// `node publicar.mjs` de 30 s a cada livro. Agora o andamento chega por
+// callback, parar é um AbortSignal, e o catálogo inteiro só é refeito quando
+// a esteira fica ociosa (ou a cada 6 h de trabalho seguido).
+//
+// O pulso: o estado vai direto para a tabela `esteira_pulso` a cada ~20 s, e
+// o painel mostra ao vivo.
 // ─────────────────────────────────────────────────────────────
 
-import { spawn } from 'node:child_process'
-import { existsSync, readFileSync, readdirSync, mkdirSync, renameSync, rmSync } from 'node:fs'
+import { readFileSync, readdirSync, mkdirSync } from 'node:fs'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { abrir } from './banco/base.mjs'
 import * as esteira from './esteira.mjs'
-import { indexarTexto, indexarObra } from './reindexar.mjs'
-import { instalarTraducao } from '../ingestao/instalar-traducao.mjs'
-import { traduzir, saldoDeepL } from '../ingestao/motor-traducao.mjs'
+import { traduzirLivro, traducaoPronta } from './servicos/traducao.mjs'
+import { instalarLivro } from './servicos/acervo.mjs'
+import { publicarCatalogo, publicarObra } from './servicos/catalogo.mjs'
+import { traduzir, saldoDeepL } from './servicos/motor-traducao.mjs'
 
 const RAIZ = join(dirname(fileURLToPath(import.meta.url)), '..')
 const PASTA = process.env.FIO_TRADUCOES || join(RAIZ, 'dados', 'traducoes')
@@ -52,10 +58,10 @@ const JURISDICAO = process.env.FIO_JURISDICAO || 'BR'
 const UA = 'fio/0.1 (biblioteca em portugues; https://fiolib.com.br)'
 
 const MIN = 60_000
-const OCIOSA_MIN = Number(process.env.FIO_ESTEIRA_OCIOSA_MIN || 5)   // fila vazia: olha de novo a cada 5 min
+const OCIOSA_MIN = Number(process.env.FIO_ESTEIRA_OCIOSA_MIN || 5)        // fila vazia: olha de novo a cada 5 min
 const SEM_SINAL_MIN = Number(process.env.FIO_ESTEIRA_SEM_SINAL_MIN || 60) // livro sem avançar 1 h: travou
-const TETO_LIVRO_H = 36                                                // nenhum livro leva mais que isso
-const PUBLICAR_TETO_MIN = 15
+const TETO_LIVRO_H = 36                                                     // nenhum livro leva mais que isso
+const CATALOGO_INTEIRO_H = 6                                                // em trabalho seguido, refaz tudo a cada 6 h
 
 const banco = abrir()
 // A API escreve no mesmo banco. Esperar até 30 s pela vez é melhor que
@@ -88,7 +94,7 @@ function pulsar(parcial = {}, agora = false) {
   try {
     const plano = esteira.contagem(banco)
     pulso.plano = { total: plano.total, traduzidos: plano.traduzidos }
-    esteira.receberPulso(banco, { ...pulso, enviado: new Date().toISOString() })
+    esteira.guardarPulso(banco, { ...pulso, enviado: new Date().toISOString() })
   } catch (e) { console.error('pulso:', e.message) } // banco ocupado agora; o próximo vai
 }
 
@@ -101,23 +107,23 @@ const pulsoRodada = () => {
 function lembrar(u) { pulso.ultimos.unshift(u); pulso.ultimos.splice(8) }
 
 // ─────────────────────────────────────────────────────────────
-// Parar direito, e o vigia
+// Parar direito, e os vigias
 // ─────────────────────────────────────────────────────────────
 
 let parar = false
-let filho = null
+let livroEmCurso = null // o AbortController do livro de agora
 let ultimoAvanco = Date.now()
 const avancou = () => { ultimoAvanco = Date.now() }
 
-// O `docker stop` manda SIGTERM. O livro em curso para onde está — o caderno
-// já guardou cada parágrafo — e o próximo começo continua dali.
+// O `docker stop` manda SIGTERM. O livro em curso para de pedir parágrafos
+// novos — o caderno já guardou cada um que saiu — e o próximo começo continua dali.
 function encerrar(sinal) {
   if (parar) return
   parar = true
   log(`${sinal}: parando (o caderno guarda o que já saiu)`)
-  if (filho) filho.kill('SIGTERM')
+  livroEmCurso?.abort(new Error('a esteira foi parada'))
   try { pulsar({ estado: 'parada', atual: null }, true) } catch {}
-  setTimeout(() => process.exit(0), 5_000).unref()
+  setTimeout(() => process.exit(0), 10_000).unref()
 }
 process.on('SIGTERM', () => encerrar('SIGTERM'))
 process.on('SIGINT', () => encerrar('SIGINT'))
@@ -128,8 +134,8 @@ process.on('SIGINT', () => encerrar('SIGINT'))
 process.on('uncaughtException', (e) => { console.error('erro não tratado:', e); process.exit(1) })
 process.on('unhandledRejection', (e) => { console.error('promessa rejeitada:', e); process.exit(1) })
 
-// O vigia: se nada avançou em 3 horas — nem livro, nem volta do laço —, algo
-// travou de um jeito que nenhum prazo abaixo previu. Sair é o conserto.
+// O vigia geral: se nada avançou em 3 horas — nem livro, nem volta do laço —,
+// algo travou de um jeito que nenhum prazo abaixo previu. Sair é o conserto.
 setInterval(() => {
   if (Date.now() - ultimoAvanco > 3 * 60 * MIN) {
     console.error('nada avançou em 3 h; saindo para o Docker religar')
@@ -143,53 +149,6 @@ async function dormir(ms) {
     await new Promise((r) => setTimeout(r, Math.min(5_000, ate - Date.now())))
     pulsar() // batida: é o que mostra "viva" no painel
   }
-}
-
-// ─────────────────────────────────────────────────────────────
-// Um processo filho, sem deixar ninguém sem saída
-//
-// O `error` não é zelo: um filho que não consegue nem nascer emite `error` e
-// nunca `close`, e `error` sem ouvinte derruba o processo inteiro (foi o que
-// levou a esteira do PC em 14/09/2026).
-// ─────────────────────────────────────────────────────────────
-
-function rodar(args, { aoFalar, semSinalMs, tetoMs } = {}) {
-  return new Promise((pronto) => {
-    const p = spawn(process.execPath, args, {
-      cwd: RAIZ, env: { ...process.env, FIO_TRADUCOES: PASTA }, stdio: ['ignore', 'pipe', 'pipe'],
-    })
-    filho = p
-    let saida = ''
-    let sinal = Date.now()
-    let motivo = null
-    const guardar = (d) => { saida = (saida + d).slice(-20_000) }
-    p.stdout.on('data', (d) => { guardar(d); sinal = Date.now(); aoFalar?.(String(d)) })
-    p.stderr.on('data', guardar)
-    const matar = (porque) => {
-      motivo = porque
-      p.kill('SIGTERM')
-      setTimeout(() => { try { p.kill('SIGKILL') } catch {} }, 10_000).unref()
-    }
-    const relogio = setInterval(() => {
-      if (semSinalMs && Date.now() - sinal > semSinalMs) matar(`sem avançar há ${Math.round(semSinalMs / MIN)} min`)
-    }, 30_000)
-    const teto = tetoMs ? setTimeout(() => matar(`passou de ${Math.round(tetoMs / MIN)} min`), tetoMs) : null
-    const fim = (codigo, extra = '') => {
-      clearInterval(relogio); if (teto) clearTimeout(teto)
-      filho = null
-      pronto({ codigo, saida: saida + extra, motivo })
-    }
-    p.on('error', (e) => fim(-1, `\nErro: não deu para rodar o node: ${e.message}`))
-    p.on('close', (codigo) => fim(codigo ?? -1))
-  })
-}
-
-/** A primeira linha que parece erro — a última, num processo morto, é "Node.js v22". */
-function primeiroErro(saida) {
-  const linhas = saida.split('\n').map((l) => l.trim()).filter(Boolean)
-  return linhas.find((l) => /^\w*Error\b|^Erro\b|palavras — esta fonte|não deu para baixar|parágrafos não traduziram/.test(l))
-    ?? linhas.filter((l) => !/^Node\.js v|^at |ExperimentalWarning|--trace-warnings/.test(l)).at(-1)
-    ?? 'sem mensagem'
 }
 
 // O que não melhora esperando: fonte que não é livro, endereço que não existe.
@@ -211,21 +170,19 @@ const PERMANENTE = /esta fonte não é um livro|a fonte respondeu (404|410)|Isto
  */
 async function medirTamanhos() {
   for (let lote = esteira.semTamanho(banco); lote.length && !parar; lote = esteira.semTamanho(banco)) {
-    for (const it of lote) await medirUm(it)
+    for (const it of lote) {
+      let bytes = 2_000_000_000 // sem resposta: vai para o fim da fila, mas vai
+      try {
+        const r = await fetch(it.fonte, {
+          method: 'HEAD', headers: { 'user-agent': UA, 'accept-encoding': 'identity' }, signal: AbortSignal.timeout(15_000),
+        })
+        const n = Number(r.headers.get('content-length'))
+        if (r.ok && n > 0) bytes = n
+      } catch { /* fica no fim */ }
+      esteira.guardarTamanho(banco, it.id, bytes)
+    }
     avancou()
   }
-}
-
-async function medirUm(it) {
-  let bytes = 2_000_000_000 // sem resposta: vai para o fim da fila, mas vai
-  try {
-    const r = await fetch(it.fonte, {
-      method: 'HEAD', headers: { 'user-agent': UA, 'accept-encoding': 'identity' }, signal: AbortSignal.timeout(15_000),
-    })
-    const n = Number(r.headers.get('content-length'))
-    if (r.ok && n > 0) bytes = n
-  } catch { /* fica no fim */ }
-  esteira.guardarTamanho(banco, it.id, bytes)
 }
 
 /**
@@ -238,7 +195,7 @@ async function servicoResponde(de) {
   try {
     const t = await Promise.race([
       traduzir('Good morning.', { de: 'en', para: 'pt' }),
-      new Promise((_, nao) => setTimeout(() => nao(new Error('sem resposta em 30 s')), 30_000)),
+      new Promise((_, nao) => setTimeout(() => nao(new Error('sem resposta em 30 s')), 30_000).unref()),
     ])
     if (t && t.trim()) return true
   } catch { /* olha o DeepL */ }
@@ -246,140 +203,119 @@ async function servicoResponde(de) {
   return !!saldo && saldo.sobra > 50_000
 }
 
-async function traduzirLivro(item, saida) {
+/**
+ * Traduz um livro com dois vigias: sem avançar por `SEM_SINAL_MIN`, ou passado
+ * o teto, o livro é parado (o caderno guarda o que saiu) e volta mais tarde.
+ */
+async function traduzirComVigia(item, nome) {
   const atual = { obra: item.obra_id, titulo: item.titulo, de: item.idioma, feitas: 0, total: null, minRestantes: null, inicio: new Date().toISOString() }
   pulsar({ estado: 'traduzindo', atual, rodada: pulsoRodada() }, true)
-  const t0 = Date.now()
-  const r = await rodar([
-    join(RAIZ, 'ingestao', 'traduzir-obra.mjs'),
-    '--fonte', item.fonte, '--de', item.idioma, '--titulo', item.titulo, '--saida', saida,
-  ], {
-    semSinalMs: SEM_SINAL_MIN * MIN,
-    tetoMs: TETO_LIVRO_H * 60 * MIN,
-    aoFalar: (pedaco) => {
-      // "  120/860  ~14 min restantes" — a última que apareceu neste pedaço
-      const m = [...pedaco.matchAll(/(\d+)\/(\d+)\s+~(\d+) min/g)].at(-1)
-      if (m) {
+  const controle = new AbortController()
+  livroEmCurso = controle
+  let sinal = Date.now()
+  const vigia = setInterval(() => {
+    if (Date.now() - sinal > SEM_SINAL_MIN * MIN) controle.abort(new Error(`travou: sem avançar há ${SEM_SINAL_MIN} min`))
+  }, 30_000)
+  const teto = setTimeout(() => controle.abort(new Error(`travou: passou de ${TETO_LIVRO_H} h`)), TETO_LIVRO_H * 60 * MIN)
+  try {
+    return await traduzirLivro({
+      fonte: item.fonte, de: item.idioma, titulo: item.titulo, nome, pasta: PASTA, sinal: controle.signal,
+      aoDizer: (l) => { if (/^motor:|^\(|ficaram no original/.test(l)) log(`   ${l.slice(0, 160)}`) },
+      aoAndar: (feitas, total, minRestantes) => {
+        sinal = Date.now()
         avancou()
-        pulsar({ atual: { ...atual, feitas: Number(m[1]), total: Number(m[2]), minRestantes: Number(m[3]) } })
-      }
-      const motor = pedaco.match(/motor: ([^\n]+)/)
-      if (motor) log(`   motor: ${motor[1].trim().slice(0, 150)}`)
-    },
-  })
-  const min = Math.round((Date.now() - t0) / MIN)
-  if (r.codigo === 0 && existsSync(join(PASTA, `${saida}.json`))) return { ok: true, min }
-  return { ok: false, min, erro: r.motivo ? `travou: ${r.motivo}` : primeiroErro(r.saida) }
+        pulsar({ atual: { ...atual, feitas, total, minRestantes } })
+      },
+    })
+  } finally {
+    clearInterval(vigia)
+    clearTimeout(teto)
+    livroEmCurso = null
+  }
 }
 
-/** O ano de morte que vai para a linha de direito: o do autor mais recente. */
-const morteDe = (obraId) => banco.prepare(`
-  SELECT MAX(p.morte) morte FROM obra_pessoa op JOIN pessoa p ON p.id = op.pessoa_id
-   WHERE op.obra_id = ? AND op.papel = 'autor'`).get(obraId)?.morte ?? 0
+// ── o catálogo do site ──
+//
+// Cada livro pronto entra na hora, sozinho (`publicarObra`, milissegundos). O
+// catálogo INTEIRO — que é o que acerta as coleções da home — é refeito na
+// partida, quando a fila esvazia e, em trabalho seguido, a cada 6 h.
+let catalogoSujo = true          // na partida, uma vez: garante que nada ficou para trás
+let ultimoInteiro = 0
 
-function instalar(item, saida) {
-  const t = JSON.parse(readFileSync(join(PASTA, `${saida}.json`), 'utf8'))
-  const r = instalarTraducao(banco, t, { obraId: item.obra_id, morte: morteDe(item.obra_id), jurisdicao: JURISDICAO, aoDizer: log })
-  const caps = indexarTexto(banco, r.textoId)
-  indexarObra(banco, item.obra_id)
-  // Devolve o espaço do WAL aos poucos, sem travar ninguém (PASSIVE não espera).
-  try { banco.exec('PRAGMA wal_checkpoint(PASSIVE)') } catch {}
-  return { ...r, indexados: caps }
+function publicarLivro(obraId) {
+  if (!SITE_DADOS) return
+  try {
+    publicarObra(banco, SITE_DADOS, obraId, { jurisdicao: JURISDICAO })
+    catalogoSujo = true
+  } catch (e) {
+    // não perde nada: o catálogo inteiro da próxima vez inclui esta obra
+    log(`   ! não publiquei a obra ${obraId} no catálogo (${e.message}); vai no próximo inteiro`)
+    catalogoSujo = true
+  }
 }
 
-/**
- * Reescreve `catalogo.json` e `fichas/` do site a partir do banco.
- *
- * `publicar.mjs` roda num processo filho (130 MB e ~30 s, que não precisam
- * morar aqui) e escreve numa pasta ao lado; a troca é por `rename`, no mesmo
- * disco, para o site nunca servir um catálogo pela metade.
- */
-let precisaPublicar = true // na partida, uma vez: garante que nada ficou para trás
-async function publicarCatalogo() {
+function publicarInteiro() {
   if (!SITE_DADOS) {
-    if (precisaPublicar) log('sem FIO_SITE_DADOS: o catálogo do site não é republicado daqui')
-    precisaPublicar = false
-    return true
+    if (catalogoSujo) log('sem FIO_SITE_DADOS: o catálogo do site não é publicado daqui')
+    catalogoSujo = false
+    return
   }
   pulsar({ estado: 'publicando', atual: null }, true)
   const t0 = Date.now()
-  const novo = join(SITE_DADOS, '.esteira-novo')
-  rmSync(novo, { recursive: true, force: true })
-  const r = await rodar([join(RAIZ, 'ingestao', 'publicar.mjs'), '--saida', novo], { tetoMs: PUBLICAR_TETO_MIN * MIN })
-  const cat = join(novo, 'catalogo.json')
-  if (r.codigo !== 0 || !existsSync(cat) || !existsSync(join(novo, 'fichas'))) {
-    log(`   ! o catálogo não republicou (${r.motivo ?? primeiroErro(r.saida)}); tento de novo depois`)
-    rmSync(novo, { recursive: true, force: true })
-    return false
-  }
-  // Trava do catálogo encolhido: um banco que respondeu pela metade não pode
-  // apagar metade do site. Se o novo tem bem menos obras que o atual, fica o atual.
   try {
-    const obras = (f) => JSON.parse(readFileSync(f, 'utf8')).obras?.length ?? 0
-    const atual = existsSync(join(SITE_DADOS, 'catalogo.json')) ? obras(join(SITE_DADOS, 'catalogo.json')) : 0
-    const nova = obras(cat)
-    if (nova < atual * 0.9) {
-      log(`   ! catálogo novo com ${nova} obras contra ${atual} no ar; não troco`)
-      rmSync(novo, { recursive: true, force: true })
-      precisaPublicar = false
-      return false
-    }
-  } catch (e) { log(`   ! catálogo novo ilegível (${e.message})`); rmSync(novo, { recursive: true, force: true }); return false }
-
-  const velhas = join(SITE_DADOS, '.fichas-velhas')
-  rmSync(velhas, { recursive: true, force: true })
-  if (existsSync(join(SITE_DADOS, 'fichas'))) renameSync(join(SITE_DADOS, 'fichas'), velhas)
-  renameSync(join(novo, 'fichas'), join(SITE_DADOS, 'fichas'))
-  renameSync(cat, join(SITE_DADOS, 'catalogo.json'))
-  rmSync(velhas, { recursive: true, force: true })
-  rmSync(novo, { recursive: true, force: true })
-  precisaPublicar = false
-  log(`   ↑ catálogo do site republicado (${Math.round((Date.now() - t0) / 1000)} s)`)
-  return true
+    const n = publicarCatalogo(banco, SITE_DADOS, { jurisdicao: JURISDICAO })
+    log(n.trocou
+      ? `   ↑ catálogo inteiro republicado: ${n.obras} obras, ${n.legiveis} para ler (${Math.round((Date.now() - t0) / 1000)} s)`
+      : `   ! catálogo novo com ${n.obras} obras contra ${n.noAr} no ar; não troquei`)
+    catalogoSujo = false
+    ultimoInteiro = Date.now()
+  } catch (e) {
+    log(`   ! o catálogo não republicou (${e.message}); tento de novo depois`)
+  }
+  avancou()
 }
 
 async function processar(item) {
-  const saida = `obra${item.obra_id}`
+  const nome = `obra${item.obra_id}`
   const cabeca = `obra ${item.obra_id} — ${item.titulo}`
   const t0 = Date.now()
+  const falha = (erro, etapa = '') => {
+    const f = esteira.falhou(banco, item.id, `${etapa}${erro}`, { permanente: PERMANENTE.test(erro) })
+    rodada.falhas++
+    lembrar({ titulo: item.titulo, min: Math.round((Date.now() - t0) / MIN), palavras: 0, ok: false })
+    log(`   FALHOU${etapa ? ` ao ${etapa.replace(/: $/, '')}` : ''}: ${String(erro).slice(0, 140)}`)
+    log(f?.estado === 'erro' ? '   → marcado como erro (o painel pode mandar tentar de novo)' : `   → tenta de novo em ${f?.esperaMin} min`)
+    pulsar({ atual: null, rodada: pulsoRodada() }, true)
+  }
 
   // Uma tradução pronta que ainda não entrou (o container caiu entre traduzir
   // e instalar, ou veio do PC) é instalada sem traduzir de novo.
-  if (!existsSync(join(PASTA, `${saida}.json`))) {
+  let livro = traducaoPronta(PASTA, nome)
+  if (livro) log(`${cabeca}: tradução já pronta, instalando`)
+  else {
     log(`${cabeca}\n   de ${item.idioma}, ${item.fonte}${item.tentativas ? ` (tentativa ${item.tentativas + 1})` : ''}`)
-    const t = await traduzirLivro(item, saida)
-    if (parar) return
-    if (!t.ok) {
-      const f = esteira.falhou(banco, item.id, t.erro, { permanente: PERMANENTE.test(t.erro) })
-      rodada.falhas++
-      lembrar({ titulo: item.titulo, min: t.min, palavras: 0, ok: false })
-      log(`   FALHOU (${t.min} min): ${t.erro.slice(0, 140)}`)
-      log(f?.estado === 'erro' ? '   → marcado como erro (o painel pode mandar tentar de novo)' : `   → tenta de novo em ${f?.esperaMin} min`)
-      pulsar({ atual: null, rodada: pulsoRodada() }, true)
-      return
+    try {
+      livro = (await traduzirComVigia(item, nome)).livro
+    } catch (e) {
+      if (parar) return // parada pedida: o livro volta como estava, sem contar falha
+      return falha(e.message)
     }
-  } else {
-    log(`${cabeca}: tradução já pronta, instalando`)
   }
 
   pulsar({ estado: 'instalando' }, true)
   try {
-    const r = instalar(item, saida)
+    const r = instalarLivro(banco, livro, { obraId: item.obra_id, jurisdicao: JURISDICAO, aoDizer: log })
     esteira.marcarPronto(banco, item.id)
     esteira.reconciliar(banco) // avisa quem pediu
     rodada.feitos++
     lembrar({ titulo: item.titulo, min: Math.round((Date.now() - t0) / MIN), palavras: r.palavras, ok: true })
-    log(`   pronto: ${r.capitulos} capítulos, ${r.palavras} palavras, ${r.indexados} na busca`)
-    precisaPublicar = true
+    log(`   pronto: ${r.capitulos} capítulos, ${r.palavras} palavras, ${r.indexados} na busca, ${Math.round((Date.now() - t0) / MIN)} min`)
     avancou()
   } catch (e) {
-    const f = esteira.falhou(banco, item.id, `instalar: ${e.message}`, { permanente: PERMANENTE.test(e.message) })
-    rodada.falhas++
-    lembrar({ titulo: item.titulo, min: 0, palavras: 0, ok: false })
-    log(`   FALHOU ao instalar: ${e.message.slice(0, 140)} → ${f?.estado === 'erro' ? 'erro' : `de novo em ${f?.esperaMin} min`}`)
+    return falha(e.message, 'instalar: ')
   }
+  publicarLivro(item.obra_id)
   pulsar({ atual: null, rodada: pulsoRodada() }, true)
-  if (precisaPublicar) await publicarCatalogo()
 }
 
 /**
@@ -419,10 +355,11 @@ async function volta() {
   await medirTamanhos()
   const item = escolher()
   if (!item) {
-    if (precisaPublicar) await publicarCatalogo()
+    if (catalogoSujo) publicarInteiro()
     pulsar({ estado: 'ociosa', atual: null, rodada: pulsoRodada() }, true)
     return dormir(OCIOSA_MIN * MIN)
   }
+  if (catalogoSujo && Date.now() - ultimoInteiro > CATALOGO_INTEIRO_H * 60 * MIN) publicarInteiro()
 
   if (!(await servicoResponde(item.idioma))) {
     log('o serviço de tradução não responde; espero 10 min antes de começar outro livro')
@@ -435,7 +372,7 @@ async function volta() {
 async function laco() {
   log(`esteira no ar: fila em ${esteira.contagem(banco).faltam} livro(s), cadernos em ${PASTA}`)
   pulsar({ estado: 'medindo', rodada: pulsoRodada() }, true)
-  if (precisaPublicar) await publicarCatalogo()
+  publicarInteiro()
   while (!parar) {
     try {
       await volta()
@@ -452,11 +389,10 @@ async function laco() {
 
 const iImportar = process.argv.indexOf('--importar')
 if (iImportar > 0) {
-  const arquivo = process.argv[iImportar + 1]
-  const j = JSON.parse(readFileSync(arquivo, 'utf8'))
-  const r = esteira.importarPlano(banco, j.plano ?? j)
+  const j = JSON.parse(readFileSync(process.argv[iImportar + 1], 'utf8'))
+  const r = esteira.importarPlano(banco, j.plano ?? j.livros ?? j)
   console.log(`entraram ${r.entraram}, já estavam ${r.jaEstavam}, recusados ${r.recusados.length}`)
-  for (const x of r.recusados) console.log(`  recusado: obra ${x.obra} ${x.titulo} — ${x.porque}`)
+  for (const x of r.recusados) console.log(`  recusado: ${x.obra ? `obra ${x.obra} ` : ''}${x.titulo} — ${x.porque}`)
   console.log(JSON.stringify(esteira.contagem(banco)))
 } else {
   await laco()

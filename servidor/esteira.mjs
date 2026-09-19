@@ -1,27 +1,19 @@
-// A esteira vista do servidor: a fila, o pulso e os pedidos.
+// A esteira de tradução, do lado do banco: a fila, o pulso e os pedidos.
 //
-// Desde 18/09/2026 a esteira roda AQUI, na VPS, num container próprio
-// (servidor/esteira-trabalhador.mjs), e a fila deste banco é a única lista de
-// trabalho: o que está 'na_esteira' é o que ela vai traduzir. As funções de
-// fila abaixo (promover, proximo, falhou…) são as que o trabalhador usa.
+// A esteira roda na VPS, num container próprio (servidor/esteira-trabalhador.mjs),
+// e a fila deste banco (`fila_traducao`) é a única lista de trabalho. Quem
+// escreve nela: o painel (livros novos), os assinantes (pedidos) e o
+// `--importar` do trabalhador (lotes prontos). Quem lê: o trabalhador, pelas
+// funções de fila lá embaixo (promover, proximo, falhou…), e o painel.
 //
-// Antes disso a esteira rodava na máquina do dono e o painel rodava aqui. Até 17/09 o painel
-// só sabia o que a fila dizia — e a fila só mudava quando alguém rodava
-// `puxar-fila.mjs`, então mostrava "29 na esteira" com a esteira parada havia
-// dias. Agora:
+// O PULSO é o que a esteira está fazendo agora — livro, trechos, últimas
+// linhas do log. O trabalhador grava direto na tabela `esteira_pulso` a cada
+// ~20 s; o painel lê e diz "parada" quando ele envelhece.
 //
-//   1. a esteira manda um PULSO a cada ~20 s (`POST /api/esteira/pulso`, com a
-//      chave FIO_ESTEIRA_CHAVE): o livro de agora, quantos trechos faltam, a
-//      rodada inteira, e as últimas linhas do log;
-//   2. o painel lê o pulso e a idade dele — pulso velho quer dizer esteira
-//      parada (PC dormindo, prazo da rodada, erro), e o painel diz isso;
-//   3. a fila se reconcilia sozinha a cada leitura do painel: o que já tem
-//      tradução publicada vira "pronto", sem depender de script nenhum.
-//
-// A chave fica só no `.env` da VPS e num arquivo fora do git na máquina do
-// dono. Sem a variável, a rota nem existe (404).
+// Até 19/09/2026 o pulso também chegava por HTTP (`POST /api/esteira/pulso`,
+// com uma chave), da época em que a esteira rodava no PC do dono. A rota saiu
+// junto com a esteira do PC: uma porta a menos, e uma chave a menos para guardar.
 
-import { createHash, timingSafeEqual } from 'node:crypto'
 import { Recusa } from './contas.mjs'
 import { avisar } from './gosto.mjs'
 
@@ -30,7 +22,7 @@ export function garantirTabelas(banco) {
     id INTEGER PRIMARY KEY CHECK (id = 1),
     dados TEXT NOT NULL,
     recebido_em TEXT NOT NULL DEFAULT (datetime('now')))`)
-  // prioridade: pedido de assinante Tear passa na frente (ver fila-do-painel.mjs)
+  // prioridade: pedido de assinante Tear passa na frente (ver proximo, abaixo)
   try { banco.exec('ALTER TABLE fila_traducao ADD COLUMN prioridade INTEGER NOT NULL DEFAULT 0') } catch {}
   // As colunas do trabalhador (18/09): o tamanho da fonte decide a ordem, e
   // as tentativas com hora marcada fazem a falha passageira esperar em vez de
@@ -45,14 +37,6 @@ export function garantirTabelas(banco) {
     mexido_em TEXT NOT NULL DEFAULT (datetime('now')))`)
 }
 
-const resumo = (s) => createHash('sha256').update(String(s)).digest()
-
-export function chaveConfere(recebida) {
-  const certa = process.env.FIO_ESTEIRA_CHAVE
-  if (!certa || certa.length < 24) return false
-  return timingSafeEqual(resumo(recebida ?? ''), resumo(certa))
-}
-
 const txt = (v, n) => String(v ?? '').replace(/[\u0000-\u001f\u007f]/g, ' ').slice(0, n)
 const num = (v) => (Number.isFinite(Number(v)) ? Number(v) : null)
 
@@ -61,7 +45,7 @@ const num = (v) => (Number.isFinite(Number(v)) ? Number(v) : null)
 const ESTADOS = ['traduzindo', 'publicando', 'instalando', 'medindo', 'ociosa', 'esperando', 'pausada', 'terminou', 'parada']
 
 /** Guarda o pulso, só com os campos conhecidos e com tamanho limitado. */
-export function receberPulso(banco, d) {
+export function guardarPulso(banco, d) {
   const limpo = {
     estado: ESTADOS.includes(d.estado) ? d.estado : 'traduzindo',
     rodada: { total: num(d.rodada?.total), feitos: num(d.rodada?.feitos), falhas: num(d.rodada?.falhas), inicio: txt(d.rodada?.inicio, 40) },
@@ -386,10 +370,26 @@ export function importarPlano(banco, plano) {
   const jaNaFila = banco.prepare("SELECT 1 FROM fila_traducao WHERE obra_id = ? OR (fonte = ? AND estado <> 'erro')")
   const poe = banco.prepare(`INSERT INTO fila_traducao (titulo, autor, morte, fonte, idioma, estado, obra_id, prioridade, em_trilha)
       VALUES (?,?,?,?,?, 'na_esteira', ?,?,?)`)
+  const soFonte = banco.prepare("SELECT 1 FROM fila_traducao WHERE fonte = ? AND estado <> 'erro'")
+  const esperando = banco.prepare(`INSERT INTO fila_traducao (titulo, autor, morte, fonte, idioma, estado, prioridade)
+      VALUES (?,?,?,?,?, 'espera', ?)`)
   const r = { entraram: 0, jaEstavam: 0, recusados: [] }
   banco.exec('BEGIN')
   try {
     for (const l of plano) {
+      const fonteOk = /^https:\/\/(www\.)?gutenberg\.(org|net\.au)\//.test(String(l.fonte))
+      // Linha SEM obra (o formato de lote-populares.mjs e do painel): entra
+      // como 'espera', e a esteira cria a obra ao promover.
+      if (l.obra == null) {
+        const titulo = String(l.titulo ?? '').trim().slice(0, 300), autor = String(l.autor ?? '').trim().slice(0, 200)
+        if (!titulo || !autor) { r.recusados.push({ titulo: l.titulo, porque: 'sem título ou autor' }); continue }
+        if (!fonteOk) { r.recusados.push({ titulo, porque: 'fonte fora do Gutenberg' }); continue }
+        if (soFonte.get(l.fonte)) { r.jaEstavam++; continue }
+        esperando.run(titulo, autor, Number.isInteger(l.morte) ? l.morte : null, l.fonte,
+          String(l.de ?? l.idioma ?? 'en').slice(0, 5), Number(l.prioridade) || 0)
+        r.entraram++
+        continue
+      }
       const o = obra.get(Number(l.obra))
       if (!o) { r.recusados.push({ obra: l.obra, titulo: l.titulo, porque: 'obra não existe aqui' }); continue }
       if (!mesmoTitulo(o.titulo, l.titulo) && !mesmoTitulo(o.titulo_pt, l.titulo)) {
