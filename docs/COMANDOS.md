@@ -64,3 +64,50 @@ antigo e apaga a interface que está no ar (ver docs/PROJETO.md).
 Ponha `FIO_ADMIN_SENHA=permitida` no `/opt/fio/infra/.env`, rode
 `bash infra/fio.sh site reiniciar`, entre com a senha, e depois tire a linha e
 reinicie de novo.
+
+## Se a VPS precisar ser desligada (ou emprestada para outra coisa)
+
+O dono avisou em 19/09/2026 que a máquina pode ser desligada por um tempo — por
+exemplo, para rodar um servidor de jogo com os amigos — e depois volta.
+
+**Nada no site se corrompe com isso**, desde que os containers sejam parados
+(ou a máquina reiniciada) em vez de o disco ser apagado:
+
+- O banco é SQLite em modo WAL e fecha sozinho: o servidor trata o sinal de
+  desligar, e o backup diário das 03:20 continua no disco.
+- Os três containers da Fiolib têm `restart: unless-stopped`: **voltam sozinhos
+  quando a máquina liga**. Se forem parados à mão, ficam parados até alguém os
+  subir — inclusive depois de reiniciar.
+
+Desligar e ligar de novo:
+
+```bash
+bash infra/fio.sh site desligar     # ou: esteira desligar
+bash infra/fio.sh site ligar        # volta tudo como estava
+```
+
+Ou, para parar tudo de uma vez, dentro da VPS:
+
+```bash
+docker compose -f /opt/fio/infra/docker-compose.yml stop
+docker compose -f /opt/fio/infra/docker-compose.yml up -d
+```
+
+O que **não** pode acontecer sem uma cópia fora da máquina: formatar,
+reinstalar o sistema ou apagar `/opt/fio` e `/var/lib/docker`. Aí vai junto o
+banco (contas, progresso, marcações) — hoje a única cópia está na própria VPS.
+Antes de emprestar a máquina, trazer uma cópia para o computador:
+
+```bash
+bash infra/fio.sh copia
+```
+
+Duas coisas para combinar com quem for usar a máquina:
+
+1. **Portas 80 e 443 são do Caddy da Fiolib.** Um servidor de jogo que queira
+   essas portas derruba os dois sites; quase todo jogo usa outras portas.
+2. **Memória.** A VPS tem 2 GB e 1 núcleo. Com um servidor de jogo pesado
+   ligado junto, o site fica lento — e, se faltar memória, o sistema mata
+   primeiro o processo de maior "nota" de OOM, que hoje é o jogo (a Fiolib está
+   com `oom_score_adj` negativo, de propósito). Melhor desligar a Fiolib
+   enquanto o jogo roda, e ligar de volta depois.

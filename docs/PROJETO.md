@@ -72,7 +72,7 @@ Toda mudança no app vira um **remendo registrado** em `infra/remendar-bundle.mj
 âncora exata, quantas vezes deve aparecer, e o que entra no lugar. O script parte
 do bundle ORIGINAL (`/opt/fio/site/ativos/index-DBmeFHaL.js`, **nunca apagar**),
 aplica tudo em ordem, recusa se alguma âncora não bater, e gera
-`index-<hash>.js` + `index.html`. São 27 remendos hoje:
+`index-<hash>.js` + `index.html`. São 29 remendos hoje:
 
 - login por usuário OU e-mail
 - links **painel** (só admin), **para você** (com contador de avisos) e **quadrinhos** no cabeçalho
@@ -90,7 +90,17 @@ Estilo novo vai **em linha**: o CSS no ar só tem as classes Tailwind que o buil
 antigo usou.
 
 Telas grandes demais para remendo são **páginas próprias** (HTML + JS sem
-dependência, texto sempre por nó de texto): painel, central, quadrinhos.
+dependência, texto sempre por nó de texto): painel, central, quadrinhos,
+comunidade, publicar, planos, conta, direitos.
+
+### O cabeçalho e o rodapé são de fora do bundle (19/09/2026)
+
+`web/public/fio-cabecalho.js` desenha a MESMA barra e o MESMO rodapé no app e
+nas páginas próprias: Buscar · Estante · Quadrinhos ▾ · Comunidade ▾ e, no
+canto, tema, painel (só admin), sino de notificações e perfil. Dois remendos
+fazem o cabeçalho e o rodapé do bundle não desenharem nada; o cabeçalho do app
+só entrega `window.fioAbrirBusca` e `window.fioMudarPrefs`. Ali também moram
+os convites aos planos (docs/NOTIFICACOES-E-PLANOS.md).
 
 ## 4. O acervo e como ele cresce
 

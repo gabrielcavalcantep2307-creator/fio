@@ -55,3 +55,31 @@
   de leitura. Cada link de fora conta.
 - O nome ajuda escrito junto: **Fiolib**. "Fio lib" separado disputa com a
   ferramenta de Linux.
+
+## A verificação da marca no Google Cloud (19/09/2026)
+
+O Google recusou a verificação da marca do app OAuth com três queixas. As duas
+primeiras foram resolvidas no site; a terceira e a quarta são cliques no
+console, e só o dono pode dar.
+
+| A queixa do Google | O que era | Situação |
+|---|---|---|
+| "O site do URL da sua página inicial não está registrado para você" | o domínio não estava verificado no Search Console **com a mesma conta Google** que é dona do projeto no Cloud | falta: verificar o domínio (passos acima) com a conta certa |
+| "A página inicial não explica a finalidade do app" | a home é um app React; sem JavaScript, não havia texto nenhum | **feito**: a apresentação agora está no HTML, dentro de `#raiz` (infra/cabeca-google.mjs), com o que o site faz, o que pedimos do Google e o link da privacidade |
+| "O nome do app 'FioLib' não corresponde ao nome na sua página inicial" | a home dizia "Fio — biblioteca" | **feito**: título, logotipo e rodapé dizem **Fiolib**; falta trocar o nome do app no console para exatamente `Fiolib` |
+
+Ordem certa no console (Google Auth Platform → Branding):
+
+1. Nome do app: `Fiolib` (sem maiúscula no meio).
+2. Página inicial: `https://fiolib.com.br`.
+3. Política de privacidade: `https://fiolib.com.br/privacidade.html`.
+4. Termos de serviço: `https://fiolib.com.br/termos.html`.
+5. Domínio autorizado: `fiolib.com.br`.
+6. Verificar o domínio no Search Console com a MESMA conta, e só então pedir a
+   verificação de novo ("Corrigi os problemas").
+
+O logotipo é opcional: sem ele, a tela de permissão mostra só o nome e o
+domínio, e a verificação de marca deixa de ser necessária para funcionar — o
+login com Google continua aberto a todo mundo desde que o app esteja
+**publicado (Em produção)** e os escopos sejam os não sensíveis
+(`openid email profile`), que é o caso.
