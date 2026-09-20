@@ -138,11 +138,42 @@ então entra na auditoria por conta própria:
 
 | # | Achado | Gravidade | Estado |
 |---|---|---|---|
-| 1 | SSH aceita senha, e para o root | **grave** | comando pronto, esperando o dono |
-| 2 | Sem firewall | médio | comando pronto |
-| 3 | Sem fail2ban | médio | comando pronto |
-| 4 | Backup só na própria máquina | médio | pendência antiga, falta escolher destino |
-| 5 | Reinício pendente | baixo | próxima janela |
+| 1 | SSH aceita senha, e para o root | **grave** | **CONSERTADO** em 20/09, conferido dos dois lados |
+| 2 | Sem firewall | médio | **CONSERTADO**: ufw ativo, só 22/80/443 |
+| 3 | Sem fail2ban | médio | **CONSERTADO**: 4 tentativas, banimento de 1 h |
+| 4 | Backup só na própria máquina | médio | **aberto** — falta escolher o destino de fora |
+| 5 | Reinício pendente | baixo | aberto, próxima janela |
+
+## O que foi feito, e o que apareceu no meio
+
+**SSH.** O arquivo novo (`99-fiolib.conf`) sozinho NÃO bastou, e vale registrar
+porque é uma armadilha silenciosa: no `sshd_config` a **primeira** ocorrência de
+uma chave é a que vale, e o `50-cloud-init.conf` da Hostinger — que vem antes
+na ordem alfabética — trazia `PasswordAuthentication yes`. O `sshd -T` continuou
+dizendo `yes` depois do reload, sem erro nenhum. Só olhando quem declarava a
+chave é que apareceu. A linha foi comentada no lugar (o arquivo ficou, com
+cópia em `.antes-da-fiolib`).
+
+Conferido depois, dos dois lados:
+
+```
+chave  → entra normalmente
+senha  → Permission denied (publickey)
+```
+
+A chave do Nathan (`natha@nathan`) está em `authorized_keys` e continua
+valendo. **Ninguém nunca entrou por senha nesta máquina** — todo acesso do
+histórico é `Accepted publickey`.
+
+**Firewall e fail2ban.** `ufw` ativo com 22/80/443 e o resto negado; fail2ban
+no `sshd` com 4 tentativas, janela de 10 min e banimento de 1 h. Conferido
+depois de ligar: o site responde 200 e o SSH entra.
+
+**Sobra uma chave a menos do que deveria.** Em `authorized_keys` ainda está
+`mudanca-fiolib`, a chave temporária criada para a ponte SSH da mudança de VPS
+em 20/09. A mudança acabou. Não removi porque tirar acesso é decisão do dono, e
+não custa nada deixar escrito: `ssh-keygen -R` não serve aqui, é editar
+`/root/.ssh/authorized_keys` e apagar a linha que termina em `mudanca-fiolib`.
 
 Nada encontrado no site, no servidor, nas contas ou nos cabeçalhos. A
 superfície pública está fechada; o que está aberto é a porta de serviço da
