@@ -49,6 +49,7 @@
 import { abrir } from './banco/base.mjs'
 import * as ajustes from './ajustes.mjs'
 import * as revisao from './revisao.mjs'
+import { indexarTexto } from './reindexar.mjs'
 import { traduzir } from './servicos/motor-traducao.mjs'
 
 const MIN = 60_000
@@ -278,6 +279,17 @@ async function revisarLivro(livro, modo) {
   if (trocas > TETO_TROCAS_LIVRO) {
     revisao.marcar(banco, livro.texto_id, 'suspeito', { trocas, recusadas, motivo: trocas + ' trocas no livro' })
     return { trocas, recusadas, suspeito: 'teto do livro' }
+  }
+  // A BUSCA TEM QUE SABER (20/09/2026)
+  //
+  // O índice de busca no texto é uma cópia das palavras de cada capítulo. Se
+  // o capítulo muda e o índice não, a busca passa a procurar palavra que não
+  // existe mais — alguém procura "tremia" e não acha o livro onde nós
+  // acabamos de escrever "tremia", porque o índice ainda guarda "tremiava".
+  // É a mesma pegadinha que a esteira resolve chamando indexarTexto depois de
+  // instalar um livro; aqui vale igual, e só para o livro mexido.
+  if (trocas && modo === 'aplicar') {
+    try { indexarTexto(banco, livro.texto_id) } catch (e) { log('  aviso: a busca não foi refeita — ' + e.message) }
   }
   revisao.marcar(banco, livro.texto_id, 'pronto', { trocas, recusadas })
   return { trocas, recusadas, suspeito: null }
