@@ -224,6 +224,23 @@ com a frase onde foi vista), manda ao MESMO motor da esteira o parágrafo — ou
 o capítulo — que ficou na língua de origem, e conserta número por extenso
 quebrado.
 
+**A regra que decide se uma palavra pode entrar no glossário** (20/09, depois
+da auditoria): *a palavra trocada tem que carregar, nela mesma, a flexão que a
+substituta vai precisar.* Palavra estrangeira nunca carrega — "queer" não diz
+se é masculino, "fluttered" não diz se é plural —, e as cinco entradas assim
+que eu tinha escrito criaram "armadilha **estranho**", "os homens
+**vistosas**" e "as bandeiras **esvoaçou**" no ar. Foram desfeitas (as 1.504
+trocas, byte a byte) e proibidas: toda entrada declara uma `classe`, e só
+`substantivo`, `numeral`, `adverbio` e `flexionada` passam — classe fora da
+lista derruba o serviço ao subir. Hífen dos dois lados cancela a troca, porque
+composto com hífen é quase sempre nome próprio ("Gay-Headers", em Moby Dick,
+virou "Vistosas-Headers").
+
+**Auditar antes de confiar:** `ingestao/auditar-revisora.mjs` mostra cada troca
+NA FRASE em que ela caiu — é o único jeito de alguém dizer "isso está certo".
+Roda em `--estado proposta` para conferir antes de aplicar. A ordem que passou
+a valer: propor → auditar na frase → só então aplicar.
+
 **As sete travas** (detalhadas no cabeçalho de `servidor/revisao.mjs`): escopo
 só em `revisao='automatica'`; diário com o capítulo inteiro como estava
 (`revisao_troca`, e `--desfazer` devolve byte a byte); tamanho dentro de ±40 %;
