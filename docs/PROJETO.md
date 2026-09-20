@@ -232,6 +232,13 @@ de novo e só entra se ficou mais português; teto de trocas por capítulo e por
 livro, que marca o livro `suspeito` e para; e o modo **propor** como padrão,
 que grava a proposta e não encosta no texto.
 
+**Onde ela aparece** (20/09, pedido do dono — "não estou vendo essa parte de
+revisão aqui na esteira"): **painel → aba Esteira**, logo abaixo da esteira,
+com modo, livro de agora, progresso, trocas feitas e as **recusas com o motivo
+de cada uma**; interruptor na aba **Controle**; aviso no topo do painel; e
+"desfazer tudo" a um clique. Mostrar as recusas é de propósito — elas parecem
+defeito e são o contrário: são a prova de que as travas estão segurando.
+
 ```bash
 docker logs -f infra-revisora-1
 docker exec infra-revisora-1 node servidor/revisor-trabalhador.mjs --livro 4563
