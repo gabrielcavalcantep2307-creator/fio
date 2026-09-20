@@ -126,6 +126,28 @@ export function criarVitrine({ banco, estatico, site }) {
     } catch { return { titulo: '', pars: [] } }
   }
 
+  // ── o cartão de compartilhamento das páginas que não são de um livro ──
+  //
+  // A ficha de livro já tem imagem: a capa. A home, as listas e os assuntos
+  // não tinham nenhuma, e link sem imagem no WhatsApp ou no Reddit é uma
+  // linha de texto cinza que ninguém clica — justo agora, que a divulgação
+  // está começando.
+  //
+  // O arquivo é desenhado por infra/cartao-gerar.html (precisa de navegador:
+  // a marca é Literata, e desenhar texto com a fonte certa não se faz em
+  // Node sem dependência). Enquanto ele não existir, nenhuma tag é escrita —
+  // apontar og:image para um 404 é pior que não ter og:image, porque alguns
+  // leitores de cartão desistem em vez de cair para o texto.
+  let cartaoEm = 0
+  let cartaoTem = false
+  function cartao() {
+    if (Date.now() - cartaoEm > 60_000) {
+      cartaoEm = Date.now()
+      try { cartaoTem = statSync(join(estatico, 'cartao.jpg')).isFile() } catch { cartaoTem = false }
+    }
+    return cartaoTem ? `${SITE}/cartao.jpg` : null
+  }
+
   const capaDe = (o) => o.capa ? `${SITE}/capas/${encodeURIComponent(o.capa)}`
     : o.capaOL ? `https://covers.openlibrary.org/b/id/${encodeURIComponent(o.capaOL)}-L.jpg` : null
   const urlLivro = (o) => `/livro/${o.id}-${lesma(primeiraLinha(o.titulo))}`
@@ -133,6 +155,7 @@ export function criarVitrine({ banco, estatico, site }) {
 
   // ── a moldura de toda página ──
   function pagina({ titulo, descricao, canonico, imagem, ld, corpo, indexar = true }) {
+    imagem = imagem || cartao()
     return `<!doctype html>
 <html lang="pt-BR">
 <head>
@@ -241,7 +264,16 @@ ${corpo}
     <h1>${esc(titulo)}</h1>
     <p class="autor-l">${autor ? `<a href="${esc(urlAutor(autor))}">${esc(nomeAutor)}</a>` : esc(nomeAutor)}${esc(vida)}</p>
     ${o.chamada ? `<p class="chamada">${esc(o.chamada)}</p>` : ''}
-    <div class="selos">${(o.temas ?? []).map((t) => `<span class="selo">${esc(t)}</span>`).join('')}${o.minutos ? `<span class="selo">${Math.max(1, Math.round(o.minutos / 60))} h de leitura</span>` : ''}${f.paginas ? `<span class="selo">${f.paginas} páginas</span>` : ''}</div>
+    <div class="selos">${(o.temas ?? []).map((t) => {
+      // O selo do assunto era decorativo. Agora é a porta da página do
+      // assunto — e é por esses links que o Google entende que a Fiolib tem
+      // filosofia, e não só um livro de filosofia solto.
+      const ch = lesma(primeiraLinha(t))
+      const tem = assuntos().get(ch)
+      return tem && tem.obras.length >= POUCOS
+        ? `<a class="selo" href="${esc(urlAssunto(ch))}">${esc(primeiraLinha(t))}</a>`
+        : `<span class="selo">${esc(primeiraLinha(t))}</span>`
+    }).join('')}${o.minutos ? `<span class="selo">${Math.max(1, Math.round(o.minutos / 60))} h de leitura</span>` : ''}${f.paginas ? `<span class="selo">${f.paginas} páginas</span>` : ''}</div>
     <div class="acoes">${l
       ? `<a class="botao" href="/#/ler/${id}">Ler agora, grátis</a><a class="botao fraco" href="/#/obra/${id}">Ver no app</a>`
       : `<a class="botao fraco" href="/#/obra/${id}">Ver no app</a>`}<button type="button" class="botao fraco" data-compartilhar data-titulo="${esc(titulo)}, de ${esc(nomeAutor)}" data-texto="Achei este livro para ler de graça na Fiolib.">Compartilhar</button></div>
@@ -283,6 +315,91 @@ ${doMesmo.length ? `<h2>Mais de ${esc(autor.nome)}</h2><ul class="lista-v">${doM
     }))
   }
 
+  // ── /assuntos e /assunto/:nome ── (20/09/2026)
+  //
+  // O buraco que faltava na vitrine, e é o mais caro de todos: o Google
+  // entrava pela home ou por um livro solto, e não tinha por onde entender
+  // que a Fiolib TEM filosofia, TEM poesia, TEM romance brasileiro. Quem
+  // procura "livros de filosofia para ler online" não procura por um título;
+  // procura por um assunto, e não havia página de assunto nenhuma.
+  //
+  // Os temas já existiam no catálogo e já apareciam na ficha do livro — como
+  // selo cinza, sem link. Eram uma etiqueta decorativa. Agora cada um é uma
+  // página de verdade, com endereço próprio, no sitemap, ligada de todas as
+  // fichas que a carregam. É o degrau que faltava entre "a home" e "um
+  // livro".
+  //
+  // `/assunto/` e não `/tema/` porque `/tema/...` já é rota do app desde
+  // antes (ela redireciona para `/#/tema/...`), e dois donos para o mesmo
+  // endereço é como se perde uma tarde.
+  const POUCOS = 4   // assunto com menos que isto não vira página: conteúdo raso não merece indexação
+
+  let assuntosGuardados = { chave: '', mapa: new Map() }
+  function assuntos() {
+    const c = catalogo()
+    if (assuntosGuardados.chave === c.chave) return assuntosGuardados.mapa
+    const mapa = new Map()
+    for (const o of c.obras) {
+      if (!vitrinavel(o.id)) continue
+      for (const t of o.temas ?? []) {
+        const nome = primeiraLinha(t)
+        if (!nome) continue
+        const chave = lesma(nome)
+        if (!mapa.has(chave)) mapa.set(chave, { nome, obras: [] })
+        mapa.get(chave).obras.push(o)
+      }
+    }
+    for (const a of mapa.values()) a.obras.sort((x, y) => primeiraLinha(x.titulo).localeCompare(primeiraLinha(y.titulo), 'pt'))
+    assuntosGuardados = { chave: c.chave, mapa }
+    return mapa
+  }
+
+  const urlAssunto = (chave) => `/assunto/${chave}`
+  const assuntosPublicos = () => [...assuntos().entries()].filter(([, a]) => a.obras.length >= POUCOS)
+
+  function paginaDeAssuntos(req, res) {
+    const lista = assuntosPublicos().sort((x, y) => y[1].obras.length - x[1].obras.length)
+    const corpo = `<p class="migalhas"><a href="/livros">Livros</a> › Assuntos</p>
+<h1>Assuntos</h1><p class="sub">${lista.length} assuntos, para achar o livro pelo que ele trata.</p>
+<ul class="lista-v">${lista.map(([chave, a]) =>
+      `<li><a href="${esc(urlAssunto(chave))}">${esc(a.nome)}</a> <small>${a.obras.length} ${a.obras.length === 1 ? 'livro' : 'livros'}</small></li>`).join('')}</ul>`
+    return responder(req, res, 200, pagina({
+      titulo: 'Assuntos — livros por tema para ler online grátis | Fiolib',
+      descricao: `Filosofia, poesia, romance, história, ciência e mais ${Math.max(0, lista.length - 5)} assuntos de livros em português para ler de graça na Fiolib.`,
+      canonico: '/assuntos', corpo,
+    }))
+  }
+
+  function paginaAssunto(req, res, chave, busca) {
+    const a = assuntos().get(chave)
+    if (!a || a.obras.length < POUCOS) return naoAchei(req, res)
+    const paginas = Math.max(1, Math.ceil(a.obras.length / POR_PAGINA))
+    const p = Math.min(paginas, Math.max(1, Number(busca.get('p')) || 1))
+    const canonico = `${urlAssunto(chave)}${p > 1 ? `?p=${p}` : ''}`
+    const nesta = a.obras.slice((p - 1) * POR_PAGINA, p * POR_PAGINA)
+    const descricao = corta(`${a.obras.length} livros de ${a.nome.toLowerCase()} para ler online, de graça e em português, na Fiolib. ` +
+      nesta.slice(0, 4).map((o) => primeiraLinha(o.titulo)).join(', ') + '.', 158)
+    const ld = {
+      '@context': 'https://schema.org', '@type': 'CollectionPage',
+      name: `Livros de ${a.nome}`, url: SITE + canonico, inLanguage: 'pt-BR',
+      mainEntity: {
+        '@type': 'ItemList', numberOfItems: a.obras.length,
+        itemListElement: nesta.slice(0, 30).map((o, i) => ({
+          '@type': 'ListItem', position: (p - 1) * POR_PAGINA + i + 1,
+          name: primeiraLinha(o.titulo), url: SITE + urlLivro(o),
+        })),
+      },
+    }
+    const corpo = `<p class="migalhas"><a href="/livros">Livros</a> › <a href="/assuntos">Assuntos</a> › ${esc(a.nome)}</p>
+<h1>${esc(a.nome)}</h1><p class="sub">${a.obras.length} ${a.obras.length === 1 ? 'livro' : 'livros'} para ler de graça, no celular ou no computador.</p>
+<ul class="lista-v">${nesta.map((o) => `<li><a href="${esc(urlLivro(o))}">${esc(primeiraLinha(o.titulo))}</a>${o.autor ? ` <small>${esc(o.autor)}</small>` : ''}${o.chamada ? `<br><small>${esc(corta(o.chamada, 110))}</small>` : ''}</li>`).join('')}</ul>
+${paginas > 1 ? `<nav class="paginas-v">${Array.from({ length: paginas }, (_, k) => k + 1).map((k) => k === p ? `<span class="filtro" aria-current="page">${k}</span>` : `<a class="filtro" href="${esc(urlAssunto(chave))}${k > 1 ? `?p=${k}` : ''}">${k}</a>`).join('')}</nav>` : ''}`
+    return responder(req, res, 200, pagina({
+      titulo: `Livros de ${a.nome}${p > 1 ? ` — página ${p}` : ''} | Ler online grátis na Fiolib`,
+      descricao, canonico, ld, corpo,
+    }))
+  }
+
   // ── /livros e /autores (paginados) ──
   function lista(req, res, tipo, busca) {
     const c = catalogo()
@@ -298,6 +415,7 @@ ${doMesmo.length ? `<h2>Mais de ${esc(autor.nome)}</h2><ul class="lista-v">${doM
       ? `Livros para ler online grátis em português${p > 1 ? ` — página ${p}` : ''} | Fiolib`
       : `Autores de livros em domínio público${p > 1 ? ` — página ${p}` : ''} | Fiolib`
     const corpo = `<h1>${nome}</h1><p class="sub">${tipo === 'livros' ? `${itens.length} livros em português para ler de graça, no celular ou no computador.` : `${itens.length} autores com livros para ler de graça.`}</p>
+${tipo === 'livros' ? '<p class="sub"><a href="/assuntos">Ver por assunto</a> — filosofia, poesia, romance, história e mais.</p>' : ''}
 <ul class="lista-v">${itens.slice((p - 1) * POR_PAGINA, p * POR_PAGINA).map((i) => `<li><a href="${esc(i.url)}">${esc(i.nome)}</a>${i.extra ? ` <small>${esc(i.extra)}</small>` : ''}</li>`).join('')}</ul>
 ${paginas > 1 ? `<nav class="paginas-v">${Array.from({ length: paginas }, (_, k) => k + 1).map((k) => k === p ? `<span class="filtro" aria-current="page">${k}</span>` : `<a class="filtro" href="/${tipo}${k > 1 ? `?p=${k}` : ''}">${k}</a>`).join('')}</nav>` : ''}`
     return responder(req, res, 200, pagina({ titulo, descricao: corta(`${nome} da Fiolib, biblioteca online gratuita em português.`, 158), canonico, corpo }))
@@ -317,7 +435,8 @@ ${paginas > 1 ? `<nav class="paginas-v">${Array.from({ length: paginas }, (_, k)
   function sitemap(req, res) {
     const c = catalogo()
     const quando = c.gerado || new Date().toISOString().slice(0, 10)
-    const urls = ['/', '/livros', '/autores', '/quadrinhos.html', '/assinaturas.html']
+    const urls = ['/', '/livros', '/autores', '/assuntos', '/quadrinhos.html', '/assinaturas.html']
+    for (const [chave] of assuntosPublicos()) urls.push(urlAssunto(chave))
     for (const o of c.obras) if (vitrinavel(o.id)) urls.push(urlLivro(o))
     for (const a of c.autores.values()) if (c.obras.some((o) => o.autorId === a.id && vitrinavel(o.id))) urls.push(urlAutor(a))
     const paginas = Math.ceil(c.obras.filter((o) => vitrinavel(o.id)).length / POR_PAGINA)
@@ -333,6 +452,9 @@ ${paginas > 1 ? `<nav class="paginas-v">${Array.from({ length: paginas }, (_, k)
     if (caminho === '/sitemap.xml') return sitemap(req, res)
     const busca = new URL(req.url, 'http://x').searchParams
     if (caminho === '/livros' || caminho === '/autores') return lista(req, res, caminho.slice(1), busca)
+    if (caminho === '/assuntos') return paginaDeAssuntos(req, res)
+    const ass = caminho.match(/^\/assunto\/([a-z0-9-]{1,80})\/?$/)
+    if (ass) return paginaAssunto(req, res, ass[1], busca)
     const m = caminho.match(/^\/(livro|autor)\/(\d{1,7})(?:-([a-z0-9-]*))?\/?$/)
     if (!m) return false
     return m[1] === 'livro' ? livro(req, res, Number(m[2]), m[3] ?? '') : autor(req, res, Number(m[2]), m[3] ?? '')

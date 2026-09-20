@@ -2545,12 +2545,12 @@
   "corpo": "texto"
  },
  "painel :: leitora GET /painel-do-contrato-1234": {
-  "status": 200,
+  "status": 404,
   "tipo": "text/html",
-  "cache": "no-cache",
+  "cache": "no-store",
   "local": null,
   "cookie": null,
-  "corpo": "texto"
+  "corpo": "<!doctype html><title>Fio</title>"
  },
  "painel :: dona GET /painel-do-contrato-1234": {
   "status": 200,
@@ -2609,20 +2609,20 @@
   "corpo": ""
  },
  "painel :: anon GET /admin": {
-  "status": 200,
+  "status": 404,
   "tipo": "text/html",
-  "cache": "no-cache",
+  "cache": "no-store",
   "local": null,
   "cookie": null,
-  "corpo": "texto"
+  "corpo": "<!doctype html><title>Fio</title>"
  },
  "painel :: leitora GET /admin": {
-  "status": 200,
+  "status": 404,
   "tipo": "text/html",
-  "cache": "no-cache",
+  "cache": "no-store",
   "local": null,
   "cookie": null,
-  "corpo": "texto"
+  "corpo": "<!doctype html><title>Fio</title>"
  },
  "painel :: dona GET /admin": {
   "status": 302,
@@ -2633,28 +2633,28 @@
   "corpo": ""
  },
  "painel :: anon GET /painel-errado-do-contrato": {
-  "status": 200,
+  "status": 404,
   "tipo": "text/html",
-  "cache": "no-cache",
+  "cache": "no-store",
   "local": null,
   "cookie": null,
-  "corpo": "texto"
+  "corpo": "<!doctype html><title>Fio</title>"
  },
  "painel :: leitora GET /painel-errado-do-contrato": {
-  "status": 200,
+  "status": 404,
   "tipo": "text/html",
-  "cache": "no-cache",
+  "cache": "no-store",
   "local": null,
   "cookie": null,
-  "corpo": "texto"
+  "corpo": "<!doctype html><title>Fio</title>"
  },
  "painel :: dona GET /painel-errado-do-contrato": {
-  "status": 200,
+  "status": 404,
   "tipo": "text/html",
-  "cache": "no-cache",
+  "cache": "no-store",
   "local": null,
   "cookie": null,
-  "corpo": "texto"
+  "corpo": "<!doctype html><title>Fio</title>"
  },
  "manutenção liga :: dona POST /api/ajustes": {
   "status": 200,
@@ -3155,20 +3155,20 @@
   }
  },
  "estático :: anon GET /../../etc/passwd": {
-  "status": 200,
+  "status": 404,
   "tipo": "text/html",
-  "cache": "no-cache",
+  "cache": "no-store",
   "local": null,
   "cookie": null,
-  "corpo": "texto"
+  "corpo": "<!doctype html><title>Fio</title>"
  },
  "estático :: anon GET /%2e%2e/%2e%2e/etc/passwd": {
-  "status": 200,
+  "status": 404,
   "tipo": "text/html",
-  "cache": "no-cache",
+  "cache": "no-store",
   "local": null,
   "cookie": null,
-  "corpo": "texto"
+  "corpo": "<!doctype html><title>Fio</title>"
  },
  "estático :: anon GET /obra/1": {
   "status": 302,
@@ -3312,15 +3312,15 @@
   }
  },
  "cru :: anon GET /../../../../etc/passwd": {
-  "status": 200,
+  "status": 404,
   "vazou": false
  },
  "cru :: anon GET /..%2f..%2f..%2fetc%2fpasswd": {
-  "status": 200,
+  "status": 404,
   "vazou": false
  },
  "cru :: anon GET /%2e%2e%2f%2e%2e%2fetc%2fpasswd": {
-  "status": 200,
+  "status": 404,
   "vazou": false
  },
  "cru :: anon GET /dados/..%5c..%5c..%5cwindows%5cwin.ini": {

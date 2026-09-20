@@ -20,7 +20,7 @@ const TIPOS = {
 }
 
 export function criarEstatico({ banco, estatico, quemE }) {
-  function servirArquivo(req, res, caminho) {
+  function servirArquivo(req, res, caminho, status = 200) {
     // `/ativos/index-a1b2.js` tem o resumo do conteúdo no nome: mudou o
     // conteúdo, muda o nome. Pode ficar no cache para sempre.
     // `index.html` NÃO pode: é ele que aponta para os nomes novos.
@@ -32,13 +32,15 @@ export function criarEstatico({ banco, estatico, quemE }) {
 
     const info = statSync(arquivo)
     const etiqueta = `"${info.size.toString(36)}-${info.mtimeMs.toString(36)}"`
-    if (req.headers['if-none-match'] === etiqueta) { res.writeHead(304); res.end(); return true }
+    // Só o que responde 200 entra em cache de validação: um 404 não deve
+    // virar "não mudou" da próxima vez que alguém pedir o mesmo endereço.
+    if (status === 200 && req.headers['if-none-match'] === etiqueta) { res.writeHead(304); res.end(); return true }
 
-    res.writeHead(200, {
+    res.writeHead(status, {
       'content-type': TIPOS[extname(arquivo).toLowerCase()] ?? 'application/octet-stream',
       'content-length': info.size,
-      'cache-control': eterno ? 'public, max-age=31536000, immutable' : 'no-cache',
-      etag: etiqueta,
+      'cache-control': status === 200 ? (eterno ? 'public, max-age=31536000, immutable' : 'no-cache') : 'no-store',
+      ...(status === 200 ? { etag: etiqueta } : {}),
     })
     createReadStream(arquivo).pipe(res)
     return true
@@ -101,8 +103,30 @@ export function criarEstatico({ banco, estatico, quemE }) {
         res.writeHead(404, { 'content-type': 'text/plain; charset=utf-8', 'cache-control': 'no-store' })
         return res.end('não achei')
       }
-      // rota do app: devolve o index e deixa o navegador resolver
-      if (servirArquivo(req, res, '/index.html')) return
+      // ── O SOFT-404, e por que ele é pior que um 404 ── (20/09/2026)
+      //
+      // Até aqui, QUALQUER caminho sem extensão recebia o index.html com
+      // status 200. `/pagina-que-nao-existe-xyz`, `/categoria/filosofia`,
+      // `/colecao/qualquer-coisa` — todos 200, todos com os mesmos 4.510
+      // bytes da casca do app.
+      //
+      // Para uma pessoa isso é inofensivo: ela vê a home e segue. Para o
+      // Google é um site com infinitas páginas idênticas, e ele tem nome para
+      // isso — "soft 404". O custo é duplo: gasta o orçamento de rastreio em
+      // endereços que não existem, e um site cheio de páginas iguais perde
+      // confiança justamente quando está tentando ser indexado pela primeira
+      // vez.
+      //
+      // O app é roteado por HASH (`/#/ler/123`), então o ÚNICO caminho de
+      // verdade dele é `/`. Tudo o mais sem extensão ou é da vitrine (que
+      // responde antes daqui) ou não existe.
+      //
+      // Continua devolvendo a casca no corpo — quem digitou errado vê o site
+      // funcionando em vez de "não achei" —, mas com o status que diz a
+      // verdade. É o que o Google pede para página que não existe num app de
+      // uma página só.
+      const rotaDeVerdade = caminho === '/' || caminho === ''
+      if (servirArquivo(req, res, '/index.html', rotaDeVerdade ? 200 : 404)) return
     } catch (e) {
       console.error('[fio] estático', e)
       if (res.headersSent) return
