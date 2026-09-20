@@ -284,6 +284,29 @@ const REMENDOS = [
   // ── 18/09 (noite): a cara dos sites de leitura, com a identidade do Fio ──
   // Estilos em /fio-visual.css; aqui só as classes e os selos.
   {
+    // ── 20/09: a piscada do destaque da home ──
+    //
+    // O dono: "quando eu atualizo a página principal dá uma piscada na imagem
+    // principal, a que está em destaque". É real, e é o próprio componente de
+    // capa que causa.
+    //
+    // Toda capa é desenhada em DUAS camadas: o SVG desenhado por tema atrás
+    // (`Ze`), e a foto por cima. A foto nasce com `loading="lazy"`, que manda
+    // o navegador adiar o download até saber que a imagem está à vista. Para
+    // as capas das prateleiras isso está certíssimo — são dezenas, e quase
+    // todas começam fora da tela. Para o DESTAQUE está errado: ele é a
+    // primeira coisa da página, sempre visível, e o "adiar" garante que a
+    // pessoa veja primeiro a capa desenhada e, um instante depois, a real
+    // entrando por cima. A piscada.
+    //
+    // O conserto é dizer a verdade ao navegador: a capa grande é `eager` e
+    // tem prioridade alta; as outras continuam preguiçosas. Nenhuma imagem a
+    // mais é baixada — só muda a ordem.
+    nome: 'visual: a capa do destaque carrega na frente (fim da piscada)',
+    de: 'loading:`lazy`,decoding:`async`,width:300,height:450',
+    para: 'loading:t===`grande`?`eager`:`lazy`,fetchPriority:t===`grande`?`high`:`auto`,decoding:`async`,width:300,height:450',
+  },
+  {
     // O destaque da home ganha a capa desfocada ao fundo.
     nome: 'visual: destaque da home com a capa ao fundo',
     de: '(0,N.jsxs)(`section`,{className:`rounded-xl overflow-hidden relative`,style:{background:`var(--papel-2)`,border:`1px solid var(--linha)`},children:[(0,N.jsx)(`div`,{"aria-hidden":!0,className:`absolute inset-0 pointer-events-none`,style:{background:`radial-gradient(58% 88% at 13% 42%, color-mix(in srgb, var(--acento) 14%, transparent), transparent 70%)`}}),',

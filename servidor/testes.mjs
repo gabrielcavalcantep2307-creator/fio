@@ -2300,3 +2300,126 @@ test('planos: "me avise quando abrir" e a lista de contas do painel', async () =
   const admins = planos.listarContas(b, { filtro: 'admin' })
   assert.ok(admins.contas.every((c) => c.papel === 'admin' && c.planoAtual === 'tear'), 'admin é sempre Tear')
 })
+
+// ─────────────────────────────────────────────────────────────
+// A REVISORA (20/09/2026)
+//
+// O que se testa aqui não é "consegue consertar" — é **consegue NÃO
+// estragar**. O dono autorizou este serviço com uma condição explícita: que
+// ele não possa quebrar as traduções. Cada teste abaixo é uma das travas de
+// servidor/revisao.mjs, e o dia em que um deles ficar vermelho é o dia em que
+// a revisora tem que ficar parada.
+// ─────────────────────────────────────────────────────────────
+
+test('revisora: mede a língua do parágrafo pelas palavras de função', async () => {
+  const r = await import('./revisao.mjs')
+  const pt = r.medirLingua('Ele não sabia o que era, mas tinha certeza de que a casa estava vazia e de que ninguém viria.')
+  assert.equal(pt.lingua, 'pt')
+  const de = r.medirLingua('Der Gedanke an den Prozeß verließ ihn nicht mehr. Öfters schon hatte er überlegt, ob es nicht gut wäre.')
+  assert.equal(de.lingua, 'de')
+  const en = r.medirLingua('The thought of the trial never left him, and he had often wondered whether it would not be a good thing.')
+  assert.equal(en.lingua, 'en')
+})
+
+test('revisora: só acusa parágrafo que ficou MESMO na língua de origem', async () => {
+  const r = await import('./revisao.mjs')
+  // alemão inteiro, como em O Processo e O Castelo: é defeito
+  assert.equal(r.ficouNaOrigem('Der Gedanke an den Prozeß verließ ihn nicht mehr. Öfters schon hatte er überlegt, ob es nicht gut wäre, eine Verteidigung zu schreiben und sie bei dem Gericht einzureichen.'), 'de')
+  // português com um nome estrangeiro no meio: NÃO é defeito
+  assert.equal(r.ficouNaOrigem('Heathcliff entrou na sala sem dizer nada, e Catherine Earnshaw olhou para ele como se não o reconhecesse depois de tantos anos longe da casa.'), null)
+  // frase curta: não dá para medir, então não se mexe
+  assert.equal(r.ficouNaOrigem('The window was open.'), null)
+})
+
+test('revisora: o glossário troca a palavra inteira e respeita a caixa', async () => {
+  const r = await import('./revisao.mjs')
+  const { html, usadas } = r.aplicarGlossarioNoHtml('<p>O cartão queer, e Queer outra vez.</p>')
+  assert.match(html, /cartão estranho/)
+  assert.match(html, /Estranho outra vez/, 'maiúscula do original é preservada')
+  assert.ok(usadas.includes('queer'))
+  // não casa dentro de outra palavra
+  assert.equal(r.aplicarGlossarioNoHtml('<p>queerness</p>').usadas.length, 0)
+})
+
+test('revisora: o glossário nunca escreve dentro de uma tag', async () => {
+  const r = await import('./revisao.mjs')
+  const entrada = '<p class="queer"><a href="/queer">queer</a></p>'
+  const { html } = r.aplicarGlossarioNoHtml(entrada)
+  assert.match(html, /class="queer"/, 'a classe fica intacta')
+  assert.match(html, /href="\/queer"/, 'o endereço fica intacto')
+  assert.match(html, />estranho</, 'só o texto é trocado')
+})
+
+test('revisora: conserta número por extenso quebrado', async () => {
+  const r = await import('./revisao.mjs')
+  assert.match(r.consertarNumeros('<p>ele aumentou para trêscentos de mil</p>').html, /trezentos/)
+  assert.match(r.consertarNumeros('<p>um exército de vinte e cincocentos homens</p>').html, /quinhentos/)
+})
+
+test('revisora: TRAVA do tamanho — troca que encolhe ou incha é recusada', async () => {
+  const r = await import('./revisao.mjs')
+  const antes = '<p>' + 'uma frase inteira e comprida que diz alguma coisa. '.repeat(10) + '</p>'
+  assert.equal(r.trocaSegura(antes, '<p>curto</p>').pode, false)
+  assert.equal(r.trocaSegura(antes, '<p>' + 'texto '.repeat(400) + '</p>').pode, false)
+})
+
+test('revisora: TRAVA da prova — só grava se ficou MAIS português', async () => {
+  const r = await import('./revisao.mjs')
+  const alemao = '<p>Der Gedanke an den Prozeß verließ ihn nicht mehr, und er hatte schon oft überlegt, ob es nicht gut wäre.</p>'
+  const portugues = '<p>O pensamento do processo não o deixava mais, e ele já tinha pensado muitas vezes se não seria bom.</p>'
+  assert.equal(r.trocaSegura(alemao, portugues).pode, true, 'alemão → português passa')
+  assert.equal(r.trocaSegura(portugues, alemao).pode, false, 'português → alemão é recusado')
+  // o motor devolvendo a mesma língua de novo (o caso que mais acontece)
+  const outroAlemao = '<p>Der Gedanke an das Verfahren verließ ihn nicht mehr, und er hatte schon oft gedacht, dass es gut wäre.</p>'
+  assert.equal(r.trocaSegura(alemao, outroAlemao).pode, false, 'voltou em alemão: recusa')
+})
+
+test('revisora: TRAVA da marcação — troca que perde tag é recusada', async () => {
+  const r = await import('./revisao.mjs')
+  const antes = '<p>O pensamento do <em>processo</em> não o deixava mais em paz nenhum instante.</p>'
+  const depois = '<p>O pensamento do processo não o deixava mais em paz nenhum instante hoje.</p>'
+  assert.equal(r.trocaSegura(antes, depois, { exigirMaisPortugues: false }).pode, false)
+})
+
+test('revisora: o desfazer devolve o capítulo exatamente como estava', async () => {
+  const r = await import('./revisao.mjs')
+  const b = bd()
+  r.garantirTabelas(b)
+  const original = '<p>O cartão queer estava na mesa.</p>'
+  const cap = b.prepare('SELECT id, corpo FROM capitulo LIMIT 1').get()
+  if (!cap) return // banco de teste sem capítulo: nada a provar aqui
+  const antes = cap.corpo
+  b.prepare('UPDATE capitulo SET corpo = ? WHERE id = ?').run(original, cap.id)
+  const trocado = r.aplicarGlossarioNoHtml(original).html
+  b.prepare(`INSERT INTO revisao_troca (texto_id, capitulo_id, tipo, regra, antes, depois, estado)
+    VALUES (0, ?, 'glossario', 'queer', ?, ?, 'aplicada')`).run(cap.id, original, trocado)
+  b.prepare('UPDATE capitulo SET corpo = ? WHERE id = ?').run(trocado, cap.id)
+  assert.match(b.prepare('SELECT corpo FROM capitulo WHERE id = ?').get(cap.id).corpo, /estranho/)
+  assert.equal(r.desfazer(b, { textoId: 0 }), 1)
+  assert.equal(b.prepare('SELECT corpo FROM capitulo WHERE id = ?').get(cap.id).corpo, original, 'voltou byte a byte')
+  b.prepare('UPDATE capitulo SET corpo = ? WHERE id = ?').run(antes, cap.id)
+})
+
+test('revisora: o painel não consegue gravar um modo inventado', async () => {
+  const ajustes = await import('./ajustes.mjs')
+  const b = bd()
+  ajustes.escrever(b, 'revisora', 'propor')
+  assert.equal(ajustes.ler(b, 'revisora'), 'propor')
+  assert.throws(() => ajustes.escrever(b, 'revisora', 'aplicarr'), /inválido/)
+  assert.equal(ajustes.ler(b, 'revisora'), 'propor', 'o valor bom continua lá')
+})
+
+test('revisora: corta texto comprido em frases inteiras, nunca no meio de uma', async () => {
+  const r = await import('./revisao.mjs')
+  const frase = 'Ele caminhou até a porta e bateu três vezes sem obter resposta nenhuma. '
+  const pedacos = r.emPedacos(frase.repeat(30), 300)
+  assert.ok(pedacos.length > 1, 'texto grande vira vários pedaços')
+  for (const p of pedacos) {
+    assert.ok(p.length <= 400, 'nenhum pedaço estoura muito o teto: ' + p.length)
+    assert.match(p.trim(), /[.!?…»"”]$/, 'todo pedaço fecha numa frase')
+  }
+  assert.equal(pedacos.join(' ').replace(/[ ]+/g, ' ').trim(), frase.repeat(30).replace(/[ ]+/g, ' ').trim(), 'nada se perde no corte')
+  // frase sozinha maior que o teto vai inteira, e não picada
+  const semPonto = 'palavra '.repeat(200)
+  assert.equal(r.emPedacos(semPonto, 100).length, 1)
+})

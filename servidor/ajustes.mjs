@@ -16,7 +16,14 @@ export const CHAVES = {
   gratis_livros_mes: 'int',
   // 19/09: "desligar o site" pelo painel (servidor/manutencao.mjs)
   manutencao: 'bool',
+  // 20/09: a revisora das traduções (servidor/revisao.mjs). Três estados, e o
+  // padrão de fábrica é o mais tímido: 'propor' mede e lista, sem tocar no
+  // texto; 'aplicar' troca de verdade; 'parada' não faz nada.
+  revisora: 'modo',
 }
+
+/** Os únicos valores que uma chave de tipo 'modo' aceita. */
+export const MODOS = { revisora: ['parada', 'propor', 'aplicar'] }
 
 // A régua editorial de sempre: 300 palavras por página é o meio-termo entre
 // livro de bolso e capa dura. Serve para dois cálculos — o teto do portão e o
@@ -42,6 +49,12 @@ export function ler(banco, chave) {
 
 export function escrever(banco, chave, valor) {
   if (!(chave in CHAVES)) throw new Error(`ajuste desconhecido: ${chave}`)
+  // Chave de tipo 'modo' tem lista fechada. Sem esta conferência, o painel
+  // poderia gravar "aplicarr" e a revisora cairia no padrão sem ninguém ver —
+  // um erro de digitação ligando um serviço que mexe no acervo.
+  if (CHAVES[chave] === 'modo' && !MODOS[chave]?.includes(String(valor))) {
+    throw new Error(`valor inválido para ${chave}: ${valor}`)
+  }
   garantir(banco)
   banco.prepare(`INSERT INTO ajuste (chave, valor) VALUES (?,?)
     ON CONFLICT(chave) DO UPDATE SET valor = excluded.valor`).run(chave, String(valor))

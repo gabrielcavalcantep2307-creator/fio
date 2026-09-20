@@ -112,3 +112,129 @@ reais — e link de gente de verdade é o que o Google conta.
   divulgação começa: um pico de gente num site fora do ar não volta.
 - Responda todo mundo que comentar. A primeira dúzia de leitores fiéis vale
   mais que mil cliques.
+
+---
+
+# O Reddit recusou. Por quê, e o que fazer no lugar (20/09/2026)
+
+O dono postou e ouviu que estava se autodivulgando, contra as diretrizes. Não
+foi azar nem moderador ranzinza: **o texto da seção anterior é, na forma, um
+anúncio** — "fiz um site, aqui está o link". Quase todo sub de livros barra
+isso por definição, e o r/livros tem regra explícita contra divulgação de
+projeto próprio.
+
+## A diferença que o Reddit mede
+
+Não é o link. É **de quem é o post**.
+
+| Recusado | Aceito |
+|---|---|
+| o post é sobre o seu site, e o leitor ganha um link | o post é sobre o que o leitor quer, e o link é onde aquilo está |
+| "fiz uma biblioteca, deem uma olhada" | "levantei todos os livros do Machado que estão em domínio público; segue a lista" |
+| você aparece como dono pedindo atenção | você aparece como alguém que sabe do assunto e respondeu |
+
+A regra prática que os moderadores aplicam é a **proporção 9:1**: para cada
+post seu sobre coisa sua, nove participações em que você não ganha nada. Uma
+conta criada hoje que estreia com o próprio link é, para eles, um anúncio —
+independentemente do que o site seja.
+
+## Os três caminhos que funcionam, em ordem
+
+### 1. Responder, não anunciar
+
+É o melhor retorno e o de menor risco. Toda semana alguém pergunta em
+r/livros, r/brasil, r/estudosbrasil, r/concursospublicos:
+
+> "onde consigo ler *Dom Casmurro* de graça?"
+> "tem algum lugar com a CLT inteira para ler?"
+> "queria começar a ler clássico mas não tenho dinheiro"
+
+Responda de verdade — indique a obra, diga em que edição, e aí sim o link
+direto **do livro**, não da home:
+
+> `https://fiolib.com.br/livro/NNN`
+
+Isso não é divulgação: é a resposta certa para a pergunta. E é o único jeito
+em que o link chega junto com uma razão para clicar.
+
+### 2. Postar o TRABALHO, e não o produto
+
+O que você tem e quase ninguém tem é assunto de verdade. Três postagens que
+se sustentam sozinhas, mesmo que ninguém visite o site:
+
+**a) A tradução, que é uma notícia de fato**
+
+> **1984 e A Revolução dos Bichos estão em domínio público no Brasil desde
+> 2021, e não havia tradução livre em português. Fiz uma.**
+>
+> Orwell morreu em 1950, então desde 2021 as obras dele são de domínio público
+> aqui (Lei 9.610, art. 41: 70 anos). Só que domínio público vale para o
+> ORIGINAL — toda tradução publicada no Brasil continua tendo dono, que é o
+> tradutor. Na prática, o livro é livre e ninguém pode ler de graça em
+> português.
+>
+> O art. 14 diz que quem traduz uma obra livre é autor da tradução. Então
+> traduzi as duas do inglês. Estão aqui, de graça, e a tradução é automática e
+> revisada, com o aviso na tela: [links]
+>
+> Fiquei com uma dúvida que talvez alguém daqui saiba responder: [pergunta
+> real sua sobre direito autoral]
+
+Isso é um post sobre **direito autoral e domínio público** que por acaso tem
+seus links. Nenhum moderador chama de spam, e o pessoal de r/brasil e
+r/direito discute com gosto.
+
+**b) A lista, que é serviço**
+
+> **Levantei os 4.500 livros em português que estão em domínio público e dá
+> para ler online. Segue o que achei de mais esquecido.**
+>
+> (e aí uma lista de verdade, com 15 ou 20 títulos e uma linha sobre cada:
+> Lima Barreto além do Policarpo, as poetisas do século XIX, os livros de
+> viagem, o que o Gutenberg tem em português e ninguém sabe.)
+
+Poste a lista **no corpo do post**, não atrás do link. Quem quiser ler clica.
+
+**c) A coisa técnica, em r/brdev**
+
+> **Fiz uma biblioteca com 4.500 livros em Node sem uma dependência sequer.
+> SQLite, 175 req/s num núcleo. O que eu aprendi.**
+
+Público técnico gosta de número e de decisão explicada. Esse post pode ser
+sobre o site abertamente — em sub de programação, projeto próprio é conteúdo.
+
+### 3. A porta da frente
+
+Vários subs têm o lugar certo para isso, e aí é permitido:
+
+- o **post fixo semanal** ("Self-promotion Saturday", "Divulgue seu projeto");
+- **r/SideProject**, **r/InternetIsBeautiful**, **r/DigitalHumanities**,
+  **r/brdev**, **r/portugal** — todos aceitam projeto próprio;
+- **r/books** e **r/freeEbooks** em inglês, falando do acervo em português
+  (público pequeno, mas legítimo).
+
+## O que ajuda antes de postar
+
+- **Conta com história.** Conta nova postando link é o gatilho automático.
+  Participe uma ou duas semanas antes, sem link nenhum.
+- **Link do livro, não da home.** Levar para a home é publicidade; levar para
+  a obra que a pessoa procurava é resposta.
+- **Diga que é seu.** Esconder é o que vira banimento. "Eu mantenho esse site"
+  numa linha resolve, e vira honestidade em vez de propaganda.
+
+## Sobre eu espalhar isso por você
+
+Não vou postar em seu nome, e não é pudor: eu não tenho — nem devo ter — conta
+sua no Reddit, no X ou em grupo nenhum, e post automático assinado como você é
+exatamente o padrão que faz o link ser marcado como spam e o domínio novo
+apanhar no Google por meses. Perderíamos o canal e o endereço.
+
+O que eu faço, e já está no ar: **IndexNow** avisa Bing, DuckDuckGo, Yandex e
+Ecosia a cada livro novo, sem pedir nada a ninguém; o sitemap e as páginas por
+livro e por autor entregam o acervo ao Google; e o cartão de link faz a capa
+aparecer quando você cola o endereço em qualquer lugar. Essa parte é
+automática e é a que escala sem custo.
+
+O resto são doze postagens suas, escritas acima. Doze postagens de gente de
+verdade valem mais, e são a única coisa que o algoritmo do Google conta como
+recomendação.

@@ -199,6 +199,53 @@ vídeo) sai na mesma velocidade. O que acelera de verdade:
 
 **DeepL ligado (18/09):** chave grátis do dono em `DEEPL_CHAVE` (`.env` local e da VPS, fora do git), **1 milhão de caracteres por mês**. `ingestao/motor-traducao.mjs` escolhe o motor POR LIVRO: se o livro inteiro cabe no saldo do mês, guardando 200 mil (`DEEPL_RESERVA`) para os balões dos quadrinhos, vai todo pelo DeepL; senão, todo pelo MinT. Livro já começado continua no MinT. Na prática: 1 ou 2 romances por mês no DeepL, o resto no MinT.
 
+## 5b. A revisora (20/09/2026)
+
+O dono abriu livros traduzidos e achou "muitas palavras ainda na língua
+original", e pediu um serviço que fique revisando sozinho — "igual à esteira,
+mas mais controlado, porque se ficar sem controle vai quebrar todas as
+traduções". É o serviço `revisora` do compose (`servidor/revisor-trabalhador.mjs`,
+motor em `servidor/revisao.mjs`).
+
+**O que o raio-x achou** (`ingestao/conferir-traducao.mjs`, 168 livros,
+9,6 milhões de palavras):
+
+| | |
+|---|---|
+| Palavra deixada na língua de origem | **0,21 %** — pouca, e concentrada |
+| Pior caso | *O Castelo* 5,6 % e *O Processo* 3,5 % |
+| A causa de verdade | **capítulo inteiro que a esteira pulou**: o cap. 15 d'*O Castelo* são 21.570 palavras em alemão, no ar |
+| Invenções que parecem português | 79 mil ("trêscentos", "ruguiu", "fruncindo") — e boa parte são falso positivo do vocabulário, que é de livro velho |
+| Parágrafo inteiro na origem | 42 em 250 mil |
+
+**Ela não reescreve nada.** Faz três coisas fechadas: troca palavra de uma
+lista escrita à mão (`servidor/glossario-revisao.json`, 32 entradas, cada uma
+com a frase onde foi vista), manda ao MESMO motor da esteira o parágrafo — ou
+o capítulo — que ficou na língua de origem, e conserta número por extenso
+quebrado.
+
+**As sete travas** (detalhadas no cabeçalho de `servidor/revisao.mjs`): escopo
+só em `revisao='automatica'`; diário com o capítulo inteiro como estava
+(`revisao_troca`, e `--desfazer` devolve byte a byte); tamanho dentro de ±40 %;
+a marcação tem que continuar de pé; **prova depois** — o texto trocado é medido
+de novo e só entra se ficou mais português; teto de trocas por capítulo e por
+livro, que marca o livro `suspeito` e para; e o modo **propor** como padrão,
+que grava a proposta e não encosta no texto.
+
+```bash
+docker logs -f infra-revisora-1
+docker exec infra-revisora-1 node servidor/revisor-trabalhador.mjs --livro 4563
+docker exec infra-revisora-1 node servidor/revisor-trabalhador.mjs --desfazer
+```
+
+Modo: `FIO_REVISORA` no `.env` (`parada`/`propor`/`aplicar`) ou o ajuste
+`revisora` pelo painel, que só aceita os três valores da lista.
+
+**Ainda de um capítulo só:** 38 livros. `ingestao/dividir-capitulos.mjs` acha
+corte seguro em 10 deles (Sherlock, Padre Brown, Arsène Lupin, O Livro da
+Selva) e recusa os outros 28. Ele **não roda sozinho** e o padrão é só mostrar;
+`--gravar` é decisão humana, livro a livro.
+
 ## 6. Contas, segurança e o que cada leitor tem
 
 - **Login:** usuário OU e-mail + senha. Senha em scrypt (N=2¹⁵) com sal próprio. Sessão opaca em cookie `__Host-` HttpOnly, SameSite=Lax, Secure. Freio de tentativas por conta e por faixa de IP.

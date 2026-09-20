@@ -142,6 +142,43 @@ services:
         max-size: 10m
         max-file: '3'
 
+  # A revisora (20/09/2026): conserta o que a esteira traduziu.
+  #
+  # Container à parte pelas mesmas razões da esteira, e um teto MENOR: ela lê
+  # capítulo e troca palavra, não baixa livro de 400 mil palavras. Também cede
+  # a CPU antes de todo mundo — nada aqui é urgente, e o preço de ela demorar
+  # um dia a mais é zero.
+  #
+  # Nasce em FIO_REVISORA=propor: mede, lista o que faria, e NÃO encosta no
+  # texto. Passar para 'aplicar' é decisão do dono, pelo painel ou pelo .env.
+  # O padrão tímido é de propósito — este é o único serviço do projeto que
+  # mexe em livro que já está no ar.
+  revisora:
+    build:
+      context: ..
+      dockerfile: infra/Dockerfile
+    command: ['node', 'servidor/revisor-trabalhador.mjs']
+    restart: unless-stopped
+    depends_on:
+      - fio
+    mem_limit: 512m
+    cpus: 0.5
+    oom_score_adj: 100
+    stop_grace_period: 20s
+    environment:
+      NODE_ENV: production
+      FIO_BANCO: /dados/catalogo.db
+      FIO_REVISORA: ${FIO_REVISORA:-propor}
+      DEEPL_CHAVE: ${DEEPL_CHAVE:-}
+      DEEPL_RESERVA: ${DEEPL_RESERVA:-200000}
+    volumes:
+      - dados:/dados
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '3'
+
 volumes:
   dados:
   caddy_data:
