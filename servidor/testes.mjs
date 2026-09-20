@@ -2423,3 +2423,46 @@ test('revisora: corta texto comprido em frases inteiras, nunca no meio de uma', 
   const semPonto = 'palavra '.repeat(200)
   assert.equal(r.emPedacos(semPonto, 100).length, 1)
 })
+
+test('nomes: acha o personagem que o tradutor comeu, pela contagem', async () => {
+  const n = await import('./nomes-do-livro.mjs')
+  // o original diz "White Fang" muitas vezes; a nossa tradução diz "Fingão
+  // Branco" o mesmo tanto, e nenhuma das duas aparece do outro lado
+  const original = new Map([['White Fang', 243], ['Beauty Smith', 60], ['Alce', 9]])
+  const nossa = new Map([['Fingão Branco', 241], ['Beauty Smith', 58], ['Alce', 9]])
+  const r = n.casarPorFrequencia(nossa, original)
+  assert.equal(r.casados.length, 1)
+  assert.deepEqual(
+    { de: r.casados[0].de, para: r.casados[0].para },
+    { de: 'Fingão Branco', para: 'White Fang' })
+})
+
+test('nomes: na dúvida entre dois candidatos, não casa nenhum', async () => {
+  const n = await import('./nomes-do-livro.mjs')
+  const original = new Map([['White Fang', 100]])
+  // dois nomes nossos com a MESMA contagem: escolher seria chutar
+  const nossa = new Map([['Fingão Branco', 100], ['Presa Branca', 98]])
+  assert.equal(n.casarPorFrequencia(nossa, original).casados.length, 0)
+})
+
+test('nomes: contagem distante não casa, e nome raro nem entra', async () => {
+  const n = await import('./nomes-do-livro.mjs')
+  assert.equal(n.casarPorFrequencia(new Map([['Outro', 40]]), new Map([['White Fang', 100]])).casados.length, 0,
+    'contagem 40 contra 100 não é o mesmo personagem')
+  assert.equal(n.casarPorFrequencia(new Map([['Outro', 4]]), new Map([['Nome', 5]])).casados.length, 0,
+    'abaixo do piso de 8 aparições não se arrisca')
+})
+
+test('nomes: tira do texto os nomes próprios e ignora começo de frase', async () => {
+  const n = await import('./nomes-do-livro.mjs')
+  const contas = n.nomesDe('<p>Depois disso Heathcliff saiu. Catherine olhou para Heathcliff. Ele sorriu para Catherine.</p>')
+  assert.equal(contas.get('Heathcliff'), 2, 'os dois Heathcliff estão no meio da frase')
+  // "Catherine olhou..." abre a frase, e no começo de frase TODA palavra tem
+  // maiúscula: essa não conta. Sobra a de "Ele sorriu para Catherine".
+  // A contagem sai menor que a verdadeira de propósito — e como a comparação
+  // com o original usa a mesma régua dos dois lados, a subtração continua
+  // valendo.
+  assert.equal(contas.get('Catherine'), 1)
+  assert.equal(contas.get('Depois'), undefined, '"Depois" é começo de frase, não nome')
+  assert.equal(contas.get('Ele'), undefined)
+})
