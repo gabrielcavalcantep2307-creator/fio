@@ -147,7 +147,8 @@ export default function rotasDoPainel({ rota, banco, estatico }) {
     assinaturas: planos.listar(banco), planos: planos.ORDEM.map((k) => ({ chave: k, nome: planos.PLANOS[k].nome })),
   }))
   // as mensagens do "fale com a gente" (contato.mjs)
-  rota(admin('/api/admin/contatos'), () => ({ mensagens: contato.listar(banco), pendentes: contato.pendentes(banco), tipos: contato.TIPOS }))
+  rota(admin('/api/admin/contatos'), () => ({ mensagens: contato.listar(banco), pendentes: contato.pendentes(banco), tipos: contato.TIPOS,
+    presentes: planos.pedidosDePresente(banco) }))
   rota(post('/api/admin/contato/resolver'), ({ dado }) => contato.resolver(banco, dado))
 
   // todas as contas, com busca e filtro por plano (planos.listarContas)

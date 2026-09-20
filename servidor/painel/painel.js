@@ -93,7 +93,7 @@ async function desenhar() {
       ['publicacoes', `Publicações${pendencias ? ` (${pendencias})` : ''}`, () => [secaoPublicacoes(pubs)]],
       ['correcoes', `Correções${cor.pendentes.length ? ` (${cor.pendentes.length})` : ''}`, () => [secaoCorrecoes(cor)]],
       ['acervo', 'Acervo', () => [secaoAcervo()]],
-      ['assinaturas', 'Assinaturas', () => [secaoAssinaturas()]],
+      ['assinaturas', `Assinaturas${msg.presentes ? ` (${msg.presentes})` : ''}`, () => [secaoAssinaturas()]],
       ['mensagens', `Mensagens${msg.pendentes ? ` (${msg.pendentes})` : ''}`, () => [secaoMensagens()]],
       ['ajustes', 'Configurações', () => [secaoAjustes(aj)]],
     ]),
@@ -436,7 +436,7 @@ function secaoCorrecoes(d) {
 const ROTULO_PLANO = { leitor: 'Grátis', novelo: 'Novelo', trama: 'Trama', tear: 'Tear' }
 const FILTROS_CONTAS = [
   ['todos', 'Todas'], ['assinantes', 'Assinantes'], ['gratis', 'Grátis'], ['novelo', 'Novelo'], ['trama', 'Trama'],
-  ['tear', 'Tear'], ['interessados', 'Querem assinar'], ['vencidos', 'Plano vencido'], ['admin', 'Administração'],
+  ['tear', 'Tear'], ['interessados', 'Pediram presente'], ['vencidos', 'Plano vencido'], ['admin', 'Administração'],
 ]
 const PRAZOS = [['', 'sem prazo'], ['30', '30 dias'], ['90', '90 dias'], ['365', '1 ano']]
 let estadoContas = { q: '', filtro: 'todos', pagina: 1 }
@@ -446,8 +446,8 @@ const estiloSelect = 'padding:6px;border-radius:7px;border:1px solid var(--linha
 function secaoAssinaturas() {
   const s = el('section', {}, el('h2', {}, 'Assinaturas e contas'))
   s.append(el('p', { class: 'ajuda' },
-    'Todas as contas do site. Troque o plano na própria linha e clique em "aplicar". O pagamento ainda não existe: quem tem plano é quem você concede aqui (cortesia). ',
-    'Quem clicou em "me avise quando abrir" aparece em "Querem assinar". Contas de administração são sempre Tear. ',
+    'Todas as contas do site. Troque o plano na própria linha e clique em "aplicar". O pagamento ainda não existe: quem tem plano é quem você presenteia aqui. ',
+    'Quem pediu um presente aparece em "Pediram presente" — e o site promete que chega em até 24 horas. Quem recebe ganha um aviso no sino. Contas de administração são sempre Tear. ',
     el('a', { href: '/assinaturas.html', target: '_blank' }, 'Ver a página de planos')))
   const resumo = el('div', { class: 'cartoes', style: 'margin:14px 0' })
   const chips = el('div', { class: 'aba', style: 'flex-wrap:wrap' })
@@ -466,7 +466,7 @@ function secaoAssinaturas() {
     resumo.replaceChildren(
       cartao(r.resumo.todos, 'contas'), cartao(r.resumo.assinantes, 'com plano (inclui administração)'),
       cartao(r.resumo.novelo, 'Novelo'), cartao(r.resumo.trama, 'Trama'), cartao(r.resumo.tear, 'Tear'),
-      cartao(r.resumo.interessados, 'querem assinar'))
+      cartao(r.resumo.interessados, 'pediram presente'))
     chips.replaceChildren(...FILTROS_CONTAS.map(([k, rot]) => el('button', { type: 'button', 'aria-selected': String(estadoContas.filtro === k),
       onclick: () => { estadoContas = { ...estadoContas, filtro: k, pagina: 1 }; carregar() } }, `${rot} (${num(r.resumo[k] ?? 0)})`)))
     if (!r.contas.length) { lista.replaceChildren(el('div', { class: 'vazio' }, 'Nenhuma conta neste filtro.')); return }
@@ -488,10 +488,20 @@ function secaoAssinaturas() {
       } }, 'aplicar')
       const mudou = () => { aplicar.style.visibility = plano.value !== c.planoAtual || prazo.value ? 'visible' : 'hidden' }
       plano.addEventListener('change', mudou); prazo.addEventListener('change', mudou)
+      const presentear = el('button', { type: 'button', style: 'padding:4px 10px;margin-left:6px', title: c.quer_por || 'Dar o plano que a pessoa pediu', onclick: async () => {
+        presentear.disabled = true
+        try {
+          await pedir('/admin/assinatura', { usuario: c.usuario, plano: c.quer, dias: null, nota: 'presente pedido pelo site' })
+          await carregar()
+          main.prepend(recado('bom', `${c.usuario} ganhou o ${ROTULO_PLANO[c.quer]}. A pessoa recebe o aviso no sino.`))
+        } catch (e) { presentear.disabled = false; main.prepend(recado('ruim', e.message)) }
+      } }, 'presentear')
       const situacao = ehAdmin ? el('span', { class: 'selo pronto' }, 'administração')
         : c.vencida ? el('span', { class: 'selo erro' }, `${ROTULO_PLANO[c.plano]} venceu ${dataCurta(c.ate)}`)
           : c.plano ? el('span', { class: 'selo pronto' }, c.ate ? `até ${dataCurta(c.ate)}` : 'sem prazo')
-            : c.quer ? el('span', { class: 'selo espera' }, `quer o ${ROTULO_PLANO[c.quer]}`) : el('span', { class: 'ajuda' }, '—')
+            : c.quer ? el('span', {}, el('span', { class: 'selo espera', title: c.quer_por || '' }, `pediu o ${ROTULO_PLANO[c.quer]} ${dataCurta(c.quer_em)}`), presentear,
+              c.quer_por ? el('div', { class: 'ajuda', style: 'margin-top:4px;max-width:34ch' }, `"${c.quer_por}"`) : null)
+              : el('span', { class: 'ajuda' }, '—')
       corpo.append(el('tr', {},
         el('td', {}, el('div', {}, c.nome), el('div', { class: 'mono', style: 'color:var(--tinta2)' }, `@${c.usuario}${c.email ? ` · ${c.email}` : ''}${c.google ? ' · Google' : ''}`)),
         el('td', {}, el('div', { style: 'display:flex;gap:6px;align-items:center;flex-wrap:wrap' }, plano, prazo, aplicar)),

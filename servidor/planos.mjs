@@ -30,8 +30,14 @@
 // existindo em `publicar`, só não viram argumento de venda.
 // ─────────────────────────────────────────────────────────────
 
+import { avisar } from './gosto.mjs'
+
 export const DISPONIVEL = false
-export const AVISO = 'As assinaturas ainda não estão abertas. Os preços abaixo são os que vão valer quando o pagamento for ligado. Até lá, os planos são concedidos pela administração do Fio.'
+// 19/09/2026: enquanto não há pagamento, os planos são PRESENTE de quem faz a
+// casa. Esta frase aparece na página de planos, então é ela que promete o
+// prazo — e o prazo tem de ser cumprido pelo painel (aba Assinaturas).
+export const AVISO = 'A Fiolib está começando e o pagamento ainda não está ligado. Enquanto isso, os planos são de presente: peça o seu aqui e ele chega em até 24 horas, sem cobrança e sem cartão.'
+export const PRAZO_PRESENTE_HORAS = 24
 
 const MB = 1024 * 1024
 const SEM_LIMITE = Infinity
@@ -170,33 +176,61 @@ export function conceder(banco, adminId, { usuario, plano, dias, nota }, { chave
     ON CONFLICT(leitor_id) DO UPDATE SET plano = excluded.plano, origem = 'cortesia',
       concedida_por = excluded.concedida_por, nota = excluded.nota, desde = datetime('now'), ate = excluded.ate`)
     .run(alvo.id, plano, adminId, String(nota ?? '').trim().slice(0, 200) || null, ate, ate)
+  // o presente chega com aviso no sino, e o pedido sai da fila do painel
+  const pediu = banco.prepare('SELECT plano FROM plano_interesse WHERE leitor_id = ?').get(alvo.id)
+  banco.prepare('DELETE FROM plano_interesse WHERE leitor_id = ?').run(alvo.id)
+  try {
+    avisar(banco, alvo.id, {
+      chave: `presente-${plano}-${new Date().toISOString().slice(0, 10)}`,
+      tipo: 'presente',
+      titulo: `O plano ${PLANOS[plano].nome} é seu, de presente`,
+      corpo: pediu
+        ? 'O pedido que você fez foi atendido. Já vale: leia sem limite, ouça em voz alta e baixe em EPUB.'
+        : 'Um presente da casa enquanto estamos começando. Já vale: leia sem limite, ouça em voz alta e baixe em EPUB.',
+      link: '/assinaturas.html',
+    })
+  } catch { /* aviso é bônus; conceder não pode falhar por causa dele */ }
   return { ok: true, usuario: alvo.usuario, plano }
 }
 
-// ── "quero assinar" (19/09/2026) ──
+// ── pedir um plano DE PRESENTE (19/09/2026) ──
 //
-// O pagamento ainda não existe, mas os convites aos planos já aparecem no
-// site. Um convite que leva a um botão que não compra nada é pior que nenhum;
-// então o botão diz a verdade — "me avise quando abrir" — e guarda o
-// interesse. Serve de termômetro para o dono (painel → Assinaturas) e, quando
-// o pagamento abrir, de lista de quem avisar primeiro.
+// O pagamento ainda não existe e a casa está começando: em vez de esconder
+// isso atrás de um "em breve", o dono decidiu **dar os planos de presente** a
+// quem pedir. O pedido entra aqui, aparece no painel (aba Assinaturas →
+// "Pediram presente") e o dono concede — a promessa na tela é de até 24 horas.
+//
+// É também o melhor motivo que existe para criar conta: presente só se dá a
+// alguém, e "alguém" aqui é uma conta.
 export function garantirInteresse(banco) {
   banco.exec(`CREATE TABLE IF NOT EXISTS plano_interesse (
     leitor_id  INTEGER PRIMARY KEY REFERENCES leitor(id) ON DELETE CASCADE,
     plano      TEXT NOT NULL CHECK (plano IN ('novelo','trama','tear')),
+    motivo     TEXT,
     criado_em  TEXT NOT NULL DEFAULT (datetime('now'))
   )`)
+  // bancos criados antes de 19/09 não tinham "motivo"
+  try { banco.exec('ALTER TABLE plano_interesse ADD COLUMN motivo TEXT') } catch { /* já existe */ }
 }
 
-export function querer(banco, pessoa, plano) {
+export function querer(banco, pessoa, plano, motivo = '') {
   if (!['novelo', 'trama', 'tear'].includes(plano)) plano = 'novelo'
-  banco.prepare(`INSERT INTO plano_interesse (leitor_id, plano) VALUES (?, ?)
-    ON CONFLICT (leitor_id) DO UPDATE SET plano = excluded.plano, criado_em = datetime('now')`).run(pessoa.id, plano)
-  return { ok: true, plano }
+  const razao = String(motivo ?? '').replace(/\s+/g, ' ').trim().slice(0, 300) || null
+  banco.prepare(`INSERT INTO plano_interesse (leitor_id, plano, motivo) VALUES (?, ?, ?)
+    ON CONFLICT (leitor_id) DO UPDATE SET plano = excluded.plano, motivo = coalesce(excluded.motivo, plano_interesse.motivo),
+      criado_em = datetime('now')`).run(pessoa.id, plano, razao)
+  return { ok: true, plano, prazoHoras: 24 }
 }
 
 export const interesseDe = (banco, leitorId) =>
-  banco.prepare('SELECT plano, criado_em FROM plano_interesse WHERE leitor_id = ?').get(leitorId) ?? null
+  banco.prepare('SELECT plano, motivo, criado_em FROM plano_interesse WHERE leitor_id = ?').get(leitorId) ?? null
+
+/** Quantos pedidos de presente estão esperando (painel). */
+export const pedidosDePresente = (banco) =>
+  banco.prepare(`SELECT COUNT(*) n FROM plano_interesse i
+    LEFT JOIN assinatura a ON a.leitor_id = i.leitor_id
+    JOIN leitor l ON l.id = i.leitor_id AND l.desativado = 0 AND l.papel <> 'admin'
+    WHERE a.plano IS NULL OR (a.ate IS NOT NULL AND a.ate <= datetime('now'))`).get().n
 
 // ── todas as contas, para o painel (19/09/2026) ──
 //
@@ -234,7 +268,7 @@ export function listarContas(banco, { q = '', filtro = 'todos', pagina = 1 } = {
   const contas = banco.prepare(`
     SELECT l.id, l.usuario, l.nome, l.email, l.papel, l.criado_em, l.visto_em,
            (SELECT 1 FROM leitor_google g WHERE g.leitor_id = l.id) google,
-           a.plano, a.origem, a.desde, a.ate, a.nota, i.plano quer,
+           a.plano, a.origem, a.desde, a.ate, a.nota, i.plano quer, i.motivo quer_por, i.criado_em quer_em,
            (SELECT COUNT(*) FROM livro_liberado b WHERE b.leitor_id = l.id AND b.liberado_em > datetime('now', '-30 days')) livros_mes
       ${base}
      ORDER BY (l.papel = 'admin') DESC, (a.plano IS NOT NULL) DESC, coalesce(l.visto_em, l.criado_em) DESC

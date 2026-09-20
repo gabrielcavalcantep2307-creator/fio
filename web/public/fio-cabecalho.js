@@ -172,7 +172,7 @@
 
   // ── o sino ──
   let listaAvisos = null, filtroAvisos = 'todas', carregandoAvisos = false
-  const TIPO_ICONE = { seguranca: 'escudo', denuncia: 'bandeira', correcao: 'lapis', revisao: 'lapis', seguindo: 'gente', publicacao: 'gente', boasvindas: 'estrela', titulo: 'estrela', plano: 'estrela' }
+  const TIPO_ICONE = { seguranca: 'escudo', denuncia: 'bandeira', correcao: 'lapis', revisao: 'lapis', seguindo: 'gente', publicacao: 'gente', boasvindas: 'estrela', titulo: 'estrela', plano: 'estrela', presente: 'estrela', contato: 'gente' }
   function quando(s) {
     const d = new Date(String(s).replace(' ', 'T') + 'Z')
     const seg = (Date.now() - d) / 1000
@@ -238,12 +238,12 @@
     const sair = async () => { try { await fioApi.pedir('/sair', {}) } catch {} window.fioDono?.saiu(); try { sessionStorage.removeItem('fio:barra') } catch {} location.href = '/' }
     const lista = h('div', { class: 'fio-lista curta' },
       h('div', { class: 'quem' }, h('strong', {}, eu.nome || eu.usuario), h('span', {}, `@${eu.usuario}`),
-        h('span', { class: `selo-plano${pago ? ' pago' : ''}` }, `Plano ${nomePlano}`)),
+        h('span', { class: `selo-plano${pago ? ' pago' : ''}` }, pago ? `Plano ${nomePlano} · presente da casa` : `Plano ${nomePlano}`)),
       h('a', { href: '/conta.html', role: 'menuitem' }, 'Minha conta'),
       h('a', { href: '/central.html#recs', role: 'menuitem' }, 'Recomendações para você'),
       h('a', { href: '/central.html#gosto', role: 'menuitem' }, 'Meu gosto'),
       h('a', { href: '/central.html#pedidos', role: 'menuitem' }, 'Pedidos de tradução'),
-      h('a', { href: '/assinaturas.html', role: 'menuitem' }, pago ? 'Meu plano' : 'Conhecer os planos'),
+      h('a', { href: '/assinaturas.html', role: 'menuitem' }, pago ? 'Meu plano' : (plano?.meu?.quer ? 'Meu pedido de presente' : 'Pedir um plano de presente')),
       h('a', { href: '/conta.html#dados', role: 'menuitem' }, 'Privacidade e dados'),
       h('button', { type: 'button', role: 'menuitem', onclick: sair }, 'Sair'))
     return suspenso('perfil', gatilho, lista, { direita: true })
@@ -269,7 +269,7 @@
       grupo('Quadrinhos', MENUS.quadrinhos.itens.map(([r, u]) => link(r, u))),
       grupo('Comunidade', MENUS.comunidade.itens.map(([r, u]) => link(r, u))),
       eu ? grupo(`Conta · ${primeiroNome()}`, [link('Minha conta', '/conta.html'), link('Notificações', '/central.html#avisos'), link('Recomendações para você', '/central.html#recs'),
-        link(plano?.meu?.plano && plano.meu.plano !== 'leitor' ? 'Meu plano' : 'Conhecer os planos', '/assinaturas.html'),
+        link(plano?.meu?.plano && plano.meu.plano !== 'leitor' ? 'Meu plano' : 'Pedir um plano de presente', '/assinaturas.html'),
         eu.papel === 'admin' ? link('Painel de administração', '/admin.html') : null,
         h('button', { type: 'button', onclick: async () => { try { await fioApi.pedir('/sair', {}) } catch {} window.fioDono?.saiu(); location.href = '/' } }, 'Sair')])
         : grupo('Conta', [link('Entrar', '/#/entrar'), link('Criar conta grátis', '/#/entrar')]),
@@ -314,7 +314,8 @@
       h('div', { class: 'sobre' },
         h('a', { class: 'logo', href: '/#/' }, h('img', { src: '/fio.svg', alt: '' }), h('span', {}, 'Fiolib')),
         h('p', {}, 'Biblioteca online e gratuita de livros em português: clássicos em domínio público, leis brasileiras, quadrinhos livres e obras publicadas pelos próprios leitores.'),
-        h('p', { class: 'selos-rodape' }, h('span', {}, 'Sem anúncios'), h('span', {}, 'Sem venda de dados'), h('span', {}, 'Lei 9.610/98 e LGPD'))),
+        h('p', { class: 'selos-rodape' }, h('span', {}, 'Sem anúncios'), h('span', {}, 'Sem venda de dados'), h('span', {}, 'Lei 9.610/98 e LGPD')),
+        h('p', { class: 'presente-rodape' }, 'A casa está começando: os planos ainda não são vendidos — são ', h('a', { href: '/assinaturas.html' }, 'dados de presente a quem pede'), '.')),
       col('Acervo', [['Todos os livros', '/livros'], ['Autores', '/autores'], ['Quadrinhos e mangá', '/quadrinhos.html'], ['Comunidade', '/publicacoes.html']]),
       col('Sua conta', [['Entrar ou criar conta', '/#/entrar'], ['Planos', '/assinaturas.html'], ['Notificações', '/central.html#avisos'], ['Privacidade e dados', '/conta.html#dados']]),
       col('A Fiolib', [['Direitos autorais e o acervo', '/direitos.html'], ['Termos de uso', '/termos.html'], ['Política de privacidade', '/privacidade.html'], ['Denunciar um conteúdo', '/direitos.html#avisar'], ['Fale com a gente', '/direitos.html#contato']])),
@@ -333,7 +334,7 @@
   function faixaSemConta() {
     if (eu || lugarSemConvite() || !podeMostrar('faixa-conta', 7)) return
     faixa.replaceChildren(h('div', { class: 'dentro' },
-      h('p', {}, h('strong', {}, 'Crie sua conta grátis. '), 'Leia 3 livros inteiros por mês e continue de onde parou em qualquer aparelho.'),
+      h('p', {}, h('strong', {}, 'Crie sua conta grátis aqui. '), 'Leia 3 livros inteiros por mês — e, enquanto a Fiolib está começando, peça um plano de presente: chega em até 24 h, sem cartão.'),
       h('a', { class: 'botao-conta', href: '/#/entrar' }, 'Criar conta'),
       h('button', { type: 'button', class: 'ico', 'aria-label': 'Dispensar', onclick: () => { lembrar('faixa-conta'); faixa.replaceChildren(); faixa.hidden = true } }, icone('fechar', 16))))
     faixa.hidden = false
@@ -346,15 +347,19 @@
     setTimeout(() => t.classList.add('visivel'), 50)
   }
 
-  async function querAssinar(botao, planoChave = 'novelo') {
+  async function pedirPresente(botao, planoChave = 'novelo') {
     botao.disabled = true
-    try { await fioApi.pedir('/planos/quero', { plano: planoChave }); botao.textContent = 'Pronto: avisamos você'; if (plano?.meu) plano.meu.quer = { plano: planoChave } }
-    catch (e) { botao.disabled = false; botao.textContent = e.message }
+    try {
+      await fioApi.pedir('/planos/quero', { plano: planoChave })
+      botao.textContent = 'Pedido feito: chega em até 24 h'
+      if (plano?.meu) plano.meu.quer = { plano: planoChave }
+      try { sessionStorage.removeItem('fio:barra') } catch {}
+    } catch (e) { botao.disabled = false; botao.textContent = e.message }
   }
   function acaoDoPlano(p, grande = false) {
     if (plano?.disponivel) return h('a', { class: `botao-conta${grande ? ' grande' : ''}`, href: `/assinaturas.html?plano=${p}` }, 'Assinar')
-    if (plano?.meu?.quer) return h('span', { class: 'ja' }, 'Você vai ser avisado quando abrir')
-    return h('button', { type: 'button', class: `botao-conta${grande ? ' grande' : ''}`, onclick: (e) => querAssinar(e.currentTarget, p) }, 'Me avise quando abrir')
+    if (plano?.meu?.quer) return h('span', { class: 'ja' }, 'Pedido feito — chega em até 24 h')
+    return h('button', { type: 'button', class: `botao-conta${grande ? ' grande' : ''}`, onclick: (e) => pedirPresente(e.currentTarget, p) }, 'Pedir de presente')
   }
 
   function janelaDosPlanos() {
@@ -365,10 +370,10 @@
     const fundo = h('div', { class: 'fio-modal-fundo', onclick: (e) => { if (e.target === fundo) fechar() } },
       h('div', { class: 'fio-modal', role: 'dialog', 'aria-modal': 'true', 'aria-labelledby': 'fio-modal-t' },
         h('button', { type: 'button', class: 'ico fechar', 'aria-label': 'Fechar', onclick: fechar }, icone('fechar', 18)),
-        h('p', { class: 'olho' }, 'Planos da Fiolib'),
+        h('p', { class: 'olho' }, plano?.disponivel ? 'Planos da Fiolib' : 'Presente da casa'),
         h('h2', { id: 'fio-modal-t' }, 'Leia sem limite, ouça e leve para o Kindle'),
         h('p', { class: 'sub' }, plano?.disponivel ? 'Escolha o seu. Dá para cancelar quando quiser.'
-          : 'As assinaturas abrem em breve. Deixe seu nome na lista e seja avisado primeiro — sem compromisso.'),
+          : 'A Fiolib está começando e ainda não cobra nada: os planos são de presente para quem pedir. O seu chega em até 24 horas, sem cartão e sem cobrança depois.'),
         h('div', { class: 'cartoes' }, pagos.map((p) => h('div', { class: `cartao${p.chave === 'novelo' ? ' destaque' : ''}` },
           p.chave === 'novelo' ? h('span', { class: 'fita' }, 'o mais escolhido') : null,
           h('strong', {}, p.nome), h('span', { class: 'preco' }, dinheiro(p.preco), h('small', {}, '/mês')),
@@ -390,8 +395,10 @@
       const acabou = livros.usados >= livros.limite
       setTimeout(() => lembrete(h('div', {},
         h('strong', {}, acabou ? `Você abriu os ${livros.limite} livros grátis deste mês` : `Você abriu ${livros.usados} de ${livros.limite} livros grátis este mês`),
-        h('p', {}, acabou && livros.renovaEm ? `O próximo libera em ${new Date(livros.renovaEm.replace(' ', 'T') + 'Z').toLocaleDateString('pt-BR')}. Com o Novelo, você lê sem limite.` : 'Os livros que você já abriu continuam abertos. Com o Novelo, não há limite.'),
-        h('a', { href: '/assinaturas.html' }, 'Conhecer os planos')), `contador-${livros.usados}`), 2500)
+        h('p', {}, acabou && livros.renovaEm
+          ? `O próximo libera em ${new Date(livros.renovaEm.replace(' ', 'T') + 'Z').toLocaleDateString('pt-BR')} — mas o plano Novelo está sendo dado de presente enquanto a casa começa.`
+          : 'Os que já abriu continuam abertos. E, enquanto a Fiolib está começando, o plano Novelo é de presente para quem pedir.'),
+        h('a', { href: '/assinaturas.html' }, 'Pedir o meu presente')), `contador-${livros.usados}`), 2500)
       return
     }
     // a janela: no máximo a cada 14 dias, depois de um tempo navegando, e nunca

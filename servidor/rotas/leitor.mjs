@@ -119,9 +119,9 @@ export default function rotasDoLeitor({ rota, banco, estatico }) {
     return v
   })
 
-  // "me avise quando as assinaturas abrirem" (planos.querer)
+  // pedir um plano de presente enquanto não há pagamento (planos.querer)
   rota({ metodo: 'POST', caminho: '/api/planos/quero', acesso: 'conta', freio: { acao: 'guardar-extra' } },
-    ({ pessoa, dado }) => planos.querer(banco, pessoa, String(dado.plano ?? '')))
+    ({ pessoa, dado }) => planos.querer(banco, pessoa, String(dado.plano ?? ''), dado.motivo))
 
   // ── pedidos de tradução (servidor/esteira.mjs) ──
   rota({ caminho: '/api/pedidos-traducao', acesso: 'conta' }, ({ pessoa }) => {

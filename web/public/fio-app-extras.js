@@ -210,6 +210,13 @@
     const g = document.getElementById('fio-google')
     if (g && !g.dataset.visto) {
       g.dataset.visto = '1'
+      // 19/09: a conta da casa vem primeiro; o Google é a alternativa. O
+      // bundle põe o botão ANTES do formulário, então ele desce para depois,
+      // e o "ou" passa a ficar em cima dele.
+      const form = g.parentElement?.querySelector('form')
+      if (form) form.after(g)
+      const ou = g.lastElementChild
+      if (ou && ou !== g.firstElementChild) { ou.textContent = 'ou, se preferir'; ou.style.marginTop = '1.6rem'; g.prepend(ou) }
       googleLigado ??= api('/google/ligado').then((r) => !!r?.disponivel).catch(() => false)
       googleLigado.then((sim) => { if (sim) g.style.display = '' })
     }

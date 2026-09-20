@@ -86,9 +86,10 @@ export function capituloDoMuro(decisao) {
     return {
       titulo: 'Continue lendo com uma conta grátis',
       corpo: [
-        'Este foi o primeiro capítulo. Para ler o livro inteiro, crie uma conta — é de graça e leva um minuto.',
+        'Este foi o primeiro capítulo. Para ler o livro inteiro, crie uma conta aqui mesmo — é de graça, leva um minuto e nem e-mail é obrigatório.',
         'Com a conta grátis você abre 3 livros novos por mês, lê todas as leis e os quadrinhos livres, e o seu progresso fica guardado em todos os aparelhos.',
-        'Toque em “entrar”, no alto da página, e depois em “criar conta”. Se já tem conta, é só entrar: o livro continua daqui.',
+        'E, enquanto a Fiolib está começando, os planos pagos estão sendo dados DE PRESENTE a quem pede: crie a conta, peça o seu na página de planos, e ele chega em até 24 horas.',
+        'Toque em “Criar conta grátis”, no alto da página. Se já tem conta, é só entrar: o livro continua daqui.',
       ].join('\n\n'),
     }
   }
@@ -97,7 +98,8 @@ export function capituloDoMuro(decisao) {
     corpo: [
       `No plano grátis dá para começar ${decisao.limite} livros novos a cada 30 dias, e você já começou os ${decisao.limite}. Os que já abriu continuam abertos: é só voltar a eles.`,
       decisao.renovaEm ? `Um novo livro libera em ${dataBr(decisao.renovaEm)}.` : '',
-      'Para ler sem limite — e ouvir em voz alta e baixar em EPUB —, veja os planos em fiolib.com.br/assinaturas.html.',
+      'Enquanto a Fiolib está começando, o plano Novelo — livros sem limite, ouvir em voz alta e baixar em EPUB — está sendo dado DE PRESENTE a quem pede.',
+      'Peça o seu na página de planos (fiolib.com.br/assinaturas.html): chega em até 24 horas, sem cobrança e sem cartão.',
     ].filter(Boolean).join('\n\n'),
   }
 }
