@@ -136,3 +136,5 @@
 .fio-rodape .baixo p{margin:0 0 6px;max-width:92ch}
 .fio-rodape .baixo a{color:var(--acento)}
 @media (max-width:760px){.fio-rodape .dentro{grid-template-columns:1fr 1fr}.fio-rodape .sobre{grid-column:1/-1}}
+/* o canto enquanto não se sabe quem está entrado (evita o "criar conta" piscar) */
+.fio-barra .esperando{display:inline-block;width:118px;height:34px}

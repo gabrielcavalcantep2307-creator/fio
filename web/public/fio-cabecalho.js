@@ -63,6 +63,7 @@
   const lerGuardado = (k) => { try { return JSON.parse(localStorage.getItem(k) || 'null') } catch { return null } }
 
   const noApp = !!document.getElementById('raiz')
+  const esquecerQuem = () => { try { localStorage.removeItem('fio:quem'); sessionStorage.removeItem('fio:barra') } catch {} }
 
   // ── tema: o mesmo guardado do app ──
   const CHAVE = 'fio.estante.v1'
@@ -121,7 +122,20 @@
     },
   }
 
+  // A barra desenha ANTES de o servidor dizer quem está entrado. Começar
+  // supondo "visitante" fazia o botão "Criar conta grátis" piscar na tela de
+  // quem já tinha conta a cada F5. Então ela começa com a última pessoa
+  // conhecida NESTE navegador (só nome, usuário e papel; nada secreto) e
+  // corrige quando a resposta chega. Enquanto não sabe, não mostra nem
+  // "entrar" nem o perfil: melhor um canto vazio por um instante do que a
+  // informação errada.
+  const LEMBRANCA = 'fio:quem'
+  let sabemos = false
   let eu = null, plano = null, avisos = 0, menuAberto = false, abertos = null
+  try {
+    const l = lerGuardado(LEMBRANCA)
+    if (l && l.eu) { eu = l.eu; plano = l.plano ?? null; avisos = l.avisos ?? 0 }
+  } catch { /* navegador sem localStorage */ }
   const barra = h('header', { class: 'fio-barra' })
   const SUBS = {
     comunidade: MENUS.comunidade.itens.map(([rot, href]) => [rot.toLowerCase(), href, rot]),
@@ -235,7 +249,7 @@
     const pago = plano?.meu && plano.meu.plano !== 'leitor'
     const gatilho = h('button', { type: 'button', class: 'm perfil', onclick: (e) => { e.stopPropagation(); abertos = abertos === 'perfil' ? null : 'perfil'; marcarAbertos() } },
       h('span', { class: 'avatar', 'aria-hidden': 'true' }, primeiroNome().slice(0, 1).toUpperCase()), primeiroNome().toLowerCase(), icone('seta', 13))
-    const sair = async () => { try { await fioApi.pedir('/sair', {}) } catch {} window.fioDono?.saiu(); try { sessionStorage.removeItem('fio:barra') } catch {} location.href = '/' }
+    const sair = async () => { try { await fioApi.pedir('/sair', {}) } catch {} window.fioDono?.saiu(); esquecerQuem(); location.href = '/' }
     const lista = h('div', { class: 'fio-lista curta' },
       h('div', { class: 'quem' }, h('strong', {}, eu.nome || eu.usuario), h('span', {}, `@${eu.usuario}`),
         h('span', { class: `selo-plano${pago ? ' pago' : ''}` }, pago ? `Plano ${nomePlano} · presente da casa` : `Plano ${nomePlano}`)),
@@ -255,10 +269,10 @@
         icone(ESCUROS.has(temaAtual()) ? 'sol' : 'lua', 19)),
       eu?.papel === 'admin' ? h('a', { class: 'ico adm', href: '/admin.html', title: 'Painel de administração', 'aria-label': 'Painel de administração', 'aria-current': areaAtual() === 'painel' ? 'page' : null }, icone('painel', 19)) : null,
       eu ? sino() : null,
-      largo ? (eu ? perfil() : [
+      largo ? (eu ? perfil() : sabemos ? [
         h('a', { class: 'm', href: '/#/entrar' }, 'Entrar'),
         h('a', { class: 'botao-conta', href: '/#/entrar' }, 'Criar conta grátis'),
-      ]) : null)
+      ] : h('span', { class: 'esperando', 'aria-hidden': 'true' })) : null)
   }
 
   function menuCelular() {
@@ -271,7 +285,7 @@
       eu ? grupo(`Conta · ${primeiroNome()}`, [link('Minha conta', '/conta.html'), link('Notificações', '/central.html#avisos'), link('Recomendações para você', '/central.html#recs'),
         link(plano?.meu?.plano && plano.meu.plano !== 'leitor' ? 'Meu plano' : 'Pedir um plano de presente', '/assinaturas.html'),
         eu.papel === 'admin' ? link('Painel de administração', '/admin.html') : null,
-        h('button', { type: 'button', onclick: async () => { try { await fioApi.pedir('/sair', {}) } catch {} window.fioDono?.saiu(); location.href = '/' } }, 'Sair')])
+        h('button', { type: 'button', onclick: async () => { try { await fioApi.pedir('/sair', {}) } catch {} window.fioDono?.saiu(); esquecerQuem(); location.href = '/' } }, 'Sair')])
         : grupo('Conta', [link('Entrar', '/#/entrar'), link('Criar conta grátis', '/#/entrar')]),
       grupo(null, [h('button', { type: 'button', onclick: trocarTema }, ESCUROS.has(temaAtual()) ? 'Usar o tema claro' : 'Usar o tema noturno')]))
   }
@@ -428,6 +442,7 @@
     try { lembrado = JSON.parse(sessionStorage.getItem('fio:barra') || 'null') } catch {}
     if (lembrado && Date.now() - lembrado.em < 10_000) ({ eu, avisos, plano } = lembrado)
     else {
+      const antes = eu
       eu = await fioApi.eu().catch(() => null)
       if (eu) window.fioDono?.conferir(eu.id)
       const [x, p] = await Promise.all([
@@ -436,7 +451,11 @@
       ])
       avisos = x?.naoLidos || 0; plano = p
       try { sessionStorage.setItem('fio:barra', JSON.stringify({ eu, avisos, plano, em: Date.now() })) } catch {}
+      // se a pessoa saiu (ou a sessão venceu), a lembrança tem de sumir junto
+      if (!eu && antes) esquecerQuem()
     }
+    sabemos = true
+    if (eu) guardar(LEMBRANCA, { eu: { id: eu.id, usuario: eu.usuario, nome: eu.nome, papel: eu.papel }, plano, avisos, em: Date.now() })
     desenhar()
     convites()
   }
