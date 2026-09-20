@@ -26,6 +26,11 @@ const LD = {
   ],
 }
 
+// O código que o Search Console deu ao dono (20/09/2026). Ele prova que a
+// página inicial é dele — é o que destrava o sitemap e a verificação da marca
+// no Google Cloud. Não é segredo: fica no HTML de qualquer jeito.
+const VERIFICACAO = 'KUMLG5_GOtXU4KIcg14urGqYyolc4syP715xJdYl_XA'
+
 const MARCA = '<!-- cabeça para o Google (infra/cabeca-google.mjs) -->'
 
 export function cabecaParaOGoogle(index) {
@@ -37,6 +42,7 @@ export function cabecaParaOGoogle(index) {
   if (a >= 0 && b > a) s = s.slice(0, a).trimEnd() + s.slice(b + FIM.length)
   const bloco = `
     ${MARCA}
+    <meta name="google-site-verification" content="${VERIFICACAO}" />
     <link rel="canonical" href="${SITE}/" />
     <meta property="og:site_name" content="Fiolib" />
     <meta property="og:locale" content="pt_BR" />
