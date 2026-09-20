@@ -165,6 +165,26 @@ export function ficouNaOrigem(texto) {
 // O glossário: a lista fixa
 // ─────────────────────────────────────────────────────────────
 
+/**
+ * As classes de palavra que podem ser trocadas por regra, e o motivo de a
+ * lista ser tão curta.
+ *
+ * Cada uma cumpre a mesma condição: a palavra errada determina sozinha a
+ * palavra certa, sem olhar a frase.
+ *
+ *   substantivo  nome por nome do mesmo gênero e número (flanel → flanela)
+ *   numeral      número por extenso, que não flexiona   (trêscentos → trezentos)
+ *   adverbio     advérbio, que nunca flexiona           (despreciosamente → …)
+ *   flexionada   a palavra errada já vem flexionada em português, então a
+ *                certa é única (tremiavam → tremiam, diônica → dionisíaca)
+ *
+ * Fora daqui ficam adjetivo e verbo ESTRANGEIROS, que é onde o desastre mora:
+ * "queer" não diz se é masculino ou feminino, "fluttered" não diz se é
+ * singular ou plural, e quem sabe isso é a frase. Ver o cabeçalho do
+ * glossário para as três frases que isso estragou no ar.
+ */
+export const CLASSES = new Set(['substantivo', 'numeral', 'adverbio', 'flexionada'])
+
 let glossarioGuardado = null
 export function glossario() {
   if (glossarioGuardado) return glossarioGuardado
@@ -172,13 +192,42 @@ export function glossario() {
   // `desligada: true` tira uma entrada de circulação sem apagar a prova de que
   // ela já foi considerada — e de por que saiu.
   glossarioGuardado = bruto.entradas.filter((e) => e.de && e.para && e.de !== e.para && !e.desligada)
+  // A trava nasce aqui, e não só no teste: uma entrada de classe errada
+  // derruba o serviço ao subir, em vez de estragar livro em silêncio.
+  for (const e of glossarioGuardado) {
+    if (!CLASSES.has(e.classe)) {
+      throw new Error(`glossário: "${e.de}" tem classe "${e.classe ?? '(nenhuma)'}", que não é trocável por regra. ` +
+        'Só entram substantivo, numeral, adverbio e flexionada — ver o cabeçalho do glossario-revisao.json.')
+    }
+  }
   return glossarioGuardado
 }
 
-/** Só letra, e a palavra inteira: "resort" não pode casar dentro de "resorts". */
+/** As famílias do glossário, para o painel e para desligar uma de cada vez. */
+export const porIdioma = () => {
+  const m = new Map()
+  for (const e of glossario()) m.set(e.idioma ?? '?', (m.get(e.idioma ?? '?') ?? 0) + 1)
+  return [...m.entries()].sort((a, b) => b[1] - a[1])
+}
+
+/**
+ * A cerca da palavra: inteira, e nunca dentro de um composto.
+ *
+ * "resort" não pode casar dentro de "resorts" — isso a primeira versão já
+ * fazia. O que ela NÃO fazia era tratar o hífen como parte da palavra, e a
+ * auditoria de 20/09 mostrou o estrago:
+ *
+ *    yew-tree        → teixo-tree          (meia palavra traduzida)
+ *    "Gay-Headers"   → "Vistosas-Headers"  (Gay Head é um LUGAR, em Moby Dick)
+ *
+ * Composto com hífen é uma palavra só, e quase sempre é justamente onde mora
+ * o nome próprio. Então o hífen, dos dois lados, cancela a troca: a revisora
+ * deixa o composto em paz e alguém decide depois. Perder uma troca boa por
+ * causa disso é barato; "Vistosas-Headers" não é.
+ */
 const TROCA_CACHE = new Map()
 function regraDe(de) {
-  if (!TROCA_CACHE.has(de)) TROCA_CACHE.set(de, new RegExp('(^|[^0-9A-Za-zÀ-ÿ])(' + de + ')(?=[^0-9A-Za-zÀ-ÿ]|$)', 'gi'))
+  if (!TROCA_CACHE.has(de)) TROCA_CACHE.set(de, new RegExp('(^|[^0-9A-Za-zÀ-ÿ-])(' + de + ')(?=[^0-9A-Za-zÀ-ÿ-]|$)', 'gi'))
   const r = TROCA_CACHE.get(de)
   r.lastIndex = 0
   return r

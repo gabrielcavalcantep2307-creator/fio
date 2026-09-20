@@ -2333,21 +2333,24 @@ test('revisora: só acusa parágrafo que ficou MESMO na língua de origem', asyn
 
 test('revisora: o glossário troca a palavra inteira e respeita a caixa', async () => {
   const r = await import('./revisao.mjs')
-  const { html, usadas } = r.aplicarGlossarioNoHtml('<p>O cartão queer, e Queer outra vez.</p>')
-  assert.match(html, /cartão estranho/)
-  assert.match(html, /Estranho outra vez/, 'maiúscula do original é preservada')
-  assert.ok(usadas.includes('queer'))
+  // O exemplo era "queer" até 20/09, quando a auditoria derrubou essa entrada
+  // (adjetivo estrangeiro: a flexão depende da frase). "flanel" é substantivo
+  // e faz o mesmo serviço aqui.
+  const { html, usadas } = r.aplicarGlossarioNoHtml('<p>A camisa de flanel, e Flanel outra vez.</p>')
+  assert.match(html, /camisa de flanela/)
+  assert.match(html, /Flanela outra vez/, 'maiúscula do original é preservada')
+  assert.ok(usadas.includes('flanel'))
   // não casa dentro de outra palavra
-  assert.equal(r.aplicarGlossarioNoHtml('<p>queerness</p>').usadas.length, 0)
+  assert.equal(r.aplicarGlossarioNoHtml('<p>flanelinha</p>').usadas.length, 0)
 })
 
 test('revisora: o glossário nunca escreve dentro de uma tag', async () => {
   const r = await import('./revisao.mjs')
-  const entrada = '<p class="queer"><a href="/queer">queer</a></p>'
+  const entrada = '<p class="flanel"><a href="/flanel">flanel</a></p>'
   const { html } = r.aplicarGlossarioNoHtml(entrada)
-  assert.match(html, /class="queer"/, 'a classe fica intacta')
-  assert.match(html, /href="\/queer"/, 'o endereço fica intacto')
-  assert.match(html, />estranho</, 'só o texto é trocado')
+  assert.match(html, /class="flanel"/, 'a classe fica intacta')
+  assert.match(html, /href="\/flanel"/, 'o endereço fica intacto')
+  assert.match(html, />flanela</, 'só o texto é trocado')
 })
 
 test('revisora: conserta número por extenso quebrado', async () => {
@@ -2385,16 +2388,16 @@ test('revisora: o desfazer devolve o capítulo exatamente como estava', async ()
   const r = await import('./revisao.mjs')
   const b = bd()
   r.garantirTabelas(b)
-  const original = '<p>O cartão queer estava na mesa.</p>'
+  const original = '<p>A camisa de flanel estava na mesa.</p>'
   const cap = b.prepare('SELECT id, corpo FROM capitulo LIMIT 1').get()
   if (!cap) return // banco de teste sem capítulo: nada a provar aqui
   const antes = cap.corpo
   b.prepare('UPDATE capitulo SET corpo = ? WHERE id = ?').run(original, cap.id)
   const trocado = r.aplicarGlossarioNoHtml(original).html
   b.prepare(`INSERT INTO revisao_troca (texto_id, capitulo_id, tipo, regra, antes, depois, estado)
-    VALUES (0, ?, 'glossario', 'queer', ?, ?, 'aplicada')`).run(cap.id, original, trocado)
+    VALUES (0, ?, 'glossario', 'flanel', ?, ?, 'aplicada')`).run(cap.id, original, trocado)
   b.prepare('UPDATE capitulo SET corpo = ? WHERE id = ?').run(trocado, cap.id)
-  assert.match(b.prepare('SELECT corpo FROM capitulo WHERE id = ?').get(cap.id).corpo, /estranho/)
+  assert.match(b.prepare('SELECT corpo FROM capitulo WHERE id = ?').get(cap.id).corpo, /flanela/)
   assert.equal(r.desfazer(b, { textoId: 0 }), 1)
   assert.equal(b.prepare('SELECT corpo FROM capitulo WHERE id = ?').get(cap.id).corpo, original, 'voltou byte a byte')
   b.prepare('UPDATE capitulo SET corpo = ? WHERE id = ?').run(antes, cap.id)
@@ -2465,4 +2468,70 @@ test('nomes: tira do texto os nomes próprios e ignora começo de frase', async 
   assert.equal(contas.get('Catherine'), 1)
   assert.equal(contas.get('Depois'), undefined, '"Depois" é começo de frase, não nome')
   assert.equal(contas.get('Ele'), undefined)
+})
+
+// ─────────────────────────────────────────────────────────────
+// A AUDITORIA DA REVISORA, virada em teste (20/09/2026)
+//
+// Depois de 1.504 trocas aplicadas, a auditoria (ingestao/auditar-revisora.mjs)
+// achou cinco entradas minhas que criavam frases sem sentido — o oposto do
+// serviço. Tudo foi desfeito e as entradas saíram. Os testes abaixo são para
+// que elas não voltem por distração, minha ou de quem vier depois.
+// ─────────────────────────────────────────────────────────────
+
+test('glossário: toda entrada é de uma classe que se troca sem ler a frase', async () => {
+  const r = await import('./revisao.mjs')
+  const entradas = r.glossario()
+  assert.ok(entradas.length > 15, 'o glossário não pode ter esvaziado')
+  for (const e of entradas) {
+    assert.ok(r.CLASSES.has(e.classe), `"${e.de}" tem classe inválida: ${e.classe}`)
+    assert.ok(e.onde, `"${e.de}" não traz a frase em que foi vista`)
+  }
+})
+
+test('glossário: adjetivo e verbo estrangeiros NÃO podem voltar', async () => {
+  const r = await import('./revisao.mjs')
+  const tem = (p) => r.glossario().some((e) => e.de === p)
+  // As cinco que a auditoria derrubou. Cada uma virou frase errada no ar:
+  //   'armadilha queer' → 'armadilha estranho'   (era estranha)
+  //   'os homens gays'  → 'os homens vistosas'   (era vistosos)
+  //   'bandeiras fluttered' → 'esvoaçou'         (era esvoaçaram)
+  for (const p of ['queer', 'gays', 'fluttered', 'fluttering', 'gurgling', 'jingling']) {
+    assert.equal(tem(p), false, `"${p}" voltou ao glossário: a flexão dele depende da frase`)
+  }
+})
+
+test('glossário: a palavra errada carrega a flexão que a certa precisa', async () => {
+  const r = await import('./revisao.mjs')
+  // As duas formas de "dionisíaco" são DUAS entradas justamente por isso:
+  // cada palavra errada já diz o gênero, então a certa é única.
+  const g = r.glossario()
+  const m = g.find((e) => e.de === 'diônico')
+  const f = g.find((e) => e.de === 'diônica')
+  assert.equal(m?.para, 'dionisíaco')
+  assert.equal(f?.para, 'dionisíaca')
+  // e o mesmo para número no verbo
+  assert.equal(g.find((e) => e.de === 'tremiava')?.para, 'tremia')
+  assert.equal(g.find((e) => e.de === 'tremiavam')?.para, 'tremiam')
+})
+
+test('revisora: composto com hífen fica intacto (o caso Gay-Head / yew-tree)', async () => {
+  const r = await import('./revisao.mjs')
+  // "Gay-Headers" é gente de Gay Head, um lugar em Moby Dick. A primeira
+  // versão escreveu "Vistosas-Headers" no livro.
+  assert.equal(r.aplicarGlossarioNoHtml('<p>chamados de "Gay-Headers".</p>').usadas.length, 0)
+  // "yew-tree" virou "teixo-tree": meia palavra traduzida.
+  const y = r.aplicarGlossarioNoHtml('<p>a sombra de uma grande yew-tree.</p>')
+  assert.equal(y.usadas.length, 0)
+  assert.match(y.html, /yew-tree/)
+  // mas a palavra sozinha continua sendo trocada
+  assert.match(r.aplicarGlossarioNoHtml('<p>atrás de uma yew, e vi sua figura.</p>').html, /teixo/)
+})
+
+test('revisora: o glossário está agrupado por família, e nenhuma sumiu', async () => {
+  const r = await import('./revisao.mjs')
+  const familias = Object.fromEntries(r.porIdioma())
+  // inglês deixado para trás, espanhol do tradutor escorregando, e português
+  // inventado — as três famílias que o raio-x achou
+  for (const f of ['en', 'es', 'pt']) assert.ok(familias[f] > 0, `a família ${f} sumiu do glossário`)
 })
