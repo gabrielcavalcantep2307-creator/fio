@@ -138,7 +138,7 @@ let baseLivros = null
 async function acervoLivros(alvo) {
   try { baseLivros ??= await pedir('/admin/curadoria/base?tipo=livros') } catch (e) { alvo.replaceChildren(recado('ruim', e.message)); return }
   const busca = el('input', { placeholder: 'título, autor ou número da obra', style: 'max-width:420px' })
-  const filtro = el('select', { style: 'padding:8px;border-radius:7px;border:1px solid var(--linha);background:var(--fundo);color:var(--tinta)' },
+  const filtro = el('select', { style: 'padding:8px;border-radius:7px;border:1px solid var(--linha);background:var(--pg);color:var(--tinta)' },
     ...[['', 'todos'], ['editados', 'editados'], ['ocultos', 'ocultos'], ['semcapa', 'sem capa'], ['legiveis', 'para ler (trilho A)']].map(([v, r]) => el('option', { value: v }, r)))
   const lista = el('div', {})
   const editor = el('div', {})
@@ -371,7 +371,7 @@ function esteiraAoVivo() {
         el('ul', { style: 'margin:4px 0 0;padding-left:18px;font-size:14px' }, pu.ultimos.map((u) =>
           el('li', {}, u.ok ? '✓ ' : '✗ ', u.titulo, el('span', { class: 'ajuda' }, u.ok ? ` — ${num(u.palavras)} palavras, ${u.min} min` : ' — falhou'))))) : null,
       pu?.log?.length ? el('details', { style: 'margin-top:12px' }, el('summary', { class: 'ajuda', style: 'cursor:pointer' }, 'últimas linhas do log'),
-        el('pre', { class: 'mono', style: 'white-space:pre-wrap;background:var(--fundo);padding:10px;border-radius:8px;max-height:220px;overflow:auto' }, pu.log.join('\n'))) : null)
+        el('pre', { class: 'mono', style: 'white-space:pre-wrap;background:var(--pg);padding:10px;border-radius:8px;max-height:220px;overflow:auto' }, pu.log.join('\n'))) : null)
   }
   // A primeira leitura espera a caixa entrar na página: chamada aqui, na hora,
   // ela ainda não está no documento e `atualizar` desistia — o painel ficava
@@ -441,7 +441,7 @@ const FILTROS_CONTAS = [
 const PRAZOS = [['', 'sem prazo'], ['30', '30 dias'], ['90', '90 dias'], ['365', '1 ano']]
 let estadoContas = { q: '', filtro: 'todos', pagina: 1 }
 const dataCurta = (s) => (s ? new Date(s.replace(' ', 'T') + 'Z').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: '2-digit' }) : '—')
-const estiloSelect = 'padding:6px;border-radius:7px;border:1px solid var(--linha);background:var(--fundo);color:var(--tinta)'
+const estiloSelect = 'padding:6px;border-radius:7px;border:1px solid var(--linha);background:var(--pg);color:var(--tinta)'
 
 function secaoAssinaturas() {
   const s = el('section', {}, el('h2', {}, 'Assinaturas e contas'))

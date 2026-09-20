@@ -3,22 +3,28 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Painel — Fio</title>
+<title>Painel — Fiolib</title>
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
+<link rel="stylesheet" href="/fio-temas.css">
 <style>
+  /* O painel usa as cores DO SITE (fio-temas.css dá --papel, --papel2,
+     --tinta, --tinta2, --linha e --acento conforme o tema escolhido lá).
+     Até 20/09/2026 ele tinha uma paleta verde só dele, e destoava.
+       --pg      o fundo da página (o "papel" do site)
+       --cartao  o fundo das caixas (o "papel 2" do site) */
   :root{
-    --fundo:#f7f5f0; --papel:#fff; --tinta:#1c1a17; --tinta2:#6b655c;
-    --linha:#e6e1d8; --acento:#3a5a40; --alerta:#9a3b2e; --dourado:#8a6d3b;
-    color-scheme:light;
+    --pg:var(--papel,#fbf9f5); --cartao:var(--papel2,#f2eee6);
+    --alerta:#c0392b; --dourado:#b08d57;
   }
-  @media (prefers-color-scheme:dark){:root{
-    --fundo:#14140f; --papel:#1c1b16; --tinta:#ece7db; --tinta2:#a49d8e;
-    --linha:#2c2a22; --acento:#7fa06a; --alerta:#e0846f; --dourado:#c9a86a;
-  }}
+  html[data-tema=noturno],html[data-tema=carvao],html[data-tema=penumbra],
+  html[data-tema=musgo],html[data-tema=tinta],html[data-tema=ambar]{
+    --alerta:#e0846f; --dourado:#d2aa5c;
+  }
   *{box-sizing:border-box}
-  body{margin:0;background:var(--fundo);color:var(--tinta);
-    font:15px/1.5 ui-serif,Georgia,"Times New Roman",serif}
+  body{margin:0;background:var(--pg);color:var(--tinta);
+    font:15px/1.55 Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+  h1,h2,h3{font-family:Literata,Georgia,"Times New Roman",serif}
   .topo-painel{max-width:1000px;margin:0 auto;padding:22px 24px 0;display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
   h1{margin:0;font-size:20px;letter-spacing:.3px}
   .quem{color:var(--tinta2);font-size:13px}
@@ -26,10 +32,10 @@
   section{margin-bottom:34px}
   h2{font-size:15px;margin:0 0 12px;color:var(--tinta2);text-transform:uppercase;letter-spacing:.6px;font-family:ui-sans-serif,system-ui,sans-serif}
   .cartoes{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
-  .cartao{background:var(--papel);border:1px solid var(--linha);border-radius:10px;padding:14px 16px}
+  .cartao{background:var(--cartao);border:1px solid var(--linha);border-radius:10px;padding:14px 16px}
   .cartao .n{font-size:26px;font-weight:600;font-variant-numeric:tabular-nums;font-family:ui-sans-serif,system-ui,sans-serif}
   .cartao .r{color:var(--tinta2);font-size:12px;margin-top:2px}
-  table{width:100%;border-collapse:collapse;font-size:14px;background:var(--papel);
+  table{width:100%;border-collapse:collapse;font-size:14px;background:var(--cartao);
     border:1px solid var(--linha);border-radius:10px;overflow:hidden}
   th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--linha)}
   th{font-family:ui-sans-serif,system-ui,sans-serif;font-size:12px;color:var(--tinta2);text-transform:uppercase;letter-spacing:.4px}
@@ -40,11 +46,11 @@
   .selo.na_esteira{color:var(--acento);border-color:var(--acento)}
   .selo.pronto{color:var(--acento);border-color:var(--acento);background:color-mix(in srgb,var(--acento) 12%,transparent)}
   .selo.erro{color:var(--alerta);border-color:var(--alerta)}
-  form.add{background:var(--papel);border:1px solid var(--linha);border-radius:10px;padding:16px}
+  form.add{background:var(--cartao);border:1px solid var(--linha);border-radius:10px;padding:16px}
   .campos{display:grid;gap:10px;grid-template-columns:2fr 2fr 1fr 1fr;align-items:end}
   label{display:block;font-size:12px;color:var(--tinta2);margin-bottom:3px;font-family:ui-sans-serif,system-ui,sans-serif}
   input,textarea{width:100%;padding:8px 10px;border:1px solid var(--linha);border-radius:7px;
-    background:var(--fundo);color:var(--tinta);font:inherit;font-size:14px}
+    background:var(--pg);color:var(--tinta);font:inherit;font-size:14px}
   textarea{min-height:88px;font-family:ui-monospace,Consolas,monospace;font-size:13px}
   button{background:var(--acento);color:#fff;border:none;border-radius:7px;padding:9px 16px;
     font:inherit;font-size:14px;cursor:pointer;font-family:ui-sans-serif,system-ui,sans-serif}
@@ -52,14 +58,14 @@
   button:disabled{opacity:.5;cursor:progress}
   .aba{display:flex;gap:8px;margin:14px 0}
   .aba button{background:none;color:var(--tinta2);border:1px solid var(--linha)}
-  .aba button[aria-selected=true]{background:var(--papel);color:var(--tinta);border-color:var(--acento)}
+  .aba button[aria-selected=true]{background:var(--cartao);color:var(--tinta);border-color:var(--acento)}
   .ajuda{color:var(--tinta2);font-size:13px;max-width:70ch}
   .recado{padding:10px 14px;border-radius:8px;margin:12px 0;font-size:14px}
   .recado.bom{background:color-mix(in srgb,var(--acento) 14%,transparent);color:var(--acento)}
   .recado.ruim{background:color-mix(in srgb,var(--alerta) 14%,transparent);color:var(--alerta)}
   .mono{font-family:ui-monospace,Consolas,monospace;font-size:12px}
   .vazio{color:var(--tinta2);padding:20px;text-align:center}
-  .grupo{background:var(--papel);border:1px solid var(--linha);border-radius:10px;padding:16px 18px;margin-bottom:14px}
+  .grupo{background:var(--cartao);border:1px solid var(--linha);border-radius:10px;padding:16px 18px;margin-bottom:14px}
   .grupo h3{margin:0;font-size:15px;font-family:ui-sans-serif,system-ui,sans-serif}
   .liga{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:9px 0;border-top:1px solid var(--linha)}
   .liga:first-of-type{border-top:none}
@@ -76,7 +82,7 @@
 </head>
 <body data-area="painel">
 <div class="topo-painel">
-  <h1>Painel do Fio</h1>
+  <h1>Painel da Fiolib</h1>
   <span class="quem" id="quem"></span>
 </div>
 <main id="main">
