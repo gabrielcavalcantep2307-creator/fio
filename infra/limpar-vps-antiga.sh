@@ -21,12 +21,15 @@ SSH=(ssh -i "$CHAVE" -o StrictHostKeyChecking=accept-new -o ConnectTimeout=20)
 velha() { "${SSH[@]}" "$VELHA" "$@"; }
 titulo() { printf '\n\033[1m==> %s\033[0m\n' "$*"; }
 
-titulo "Trava: quem está servindo ${DOMINIO} agora?"
-IP=$(curl -s -o /dev/null -w '%{remote_ip}' "https://${DOMINIO}/api/saude" || true)
-SAUDE=$(curl -s -o /dev/null -w '%{http_code}' "https://${DOMINIO}/api/saude" || true)
-echo "    responde de ${IP:-?} (http ${SAUDE:-?})"
+titulo "Trava: para onde o DNS manda ${DOMINIO}, e a nova responde?"
+# Perguntar ao resolvedor do próprio computador não serve: ele guarda o
+# endereço antigo por até uma hora. Quem diz a verdade aqui é um resolvedor
+# público, que já foi buscar no servidor oficial do domínio.
+IP=$(nslookup -type=a "${DOMINIO}" 8.8.8.8 2>/dev/null | awk '/^Address: /{a=$2} END{print a}')
+SAUDE=$(curl -s -o /dev/null -w '%{http_code}' --resolve "${DOMINIO}:443:${NOVA_IP}" "https://${DOMINIO}/api/saude" || true)
+echo "    o DNS manda para ${IP:-?}; a máquina nova responde http ${SAUDE:-?}"
 if [ "$IP" != "$NOVA_IP" ] || [ "$SAUDE" != "200" ]; then
-  echo "    PARADO: o domínio ainda não está na máquina nova. Troque o DNS e espere propagar."
+  echo "    PARADO: ou o DNS ainda não virou, ou a máquina nova não está sadia."
   exit 1
 fi
 
@@ -62,6 +65,28 @@ docker compose config -q && echo "    compose do Wallt ok"
 docker compose -f /opt/fio/infra/docker-compose.yml stop || true
 docker compose up -d caddy
 sleep 4
+# Enquanto houver resolvedor com o endereço velho em cache (até uma hora), a
+# máquina antiga continua repassando para a nova. É uma dúzia de linhas no
+# Caddyfile do Wallt, e pode sair quando quiser.
+if ! grep -q 'fiolib.com.br' Caddyfile; then
+cat >> Caddyfile <<'BLOCO'
+
+# ── TEMPORÁRIO (20/09/2026): a Fiolib mudou para 2.25.210.20 ──
+# Quem ainda resolver este endereço antigo é repassado para lá. Pode apagar
+# este bloco quando o DNS estiver propagado em todo lugar (um ou dois dias).
+fiolib.com.br, www.fiolib.com.br, fiolib.duckdns.org {
+	reverse_proxy https://2.25.210.20 {
+		header_up Host {host}
+		transport http {
+			tls
+			tls_server_name fiolib.com.br
+		}
+	}
+}
+BLOCO
+docker compose up -d --force-recreate caddy
+sleep 4
+fi
 for u in https://waltt.duckdns.org/ https://picordi.duckdns.org/; do
   printf '    %s %s\n' "$(curl -s -o /dev/null -w '%{http_code}' "$u")" "$u"
 done
