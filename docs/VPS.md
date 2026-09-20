@@ -1,11 +1,17 @@
 # A VPS, e como publicar
 
-O Fio está no ar em **<https://fiolib.duckdns.org>** — e também em
-`fio.142-93-57-2.sslip.io`, que continua valendo — na mesma máquina do Wallt
-(`142.93.57.2`, 2 GB de RAM, 48 GB de disco).
+A Fiolib está no ar em **<https://fiolib.com.br>**, em **máquina própria**
+desde 20/09/2026: `2.25.210.20` (Hostinger KVM 2 — 2 núcleos, 8 GB de RAM,
+100 GB de disco, 8 TB de tráfego, Ubuntu 24.04, backup semanal do provedor).
+
+Antes disso ela dividia a máquina `142.93.57.2` (DigitalOcean, 1 núcleo,
+2 GB) com o Wallt. A mudança está contada em `infra/mudar-de-vps.sh`: a cópia
+vai de máquina para máquina por uma ponte SSH temporária e leva junto os
+CERTIFICADOS, que é o que permite virar sem HTTPS quebrado. A máquina velha
+ficou só com o Wallt (`infra/limpar-vps-antiga.sh`).
 
 > **Sobre o DuckDNS:** ao criar um domínio lá, ele grava o IP de **quem
-> criou** — não o que está escrito no campo. Foi preciso pôr `142.93.57.2` e
+> criou** — não o que está escrito no campo. Foi preciso pôr `2.25.210.20` e
 > apertar "atualizar ip" para o nome apontar para a VPS. Depois disso o Caddy
 > pediu o certificado sozinho, no primeiro acesso, sem ninguém mandar.
 
@@ -47,13 +53,10 @@ existe.
            │  443
            ▼
   ┌──────────────────┐
-  │ Caddy (do Wallt) │  um só, para os dois sites. TLS automático.
-  └────┬────────┬────┘
-       │        │
-       │        └──► waltt.duckdns.org      → /srv/site  (Wallt)
-       │
-       └──► fiolib.duckdns.org              → 127.0.0.1:8787
-            fio.142-93-57-2.sslip.io  ┘
+  │ Caddy (da Fiolib)│  TLS automático (infra/Caddyfile).
+  └────────┬─────────┘
+           │
+           └──► fiolib.com.br  (e www, duckdns)  → 127.0.0.1:8787
                                                     │
                                           ┌─────────▼──────────┐
                                           │ container `fio`    │
@@ -66,7 +69,7 @@ existe.
 ```
 
 **Dois nomes, e o de trás não é sobra.** `fio.142-93-57-2.sslip.io` devolve
-`142.93.57.2` sem cadastrar DNS em lugar nenhum — o próprio nome carrega o IP.
+`2.25.210.20` sem cadastrar DNS em lugar nenhum — o próprio nome carrega o IP.
 Ele fica de pé como rede de segurança: no dia em que o DuckDNS estiver fora do
 ar ou o domínio expirar, o site continua alcançável por um nome que não
 depende de ninguém.
@@ -144,7 +147,7 @@ que "as contas sobreviveram" seja um número na tela e não uma esperança.
 ## Rodando na mão, na máquina
 
 ```bash
-ssh -i ~/.ssh/fiolib-deploy root@142.93.57.2
+ssh -i ~/.ssh/fiolib-deploy root@2.25.210.20
 cd /opt/fio/infra
 
 docker compose ps                       # de pé?
@@ -226,7 +229,7 @@ Ficam em `/opt/fio/infra/.env`, com permissão `600`.
 | "unable to open database file" | dono do volume. `docker compose run --rm --user root fio chown -R 1717:1717 /dados` |
 | Login não gruda | cookie sem `Secure` em HTTPS, ou `FIO_ORIGENS` com barra no fim |
 | Caddy não sobe depois de editar | `docker logs infra-caddy-1 --tail 30`; a última configuração boa está em `/opt/fio/caddy.antes` |
-| Falta memória | a VPS tem 2 GB e o LiveKit come 900 MB. `mem_limit: 320m` no Fio existe para ele morrer sozinho em vez de levar o Wallt junto |
+| Falta memória | a VPS tem 8 GB só para a Fiolib; os tetos (`mem_limit: 2g` no site e na esteira) existem para um processo que estoure morrer e voltar sozinho, sem levar o resto |
 | Publicar levou o site ao ar mas o JS é o velho | `index.html` é `no-cache`, `/ativos/*` é imutável. Se o velho persiste, o `index.html` ficou em cache do lado do Caddy — `docker compose restart` no Fio resolve |
 
 ---
@@ -268,7 +271,7 @@ sido reescrito até alcançar o que está no ar — e, mesmo assim, guarde antes
 uma cópia do que está lá:
 
 ```bash
-ssh -i ~/.ssh/fiolib-deploy root@142.93.57.2 'cp -r /opt/fio/site /opt/fio/site.antes'
+ssh -i ~/.ssh/fiolib-deploy root@2.25.210.20 'cp -r /opt/fio/site /opt/fio/site.antes'
 ```
 
 Dois defeitos que estavam no caminho e foram consertados junto:

@@ -7,7 +7,11 @@
 #     bash infra/publicar-caddy.sh
 
 # Endereços antigos e o www levam ao endereço oficial (308 mantém POST).
-www.fiolib.com.br, fiolib.duckdns.org, fio.142-93-57-2.sslip.io {
+#
+# fiolib.duckdns.org saiu daqui em 20/09/2026: ele ainda aponta para a máquina
+# antiga. Para voltar, basta atualizar o IP no duckdns.org e pôr o nome de
+# volta nesta linha — o Caddy pede o certificado sozinho.
+www.fiolib.com.br, fio.2-25-210-20.sslip.io {
 	redir https://fiolib.com.br{uri} 308
 }
 

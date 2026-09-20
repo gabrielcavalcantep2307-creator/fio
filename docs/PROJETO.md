@@ -4,7 +4,7 @@ Uma biblioteca em português que liga um livro ao próximo. No ar em
 <https://fiolib.com.br> (domínio próprio desde 18/09/2026, Registro.br, ID GACPE180), na mesma VPS do Wallt.
 Os endereços antigos (`fiolib.duckdns.org`, `fio.142-93-57-2.sslip.io`) e o `www` redirecionam (308) para ele.
 
-**Caddy:** desde 19/09/2026 o Caddy é DA FIOLIB (serviço `caddy` em `infra/docker-compose.yml`, container `infra-caddy-1`); o Wallt entra como convidado (`infra/convidado-wallt.caddy`). Configuração: `infra/Caddyfile` (os imports) e `infra/Caddyfile.fiolib` → `/opt/fio/caddy/`. Publicar com `bash infra/publicar-caddy.sh` (valida antes). O registro de acesso fica em `/opt/fio/logs`. Detalhes em docs/VPS.md.
+**Caddy:** o Caddy é da Fiolib (serviço `caddy` em `infra/docker-compose.yml`, container `infra-caddy-1`). Desde 20/09/2026 a máquina é só dela (2.25.210.20, Hostinger); o Wallt ficou na antiga com o Caddy dele. Configuração: `infra/Caddyfile` (os imports) e `infra/Caddyfile.fiolib` → `/opt/fio/caddy/`. Publicar com `bash infra/publicar-caddy.sh` (valida antes). O registro de acesso fica em `/opt/fio/logs`. Detalhes em docs/VPS.md.
 
 Este é o documento de entrada: o que existe, onde mora, como se opera, quais
 armadilhas já custaram caro e o que falta. Os detalhes de cada assunto estão

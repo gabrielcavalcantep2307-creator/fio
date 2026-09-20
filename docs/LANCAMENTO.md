@@ -1,34 +1,36 @@
 # Abrir a Fiolib para todo mundo — o que aguenta e o que falta
 
-19/09/2026. O dono perguntou se já dá para divulgar o site. Este é o retrato
-medido, não estimado: teste de carga numa cópia do site com o banco de verdade,
-na própria VPS (1 núcleo, 2 GB), sem tocar no site no ar.
+19/09/2026, refeito em 20/09 na máquina nova. Este é o retrato medido, não
+estimado: teste de carga numa cópia do site com o banco de verdade, na própria
+VPS, sem tocar no site no ar.
 
-## Quanto aguenta
+**A casa mudou de máquina em 20/09/2026**: saiu de 1 núcleo e 2 GB divididos
+com outro projeto, e foi para uma VPS só dela — **2 núcleos, 8 GB de memória,
+100 GB de disco e 8 TB de tráfego por mês**.
 
-| O que foi medido | Resultado |
-|---|---|
-| Visitante sem conta navegando (home, catálogo, fichas, amostras) | ~175 pedidos/s; resposta típica 0,25 s com 50 simultâneos |
-| Leitor com conta abrindo livros | ~210 pedidos/s |
-| Tráfego misto (5% buscando dentro dos livros) — ANTES | 74 pedidos/s; 2 a 4 s de espera (a busca travava o site) |
-| Tráfego misto — DEPOIS da busca em trabalhador à parte | 175 pedidos/s; 0,57 s no pior de 95% |
-| Criar conta (4 senhas embaralhadas com scrypt) | 1,7 por segundo (~6 mil por hora) |
-| Memória do site sob carga | ~105 MB de 320 MB |
+## Quanto aguenta (medido na máquina nova)
+
+| O que foi medido | Máquina nova | Máquina antiga |
+|---|---|---|
+| Visitante sem conta navegando (home, catálogo, fichas, amostras) | **752 pedidos/s**; 0,06 s típico com 50 simultâneos | 175 pedidos/s; 0,25 s |
+| Tráfego misto (5% buscando dentro dos livros), 50 simultâneos | **643 pedidos/s**; 0,21 s no pior de 95% | 175 pedidos/s; 0,57 s |
+| O mesmo com 150 simultâneos | **770 pedidos/s**; 0,65 s no pior de 95% | não media (travava) |
+| Criar conta (4 senhas embaralhadas com scrypt) | **4,8 por segundo** (~17 mil por hora) | 1,7 por segundo |
+| Memória do site sob carga | ~100 MB de 2 GB | ~105 MB de 320 MB |
 
 **Em gente:** quem está lendo quase não custa nada — o livro chega inteiro de
 uma vez e depois só a marca de onde parou vai ao servidor a cada 2 minutos.
 Quem custa é quem está chegando e navegando (uns 10 pedidos para abrir o site,
 1 a cada 5–10 s navegando). Daí:
 
-- **1.000 a 2.000 pessoas navegando AO MESMO TEMPO**, com folga;
-- **dezenas de milhares com o site aberto lendo**;
-- uma onda de 5 mil pessoas chegando em 10 minutos (um vídeo que viraliza)
-  dá ~80 pedidos/s — metade da capacidade.
+- **5 a 8 mil pessoas navegando AO MESMO TEMPO**, com folga;
+- **centenas de milhares com o site aberto lendo** (ler quase não custa nada);
+- uma onda de 20 mil pessoas chegando em 10 minutos (um vídeo que viraliza)
+  dá ~330 pedidos/s — menos da metade da capacidade.
 
-O que acaba primeiro é o processador (1 núcleo). Se um dia faltar: a
-DigitalOcean aumenta a VPS para 2 núcleos/4 GB em minutos, sem mudar código
-(o Caddy, a esteira e a busca já rodam separados do site e aproveitam o
-segundo núcleo).
+O que acaba primeiro continua sendo o processador. Se um dia faltar, o plano
+da Hostinger sobe de tamanho em minutos, sem mudar código. O tráfego incluído
+(8 TB/mês) dá para umas 8 milhões de visitas: não é ele que limita.
 
 ## O que foi consertado para aguentar (19/09)
 

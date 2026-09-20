@@ -9,11 +9,11 @@
 #
 #   Caddyfile                  este arquivo (infra/Caddyfile)
 #   fiolib.caddy               os blocos da Fiolib (infra/Caddyfile.fiolib)
-#   convidados/wallt.caddy     os blocos do Wallt (infra/convidado-wallt.caddy)
+#   convidados/                vazia hoje; foi a casa do Wallt até 20/09/2026
 #
-# Publicar qualquer um dos três: `bash infra/publicar-caddy.sh` (valida antes).
-# Quando o Wallt morrer: apagar convidados/wallt.caddy e publicar. A Fiolib
-# nem percebe.
+# Publicar: `bash infra/publicar-caddy.sh` (valida antes de recarregar).
+# Em 20/09/2026 a Fiolib mudou para máquina própria; o Wallt ficou na antiga,
+# com o Caddy dele de volta.
 
 import /etc/caddy/fiolib.caddy
 import /etc/caddy/convidados/*.caddy

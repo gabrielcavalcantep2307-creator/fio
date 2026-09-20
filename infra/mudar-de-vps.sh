@@ -103,14 +103,20 @@ virar)
   sleep 8
   nova "curl -s -o /dev/null -w 'site local: %{http_code}\n' http://127.0.0.1:8787/api/saude"
 
-  titulo "Na máquina VELHA, uma página honesta para quem ainda cair lá"
+  titulo "Na máquina VELHA, repassar para a nova enquanto o DNS vira"
+  # Melhor do que uma página de "voltamos já": quem ainda resolve o endereço
+  # antigo é atendido pela máquina nova, através dela. Ninguém vê o site fora
+  # do ar, e continua existindo UM banco só — o da nova.
   velha "cat > /opt/fio/caddy/fiolib.caddy <<'FIM'
-# A Fiolib mudou de máquina. Enquanto o DNS não termina de virar, quem cair
-# aqui recebe um aviso curto — e nunca uma segunda cópia do site gravando.
+# A Fiolib mudou de máquina. Enquanto o DNS não termina de virar, o que cai
+# aqui é repassado para a casa nova. Este arquivo some quando a mudança
+# terminar (infra/limpar-vps-antiga.sh).
 ${DOMINIO}, www.${DOMINIO}, fiolib.duckdns.org {
-	handle {
-		respond \"A Fiolib está mudando de casa. Atualize a página em alguns minutos.\" 503 {
-			close
+	reverse_proxy https://${NOVA#*@} {
+		header_up Host {host}
+		transport http {
+			tls
+			tls_server_name ${DOMINIO}
 		}
 	}
 }

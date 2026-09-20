@@ -19,7 +19,7 @@
 # quando o painel não abre. Nada aqui fica rodando no seu computador: cada
 # comando entra na VPS, faz a coisa e sai.
 set -euo pipefail
-MAQUINA="${MAQUINA:-root@142.93.57.2}"
+MAQUINA="${MAQUINA:-root@2.25.210.20}"
 CHAVE="${CHAVE_SSH:-$HOME/.ssh/fiolib-deploy}"
 COMPOSE="docker compose -f /opt/fio/infra/docker-compose.yml"
 

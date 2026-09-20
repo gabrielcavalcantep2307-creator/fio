@@ -23,7 +23,7 @@ import { homedir } from 'node:os'
 import { fileURLToPath } from 'node:url'
 
 const RAIZ = join(dirname(fileURLToPath(import.meta.url)), '..')
-const MAQUINA = process.env.MAQUINA || 'root@142.93.57.2'
+const MAQUINA = process.env.MAQUINA || 'root@2.25.210.20'
 const CHAVE = process.env.CHAVE_SSH || join(homedir(), '.ssh', 'fiolib-deploy')
 const SITE_REMOTO = '/opt/fio/site'
 const ESPELHO = join(RAIZ, 'site-no-ar')

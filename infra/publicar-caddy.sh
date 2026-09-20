@@ -6,14 +6,14 @@
 # Sobe os três arquivos para /opt/fio/caddy:
 #   infra/Caddyfile              → Caddyfile
 #   infra/Caddyfile.fiolib       → fiolib.caddy
-#   infra/convidado-wallt.caddy  → convidados/wallt.caddy
+#   (a pasta convidados/ fica vazia: era do Wallt, até 20/09/2026)
 #
 # Valida ANTES de recarregar, num container descartável com as mesmas pastas:
 # um erro de digitação aqui derrubaria todos os sites. Se não passar, volta o
 # que estava e nada muda.
 set -euo pipefail
 cd "$(dirname "$0")"
-MAQUINA="${MAQUINA:-root@142.93.57.2}"
+MAQUINA="${MAQUINA:-root@2.25.210.20}"
 CHAVE="${CHAVE_SSH:-$HOME/.ssh/fiolib-deploy}"
 SSH=(ssh -i "$CHAVE" -o StrictHostKeyChecking=accept-new "$MAQUINA")
 
@@ -33,7 +33,6 @@ trap 'rm -f "$PACOTE"' EXIT
 mkdir -p "${PACOTE}.d/convidados"
 cp Caddyfile "${PACOTE}.d/Caddyfile"
 cp Caddyfile.fiolib "${PACOTE}.d/fiolib.caddy"
-cp convidado-wallt.caddy "${PACOTE}.d/convidados/wallt.caddy"
 tar czf "$PACOTE" -C "${PACOTE}.d" .
 rm -rf "${PACOTE}.d"
 
@@ -43,7 +42,6 @@ set -euo pipefail
 validar() {
   docker run --rm --network none \
     -v "$1":/etc/caddy:ro -v /opt/fio/logs:/var/log/fiolib \
-    -v /opt/picord/site:/srv/wallt:ro \
     caddy:2-alpine caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
 }
 if ! validar /opt/fio/caddy.novo >/tmp/caddy-validar.log 2>&1; then

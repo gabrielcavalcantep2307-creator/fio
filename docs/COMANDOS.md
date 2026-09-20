@@ -43,7 +43,7 @@ coisa e sai.
 Sem o script (de qualquer computador com a chave `fiolib-deploy`):
 
 ```bash
-ssh -i ~/.ssh/fiolib-deploy root@142.93.57.2 "docker compose -f /opt/fio/infra/docker-compose.yml up -d"
+ssh -i ~/.ssh/fiolib-deploy root@2.25.210.20 "docker compose -f /opt/fio/infra/docker-compose.yml up -d"
 ```
 
 Troque `up -d` por `stop`, `restart` ou `logs --tail 60 esteira` conforme o caso.

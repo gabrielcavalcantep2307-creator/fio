@@ -4,8 +4,12 @@
 # imagem — `fio` (a API e o site) e `esteira` (o trabalhador que traduz a
 # fila para sempre).
 #
-# O Caddy é NOSSO desde 19/09/2026. Antes ele era do Wallt e a Fiolib era
-# convidada; agora o Wallt é que entra como convidado (infra/Caddyfile).
+# Desde 20/09/2026 a Fiolib tem MÁQUINA PRÓPRIA (2 núcleos, 8 GB, 100 GB), e o
+# Caddy é dela. O Wallt ficou na máquina antiga, com o Caddy dele de volta —
+# por isso não há mais convidado nesta configuração.
+#
+# Os tetos abaixo são da máquina nova. Na antiga (1 núcleo, 2 GB dividida com
+# o Wallt) eram 320m para o site e 448m para a esteira: tudo era apertado.
 #
 # Antes de subir: copie `.env.exemplo` para `.env` e preencha.
 
@@ -16,15 +20,13 @@ services:
     # Rede do host: o Caddy fala com o site em 127.0.0.1:8787 e, enquanto o
     # Wallt existir, com o LiveKit dele (7880) e o crachá (3000).
     network_mode: host
-    mem_limit: 192m
+    mem_limit: 256m
     # Se ele cair, cai tudo: fica ao lado do site no fim da fila do OOM.
     oom_score_adj: -500
     volumes:
       # Caddyfile, fiolib.caddy e convidados/ (bash infra/publicar-caddy.sh)
       - /opt/fio/caddy:/etc/caddy:ro
       - /opt/fio/logs:/var/log/fiolib
-      # O site do Wallt, convidado. Apagar esta linha quando o Wallt morrer.
-      - /opt/picord/site:/srv/wallt:ro
       # Os certificados. Na troca vieram copiados do volume do Wallt, para
       # não pedir todos de novo ao Let's Encrypt de uma vez.
       - caddy_data:/data
@@ -46,12 +48,12 @@ services:
     ports:
       - '127.0.0.1:8787:8787'
     # Teto de memória: um processo que estoure tem que morrer e voltar
-    # sozinho, não levar a máquina (2 GB) junto.
-    mem_limit: 320m
-    # PRIORIDADE DA FIOLIB (19/09/2026). A máquina é dividida com o Wallt e
-    # a soma dos tetos passa da memória real. Se faltar memória para todo
-    # mundo, o sistema escolhe quem matar pela nota abaixo: -500 põe o site
-    # no fim da lista. E, na briga pela CPU, ele recebe o dobro da fatia.
+    # sozinho, não levar a máquina (8 GB) junto. Folga para o cache do SQLite,
+    # que é o que faz a busca e o catálogo responderem rápido.
+    mem_limit: 2g
+    # Se faltar memória, o sistema escolhe quem matar pela nota abaixo: -500
+    # põe o site no fim da lista. E, na briga pela CPU, ele recebe o dobro da
+    # fatia — agora são dois núcleos, então os dois cabem ao mesmo tempo.
     oom_score_adj: -500
     cpu_shares: 2048
     environment:
@@ -112,10 +114,10 @@ services:
     restart: unless-stopped
     depends_on:
       - fio
-    mem_limit: 448m
+    mem_limit: 2g
     # Deixa sempre CPU para o site: traduzir é esperar a rede, e o que pesa
     # (instalar, republicar) pode levar alguns segundos a mais sem problema.
-    cpus: 0.8
+    cpus: 1.2
     # Abaixo do site, acima do resto: a esteira retoma sozinha de onde
     # parou, então é ela que cede primeiro dentro da Fiolib.
     oom_score_adj: -200
