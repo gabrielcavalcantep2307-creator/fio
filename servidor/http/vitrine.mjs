@@ -244,7 +244,7 @@ ${corpo}
     <div class="selos">${(o.temas ?? []).map((t) => `<span class="selo">${esc(t)}</span>`).join('')}${o.minutos ? `<span class="selo">${Math.max(1, Math.round(o.minutos / 60))} h de leitura</span>` : ''}${f.paginas ? `<span class="selo">${f.paginas} páginas</span>` : ''}</div>
     <div class="acoes">${l
       ? `<a class="botao" href="/#/ler/${id}">Ler agora, grátis</a><a class="botao fraco" href="/#/obra/${id}">Ver no app</a>`
-      : `<a class="botao fraco" href="/#/obra/${id}">Ver no app</a>`}</div>
+      : `<a class="botao fraco" href="/#/obra/${id}">Ver no app</a>`}<button type="button" class="botao fraco" data-compartilhar data-titulo="${esc(titulo)}, de ${esc(nomeAutor)}" data-texto="Achei este livro para ler de graça na Fiolib.">Compartilhar</button></div>
     ${l ? '' : '<p class="recado ruim">Este livro está no catálogo, mas o texto ainda não pode ser lido aqui.</p>'}
     ${f.porque ? `<h2>Por que ler</h2><p>${esc(f.porque)}</p>` : ''}
     ${f.observar ? `<h2>Para observar</h2><p>${esc(f.observar)}</p>` : ''}

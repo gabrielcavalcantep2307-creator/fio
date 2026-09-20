@@ -467,6 +467,28 @@
     if (x && x.naoLidos !== avisos) { avisos = x.naoLidos; listaAvisos = null; desenharSino() }
   }, 90_000)
 
+  // ── compartilhar ──
+  // No celular abre a folha do próprio sistema (WhatsApp, Telegram, o que a
+  // pessoa usa); no computador copia o endereço. Sem botão de rede nenhuma:
+  // eles carregam script de terceiro, e aqui nada de fora roda.
+  document.addEventListener('click', async (e) => {
+    const b = e.target.closest?.('[data-compartilhar]')
+    if (!b) return
+    e.preventDefault()
+    const dados = {
+      title: b.dataset.titulo || document.title,
+      text: b.dataset.texto || '',
+      url: b.dataset.endereco || location.href.split('#')[0],
+    }
+    try {
+      if (navigator.share) { await navigator.share(dados); return }
+      await navigator.clipboard.writeText(`${dados.text ? dados.text + ' ' : ''}${dados.url}`)
+      const antes = b.textContent
+      b.textContent = 'link copiado ✓'
+      setTimeout(() => { b.textContent = antes }, 2200)
+    } catch { /* a pessoa desistiu da folha de compartilhar */ }
+  })
+
   // para páginas que trocam a sub-seção sem recarregar (central)
   window.fioMarcarSub = (chave) => { document.body.dataset.subAtual = chave; desenhar() }
   void raiz
