@@ -12,6 +12,7 @@ import * as ajustes from '../ajustes.mjs'
 import * as acesso from '../acesso.mjs'
 import * as planos from '../planos.mjs'
 import * as esteira from '../esteira.mjs'
+import * as revisao from '../revisao.mjs'
 import * as curadoria from '../curadoria.mjs'
 import * as correcoes from '../correcoes.mjs'
 import * as publicacoes from '../publicacoes.mjs'
@@ -120,6 +121,23 @@ export default function rotasDoPainel({ rota, banco, estatico }) {
   // A esteira olha este interruptor a cada volta. Pausar não interrompe o
   // livro em curso: ele termina, e o próximo espera.
   rota(post('/api/admin/esteira/pausa'), ({ dado }) => { esteira.pausar(banco, dado.pausada === true); return esteira.estado(banco) })
+
+  // ── a revisora (servidor/revisao.mjs) ──
+  // Ela conserta o que a esteira traduziu. Mostrar e desligar moram aqui
+  // porque um serviço que mexe no acervo sem aparecer no painel é um serviço
+  // em que não dá para confiar.
+  const estadoDaRevisora = () => ({ ...revisao.estado(banco), modo: ajustes.ler(banco, 'revisora') || 'propor' })
+  rota(admin('/api/admin/revisora'), () => estadoDaRevisora())
+  // `escrever` recusa qualquer valor fora de parada/propor/aplicar.
+  rota(post('/api/admin/revisora/modo'), ({ dado }) => {
+    ajustes.escrever(banco, 'revisora', String(dado.modo))
+    return estadoDaRevisora()
+  })
+  // O arrependimento, pelo painel: devolve o texto de um livro (ou de tudo)
+  // exatamente como estava antes de ela encostar.
+  rota(post('/api/admin/revisora/desfazer'), ({ dado }) => ({
+    desfeitas: revisao.desfazer(banco, { textoId: dado.texto ? Number(dado.texto) : null }),
+  }))
 
   // ── curadoria do acervo (servidor/curadoria.mjs) ──
   rota(admin('/api/admin/curadoria'), ({ busca }) => {

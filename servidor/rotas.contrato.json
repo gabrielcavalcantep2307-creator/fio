@@ -1866,6 +1866,23 @@
     "memoria": "null",
     "nucleos": "number"
    },
+   "revisora": {
+    "fila": {
+     "erro": "number",
+     "espera": "number",
+     "pronto": "number",
+     "revisando": "number",
+     "suspeito": "number"
+    },
+    "modo": "string",
+    "trocas": {
+     "aplicadas": "number",
+     "desfeitas": "number",
+     "propostas": "number",
+     "recusadas": "number"
+    },
+    "viva": "boolean"
+   },
    "seguranca": {
     "alertas": [],
     "sessoes": [

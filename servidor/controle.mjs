@@ -24,6 +24,8 @@ import { readFileSync, statSync, statfsSync } from 'node:fs'
 import { join } from 'node:path'
 import { loadavg, cpus } from 'node:os'
 import * as esteira from './esteira.mjs'
+import * as revisao from './revisao.mjs'
+import * as ajustes from './ajustes.mjs'
 import { minhasSessoes, adminSoPeloGoogle } from './contas.mjs'
 import * as manutencao from './manutencao.mjs'
 import * as diario from './diario.mjs'
@@ -71,6 +73,8 @@ function alertas(banco) {
 
 export function retrato(banco, { pessoa, token }) {
   const e = esteira.estado(banco)
+  const rev = revisao.estado(banco)
+  const modoDaRevisora = ajustes.ler(banco, 'revisora') || 'propor'
   const mem = memoria()
   const hd = disco(process.env.FIO_BANCO ? join(process.env.FIO_BANCO, '..') : '/')
   const backup = lerJson('backup.json')
@@ -92,6 +96,15 @@ export function retrato(banco, { pessoa, token }) {
   else if (e.viva) diz('ok', 'Esteira', e.pulso?.estado === 'ociosa' ? 'em dia, esperando livros novos' : 'trabalhando')
   else diz('problema', 'Esteira', `sem sinal há ${Math.round((e.pulso?.idadeSegundos ?? 0) / 60)} min. O serviço reinicia sozinho; se passar de 15 min, veja o log na VPS.`)
   if (e.fila.erro) diz('atencao', 'Esteira', `${e.fila.erro} livro(s) com erro na fila (aba Esteira → tentar de novo).`)
+
+  // A revisora mexe em livro que já está no ar, então ela avisa mais que a
+  // esteira: o dono tem que saber, olhando uma vez, se alguém está editando o
+  // acervo neste momento e em que modo.
+  if (modoDaRevisora === 'parada') diz('ok', 'Revisora', 'desligada.')
+  else if (!rev.viva) diz('problema', 'Revisora', `ligada (${modoDaRevisora}), mas sem sinal há ${Math.round((rev.pulso?.idadeSegundos ?? 0) / 60)} min. O serviço volta sozinho.`)
+  else if (modoDaRevisora === 'aplicar') diz('atencao', 'Revisora', `CONSERTANDO as nossas traduções agora: ${rev.trocas.aplicadas} trocas feitas, ${rev.fila.pronto} de ${rev.fila.pronto + rev.fila.espera + rev.fila.suspeito} livros. Tudo dá para desfazer (aba Esteira).`)
+  else diz('ok', 'Revisora', `em modo de proposta: ${rev.trocas.propostas} sugestões, e nenhum texto mudado.`)
+  if (rev.fila.suspeito) diz('atencao', 'Revisora', `${rev.fila.suspeito} livro(s) parados por suspeita — ela achou trocas demais e preferiu não mexer.`)
 
   const hB = horasDesde(backup?.quando)
   if (hB == null) diz('atencao', 'Backup do banco', 'ainda não há registro do backup (ele grava o primeiro às 03:20).')
@@ -118,6 +131,9 @@ export function retrato(banco, { pessoa, token }) {
     avisos,
     site: { desde: INICIO.toISOString(), versao, memoria: process.memoryUsage().rss, manutencao: emManutencao },
     esteira: { viva: e.viva, pausada: e.pausada, estado: e.pulso?.estado ?? null, fila: e.fila, previsao: e.previsao },
+    // A revisora, resumida: o Controle só precisa saber se ela está de pé e em
+    // que modo. Os números moram na aba Esteira.
+    revisora: { viva: rev.viva, modo: modoDaRevisora, fila: rev.fila, trocas: rev.trocas },
     diario: diario.ultimos(banco, 20),
     maquina: { memoria: mem, disco: hd, carga: loadavg(), nucleos: cpus().length, banco: tamanhoDoBanco() },
     backup, copiaPc, vps,

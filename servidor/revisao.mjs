@@ -342,6 +342,63 @@ export function pulsar(banco, estado) {
 }
 
 /**
+ * O que a revisora está fazendo, para o painel.
+ *
+ * O dono abriu o painel e não a achou: "não estou vendo essa parte de revisão
+ * aqui na esteira". Serviço que mexe no acervo e não aparece em lugar nenhum
+ * é pior que serviço que não existe — não dá para confiar no que não se vê,
+ * nem para desligar o que não se acha.
+ */
+export function estado(banco) {
+  garantirTabelas(banco)
+  const um = (sql) => { try { return banco.prepare(sql).all() } catch { return [] } }
+  const porEstado = (linhas) => Object.fromEntries(linhas.map((l) => [l.estado, l.n]))
+
+  const p = banco.prepare('SELECT estado, em FROM revisao_pulso WHERE id = 1').get()
+  let pulso = null
+  if (p) {
+    try { pulso = JSON.parse(p.estado) } catch { pulso = null }
+    if (pulso) pulso.idadeSegundos = Math.max(0, Math.round((Date.now() - new Date(p.em + 'Z').getTime()) / 1000))
+  }
+
+  const fila = porEstado(um("SELECT estado, count(*) n FROM revisao_livro GROUP BY estado"))
+  const trocas = porEstado(um("SELECT estado, count(*) n FROM revisao_troca GROUP BY estado"))
+  const tipos = um("SELECT tipo, count(*) n FROM revisao_troca WHERE estado = 'aplicada' GROUP BY tipo")
+  const recusas = um(`SELECT motivo, count(*) n FROM revisao_troca WHERE estado = 'recusada'
+    GROUP BY motivo ORDER BY n DESC LIMIT 6`)
+  const ultimas = um(`SELECT t.id, t.tipo, t.regra, t.criado_em, o.titulo_pt, o.titulo
+    FROM revisao_troca t JOIN texto x ON x.id = t.texto_id JOIN obra o ON o.id = x.obra_id
+    WHERE t.estado = 'aplicada' ORDER BY t.id DESC LIMIT 12`)
+  const suspeitos = um(`SELECT r.texto_id, r.motivo, coalesce(o.titulo_pt, o.titulo) titulo
+    FROM revisao_livro r JOIN texto x ON x.id = r.texto_id JOIN obra o ON o.id = x.obra_id
+    WHERE r.estado = 'suspeito' LIMIT 10`)
+
+  // 2 minutos sem pulso é parada — a volta mais curta dela é de 20 s.
+  const viva = pulso != null && pulso.idadeSegundos < 180
+
+  return {
+    modo: null, // preenchido pela rota, que conhece os ajustes
+    viva,
+    pulso,
+    fila: {
+      espera: fila.espera ?? 0, revisando: fila.revisando ?? 0,
+      pronto: fila.pronto ?? 0, suspeito: fila.suspeito ?? 0, erro: fila.erro ?? 0,
+    },
+    trocas: {
+      aplicadas: trocas.aplicada ?? 0, propostas: trocas.proposta ?? 0,
+      recusadas: trocas.recusada ?? 0, desfeitas: trocas.desfeita ?? 0,
+    },
+    porTipo: tipos,
+    recusas,
+    suspeitos,
+    ultimas: ultimas.map((u) => ({
+      id: u.id, tipo: u.tipo, regra: u.regra, quando: u.criado_em,
+      titulo: u.titulo_pt || u.titulo,
+    })),
+  }
+}
+
+/**
  * Desfaz. É o botão de arrependimento, e existir é metade do desenho.
  * Sem argumento, desfaz tudo o que foi aplicado.
  */

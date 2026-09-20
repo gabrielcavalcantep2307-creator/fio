@@ -89,7 +89,7 @@ async function desenhar() {
     abas([
       ['controle', 'Controle', () => [secaoControle()]],
       ['panorama', 'Panorama', () => [esteiraAoVivo(), panorama(p), recentes(p.recentes)]],
-      ['esteira', 'Esteira', () => [esteiraAoVivo(), secaoFila(fila.itens), secaoAdicionar()]],
+      ['esteira', 'Esteira', () => [esteiraAoVivo(), revisoraAoVivo(), secaoFila(fila.itens), secaoAdicionar()]],
       ['publicacoes', `Publicações${pendencias ? ` (${pendencias})` : ''}`, () => [secaoPublicacoes(pubs)]],
       ['correcoes', `Correções${cor.pendentes.length ? ` (${cor.pendentes.length})` : ''}`, () => [secaoCorrecoes(cor)]],
       ['acervo', 'Acervo', () => [secaoAcervo()]],
@@ -379,6 +379,125 @@ function esteiraAoVivo() {
   setTimeout(atualizar, 0)
   clearInterval(relogioEsteira)
   relogioEsteira = setInterval(atualizar, 10_000)
+  return caixa
+}
+
+// ── a revisora, ao vivo ──
+//
+// O dono abriu o painel depois que ela entrou no ar e disse: "não estou vendo
+// essa parte de revisão aqui na esteira". Tinha razão — o serviço existia e não
+// aparecia em lugar nenhum. Serviço que mexe no acervo e não se vê é pior que
+// serviço que não existe: não dá para confiar no que não se enxerga, nem para
+// desligar o que não se acha.
+//
+// Fica logo abaixo da esteira, porque é o segundo turno dela: a esteira traz o
+// livro, a revisora arruma o que saiu torto.
+let relogioRevisora = null
+function revisoraAoVivo() {
+  const caixa = el('section', { class: 'grupo', style: 'margin-bottom:26px' }, el('p', { class: 'ajuda' }, 'Perguntando à revisora…'))
+  const idade = (seg) => seg < 60 ? `há ${seg} s` : seg < 3600 ? `há ${Math.round(seg / 60)} min` : seg < 86400 ? `há ${Math.round(seg / 3600)} h` : `há ${Math.round(seg / 86400)} dias`
+  const NOME_DO_TIPO = {
+    glossario: 'palavra da lista',
+    retraducao: 'trecho retraduzido',
+    'capitulo-perdido': 'capítulo inteiro que ficou na língua original',
+    numero: 'número por extenso',
+  }
+
+  async function atualizar() {
+    if (!document.body.contains(caixa)) { clearInterval(relogioRevisora); relogioRevisora = null; return }
+    let r
+    try { r = await pedir('/admin/revisora') } catch (x) { caixa.replaceChildren(recado('ruim', x.message)); return }
+    const pu = r.pulso
+    const total = r.fila.espera + r.fila.revisando + r.fila.pronto + r.fila.suspeito + r.fila.erro
+    const feitos = r.fila.pronto + r.fila.suspeito
+    const aplicando = r.modo === 'aplicar'
+    const acesa = r.modo !== 'parada' && r.viva
+
+    const estadoTexto = r.modo === 'parada' ? 'desligada'
+      : !pu ? 'ainda não mandou sinal (o serviço subiu?)'
+      : r.viva ? (pu.estado === 'ociosa' ? 'em dia: já passou por todos os livros'
+        : pu.estado === 'revisando' ? `revisando ${pu.livro ?? 'um livro'}` : pu.estado)
+      : `parada — último sinal ${idade(pu.idadeSegundos)} (o serviço volta sozinho)`
+
+    const trocarModo = (modo) => async () => {
+      try { await pedir('/admin/revisora/modo', { modo }); await atualizar() }
+      catch (x) { caixa.prepend(recado('ruim', x.message)) }
+    }
+    const botao = (rotulo, modo) => el('button', {
+      class: r.modo === modo ? '' : 'fraco',
+      disabled: r.modo === modo ? '' : undefined,
+      onclick: trocarModo(modo),
+    }, rotulo)
+
+    caixa.replaceChildren(
+      el('div', { style: 'display:flex;align-items:center;gap:10px;flex-wrap:wrap' },
+        el('span', { style: `width:10px;height:10px;border-radius:50%;background:${acesa ? '#3aa55d' : 'var(--alerta)'};${acesa ? 'box-shadow:0 0 0 4px color-mix(in srgb,#3aa55d 25%,transparent)' : ''}` }),
+        el('h3', { style: 'margin:0' }, 'Revisora das traduções'),
+        el('span', { class: 'ajuda' }, estadoTexto)),
+
+      el('p', { class: 'ajuda', style: 'margin:10px 0 0' },
+        'Ela conserta SÓ o que nós mesmos traduzimos — livro que já veio em português nunca é tocado. ',
+        'Não reescreve nada: troca palavra de uma lista escrita à mão, manda ao tradutor o trecho que ficou ',
+        'na língua original, e arruma número por extenso. Tudo o que ela muda fica guardado como estava.'),
+
+      el('div', { style: 'display:flex;align-items:center;gap:8px;margin-top:12px;flex-wrap:wrap' },
+        el('span', { class: 'ajuda' }, 'modo:'),
+        botao('Desligada', 'parada'),
+        botao('Só propor', 'propor'),
+        botao('Aplicar', 'aplicar'),
+        el('span', { class: 'ajuda' }, aplicando ? 'está mudando o texto dos livros'
+          : r.modo === 'propor' ? 'lista o que faria, sem tocar no texto' : 'não faz nada')),
+
+      total ? el('div', { style: 'margin-top:14px' },
+        el('div', {}, el('b', {}, `${num(feitos)} de ${num(total)} livros revisados`)),
+        el('div', { style: 'height:8px;background:var(--linha);border-radius:4px;overflow:hidden;margin:6px 0 2px' },
+          el('div', { style: `height:100%;width:${Math.round(feitos / total * 100)}%;background:#3aa55d;transition:width .6s` }))) : null,
+
+      el('div', { class: 'cartoes', style: 'margin-top:14px' },
+        cartao(r.trocas.aplicadas, 'trocas feitas'),
+        cartao(r.trocas.propostas, 'só propostas'),
+        cartao(r.trocas.recusadas, 'recusadas pelas travas'),
+        cartao(r.fila.suspeito, 'livros parados por suspeita')),
+
+      r.porTipo && r.porTipo.length ? el('div', { class: 'ajuda', style: 'margin-top:10px' },
+        'Do que ela consertou: ' + r.porTipo.map((t) => `${num(t.n)} ${NOME_DO_TIPO[t.tipo] ?? t.tipo}`).join(' · ')) : null,
+
+      r.ultimas && r.ultimas.length ? el('div', { style: 'margin-top:14px' }, el('div', { class: 'ajuda' }, 'Últimas trocas:'),
+        el('ul', { style: 'margin:4px 0 0;padding-left:18px;font-size:14px' }, r.ultimas.map((u) =>
+          el('li', {}, u.titulo, el('span', { class: 'ajuda' }, ` — ${NOME_DO_TIPO[u.tipo] ?? u.tipo}${u.regra ? ': ' + u.regra : ''}`))))) : null,
+
+      // As recusas são a melhor parte de mostrar: são a prova de que as travas
+      // estão segurando, e não um defeito a consertar.
+      r.recusas && r.recusas.length ? el('details', { style: 'margin-top:12px' },
+        el('summary', { class: 'ajuda', style: 'cursor:pointer' }, 'o que as travas barraram, e por quê'),
+        el('ul', { style: 'margin:6px 0 0;padding-left:18px;font-size:14px' }, r.recusas.map((m) =>
+          el('li', {}, `${num(m.n)}× `, el('span', { class: 'ajuda' }, m.motivo || 'sem motivo'))))) : null,
+
+      r.suspeitos && r.suspeitos.length ? el('div', { style: 'margin-top:12px' },
+        recado('atencao', 'Livros que ela parou de mexer por desconfiança: ' +
+          r.suspeitos.map((s) => `${s.titulo} (${s.motivo})`).join('; '))) : null,
+
+      el('details', { style: 'margin-top:12px' },
+        el('summary', { class: 'ajuda', style: 'cursor:pointer' }, 'desfazer tudo o que ela mudou'),
+        el('p', { class: 'ajuda', style: 'margin:6px 0' },
+          'Devolve o texto de TODOS os livros exatamente como estava antes de ela encostar. ',
+          'Não há perda: cada capítulo mexido foi guardado inteiro.'),
+        el('button', {
+          class: 'fraco',
+          onclick: async () => {
+            if (!confirm('Desfazer todas as trocas da revisora? O texto de todos os livros volta a ser o que era.')) return
+            try {
+              const d = await pedir('/admin/revisora/desfazer', {})
+              caixa.prepend(recado('bom', `${d.desfeitas} trocas desfeitas.`))
+              await atualizar()
+            } catch (x) { caixa.prepend(recado('ruim', x.message)) }
+          },
+        }, 'Desfazer tudo')),
+    )
+  }
+  setTimeout(atualizar, 0)
+  clearInterval(relogioRevisora)
+  relogioRevisora = setInterval(atualizar, 15_000)
   return caixa
 }
 
@@ -840,6 +959,18 @@ function secaoControle() {
           esteiraLigada, esteiraLigada ? 'Desligar a esteira' : 'Ligar a esteira',
           esteiraLigada ? 'Desligar a esteira? O livro que está sendo traduzido termina, e ela para.' : null,
           () => pedir('/admin/esteira/pausa', { pausada: esteiraLigada })),
+        // A revisora tem TRÊS estados, e não dois, então o interruptor daqui
+        // só liga e desliga: escolher entre "propor" e "aplicar" é decisão de
+        // quem está olhando a lista, e mora na aba Esteira, junto dos números.
+        interruptor('Revisora das traduções',
+          r.revisora?.modo === 'parada' ? 'desligada'
+            : !r.revisora?.viva ? (r.revisora?.modo === 'aplicar' ? 'ligada (aplicando), mas sem sinal' : 'ligada (só propondo), mas sem sinal')
+            : r.revisora.modo === 'aplicar' ? 'ligada: consertando as nossas traduções'
+            : 'ligada em modo de proposta: lista o que faria, sem mudar texto',
+          r.revisora?.modo !== 'parada',
+          r.revisora?.modo !== 'parada' ? 'Desligar a revisora' : 'Ligar (só propor)',
+          r.revisora?.modo === 'aplicar' ? 'Desligar a revisora? Ela para de consertar as traduções. O que já foi feito continua feito (e dá para desfazer na aba Esteira).' : null,
+          () => pedir('/admin/revisora/modo', { modo: r.revisora?.modo !== 'parada' ? 'parada' : 'propor' })),
         el('p', { class: 'ajuda', style: 'margin:8px 0 0' }, 'Se o site inteiro sair do ar e este painel não abrir, os comandos de emergência estão em docs/COMANDOS.md.')),
       el('div', { class: 'grupo' }, el('h3', {}, 'O que está rodando'),
         el('ul', { style: 'list-style:none;margin:8px 0 0;padding:0' }, r.avisos.map((a) =>
