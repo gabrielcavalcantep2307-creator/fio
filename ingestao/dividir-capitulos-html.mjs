@@ -83,7 +83,17 @@ for (const t of candidatos) {
 
   let original
   try { original = await baixarFonte(t.fonte_url) } catch (e) { linha(t.id, t.titulo, '--  .txt: ' + e.message); continue }
-  const paragrafosOriginais = emCapitulos(soOLivro(original)).flatMap((c) => emParagrafos(c.bruto))
+  // livro que HOJE é um capítulo só foi traduzido como um bloco único, sem
+  // passar por emCapitulos (marcas.length<2 na hora) — reproduzir com
+  // emParagrafos direto. Livro com vários capítulos passou por emCapitulos
+  // de verdade, então refazer o mesmo caminho é o que reproduz a mesma
+  // sequência. emCapitulos pode ter ganhado trava nova desde a tradução
+  // (ex.: 21/09, a do cabeçalho corrido) — usar a versão errada aqui é
+  // exatamente a armadilha que a checagem de contagem abaixo existe para
+  // pegar.
+  const paragrafosOriginais = capsAtuais.length === 1
+    ? emParagrafos(soOLivro(original))
+    : emCapitulos(soOLivro(original)).flatMap((c) => emParagrafos(c.bruto))
   if (paragrafosOriginais.length !== ps.length) {
     semCorte++
     linha(t.id, t.titulo, '--  parágrafos não batem: original ' + paragrafosOriginais.length + ' x traduzido ' + ps.length)

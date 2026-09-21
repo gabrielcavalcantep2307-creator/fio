@@ -1,4 +1,4 @@
-// Livro nativo do Gutenberg com um capítulo-parede, reprocessado (21/09/2026).
+// Livro nativo do Gutenberg mal dividido, reprocessado (21/09/2026).
 //
 //   node ingestao/renormalizar-parede.mjs            # só mostra
 //   node ingestao/renormalizar-parede.mjs --obra 525
@@ -7,9 +7,16 @@
 // Livros de fonte='gutenberg' (já em português, não passam pela esteira) são
 // divididos por ingestao/normalizar.mjs → partir(), que escolhe UM nível de
 // cabeçalho (o que aparecer 3+ vezes) e corta só por ele. Funciona na maioria,
-// mas erra quando o livro mistura níveis (PARTE em <h2>, CAPÍTULO em <h3>) ou
-// quando o nível escolhido é grosso demais — sobra um "capítulo" de 20-200 mil
-// palavras (raio-x chama de PAREDE, >15 mil palavras).
+// mas erra de duas formas:
+//
+//   PAREDE      o livro mistura níveis (PARTE em <h2>, CAPÍTULO em <h3>) ou o
+//               nível escolhido é grosso demais — sobra um "capítulo" de
+//               20-200 mil palavras (raio-x chama de PAREDE, >15 mil palavras)
+//   SEM TÍTULO  nenhum nível de cabeçalho apareceu 3+ vezes — o livro cai no
+//               modo "sem cabeçalho nenhum" e vira blocos arbitrários de 60
+//               parágrafos, todos com titulo=null (95 livros, achado pelo
+//               raio-x-completo.mjs — muitos nem aparecem como parede porque
+//               os blocos são pequenos, só sem sentido nenhum)
 //
 // Este arquivo não troca a regra de normalizar.mjs (517 livros já passam bem
 // por ela); ataca só os que sobraram, com uma leitura mais solta: qualquer
@@ -84,10 +91,11 @@ function dividirSolto(corpo) {
 }
 
 let sql = `SELECT t.id texto_id, t.fonte_id, o.id obra_id, coalesce(o.titulo_pt, o.titulo) titulo,
-    count(c.id) caps, max(c.palavras) maior
+    count(c.id) caps, max(c.palavras) maior,
+    sum(case when c.titulo is null or trim(c.titulo) = '' then 1 else 0 end) semTitulo
   FROM texto t JOIN capitulo c ON c.texto_id = t.id JOIN obra o ON o.id = t.obra_id
   WHERE t.fonte = 'gutenberg' AND t.dono_id IS NULL
-  GROUP BY t.id HAVING maior > ${PAREDE} ORDER BY maior DESC`
+  GROUP BY t.id HAVING maior > ${PAREDE} OR semTitulo > 0 ORDER BY semTitulo DESC, maior DESC`
 if (soObra) sql = sql.replace("WHERE t.fonte = 'gutenberg'", "WHERE t.fonte = 'gutenberg' AND o.id = " + Number(soObra))
 const candidatos = banco.prepare(sql).all()
 
@@ -121,15 +129,20 @@ for (const t of candidatos) {
     linha(t.obra_id, t.titulo, '--  corte achado mas desequilibrado (mediana ' + mediana + ')')
     continue
   }
-  // só troca se realmente melhora o que já está
-  if (maiorNovo >= t.maior || pedacos.length <= t.caps) {
+  // dividirSolto sempre dá título real (do próprio <hN>) ou 'Abertura' —
+  // nunca null. Então melhora se reduz a parede OU se o livro de hoje tinha
+  // capítulo sem título nenhum (blocos arbitrários de 60 parágrafos).
+  const melhoraParede = maiorNovo < t.maior && pedacos.length > t.caps
+  const melhoraTitulo = t.semTitulo > 0
+  if (!melhoraParede && !melhoraTitulo) {
     semCorte++
     linha(t.obra_id, t.titulo, '--  não melhora o que já está (' + t.caps + '→' + pedacos.length + ' caps, ' + t.maior + '→' + maiorNovo + ' palavras)')
     continue
   }
 
   feitos++
-  linha(t.obra_id, t.titulo, 'ok  ' + t.caps + ' → ' + pedacos.length + ' partes  (maior: ' + t.maior + ' → ' + maiorNovo + ')')
+  linha(t.obra_id, t.titulo, 'ok  ' + t.caps + ' → ' + pedacos.length + ' partes  (maior: ' + t.maior + ' → ' + maiorNovo + ')' +
+    (melhoraTitulo ? '  +título' : ''))
 
   if (!gravar) continue
   banco.exec('BEGIN')
@@ -149,7 +162,7 @@ for (const t of candidatos) {
 }
 
 console.log('')
-console.log(candidatos.length + ' livros gutenberg com capítulo-parede; ' + feitos + ' melhoraram, ' +
+console.log(candidatos.length + ' livros gutenberg com parede ou sem título; ' + feitos + ' melhoraram, ' +
   semHtml + ' sem html, ' + semCorte + ' sem corte melhor que o de hoje.')
 if (!gravar) console.log('(nada foi gravado — rode com --gravar)')
 else console.log('GRAVADO. Rode servidor/reindexar.mjs e ingestao/publicar.mjs depois.')
