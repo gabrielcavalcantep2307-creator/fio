@@ -373,6 +373,14 @@
   "cookie": null,
   "corpo": ""
  },
+ "público :: anon GET /api/livro/1/pdf": {
+  "status": 302,
+  "tipo": null,
+  "cache": "no-store",
+  "local": "/assinaturas.html?por=pdf",
+  "cookie": null,
+  "corpo": ""
+ },
  "público :: anon GET /api/mangas/abc": {
   "status": 404,
   "tipo": "application/json",

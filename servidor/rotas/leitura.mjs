@@ -9,6 +9,7 @@ import * as curadoria from '../curadoria.mjs'
 import * as correcoes from '../correcoes.mjs'
 import * as extras from '../extras.mjs'
 import { montarEpub, nomeDeArquivo } from '../epub.mjs'
+import { montarPdf, nomeDeArquivoPdf } from '../pdf.mjs'
 import { ondeComecaOLivro } from '../folha-de-rosto.mjs'
 import { criarBuscaParalela } from '../busca-paralela.mjs'
 import { diagramar } from '../diagramar.mjs'
@@ -200,6 +201,35 @@ export default function rotasDeLeitura({ rota, banco }) {
       'cache-control': 'public, max-age=3600',
     })
     res.end(epub)
+  })
+
+  // O mesmo texto, num PDF com capa, ficha técnica e sumário clicável — o
+  // formato de quem quer um arquivo com CARA de livro, não só o texto. Mesma
+  // trava de plano do EPUB (Novelo em diante) e a mesma checagem de direito.
+  rota({ caminho: '/api/livro/:id/pdf', cru: true, erro500: 'Não consegui montar o arquivo.' }, ({ res, params, quem }) => {
+    if (!planos.planoDe(banco, quem()).pdf) return redirecionar(res, '/assinaturas.html?por=pdf')
+    const o = doLivro.get(CASA, params.id)
+    if (!o || o.normalizado !== 1 || curadoria.obraOculta(banco, params.id)) throw new Recusa('Não temos o texto desta obra.', 404)
+    if (o.estado !== 'dominio_publico' && o.estado !== 'licenca_livre') throw new Recusa('Esta obra não pode ser distribuída daqui.', 403)
+    const livro = {
+      id: o.id,
+      titulo: primeiraLinha(o.titulo_pt || o.titulo),
+      autor: o.autor ?? 'autoria não identificada',
+      tradutor: o.tradutor,
+      revisao: o.revisao,
+      direito: o.revisao === 'automatica' ? `Tradução automática do Fio, sem revisão humana. ${o.motivo ?? ''}` : o.motivo,
+      fonteUrl: o.fonte_url,
+      capitulos: diagramar(capitulosDo.all(o.texto_id), { fonte: o.fonte, titulo: false }),
+    }
+    if (!livro.capitulos.length) throw new Recusa('Não temos o texto desta obra.', 404)
+    const pdf = montarPdf(livro)
+    res.writeHead(200, {
+      'content-type': 'application/pdf',
+      'content-length': pdf.length,
+      'content-disposition': `attachment; filename="${nomeDeArquivoPdf(livro)}"; filename*=UTF-8''${encodeURIComponent(nomeDeArquivoPdf(livro))}`,
+      'cache-control': 'public, max-age=3600',
+    })
+    res.end(pdf)
   })
 
   // "abri este livro": conta anônima (sem leitor, sem IP guardado)

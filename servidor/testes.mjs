@@ -424,6 +424,27 @@ const epubDeTeste = async (titulo, corpoExtra = '') => {
   })
 }
 
+test('o PDF montado é um arquivo válido, com sumário clicável', async () => {
+  const { montarPdf } = await import('./pdf.mjs')
+  const livro = {
+    id: 1, titulo: 'Livro de Teste', autor: 'Autor de Teste', revisao: 'automatica',
+    direito: 'teste', fonteUrl: 'https://exemplo.org/x.txt',
+    capitulos: [
+      { ordem: 0, titulo: 'Um', corpo: `<p>${'Texto do primeiro capítulo, comprido o bastante para quebrar linha. '.repeat(30)}</p>` },
+      { ordem: 1, titulo: 'Dois', corpo: `<p>${'Texto do segundo capítulo, também comprido, com acentuação: ção ã é ü. '.repeat(30)}</p>` },
+    ],
+  }
+  const pdf = montarPdf(livro)
+  assert.ok(Buffer.isBuffer(pdf))
+  assert.ok(pdf.length > 500)
+  assert.equal(pdf.subarray(0, 8).toString('latin1'), '%PDF-1.4')
+  assert.ok(pdf.subarray(-6).toString('latin1').includes('%%EOF'))
+  const texto = pdf.toString('latin1')
+  assert.ok(texto.includes('/Type /Catalog'))
+  assert.ok(texto.includes('/Subtype /Link'))    // o sumário virou link, não só texto
+  assert.ok((texto.match(/\/Type \/Page\b/g) ?? []).length >= 3)  // capa + ficha + ao menos 1 de corpo
+})
+
 test('o livro que eu mando é meu, e some da estante de todo mundo', async () => {
   const meusLivros = await import('./meus-livros.mjs')
   const eu = banco.prepare("SELECT id FROM leitor WHERE email = 'gabriel@exemplo.com'").get()

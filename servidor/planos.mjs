@@ -20,7 +20,7 @@
 //   Grátis     3 livros novos por mês. Livro aberto fica aberto para sempre
 //              (ninguém perde a leitura no meio). Leis, quadrinhos livres e a
 //              comunidade não contam.
-//   Novelo     ler sem limite, ouvir em voz alta, baixar EPUB, pedir tradução.
+//   Novelo     ler sem limite, ouvir em voz alta, baixar EPUB ou PDF, pedir tradução.
 //   Trama      tudo do Novelo + publicar.
 //   Tear       tudo da Trama, em escala, e com prioridade.
 //
@@ -46,25 +46,25 @@ export const PLANOS = {
   leitor: {
     chave: 'leitor', nome: 'Grátis', nivel: 0, preco: 0, precoAno: 0,
     frase: 'Para conhecer a casa.',
-    livrosMes: 3, voz: false, epub: false, pedidosMes: 0, prioridade: false,
+    livrosMes: 3, voz: false, epub: false, pdf: false, pedidosMes: 0, prioridade: false,
     publicar: null,
   },
   novelo: {
     chave: 'novelo', nome: 'Novelo', nivel: 1, preco: 9.9, precoAno: 99,
     frase: 'Para quem lê de verdade.',
-    livrosMes: SEM_LIMITE, voz: true, epub: true, pedidosMes: 2, prioridade: false,
+    livrosMes: SEM_LIMITE, voz: true, epub: true, pdf: true, pedidosMes: 2, prioridade: false,
     publicar: null,
   },
   trama: {
     chave: 'trama', nome: 'Trama', nivel: 2, preco: 19.9, precoAno: 199,
     frase: 'Para quem também escreve ou desenha.',
-    livrosMes: SEM_LIMITE, voz: true, epub: true, pedidosMes: 5, prioridade: false,
+    livrosMes: SEM_LIMITE, voz: true, epub: true, pdf: true, pedidosMes: 5, prioridade: false,
     publicar: { obras: 3, partesPorObra: 60, paginasPorParte: 120, armazenamento: 1000 * MB, caracteresPorParte: 150_000 },
   },
   tear: {
     chave: 'tear', nome: 'Tear', nivel: 3, preco: 34.9, precoAno: 349,
     frase: 'Para séries em andamento e para quem estuda pesado.',
-    livrosMes: SEM_LIMITE, voz: true, epub: true, pedidosMes: 15, prioridade: true,
+    livrosMes: SEM_LIMITE, voz: true, epub: true, pdf: true, pedidosMes: 15, prioridade: true,
     publicar: { obras: 20, partesPorObra: 500, paginasPorParte: 200, armazenamento: 5000 * MB, caracteresPorParte: 200_000 },
   },
 }
@@ -80,6 +80,7 @@ export const RECURSOS = [
     { nome: 'Progresso, marcações e notas em todos os aparelhos', leitor: true, novelo: true, trama: true, tear: true },
     { nome: 'Ouvir em voz alta', leitor: false, novelo: true, trama: true, tear: true },
     { nome: 'Baixar em EPUB (Kindle, Kobo, celular)', leitor: false, novelo: true, trama: true, tear: true },
+    { nome: 'Baixar em PDF (capa, ficha e sumário)', leitor: false, novelo: true, trama: true, tear: true },
   ] },
   { grupo: 'Traduções', itens: [
     { nome: 'Sugerir correções e aparecer como revisor', leitor: true, novelo: true, trama: true, tear: true },

@@ -139,7 +139,7 @@ await caso('senha errada', 'anon', 'POST', '/api/entrar', { corpo: { usuario: 'l
 for (const c of ['/api/saude', '/api/sugestoes', '/api/nome-livre?u=leitora', '/api/nome-livre?u=livre_nome', '/api/populares',
   '/api/planos', '/api/novidades', '/api/quadrinhos/vitrine', '/api/google/ligado', '/api/correcoes/resumo?obra=1',
   '/api/publicacoes', '/api/publicacao?id=999', '/api/publicacao/parte?id=999&ordem=1', '/api/procurar?q=palavra',
-  '/api/obra/1/avaliacoes', '/api/livro/1', '/api/livro/999', '/api/livro/1/epub', '/api/mangas/abc', '/api/pub-arquivo/nada.jpg',
+  '/api/obra/1/avaliacoes', '/api/livro/1', '/api/livro/999', '/api/livro/1/epub', '/api/livro/1/pdf', '/api/mangas/abc', '/api/pub-arquivo/nada.jpg',
   '/api/nao-existe', '/api/eu']) {
   await caso('público', 'anon', 'GET', c)
 }
