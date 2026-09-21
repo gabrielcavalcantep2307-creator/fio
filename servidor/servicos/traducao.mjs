@@ -102,14 +102,35 @@ export function soOLivro(bruto) {
 // é pior, então a linha tem que ser CURTA e ser só isso: um cabeçalho solto
 // numa linha, e não uma frase que por acaso começa com "Chapter".
 // ─────────────────────────────────────────────────────────────
+// ── 21/09/2026: o alemão, o francês, as cartas ──
+//
+// Medido nos originais dos 29 livros que saíram com capítulo médio acima de
+// 25 mil palavras. Cada forma abaixo é de um livro de verdade:
+//
+//   "Letter I. To Eloisa."    Júlia, ou a Nova Heloísa — 131 cartas, que
+//                             saíram como UM capítulo de 296.623 palavras
+//   "Erstes Hauptstück:"      Além do Bem e do Mal (o original é alemão)
+//   "Adventure I. Silver…"    As Memórias de Sherlock Holmes
+//   "CHAPITRE PREMIER."       os franceses que vêm do original
+//
+// "tome" (francês) ficou DE FORA de propósito: em Da Democracia na América
+// "TOME PREMIER." aparece 61 vezes — é o cabeçalho de cada página, não uma
+// divisão. Ver a trava do cabeçalho corrido em `emCapitulos`.
 const ORDINAIS = 'first|second|third|fourth|fifth|sixth|seventh|eighth|ninth|tenth'
   + '|eleventh|twelfth|primeir[oa]|segund[oa]|terceir[oa]|quart[oa]|quint[oa]'
   + '|sext[oa]|sétim[oa]|setim[oa]|oitav[oa]|non[oa]|décim[oa]|decim[oa]'
-const NOMES = 'chapter|part|book|canto|act|scene|capítulo|capitulo|parte|livro|ato|cena'
+  + '|erste[sr]?|zweite[sr]?|dritte[sr]?|vierte[sr]?|fünfte[sr]?|sechste[sr]?|siebente[sr]?|siebte[sr]?|achte[sr]?|neunte[sr]?|zehnte[sr]?'
+  + '|premi[eè]re?|deuxi[eè]me|troisi[eè]me|quatri[eè]me|cinqui[eè]me|sixi[eè]me|septi[eè]me|huiti[eè]me|neuvi[eè]me|dixi[eè]me'
+const NOMES = 'chapter|part|book|canto|act|scene|letter|adventure'
+  + '|capítulo|capitulo|parte|livro|ato|cena|carta'
+  + '|kapitel|hauptstück|hauptstueck|buch|teil|brief'
+  + '|chapitre|livre|partie|lettre'
 
 // As três formas que trazem o NOME da divisão junto. Separadas do numeral
 // romano pelado porque só elas podem receber um título colado — ver abaixo.
-const COM_NOME = String.raw`(?:the\s+)?(?:${NOMES})\s+(?:[ivxlcdm\d]+|${ORDINAIS})` // Chapter IV
+// "[.:]?" entre o nome e o número: o Segundo Tratado de Locke marca
+// "CHAPTER. I." — com ponto no meio — e saiu inteiro num capítulo só.
+const COM_NOME = String.raw`(?:the\s+)?(?:${NOMES})[.:]?\s+(?:[ivxlcdm\d]+|${ORDINAIS})` // Chapter IV
   + String.raw`|(?:the\s+|o\s+|a\s+)?(?:${ORDINAIS})\s+(?:${NOMES})`                 // THE FIRST BOOK
   + String.raw`|(?:the\s+)?(?:${NOMES})\s+(?:one|two|three|four|five|six|seven|eight|nine|ten)`
 
@@ -146,12 +167,34 @@ const ROMANO_COM_TITULO = /^\s*[ivxlcdm]{1,7}\.\s+(\S.*)$/i
 // Um título de capítulo é uma linha curta e solta. Este teto é o que separa um
 // cabeçalho de um parágrafo que por acaso começa com "Chapter", e é ele que
 // deixa as formas com título serem generosas sem ficarem perigosas.
+// ── o número por extenso com travessão ──
+//
+// "FOUR -- The Man in the Passage": é assim que o Gutenberg marca os contos de
+// A Sabedoria do Padre Brown. O travessão é o que torna isto seguro — nenhuma
+// frase de romance começa com "Four --" sozinha numa linha curta.
+const EXTENSO_COM_TRAVESSAO = /^\s*(?:one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen)\s*(?:--|—|–)\s*\S/i
+
+// ── a marcação em volta do cabeçalho ──
+//
+// "*CHAPTER I*" (negrito do Gutenberg) e "_I_" (itálico). Cinco livros saíram
+// num capítulo só por isso: Um dos Seiscentos, O Que Tem Asas, A Jovem
+// Philippa, A Casa no Limiar, Memórias de um Operador da Bolsa. A linha era um
+// cabeçalho perfeito — só estava embrulhada. Tira-se o embrulho antes de
+// olhar, e só ele: um asterisco no meio da linha continua lá.
+const desembrulhar = (t) => t.replace(/^[*_]+\s*/, '').replace(/\s*[*_]+$/, '')
+
 const ehMarca = (l) => {
-  const t = l.trim()
+  const t = desembrulhar(l.trim())
   if (!t || t.length > 70) return false
-  if (MARCA.test(t) || MARCA_COM_TITULO.test(t)) return true
+  if (MARCA.test(t) || MARCA_COM_TITULO.test(t) || EXTENSO_COM_TRAVESSAO.test(t)) return true
 
   const romano = t.match(ROMANO_COM_TITULO)
+  // (Houve aqui, por algumas horas de 21/09, uma recusa de "D.", "C.", "L." e
+  // "M." sozinhos, para a editora "D. APPLETON AND COMPANY" não virar
+  // capítulo. A medida derrubou a ideia: em A Vida dos Doze Césares os
+  // capítulos SÃO "C. JULIUS CAESAR." e "D. OCTAVIUS CAESAR AUGUSTUS." — a
+  // inicial romana do prenome. A editora vira um pedaço de folha de rosto,
+  // que é inofensivo; os Césares num capítulo só, não.)
   return Boolean(romano) && romano[1] === romano[1].toUpperCase() && /\p{Lu}/u.test(romano[1])
 }
 
@@ -164,8 +207,56 @@ const ehMarca = (l) => {
  */
 export function emCapitulos(texto) {
   const linhas = texto.split('\n')
-  const marcas = []
+  let marcas = []
   linhas.forEach((l, i) => { if (ehMarca(l)) marcas.push(i) })
+
+  // ── A LINHA EM BRANCO ANTES ──
+  //
+  // O .txt do Gutenberg quebra o texto a cada ~70 letras, então QUALQUER
+  // linha pode começar com "first letter. And when…" no meio de um parágrafo.
+  // A Vida dos Doze Césares ganhou um capítulo assim na primeira medida. Um
+  // cabeçalho de verdade é um parágrafo sozinho: vem sempre depois de uma
+  // linha em branco.
+  marcas = marcas.filter((i) => i === 0 || !linhas[i - 1].trim())
+
+  // ── A TRAVA DO CABEÇALHO CORRIDO (21/09/2026) ──
+  //
+  // Em Da Democracia na América, "TOME PREMIER." aparece 61 vezes — é o
+  // cabeçalho de cada página impressa, que sobreviveu à digitalização. Contado
+  // como marca, picaria o livro em 61 pedaços sem sentido.
+  //
+  // A primeira versão desta trava descartava toda marca repetida três vezes,
+  // e a medida mostrou o estrago: Os Mistérios de Udolpho caiu de 62 capítulos
+  // para 9, A Pedra da Lua de 64 para 17. Livro em vários volumes RECOMEÇA a
+  // numeração — "CHAPTER I" uma vez por volume —, e aquilo não é cabeçalho.
+  //
+  // O que separa os dois é a VIZINHANÇA, junto com a contagem. Cabeçalho de
+  // página aparece colado nele mesmo: entre dois "TOME PREMIER." não há outra
+  // marca. "CHAPTER I" que recomeça sempre tem "CHAPTER II, III, IV…" no meio.
+  //
+  // E vizinhança sozinha também erra. Em Declínio e Queda do Império Romano,
+  // Gibbon divide cada capítulo em partes, e o .txt quebra o título na mesma
+  // altura: "Chapter I: The Extent Of The Empire In The Age Of The" aparece
+  // três vezes seguidas — Part I, II e III. Tratado como cabeçalho, o livro
+  // caiu de 98 pedaços para 23.
+  //
+  // O que separa de verdade é a DISTÂNCIA. Cabeçalho de página se repete a
+  // cada página impressa: umas quarenta linhas do .txt. As partes de Gibbon
+  // estão a centenas de linhas uma da outra. Então duas marcas iguais e
+  // vizinhas só são a mesma coisa quando estão PERTO — menos de uma página —,
+  // e aí:
+  //   - se o texto se repete três vezes ou mais assim, é cabeçalho corrido, e
+  //     sai inteiro ("TOME PREMIER.", 61 vezes);
+  //   - se é um par só, é o título escrito duas vezes, e as duas viram uma.
+  // Marcas iguais LONGE uma da outra ficam todas: cada uma abre um pedaço de
+  // texto de verdade.
+  const UMA_PAGINA = 80
+  const texto_ = (i) => desembrulhar(linhas[i].trim()).toLowerCase()
+  const colada = (k) => k > 0 && texto_(marcas[k]) === texto_(marcas[k - 1]) && marcas[k] - marcas[k - 1] < UMA_PAGINA
+  const coladasPorTexto = new Map()
+  marcas.forEach((i, k) => { if (colada(k)) coladasPorTexto.set(texto_(i), (coladasPorTexto.get(texto_(i)) ?? 0) + 1) })
+  const corrido = new Set([...coladasPorTexto].filter(([, n]) => n >= 2).map(([t]) => t))
+  marcas = marcas.filter((i, k) => !corrido.has(texto_(i)) && !colada(k))
 
   if (marcas.length < 2) return [{ titulo: null, bruto: texto }]
 
@@ -176,7 +267,8 @@ export function emCapitulos(texto) {
   marcas.forEach((inicio, k) => {
     const fim = k + 1 < marcas.length ? marcas[k + 1] : linhas.length
     saida.push({
-      titulo: linhas[inicio].trim(),
+      // sem o embrulho: "*CHAPTER I*" vira o título "CHAPTER I"
+      titulo: desembrulhar(linhas[inicio].trim()),
       bruto: linhas.slice(inicio + 1, fim).join('\n').trim(),
     })
   })

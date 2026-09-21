@@ -102,7 +102,10 @@ export function retrato(banco, { pessoa, token }) {
   // acervo neste momento e em que modo.
   if (modoDaRevisora === 'parada') diz('ok', 'Revisora', 'desligada.')
   else if (!rev.viva) diz('problema', 'Revisora', `ligada (${modoDaRevisora}), mas sem sinal há ${Math.round((rev.pulso?.idadeSegundos ?? 0) / 60)} min. O serviço volta sozinho.`)
-  else if (modoDaRevisora === 'aplicar') diz('atencao', 'Revisora', `CONSERTANDO as nossas traduções agora: ${rev.trocas.aplicadas} trocas feitas, ${rev.fila.pronto} de ${rev.fila.pronto + rev.fila.espera + rev.fila.suspeito} livros. Tudo dá para desfazer (aba Esteira).`)
+  // Verde, e não amarelo (21/09/2026): aplicar é o modo que o dono ESCOLHEU.
+  // Um amarelo permanente sobre uma decisão já tomada ensina a ignorar o
+  // painel. Amarelo fica para o que pede ação — suspeito, sem sinal.
+  else if (modoDaRevisora === 'aplicar') diz('ok', 'Revisora', `consertando as nossas traduções: ${rev.trocas.aplicadas} trocas feitas, ${rev.fila.pronto} de ${rev.fila.pronto + rev.fila.espera + rev.fila.suspeito} livros. Tudo dá para desfazer (aba Esteira).`)
   else diz('ok', 'Revisora', `em modo de proposta: ${rev.trocas.propostas} sugestões, e nenhum texto mudado.`)
   if (rev.fila.suspeito) diz('atencao', 'Revisora', `${rev.fila.suspeito} livro(s) parados por suspeita — ela achou trocas demais e preferiu não mexer.`)
 

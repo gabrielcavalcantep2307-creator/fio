@@ -422,8 +422,12 @@ export function estado(banco) {
     FROM revisao_livro r JOIN texto x ON x.id = r.texto_id JOIN obra o ON o.id = x.obra_id
     WHERE r.estado = 'suspeito' LIMIT 10`)
 
-  // 2 minutos sem pulso é parada — a volta mais curta dela é de 20 s.
-  const viva = pulso != null && pulso.idadeSegundos < 180
+  // Viva é "mandou sinal quando devia". Ociosa, ela dorme 30 min de
+  // propósito — e o painel dizia "sem sinal há 25 min, problema" (21/09) sobre
+  // uma revisora que só estava esperando livro novo. O pulso agora diz quando
+  // ela volta, e o prazo é esse mais três minutos de folga.
+  const prazo = Math.max(180, (Number(pulso?.volta_em_s) || 0) + 180)
+  const viva = pulso != null && pulso.idadeSegundos < prazo
 
   return {
     modo: null, // preenchido pela rota, que conhece os ajustes

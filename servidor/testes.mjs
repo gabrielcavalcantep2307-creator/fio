@@ -2535,3 +2535,70 @@ test('revisora: o glossário está agrupado por família, e nenhuma sumiu', asyn
   // inventado — as três famílias que o raio-x achou
   for (const f of ['en', 'es', 'pt']) assert.ok(familias[f] > 0, `a família ${f} sumiu do glossário`)
 })
+
+// ─────────────────────────────────────────────────────────────
+// O DIVISOR DE CAPÍTULOS DA ESTEIRA (21/09/2026)
+//
+// 12 das 53 traduções mais recentes saíram num capítulo só — Júlia, ou a
+// Nova Heloísa com 296.623 palavras numa página. Cada teste abaixo é uma forma
+// medida num original de verdade, e cada trava é um estrago que a primeira
+// versão do conserto causou e a medida pegou.
+// ─────────────────────────────────────────────────────────────
+
+const livroDe = (...partes) => partes.join('\n\n\n') + '\n'
+const miolo = (n) => Array.from({ length: n }, (_, i) => `Parágrafo ${i + 1} de um texto de verdade, longo o bastante para não ser cabeçalho de nada.`).join('\n\n')
+
+test('capítulos: a marca embrulhada em *negrito* e _itálico_ do Gutenberg', async () => {
+  const { emCapitulos } = await import('./servicos/traducao.mjs')
+  const cs = emCapitulos(livroDe('*CHAPTER I*', miolo(3), '*CHAPTER II*', miolo(3), '*CHAPTER III*', miolo(3)))
+  assert.equal(cs.length, 3)
+  assert.equal(cs[0].titulo, 'CHAPTER I', 'o título sai sem o embrulho')
+  assert.equal(emCapitulos(livroDe('_I_', miolo(3), '_II_', miolo(3))).length, 2)
+})
+
+test('capítulos: cartas, alemão, francês e o número por extenso com travessão', async () => {
+  const { emCapitulos } = await import('./servicos/traducao.mjs')
+  assert.equal(emCapitulos(livroDe('Letter I. To Eloisa.', miolo(2), 'Letter II. To Eloisa.', miolo(2), 'Letter III. Answer.', miolo(2))).length, 3, 'Júlia')
+  assert.equal(emCapitulos(livroDe('Erstes Hauptstück:', miolo(2), 'Zweites Hauptstück:', miolo(2))).length, 2, 'Nietzsche')
+  assert.equal(emCapitulos(livroDe('CHAPITRE PREMIER.', miolo(2), 'CHAPITRE II.', miolo(2))).length, 2, 'Tocqueville')
+  assert.equal(emCapitulos(livroDe('CHAPTER. I.', miolo(2), 'CHAPTER. II.', miolo(2))).length, 2, 'Locke, com ponto no meio')
+  assert.equal(emCapitulos(livroDe('ONE -- The Absence of Mr Glass', miolo(2), 'TWO -- The Paradise of Thieves', miolo(2))).length, 2, 'Padre Brown')
+})
+
+test('capítulos: cabeçalho de página repetido NÃO vira capítulo (TOME PREMIER. ×61)', async () => {
+  const { emCapitulos } = await import('./servicos/traducao.mjs')
+  // o cabeçalho a cada página, e dois capítulos de verdade no meio
+  const paginas = []
+  for (let p = 0; p < 12; p++) {
+    if (p === 0) paginas.push('CHAPITRE I.')
+    if (p === 6) paginas.push('CHAPITRE II.')
+    paginas.push('TOME PREMIER.', miolo(2))
+  }
+  const cs = emCapitulos(livroDe(...paginas))
+  assert.equal(cs.length, 2, 'só os dois capítulos: ' + cs.map((c) => c.titulo).join(' | '))
+})
+
+test('capítulos: livro em volumes que RECOMEÇA a numeração continua inteiro (Udolpho)', async () => {
+  const { emCapitulos } = await import('./servicos/traducao.mjs')
+  const vol = () => ['CHAPTER I', miolo(4), 'CHAPTER II', miolo(4), 'CHAPTER III', miolo(4)]
+  const cs = emCapitulos(livroDe('VOLUME ONE', ...vol(), 'VOLUME TWO', ...vol(), 'VOLUME THREE', ...vol()))
+  // a primeira versão da trava descartava "CHAPTER I" por aparecer 3 vezes, e
+  // Udolpho caiu de 62 capítulos para 9
+  assert.ok(cs.length >= 9, 'os nove capítulos continuam: ' + cs.length)
+})
+
+test('capítulos: partes com o mesmo título, longe uma da outra, ficam separadas (Gibbon)', async () => {
+  const { emCapitulos } = await import('./servicos/traducao.mjs')
+  const longe = miolo(60) // bem mais de uma página impressa
+  const t = 'Chapter I: The Extent Of The Empire In The Age Of The'
+  const cs = emCapitulos(livroDe(t, longe, t, longe, t, longe, 'Chapter II: The Internal Prosperity', longe))
+  assert.equal(cs.length, 4, 'as três partes do capítulo I e o capítulo II')
+})
+
+test('capítulos: linha quebrada no meio do parágrafo não é cabeçalho', async () => {
+  const { emCapitulos } = await import('./servicos/traducao.mjs')
+  // o .txt quebra a cada ~70 letras: "first letter. And when…" chegou a abrir
+  // um capítulo em A Vida dos Doze Césares
+  const txt = livroDe('CHAPTER I', 'Ele escreveu a\nfirst letter. And when it came back\nnada mudou.', miolo(3), 'CHAPTER II', miolo(3))
+  assert.equal(emCapitulos(txt).length, 2)
+})

@@ -55,6 +55,16 @@ import { traduzir } from './servicos/motor-traducao.mjs'
 const MIN = 60_000
 const MODO_PADRAO = 'propor'
 const TETO_TROCAS_CAPITULO = Number(process.env.FIO_REVISORA_TETO_CAPITULO || 40)
+// O teto é uma DENSIDADE, e não um número fixo (21/09/2026).
+//
+// Com teto fixo de 40, dois livros foram marcados suspeitos: O Nascimento da
+// Tragédia (73 trocas) e As Aventuras de Robin Hood (65). Nenhum tinha regra
+// ruim — os dois são livros de UM capítulo só, de 42 e 107 mil palavras, e 73
+// trocas em 42 mil palavras é a mesma densidade de qualquer romance. O teto
+// existe para pegar regra que casa demais, e "demais" só se mede por palavra:
+// uma troca a cada 300 palavras é o limite, e os 40 continuam de piso.
+const PALAVRAS_POR_TROCA = 300
+const tetoDo = (cap) => Math.max(TETO_TROCAS_CAPITULO, Math.ceil((cap.palavras || 0) / PALAVRAS_POR_TROCA))
 const TETO_TROCAS_LIVRO = Number(process.env.FIO_REVISORA_TETO_LIVRO || 400)
 const TETO_RETRADUCAO_LIVRO = Number(process.env.FIO_REVISORA_TETO_RETRADUCAO || 250)
 const PAUSA_ENTRE_LIVROS_S = Number(process.env.FIO_REVISORA_PAUSA_S || 20)
@@ -188,7 +198,7 @@ async function retraduzirCapitulo(corpo, lingua) {
 }
 
 async function revisarLivro(livro, modo) {
-  const caps = banco.prepare('SELECT id, ordem, titulo, corpo FROM capitulo WHERE texto_id = ? ORDER BY ordem').all(livro.texto_id)
+  const caps = banco.prepare('SELECT id, ordem, titulo, corpo, palavras FROM capitulo WHERE texto_id = ? ORDER BY ordem').all(livro.texto_id)
   let trocas = 0
   let recusadas = 0
   let retraduzidos = 0
@@ -226,8 +236,8 @@ async function revisarLivro(livro, modo) {
     const n = revisao.consertarNumeros(g.html)
     if (g.usadas.length || n.usadas.length) {
       const quantas = g.usadas.length + n.usadas.length
-      if (quantas > TETO_TROCAS_CAPITULO) {
-        suspeito = 'capítulo ' + cap.ordem + ' daria ' + quantas + ' trocas (teto ' + TETO_TROCAS_CAPITULO + ')'
+      if (quantas > tetoDo(cap)) {
+        suspeito = 'capítulo ' + cap.ordem + ' daria ' + quantas + ' trocas em ' + (cap.palavras || '?') + ' palavras (teto ' + tetoDo(cap) + ')'
         break
       }
       const fim = tentar({
@@ -246,7 +256,7 @@ async function revisarLivro(livro, modo) {
     const ps = corpo.match(PARAGRAFO) ?? []
     for (const p of ps) {
       if (retraduzidos >= TETO_RETRADUCAO_LIVRO) { suspeito = 'passou de ' + TETO_RETRADUCAO_LIVRO + ' parágrafos para retraduzir'; break }
-      if (noCapitulo >= TETO_TROCAS_CAPITULO) break
+      if (noCapitulo >= tetoDo(cap)) break
       const lingua = revisao.ficouNaOrigem(p)
       if (!lingua) continue
       const cru = revisao.semTags(p)
@@ -302,7 +312,7 @@ async function revisarLivro(livro, modo) {
 async function volta() {
   const modo = modoAgora()
   if (modo === 'parada') {
-    revisao.pulsar(banco, { estado: 'parada' })
+    revisao.pulsar(banco, { estado: 'parada', volta_em_s: 5 * 60 })
     return { dormir: 5 * MIN }
   }
   const novos = revisao.encherFila(banco)
@@ -310,7 +320,7 @@ async function volta() {
 
   const livro = revisao.proximo(banco)
   if (!livro) {
-    revisao.pulsar(banco, { estado: 'ociosa', modo })
+    revisao.pulsar(banco, { estado: 'ociosa', modo, volta_em_s: OCIOSA_MIN * 60 })
     return { dormir: OCIOSA_MIN * MIN }
   }
 
@@ -348,6 +358,19 @@ if (soLivro) {
   const r = await revisarLivro(l, modo)
   log(JSON.stringify(r))
   process.exit(0)
+}
+
+// ── o que uma queda deixou pela metade ── (21/09/2026)
+//
+// "revisando" é o estado de um livro DURANTE a volta. Se o processo cai no
+// meio — deploy, falta de memória, reinício da máquina —, o livro fica
+// "revisando" para sempre, porque `proximo()` só pega quem espera. Foi o que
+// aconteceu com Crime e Castigo e O Castelo: pegos por uma rodada avulsa que o
+// deploy matou, esquecidos desde então — e O Castelo ainda com capítulo em
+// alemão. Ao subir, nenhum livro pode estar sendo revisado: quem está, volta.
+{
+  const voltaram = banco.prepare("UPDATE revisao_livro SET estado = 'espera' WHERE estado = 'revisando'").run().changes
+  if (voltaram) log('voltaram à fila ' + voltaram + ' livro(s) que uma queda deixou pela metade')
 }
 
 log('revisora de pé. modo: ' + modoAgora())

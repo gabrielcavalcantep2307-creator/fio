@@ -48,10 +48,8 @@ ARQ="$PASTA/catalogo-$QUANDO.db.gz"
 printf '{"quando":"%s","arquivo":"%s","bytes":%s}\n' "$(date -u +%FT%TZ)" "$(basename "$ARQ")" "$(stat -c%s "$ARQ")" > "$ESTADO/backup.json.novo"
 mv "$ESTADO/backup.json.novo" "$ESTADO/backup.json"
 
-SSH_BARRADAS=$(journalctl -u ssh -u sshd --since '24 hours ago' 2>/dev/null | grep -cE 'Invalid user|Failed|authentication failure|Connection closed by authenticating' || true)
-BANIDOS=$(fail2ban-client status sshd 2>/dev/null | awk -F: '/Currently banned/ {gsub(/[ 	]/,"",$2); print $2}' || true)
-ATUALIZACOES=$(apt-get -s -o Debug::NoLocking=1 upgrade 2>/dev/null | grep -c '^Inst.*security' || true)
-REINICIAR=false; [ -f /var/run/reboot-required ] && REINICIAR=true
-printf '{"quando":"%s","ssh_barradas":%s,"banidos":%s,"atualizacoes":%s,"reiniciar":%s}\n' \
-  "$(date -u +%FT%TZ)" "${SSH_BARRADAS:-0}" "${BANIDOS:-0}" "${ATUALIZACOES:-0}" "$REINICIAR" > "$ESTADO/maquina.json.novo"
-mv "$ESTADO/maquina.json.novo" "$ESTADO/maquina.json"
+# O retrato da máquina saiu daqui em 21/09/2026: ele rodava só uma vez por dia
+# e deixava o painel dizendo "reinício pendente" depois do reinício. Agora é
+# infra/estado-maquina.sh, a cada 30 min e na subida (cron). Aqui ele só é
+# refeito junto, para o backup e a máquina saírem com a mesma hora.
+bash "$(dirname "$0")/estado-maquina.sh" || true
