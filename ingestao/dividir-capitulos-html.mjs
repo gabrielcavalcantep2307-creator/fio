@@ -1,4 +1,4 @@
-// Livro de um capítulo só, dividido pela FORMA do original (21/09/2026).
+// Capítulo (ou livro inteiro) na forma errada, refeito pela FORMA do original (21/09/2026).
 //
 //   node ingestao/dividir-capitulos-html.mjs --banco /dados/catalogo.db            # só mostra
 //   node ingestao/dividir-capitulos-html.mjs --banco /dados/catalogo.db --texto 5098
@@ -8,11 +8,15 @@
 // só ADIVINHANDO onde é título a partir da forma da linha no .txt — e recusa
 // quando a forma não é clara (28 dos 38, na varredura de 20/09: Nietzsche
 // numerado por aforismo, "capítulo 15" citado dentro da prosa, título sem
-// número nenhum). Este arquivo ataca os MESMOS livros sem adivinhar nada:
-// baixa a edição em HTML do próprio Gutenberg (servidor/servicos/estrutura.mjs),
-// lê os <h2>/<h3> que quem preparou a edição escreveu — a forma do livro
-// original — e localiza essas âncoras no .txt que a esteira já traduziu. Só
-// entra a ESTRUTURA; o texto continua sendo o que a esteira traduziu.
+// número nenhum). Este arquivo ataca os livros de forma ruim (o raio-x —
+// ingestao/raio-x-estrutura.mjs — chama de PAREDE um capítulo com mais de
+// 15 mil palavras, e de INTEIRO o livro todo num capítulo só) sem adivinhar
+// nada: baixa a edição em HTML do próprio Gutenberg
+// (servidor/servicos/estrutura.mjs), lê os <h2>/<h3> que quem preparou a
+// edição escreveu — a forma do livro original — e localiza essas âncoras no
+// .txt que a esteira já traduziu. Só entra a ESTRUTURA; o texto continua
+// sendo o que a esteira traduziu, e o livro é refeito inteiro (não só o
+// capítulo-parede), porque só assim a numeração dos capítulos fica certa.
 //
 // Só livros com fonte no Gutenberg entram aqui (fonte_url carrega o número do
 // livro). Wikisource, Archive e Planalto não têm HTML do Gutenberg para
@@ -31,15 +35,18 @@
 // A correção: localizar os cortes no PRÓPRIO .txt original (mesma língua do
 // HTML), e só então aplicar os mesmos ÍNDICES de parágrafo na tradução.
 // Funciona porque `traduzirLivro` (servidor/servicos/traducao.mjs) monta o
-// `corpo` com exatamente um `<p>` por parágrafo do original, na mesma ordem
-// (`c.paras.map(p => '<p>'+p+'</p>')`) — parágrafo N do .txt é parágrafo N do
-// corpo. Por segurança, só se confia no corte se a CONTAGEM de parágrafos do
-// original bater exatamente com a do corpo; se não bater (o texto mudou
-// desde a tradução, ou a extração divergiu), o livro fica como está.
+// `corpo` com exatamente um `<p>` por parágrafo do original, capítulo por
+// capítulo, na mesma ordem (`c.paras.map(p => '<p>'+p+'</p>')`) — refazer
+// `emCapitulos` + a divisão em parágrafos sobre o MESMO .txt reproduz a
+// mesma sequência de parágrafos que foi traduzida. Por segurança, só se
+// confia no corte se a CONTAGEM total de parágrafos do original bater
+// exatamente com a do corpo (somando todos os capítulos de hoje); se não
+// bater (o texto mudou desde a tradução, ou `emCapitulos` mudou de versão),
+// o livro fica como está.
 
 import { DatabaseSync } from 'node:sqlite'
 import { idDoGutenberg, textoDe, baixarHtml, esbocoDoHtml, localizar } from '../servidor/servicos/estrutura.mjs'
-import { baixarFonte, soOLivro } from '../servidor/servicos/traducao.mjs'
+import { baixarFonte, soOLivro, emCapitulos } from '../servidor/servicos/traducao.mjs'
 
 const arg = (n, p) => { const i = process.argv.indexOf(n); return i > 0 ? process.argv[i + 1] : p }
 const tem = (n) => process.argv.includes(n)
@@ -47,17 +54,20 @@ const gravar = tem('--gravar')
 const banco = new DatabaseSync(arg('--banco', 'dados/catalogo.db'), { readOnly: !gravar })
 const soTexto = arg('--texto', null)
 
+const PAREDE = 15000
+const INTEIRO = 8000
+
 const PARAGRAFO = /<p(?:[ ][^>]*)?>[\s\S]*?<\/p>|<h[1-6](?:[ ][^>]*)?>[\s\S]*?<\/h[1-6]>/g
 // mesma divisão de servidor/servicos/traducao.mjs → emParagrafos (não exportada)
 const emParagrafos = (bruto) => bruto.split(/\n\s*\n/).map((p) => p.replace(/\s*\n\s*/g, ' ').trim()).filter(Boolean)
 
-let sql = `SELECT t.id, t.obra_id, t.fonte_url, coalesce(o.titulo_pt, o.titulo) titulo, count(c.id) caps, sum(c.palavras) pal
+let sql = `SELECT t.id, t.obra_id, t.fonte_url, coalesce(o.titulo_pt, o.titulo) titulo, count(c.id) caps, sum(c.palavras) pal, max(c.palavras) maior
   FROM texto t JOIN capitulo c ON c.texto_id = t.id JOIN obra o ON o.id = t.obra_id
-  WHERE t.dono_id IS NULL GROUP BY t.id HAVING caps = 1 AND pal > 8000 ORDER BY pal DESC`
+  WHERE t.dono_id IS NULL GROUP BY t.id HAVING maior > ${PAREDE} OR (caps = 1 AND pal > ${INTEIRO}) ORDER BY maior DESC`
 if (soTexto) sql = sql.replace('WHERE t.dono_id IS NULL', 'WHERE t.id = ' + Number(soTexto))
 const candidatos = banco.prepare(sql).all()
 
-const pegarCap = banco.prepare('SELECT id, ordem, titulo, corpo FROM capitulo WHERE texto_id = ?')
+const pegarCaps = banco.prepare('SELECT id, ordem, titulo, corpo FROM capitulo WHERE texto_id = ? ORDER BY ordem')
 
 let feitos = 0, semGutenberg = 0, semHtml = 0, semCorte = 0
 
@@ -67,13 +77,13 @@ for (const t of candidatos) {
   const idGb = idDoGutenberg(t.fonte_url)
   if (!idGb) { semGutenberg++; continue }
 
-  const cap = pegarCap.get(t.id)
-  const ps = (cap.corpo ?? '').match(PARAGRAFO)
-  if (!ps || ps.length < 5) { linha(t.id, t.titulo, '--  corpo vazio demais'); continue }
+  const capsAtuais = pegarCaps.all(t.id)
+  const ps = capsAtuais.flatMap((c) => (c.corpo ?? '').match(PARAGRAFO) ?? [])
+  if (ps.length < 5) { linha(t.id, t.titulo, '--  corpo vazio demais'); continue }
 
   let original
   try { original = await baixarFonte(t.fonte_url) } catch (e) { linha(t.id, t.titulo, '--  .txt: ' + e.message); continue }
-  const paragrafosOriginais = emParagrafos(soOLivro(original))
+  const paragrafosOriginais = emCapitulos(soOLivro(original)).flatMap((c) => emParagrafos(c.bruto))
   if (paragrafosOriginais.length !== ps.length) {
     semCorte++
     linha(t.id, t.titulo, '--  parágrafos não batem: original ' + paragrafosOriginais.length + ' x traduzido ' + ps.length)
@@ -126,8 +136,16 @@ for (const t of candidatos) {
     continue
   }
 
+  // sem ganho de verdade: o novo maior capítulo continua uma parede, ou o
+  // número de pedaços não mudou nada — não vale trocar por trocar
+  if (maior > PAREDE && pedacos.length <= capsAtuais.length) {
+    semCorte++
+    linha(t.id, t.titulo, '--  corte achado mas não melhora o que já está (ainda ' + maior + ' palavras no maior)')
+    continue
+  }
+
   feitos++
-  linha(t.id, t.titulo, 'ok  ' + pedacos.length + ' partes  (' + perdidos + ' perdidos)  ' +
+  linha(t.id, t.titulo, 'ok  ' + capsAtuais.length + ' → ' + pedacos.length + ' partes  (' + perdidos + ' perdidos)  ' +
     pedacos.slice(1, 4).map((p) => (p.titulo || '').slice(0, 20)).join(' | '))
 
   if (!gravar) continue
@@ -148,7 +166,7 @@ for (const t of candidatos) {
 }
 
 console.log('')
-console.log(candidatos.length + ' livros de um capítulo só; ' + feitos + ' tinham HTML do Gutenberg com corte seguro, ' +
+console.log(candidatos.length + ' livros de forma ruim (parede ou um capítulo só); ' + feitos + ' tinham HTML do Gutenberg com corte seguro, ' +
   semGutenberg + ' não vieram do Gutenberg, ' + semHtml + ' o Gutenberg não tem HTML, ' + semCorte + ' sem corte seguro.')
 if (!gravar) console.log('(nada foi gravado — rode com --gravar)')
 else console.log('GRAVADO. Rode servidor/reindexar.mjs e ingestao/publicar.mjs depois.')
