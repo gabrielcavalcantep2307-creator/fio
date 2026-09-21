@@ -10,6 +10,8 @@ import * as correcoes from '../correcoes.mjs'
 import * as extras from '../extras.mjs'
 import { montarEpub, nomeDeArquivo } from '../epub.mjs'
 import { montarPdf, nomeDeArquivoPdf } from '../pdf.mjs'
+import { readFileSync, existsSync } from 'node:fs'
+import { join } from 'node:path'
 import { ondeComecaOLivro } from '../folha-de-rosto.mjs'
 import { criarBuscaParalela } from '../busca-paralela.mjs'
 import { diagramar } from '../diagramar.mjs'
@@ -18,6 +20,7 @@ import { criarQuisDizer } from '../quis-dizer.mjs'
 import { redirecionar } from '../http/pedido.mjs'
 
 const CASA = process.env.FIO_JURISDICAO || 'BR'
+const ESTATICO = process.env.FIO_ESTATICO || join(process.cwd(), 'web', 'dist')
 
 /** O título do Gutenberg às vezes traz o subtítulo depois de uma quebra. */
 const primeiraLinha = (s) => String(s ?? '').split(/[\r\n]/)[0].replace(/\s+/g, ' ').trim()
@@ -34,7 +37,7 @@ export default function rotasDeLeitura({ rota, banco }) {
   const quisDizer = criarQuisDizer(banco, { jurisdicao: CASA })
 
   const doLivro = banco.prepare(`
-    SELECT o.id, o.titulo, o.titulo_pt, t.id texto_id, t.fonte, t.fonte_url, t.normalizado,
+    SELECT o.id, o.titulo, o.titulo_pt, o.capa, t.id texto_id, t.fonte, t.fonte_url, t.normalizado,
            t.revisao, tr.nome tradutor,
            d.estado, d.motivo,
            (SELECT p.nome FROM obra_pessoa op JOIN pessoa p ON p.id = op.pessoa_id
@@ -211,6 +214,17 @@ export default function rotasDeLeitura({ rota, banco }) {
     const o = doLivro.get(CASA, params.id)
     if (!o || o.normalizado !== 1 || curadoria.obraOculta(banco, params.id)) throw new Recusa('Não temos o texto desta obra.', 404)
     if (o.estado !== 'dominio_publico' && o.estado !== 'licenca_livre') throw new Recusa('Esta obra não pode ser distribuída daqui.', 403)
+    // a capa de verdade (JPEG local ou da Open Library), quando existe — o
+    // gerador de PDF confere a assinatura do arquivo e ignora sozinho o que
+    // não for JPEG (a maioria das capas é SVG desenhado por tema, que o PDF
+    // não sabe rasterizar; nesse caso ele desenha um painel de cor).
+    let capaJpeg = null
+    if (o.capa) {
+      try {
+        const caminho = join(ESTATICO, 'capas', o.capa)
+        if (existsSync(caminho)) capaJpeg = readFileSync(caminho)
+      } catch { /* segue sem a foto — o painel de cor cobre o caso */ }
+    }
     const livro = {
       id: o.id,
       titulo: primeiraLinha(o.titulo_pt || o.titulo),
@@ -219,6 +233,7 @@ export default function rotasDeLeitura({ rota, banco }) {
       revisao: o.revisao,
       direito: o.revisao === 'automatica' ? `Tradução automática do Fio, sem revisão humana. ${o.motivo ?? ''}` : o.motivo,
       fonteUrl: o.fonte_url,
+      capaJpeg,
       capitulos: diagramar(capitulosDo.all(o.texto_id), { fonte: o.fonte, titulo: false }),
     }
     if (!livro.capitulos.length) throw new Recusa('Não temos o texto desta obra.', 404)

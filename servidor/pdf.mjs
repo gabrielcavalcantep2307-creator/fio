@@ -146,8 +146,47 @@ const escaparPdf = (buf) => {
   }
   return Buffer.from(partes)
 }
-const opTexto = (fonte, tamanho, x, y, tw, texto) =>
-  `/${fonte} ${tamanho} Tf\n1 0 0 1 ${x.toFixed(2)} ${y.toFixed(2)} Tm\n${tw.toFixed(3)} Tw\n(${escaparPdf(bytesWinAnsi(texto)).toString('latin1')}) Tj\n`
+const corRgb = (hex) => {
+  const h = String(hex ?? '#000000').replace('#', '')
+  const n = parseInt(h.length === 3 ? h.split('').map((c) => c + c).join('') : h, 16)
+  return [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255].map((v) => v.toFixed(3))
+}
+const opTexto = (fonte, tamanho, x, y, tw, texto, { cor = '#000000', tc = 0 } = {}) => {
+  const [r, g, b] = corRgb(cor)
+  return `${r} ${g} ${b} rg\n/${fonte} ${tamanho} Tf\n${tc.toFixed(2)} Tc\n1 0 0 1 ${x.toFixed(2)} ${y.toFixed(2)} Tm\n${tw.toFixed(3)} Tw\n(${escaparPdf(bytesWinAnsi(texto)).toString('latin1')}) Tj\n`
+}
+/** Retângulo preenchido — ops de CAMINHO, têm que ficar FORA de BT/ET. */
+const opRetangulo = (x, y, w, h, cor) => {
+  const [r, g, b] = corRgb(cor)
+  return `${r} ${g} ${b} rg\n${x.toFixed(2)} ${y.toFixed(2)} ${w.toFixed(2)} ${h.toFixed(2)} re\nf\n`
+}
+/** Linha reta, cheia ou tracejada (o traço pontilhado do sumário). */
+const opLinhaReta = (x1, y1, x2, y2, cor, espessura = 0.75, tracejada = false) => {
+  const [r, g, b] = corRgb(cor)
+  return `${r} ${g} ${b} RG\n${espessura} w\n${tracejada ? '[1 2] 0' : '[] 0'} d\n${x1.toFixed(2)} ${y1.toFixed(2)} m\n${x2.toFixed(2)} ${y2.toFixed(2)} l\nS\n[] 0 d\n`
+}
+const opImagem = (nome, x, y, w, h) => `q\n${w.toFixed(2)} 0 0 ${h.toFixed(2)} ${x.toFixed(2)} ${y.toFixed(2)} cm\n/${nome} Do\nQ\n`
+
+/**
+ * Largura e nº de componentes de cor de um JPEG, lendo só os marcadores —
+ * sem decodificar a imagem. `null` se não for JPEG ou não achar o SOF.
+ */
+function dimensoesJpeg(buf) {
+  if (!buf || buf.length < 4 || buf[0] !== 0xff || buf[1] !== 0xd8) return null
+  let i = 2
+  while (i + 3 < buf.length) {
+    if (buf[i] !== 0xff) { i++; continue }
+    const marca = buf[i + 1]
+    if (marca === 0xd8 || marca === 0xd9 || (marca >= 0xd0 && marca <= 0xd7) || marca === 0x01) { i += 2; continue }
+    const tam = buf.readUInt16BE(i + 2)
+    const ehSOF = marca >= 0xc0 && marca <= 0xcf && marca !== 0xc4 && marca !== 0xc8 && marca !== 0xcc
+    if (ehSOF) {
+      return { altura: buf.readUInt16BE(i + 5), largura: buf.readUInt16BE(i + 7), componentes: buf[i + 9] }
+    }
+    i += 2 + tam
+  }
+  return null
+}
 
 // ─────────────────────────────────────────────────────────────
 // O documento: página a página, com paginação automática
@@ -166,7 +205,7 @@ const COLUNA = LARGURA_PAGINA - MARGEM * 2
 function novoDocumento(topoExtra = 0) {
   const paginas = []
   let atual = null
-  const nova = () => { atual = { ops: [], linhas: [], annots: [] }; paginas.push(atual); return atual }
+  const nova = () => { atual = { ops: [], vetor: [], linhas: [], annots: [] }; paginas.push(atual); return atual }
   let y = 0
   const doc = {
     paginas,
@@ -174,15 +213,15 @@ function novoDocumento(topoExtra = 0) {
     novaPagina() { nova(); y = ALTURA_PAGINA - MARGEM - topoExtra; return atual },
     y: () => y,
     ehTopoDePagina: () => y >= ALTURA_PAGINA - MARGEM - topoExtra - 0.01,
-    linha(texto, { fonte = 'F1', tamanho = 11, leading = tamanho * 1.4, x = MARGEM, cor, justificar = false, larguraAlvo = 0 } = {}) {
+    linha(texto, { fonte = 'F1', tamanho = 11, leading = tamanho * 1.4, x = MARGEM, cor = '#000000', tc = 0, justificar = false, larguraAlvo = 0 } = {}) {
       if (!atual) this.novaPagina()
       if (y - leading < MARGEM) this.novaPagina()
       const tw = justificar && larguraAlvo > 0 ? Math.max(0, (larguraAlvo - largura(fonte, texto, tamanho)) / Math.max(1, (texto.match(/ /g) || []).length)) : 0
-      atual.ops.push(opTexto(fonte, tamanho, x, y, tw, texto))
+      atual.ops.push(opTexto(fonte, tamanho, x, y, tw, texto, { cor, tc }))
       const rect = [x, y - 2, x + Math.max(largura(fonte, texto, tamanho), larguraAlvo || 0), y + tamanho]
       atual.linhas.push({ texto, rect })
       y -= leading
-      return { pagina: paginas.length - 1, rect }
+      return { pagina: paginas.length - 1, rect, y }
     },
     linhaCentralizada(texto, opts = {}) {
       const tamanho = opts.tamanho ?? 11
@@ -191,7 +230,10 @@ function novoDocumento(topoExtra = 0) {
       return this.linha(texto, { ...opts, x: MARGEM + Math.max(0, (COLUNA - l) / 2) })
     },
     espaco(pts) { y -= pts; if (y < MARGEM) this.novaPagina() },
-    paragrafo(texto, { fonte = 'F1', tamanho = 11, leading = tamanho * 1.45, indent = 16, justificar = true } = {}) {
+    retangulo(x, y2, w, h, cor) { if (!atual) this.novaPagina(); atual.vetor.push(opRetangulo(x, y2, w, h, cor)) },
+    linhaReta(x1, y1, x2, y2, cor, espessura, tracejada) { if (!atual) this.novaPagina(); atual.vetor.push(opLinhaReta(x1, y1, x2, y2, cor, espessura, tracejada)) },
+    imagem(nome, x, y2, w, h) { if (!atual) this.novaPagina(); atual.vetor.push(opImagem(nome, x, y2, w, h)) },
+    paragrafo(texto, { fonte = 'F1', tamanho = 11, leading = tamanho * 1.45, indent = 16, justificar = true, cor = '#000000' } = {}) {
       const primeiraColuna = COLUNA - indent
       // a 1ª linha some no recuo (coluna mais estreita); as seguintes usam a
       // coluna cheia. Quebra duas vezes e descarta da ordem original as
@@ -206,13 +248,23 @@ function novoDocumento(topoExtra = 0) {
         const ultima = i === todasLinhas.length - 1
         const x = i === 0 ? MARGEM + indent : MARGEM
         const alvo = i === 0 ? primeiraColuna : COLUNA
-        this.linha(l.palavras.join(' '), { fonte, tamanho, leading, x, justificar: justificar && !ultima, larguraAlvo: alvo })
+        this.linha(l.palavras.join(' '), { fonte, tamanho, leading, x, cor, justificar: justificar && !ultima, larguraAlvo: alvo })
       })
     },
     tituloCapitulo(texto) {
       this.espaco(18)
       this.linhaCentralizada(texto || 'Sem título', { fonte: 'F2', tamanho: 13.5, leading: 20 })
       this.espaco(14)
+    },
+    // Escreve numa posição EXATA, sem mexer no cursor nem checar quebra de
+    // página — só para os layouts livres (a capa, com faixa de cor e texto
+    // sobreposto em posições fixas, não flui como o resto do documento).
+    textoLivre(texto, x, y2, { fonte = 'F1', tamanho = 11, cor = '#000000', tc = 0, centralizado = false } = {}) {
+      if (!atual) this.novaPagina()
+      const l = largura(fonte, texto, tamanho)
+      const xx = centralizado ? MARGEM + Math.max(0, (COLUNA - l) / 2) : x
+      atual.ops.push(opTexto(fonte, tamanho, xx, y2, 0, texto, { cor, tc }))
+      return { largura: l }
     },
   }
   return doc
@@ -230,36 +282,75 @@ const semTags = (html) => String(html ?? '')
   .replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(Number(n)))
   .replace(/[ \t]+/g, ' ')
 
+// Uma cor só, neutra e elegante, para o livro que não tem foto de capa real
+// (a maioria do acervo: capa desenhada por tema, em SVG — que este arquivo
+// não sabe rasterizar sem uma dependência nova). Não tenta casar com a cor
+// do tema do site; é o equivalente em PDF da folha de rosto tipográfica
+// simples, só que com fundo de cor em vez de branco.
+const PALETA_CAPA = ['#242b2e', '#efece4', '#b9a06b'] // fundo, texto claro, acento dourado
+const CINZA_ROTULO = '#8a8a86'
+const CINZA_LINHA = '#c9c5ba'
+
 /**
  * Monta o PDF de um livro.
  *
  * `livro` é `{ id, titulo, autor, tituloOriginal, tradutor, fonte, fonteUrl,
- * revisao, direito, capitulos: [{ordem, titulo, corpo}] }`.
+ * revisao, direito, capaJpeg, capitulos: [{ordem, titulo, corpo}] }`.
+ * `capaJpeg`, se vier, é o BUFFER cru do arquivo — só entra se for JPEG de
+ * verdade (checado por assinatura, não pela extensão do nome).
  */
 export function montarPdf(livro) {
   // ── capa ──
   const capa = novoDocumento()
   capa.novaPagina()
-  capa.espaco(120)
-  capa.linhaCentralizada((livro.autor || 'AUTORIA NÃO IDENTIFICADA').toUpperCase(), { fonte: 'F2', tamanho: 13, leading: 20 })
-  capa.espaco(10)
-  capa.linhaCentralizada(livro.titulo, { fonte: 'F2', tamanho: 22, leading: 30 })
-  capa.espaco(40)
-  capa.linhaCentralizada('—', { fonte: 'F1', tamanho: 14 })
-  capa.espaco(60)
-  capa.linhaCentralizada('FIOLIB', { fonte: 'F2', tamanho: 12, leading: 18 })
-  capa.linhaCentralizada(String(new Date().getFullYear()), { fonte: 'F1', tamanho: 11 })
+  const [fundo, textoClaro, acento] = PALETA_CAPA
+  const jpeg = dimensoesJpeg(livro.capaJpeg)
+  const autorCapa = (livro.autor || 'AUTORIA NÃO IDENTIFICADA').toUpperCase()
+  const linhasTitulo = quebrarLinhas(livro.titulo || 'Sem título', 'F2', 21, COLUNA + 30)
+
+  if (jpeg && jpeg.componentes !== 4) {
+    // a imagem cobre a página inteira (como background-size:cover — pode
+    // sobrar por fora da MediaBox, e a página corta sozinha o que sobra)
+    const escala = Math.max(LARGURA_PAGINA / jpeg.largura, ALTURA_PAGINA / jpeg.altura)
+    const w = jpeg.largura * escala, h = jpeg.altura * escala
+    capa.imagem('CapaFoto', (LARGURA_PAGINA - w) / 2, (ALTURA_PAGINA - h) / 2, w, h)
+    // faixa de cor embaixo, para o título não brigar com a imagem
+    const faixaH = 74 + linhasTitulo.length * 26
+    capa.retangulo(0, 0, LARGURA_PAGINA, faixaH, fundo)
+    capa.textoLivre(autorCapa, 0, faixaH - 28, { fonte: 'F2', tamanho: 10.5, tc: 1.4, cor: acento, centralizado: true })
+    linhasTitulo.forEach((l, i) => {
+      capa.textoLivre(l.palavras.join(' '), 0, faixaH - 54 - i * 26, { fonte: 'F2', tamanho: 18, cor: textoClaro, centralizado: true })
+    })
+    capa.textoLivre('FIOLIB', 0, 22, { fonte: 'F2', tamanho: 9, tc: 1.2, cor: acento, centralizado: true })
+  } else {
+    // sem foto: painel de cor lisa, como uma folha de rosto tipográfica
+    capa.retangulo(0, 0, LARGURA_PAGINA, ALTURA_PAGINA, fundo)
+    const meio = ALTURA_PAGINA / 2
+    capa.textoLivre(autorCapa, 0, meio + 90, { fonte: 'F2', tamanho: 12, tc: 1.8, cor: acento, centralizado: true })
+    const yTitulo = meio + 40
+    linhasTitulo.forEach((l, i) => {
+      capa.textoLivre(l.palavras.join(' '), 0, yTitulo - i * 30, { fonte: 'F2', tamanho: 23, cor: textoClaro, centralizado: true })
+    })
+    const yRegua = yTitulo - linhasTitulo.length * 30 - 14
+    capa.linhaReta(LARGURA_PAGINA / 2 - 40, yRegua, LARGURA_PAGINA / 2 + 40, yRegua, acento, 0.75)
+    capa.textoLivre('FIOLIB', 0, meio - 130, { fonte: 'F2', tamanho: 11, tc: 1.6, cor: acento, centralizado: true })
+    capa.textoLivre(String(new Date().getFullYear()), 0, meio - 148, { fonte: 'F1', tamanho: 10, cor: textoClaro, centralizado: true })
+  }
 
   // ── ficha técnica + sobre esta edição + licença ──
   const info = novoDocumento()
   info.novaPagina()
-  info.linhaCentralizada('FICHA TÉCNICA', { fonte: 'F2', tamanho: 12 })
-  info.espaco(16)
+  info.espaco(20)
+  info.linhaCentralizada('FICHA TÉCNICA', { fonte: 'F2', tamanho: 12, tc: 1.5 })
+  const yReguaInfo = info.y() - 4
+  info.linhaReta(MARGEM + COLUNA / 2 - 46, yReguaInfo, MARGEM + COLUNA / 2 + 46, yReguaInfo, CINZA_LINHA, 0.75)
+  info.espaco(24)
   const campo = (rotulo, valor) => {
     if (!valor) return
-    info.linha(rotulo.toUpperCase(), { fonte: 'F2', tamanho: 9 })
-    info.paragrafo(String(valor), { fonte: 'F1', tamanho: 10.5, indent: 0, justificar: false })
-    info.espaco(8)
+    info.linha(rotulo.toUpperCase(), { fonte: 'F2', tamanho: 8.5, tc: 1.3, cor: CINZA_ROTULO })
+    info.espaco(2)
+    info.paragrafo(String(valor), { fonte: 'F1', tamanho: 11, indent: 0, justificar: false })
+    info.espaco(13)
   }
   campo('Título', livro.titulo)
   if (livro.tituloOriginal && livro.tituloOriginal !== livro.titulo) campo('Título original', livro.tituloOriginal)
@@ -268,18 +359,18 @@ export function montarPdf(livro) {
   campo('Fonte do texto original', livro.fonteUrl)
   campo('Direitos', livro.direito || 'Domínio público no Brasil.')
   campo('Edição', `Fiolib, ${new Date().getFullYear()}`)
-  info.espaco(10)
-  info.linhaCentralizada('SOBRE ESTA EDIÇÃO', { fonte: 'F2', tamanho: 12 })
-  info.espaco(16)
+  info.espaco(6)
+  info.linhaCentralizada('SOBRE ESTA EDIÇÃO', { fonte: 'F2', tamanho: 12, tc: 1.5 })
+  info.espaco(18)
   info.paragrafo(
     livro.revisao
       ? 'O texto em português desta edição foi traduzido pela esteira automática do Fio a partir do original em domínio público, e passa por um serviço de revisão que só troca o que dá para provar. Pode haver trechos ainda não revisados.'
       : 'O texto desta edição é o que está disponível em domínio público, preparado para leitura pelo Fio.',
     { fonte: 'F1', tamanho: 10.5, justificar: true },
   )
-  info.espaco(14)
-  info.linhaCentralizada('LICENÇA DE USO', { fonte: 'F2', tamanho: 12 })
   info.espaco(16)
+  info.linhaCentralizada('LICENÇA DE USO', { fonte: 'F2', tamanho: 12, tc: 1.5 })
+  info.espaco(18)
   info.paragrafo(
     'Disponibilização gratuita por meio da Fiolib (fiolib.com.br), uma biblioteca digital em português. Esta obra está em domínio público ou sob licença livre no Brasil; a tradução, quando houver, é do próprio Fio. Baixe outros livros gratuitamente em fiolib.com.br.',
     { fonte: 'F1', tamanho: 10.5, justificar: true },
@@ -300,42 +391,61 @@ export function montarPdf(livro) {
     }
   })
 
-  // ── sumário: uma linha por capítulo, clicável ──
+  // ── sumário: uma linha por capítulo, com linha pontilhada até o número
+  // da página — a numeração real só dá para escrever DEPOIS de saber quanto
+  // o próprio sumário ocupa, então as linhas de texto entram agora e os
+  // números entram como uma segunda passada mais abaixo, sem refazer a
+  // quebra de linha (o número fica numa coluna à parte, reservada, então
+  // não influencia onde o título quebra).
   const sumario = novoDocumento()
   sumario.novaPagina()
-  sumario.linhaCentralizada('SUMÁRIO', { fonte: 'F2', tamanho: 14 })
-  sumario.espaco(20)
+  sumario.linhaCentralizada('SUMÁRIO', { fonte: 'F2', tamanho: 14, tc: 1.5 })
+  const yReguaSumario = sumario.y() - 4
+  sumario.linhaReta(MARGEM + COLUNA / 2 - 46, yReguaSumario, MARGEM + COLUNA / 2 + 46, yReguaSumario, CINZA_LINHA, 0.75)
+  sumario.espaco(24)
+  const COLUNA_NUMERO = 34
   const linksPendentes = []
+  const entradasNumero = []
   livro.capitulos.forEach((c, i) => {
     const titulo = c.titulo || `Parte ${i + 1}`
     // título comprido demais pra uma linha (acontece: alguns livros herdam
     // como "capítulo" uma citação inteira) quebra em várias — cada linha
     // vira parte do mesmo link, senão o texto vazava da página
-    const quebrado = quebrarLinhas(titulo, 'F1', 10.5, COLUNA)
-    for (const l of quebrado) {
+    const quebrado = quebrarLinhas(titulo, 'F1', 10.5, COLUNA - COLUNA_NUMERO)
+    quebrado.forEach((l, k) => {
       const { pagina, rect } = sumario.linha(l.palavras.join(' '), { fonte: 'F1', tamanho: 10.5, leading: 17 })
-      linksPendentes.push({ pagina, rect, capituloIndex: i })
-    }
+      linksPendentes.push({ pagina, rect: [rect[0], rect[1], rect[2] + COLUNA_NUMERO, rect[3]], capituloIndex: i })
+      if (k === quebrado.length - 1) entradasNumero.push({ capituloIndex: i, pagina, y: rect[1] + 2, fimTitulo: rect[2] })
+    })
   })
 
-  // ── junta tudo, resolve os links do sumário para a página final do corpo ──
+  // ── junta tudo, resolve os links e os números do sumário para a página
+  // final de cada capítulo ──
   const todas = [...capa.paginas, ...info.paginas, ...sumario.paginas, ...corpo.paginas]
   const offsetCorpo = capa.paginas.length + info.paginas.length + sumario.paginas.length
   for (const l of linksPendentes) {
     const paginaAlvo = offsetCorpo + inicioCapitulo[l.capituloIndex]
     sumario.paginas[l.pagina].annots.push({ rect: l.rect, destPagina: paginaAlvo })
   }
+  for (const e of entradasNumero) {
+    const numero = String(offsetCorpo + inicioCapitulo[e.capituloIndex] + 1)
+    const xNumero = MARGEM + COLUNA - largura('F1', numero, 10.5)
+    sumario.paginas[e.pagina].vetor.push(opLinhaReta(e.fimTitulo + 4, e.y + 3, xNumero - 5, e.y + 3, CINZA_LINHA, 0.6, true))
+    sumario.paginas[e.pagina].ops.push(opTexto('F1', 10.5, xNumero, e.y, 0, numero, {}))
+  }
 
-  // ── cabeçalho corrido e número de página, só nas páginas do corpo ──
-  const tituloCurto = (livro.titulo || '').slice(0, 60)
+  // ── cabeçalho corrido (à direita, como uma edição impressa) e número de
+  // página, só nas páginas do corpo ──
+  const tituloCurto = (livro.titulo || '').slice(0, 50).toUpperCase()
+  const larguraCabecalho = largura('F3', tituloCurto, 8.5)
   corpo.paginas.forEach((p, i) => {
-    p.ops.unshift(opTexto('F3', 8.5, MARGEM, ALTURA_PAGINA - MARGEM + 14, 0, tituloCurto.toUpperCase()))
+    p.ops.unshift(opTexto('F3', 8.5, MARGEM + COLUNA - larguraCabecalho, ALTURA_PAGINA - MARGEM + 14, 0, tituloCurto, { cor: '#555555', tc: 0.6 }))
     const num = String(offsetCorpo + i + 1)
     const lnum = largura('F1', num, 9)
-    p.ops.push(opTexto('F1', 9, MARGEM + (COLUNA - lnum) / 2, MARGEM - 24, 0, num))
+    p.ops.push(opTexto('F1', 9, MARGEM + (COLUNA - lnum) / 2, MARGEM - 24, 0, num, {}))
   })
 
-  return montarBytes(todas, { titulo: livro.titulo, autor: livro.autor })
+  return montarBytes(todas, { titulo: livro.titulo, autor: livro.autor, capaFoto: jpeg && jpeg.componentes !== 4 ? { buf: livro.capaJpeg, ...jpeg } : null })
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -352,11 +462,24 @@ function montarBytes(paginas, meta) {
   const idFonteRoman = novoObj(`<< /Type /Font /Subtype /Type1 /BaseFont /Times-Roman /Encoding /WinAnsiEncoding >>`)
   const idFonteBold = novoObj(`<< /Type /Font /Subtype /Type1 /BaseFont /Times-Bold /Encoding /WinAnsiEncoding >>`)
   const idFonteItalic = novoObj(`<< /Type /Font /Subtype /Type1 /BaseFont /Times-Italic /Encoding /WinAnsiEncoding >>`)
-  const recursos = `<< /Font << /F1 ${idFonteRoman} 0 R /F2 ${idFonteBold} 0 R /F3 ${idFonteItalic} 0 R >> >>`
+
+  // A foto da capa (se veio uma JPEG de verdade): entra como Image XObject,
+  // com os BYTES CRUS do arquivo — DCTDecode é literalmente o formato JPEG,
+  // então não há recodificação nenhuma, só embrulhar num objeto de PDF.
+  let idImagemCapa = null
+  if (meta.capaFoto) {
+    const espaco = meta.capaFoto.componentes === 1 ? '/DeviceGray' : '/DeviceRGB'
+    idImagemCapa = novoObj({
+      streamCru: meta.capaFoto.buf,
+      cabecalho: `<< /Type /XObject /Subtype /Image /Width ${meta.capaFoto.largura} /Height ${meta.capaFoto.altura} /ColorSpace ${espaco} /BitsPerComponent 8 /Filter /DCTDecode /Length ${meta.capaFoto.buf.length} >>`,
+    })
+  }
+  const recursos = `<< /Font << /F1 ${idFonteRoman} 0 R /F2 ${idFonteBold} 0 R /F3 ${idFonteItalic} 0 R >> ` +
+    (idImagemCapa ? `/XObject << /CapaFoto ${idImagemCapa} 0 R >> ` : '') + '>>'
 
   const idPaginas = paginas.map(() => novoObj(null))
   const idConteudos = paginas.map((p, i) => {
-    const stream = 'BT\n' + p.ops.join('') + 'ET\n'
+    const stream = p.vetor.join('') + 'BT\n' + p.ops.join('') + 'ET\n'
     const comprimido = deflateSync(Buffer.from(stream, 'latin1'))
     return novoObj({ streamZip: comprimido })
   })
@@ -388,6 +511,9 @@ function montarBytes(paginas, meta) {
     if (o.corpo && o.corpo.streamZip) {
       const cab = `${o.id} 0 obj\n<< /Length ${o.corpo.streamZip.length} /Filter /FlateDecode >>\nstream\n`
       bloco = Buffer.concat([Buffer.from(cab, 'latin1'), o.corpo.streamZip, Buffer.from('\nendstream\nendobj\n', 'latin1')])
+    } else if (o.corpo && o.corpo.streamCru) {
+      const cab = `${o.id} 0 obj\n${o.corpo.cabecalho}\nstream\n`
+      bloco = Buffer.concat([Buffer.from(cab, 'latin1'), o.corpo.streamCru, Buffer.from('\nendstream\nendobj\n', 'latin1')])
     } else {
       bloco = Buffer.from(`${o.id} 0 obj\n${o.corpo}\nendobj\n`, 'latin1')
     }
