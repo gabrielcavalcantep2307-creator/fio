@@ -75,6 +75,16 @@ const ANO_ATUAL = new Date().getFullYear()
  * `creditados` é [{ nome, papel, morte }]. Basta um sem ano de morte para a
  * resposta virar 'desconhecido': meia informação aqui é pior que nenhuma.
  */
+/**
+ * O ano como se escreve, e não como o banco o guarda.
+ *
+ * O acervo tem Sun Tzu, Aristóteles e Tito Lívio, e para eles o ano de morte
+ * é NEGATIVO — é assim que a origem dos dados conta o que é antes de Cristo.
+ * Impresso cru, a ficha do livro dizia "morreu em -496", que não é frase que
+ * alguém leia.
+ */
+export const porExtenso = (ano) => (ano > 0 ? String(ano) : `${-ano} a.C.`)
+
 export function direitoBR({ creditados }) {
   if (!creditados?.length) {
     return { estado: 'desconhecido', motivo: 'Sem autoria identificada.', livre_em: null }
@@ -89,9 +99,14 @@ export function direitoBR({ creditados }) {
   }
   const ultimo = creditados.reduce((a, c) => (c.morte > a.morte ? c : a))
   const livre_em = ultimo.morte + 71
+  const jaLivre = livre_em <= ANO_ATUAL
+  // "livre em 425 a.C." é aritmeticamente certo e não quer dizer nada. Para o
+  // que já caiu em domínio público, a data de queda não informa ninguém — o
+  // que informa é que caiu.
+  const desfecho = jaLivre ? 'já em domínio público' : `livre em ${livre_em}`
   return {
-    estado: livre_em <= ANO_ATUAL ? 'dominio_publico' : 'protegido',
-    motivo: `${ultimo.nome} (${ultimo.papel}) morreu em ${ultimo.morte}; Lei 9.610/98 art. 41 (70 anos a partir de 1º/1 do ano seguinte) ⇒ livre em ${livre_em}.`,
+    estado: jaLivre ? 'dominio_publico' : 'protegido',
+    motivo: `${ultimo.nome} (${ultimo.papel}) morreu em ${porExtenso(ultimo.morte)}; Lei 9.610/98 art. 41 (70 anos a partir de 1º/1 do ano seguinte) — ${desfecho}.`,
     livre_em,
   }
 }

@@ -450,6 +450,42 @@ test('o PDF montado é um arquivo válido, com sumário clicável', async () => 
   assert.ok(texto.includes('/Length1'))          // o tamanho do .ttf descomprimido
 })
 
+test('o PDF escreve a seta e o acento decomposto, em vez de "?"', async () => {
+  const { montarPdf } = await import('./pdf.mjs')
+  // O /Info do PDF vai SEM compressão, e por isso é por onde dá para ler de
+  // volta o que o montador escreveu de verdade. O corpo do livro passa pela
+  // mesma conversão, comprimido.
+  const doTitulo = (titulo) => {
+    const pdf = montarPdf({
+      id: 1, titulo, autor: 'Autor', direito: 'teste', fonteUrl: 'x',
+      capitulos: [{ ordem: 0, titulo: 'Um', corpo: `<p>${'palavra '.repeat(60)}</p>` }],
+    })
+    return pdf.toString('latin1').match(/\/Title \(([^)]*)\)/)[1]
+  }
+
+  assert.equal(doTitulo('Morreu em 1900 ⇒ livre'), 'Morreu em 1900 => livre')
+  assert.equal(doTitulo('3 ≤ 4 e 5 ≠ 6'), '3 <= 4 e 5 != 6')
+  // "ão" decomposto (a + til), como sai de certas digitalizações: o NFC junta
+  // no caractere único que o Latin-1 tem, em vez de deixar o til virar "?"
+  assert.equal(doTitulo('coração'), 'coração')
+})
+
+test('ano antes de Cristo sai legível, e o que já caiu não ganha data absurda', async () => {
+  const { direitoBR } = await import('./banco/base.mjs')
+
+  const antigo = direitoBR({ creditados: [{ nome: 'Sun Tzu', papel: 'autor', morte: -496 }] })
+  assert.equal(antigo.estado, 'dominio_publico')
+  assert.match(antigo.motivo, /morreu em 496 a\.C\./)
+  assert.ok(!antigo.motivo.includes('-496'), 'o ano cru vazou para a ficha')
+  assert.ok(!antigo.motivo.includes('-425'), '"livre em 425 a.C." não diz nada a ninguém')
+  assert.match(antigo.motivo, /já em domínio público/)
+
+  // quem ainda está protegido continua ganhando a data, que é a informação útil
+  const recente = direitoBR({ creditados: [{ nome: 'Alguém', papel: 'autor', morte: 2020 }] })
+  assert.equal(recente.estado, 'protegido')
+  assert.match(recente.motivo, /livre em 2091/)
+})
+
 test('a capa do PDF é nossa, e muda de cara conforme o tema', async () => {
   const { capaDe, familiaDe } = await import('./capa-pdf.mjs')
 

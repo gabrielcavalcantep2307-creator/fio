@@ -30,6 +30,7 @@
 // seis em 11/09).
 import { limpar } from '../sanear.mjs'
 import { semIndice } from '../indice-fantasma.mjs'
+import { porExtenso } from '../banco/base.mjs'
 import { indexarTexto, indexarObra } from '../reindexar.mjs'
 
 const AVISO = 'Tradução automática do Fio, sem revisão humana, feita a partir '
@@ -95,7 +96,11 @@ export function instalarTraducao(db, t, { obraId, morte = 0, jurisdicao = 'BR', 
       VALUES (?, ?, 'dominio_publico', ?, ?, 'humano', datetime('now'))`)
       .run(textoId, jurisdicao, livreEm,
         morte
-          ? `Autor morreu em ${morte}; obra em domínio público no Brasil desde ${morte + 71} `
+          // Metade do acervo antigo é grego e romano, e para eles o ano é
+          // negativo: "morreu em -354" não é frase que alguém leia, e "desde
+          // -283" menos ainda. Ver `porExtenso` em `../banco/base.mjs`.
+          ? `Autor morreu em ${porExtenso(morte)}; obra em domínio público no Brasil `
+            + `${morte + 71 > 0 ? `desde ${morte + 71}` : 'desde sempre'} `
             + `(Lei 9.610/98, art. 41). Esta tradução é nossa, feita do original — art. 14.`
           : 'Tradução própria, feita a partir de original em domínio público (Lei 9.610/98, art. 14).')
 

@@ -36,8 +36,33 @@ const WIN_ANSI_ALTO = {
   0x0178: 0x9f, 0x0160: 0x8a, 0x0161: 0x9a, 0x017d: 0x8e, 0x017e: 0x9e,
   0x2022: 0x95, 0x2039: 0x8b, 0x203a: 0x9b, 0x02c6: 0x88, 0x02dc: 0x98,
 }
+// O que não cabe em 256 posições não pode virar "?" calado. A ficha técnica
+// de um livro trazia "(70 anos a partir de 1º/1 do ano seguinte) ? livre em":
+// o "?" ali era uma seta ⇒, e quem lesse não teria como adivinhar. Estas são
+// as marcas que aparecem em texto nosso e em livro digitalizado; cada uma
+// recebe o equivalente que o leitor entende, e sobra uma letra em vez de uma
+// dúvida. O que não estiver aqui continua virando "?", que é honesto: o
+// arquivo diz que não soube, em vez de fingir.
+const EQUIVALENTE = {
+  '⇒': '=>', '→': '->', '←': '<-', '↔': '<->', '⇔': '<=>',
+  '≤': '<=', '≥': '>=', '≠': '!=', '≈': '~', '×': 'x', '·': '.',
+  '′': "'", '″': '"', '‹': '<', '›': '>', '−': '-', '‑': '-', '‒': '-',
+  '№': 'no.', '℮': 'e', '∞': 'infinito', '†': '+', '‡': '++',
+}
 const paraWinAnsi = (cp) => (cp < 0x80 || (cp >= 0xa0 && cp <= 0xff)) ? cp : (WIN_ANSI_ALTO[cp] ?? 0x3f)
-const bytesWinAnsi = (s) => Buffer.from(Array.from(String(s ?? '')).map((c) => paraWinAnsi(c.codePointAt(0))))
+
+/**
+ * O texto em bytes do WinAnsi. Antes de converter, tira o que a tabela não
+ * tem: o acento decomposto (NFC junta "a"+"~" no "ã" que existe em Latin-1)
+ * e as marcas com equivalente escrito.
+ */
+const bytesWinAnsi = (s) => {
+  let t = String(s ?? '').normalize('NFC')
+  for (const [de, para] of Object.entries(EQUIVALENTE)) {
+    if (t.includes(de)) t = t.split(de).join(para)
+  }
+  return Buffer.from(Array.from(t).map((c) => paraWinAnsi(c.codePointAt(0))))
+}
 
 // ─────────────────────────────────────────────────────────────
 // A FONTE DO SITE, DENTRO DO ARQUIVO
