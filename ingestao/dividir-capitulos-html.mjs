@@ -104,47 +104,54 @@ for (const t of candidatos) {
   try { html = await baixarHtml(idGb) } catch (e) { linha(t.id, t.titulo, '--  html: ' + e.message); continue }
   if (!html) { semHtml++; linha(t.id, t.titulo, '--  sem html no Gutenberg (404)'); continue }
 
-  const esboco = esbocoDoHtml(html)
-  const { cortes, perdidos } = localizar(esboco, paragrafosOriginais)
+  // Tenta com todos os níveis de cabeçalho; se o resultado for uma migalheira
+  // (peça de teatro: o Gutenberg marca CADA FALA como cabeçalho, embaixo de
+  // ATO/CENA), tenta de novo só com ATO+CENA (nível 3) — ver o comentário de
+  // `nivelMaximo` em `esbocoDoHtml`.
+  function tentar(nivelMaximo) {
+    const esboco = esbocoDoHtml(html, { nivelMaximo })
+    const { cortes, perdidos } = localizar(esboco, paragrafosOriginais)
+    if (cortes.length < 3 || perdidos > cortes.length) return { erro: cortes.length + ' cortes, ' + perdidos + ' perdidos' }
 
-  // travas: precisa de pelo menos 3 cortes reais, e não pode ter perdido mais
-  // título do que achou (esboço bagunçado é pior que não ter esboço nenhum)
-  if (cortes.length < 3 || perdidos > cortes.length) {
+    // o título do HTML está na língua do original ("Chapter IV", "Kapitel 4"),
+    // não em português — não dá pra mostrar isso ao leitor. Fica só "Capítulo N",
+    // que é honesto e igual ao que o resto do acervo mostra.
+    const limites = [0, ...cortes.map((c) => c.indice), ps.length]
+    const titulosPorLimite = [null, ...cortes.map((_, k) => 'Capítulo ' + (k + 1))]
+    const pedacos = []
+    for (let k = 0; k < limites.length - 1; k++) {
+      const de = limites[k]
+      const ate = limites[k + 1]
+      if (ate <= de) continue
+      const blocos = ps.slice(de, ate)
+      const palavras = blocos.reduce((s, p) => s + (textoDe(p).match(/[^ ]+/g)?.length ?? 0), 0)
+      pedacos.push({ titulo: titulosPorLimite[k], corpo: blocos.join(''), palavras })
+    }
+
+    // nenhum pedaço pode engolir mais da metade do livro, a capa não pode
+    // ficar com tudo, e a MEDIANA não pode ser migalha
+    const corpoTodo = pedacos.reduce((s, p) => s + p.palavras, 0)
+    const miolo = pedacos.slice(1)
+    const maior = miolo.length ? Math.max(...miolo.map((p) => p.palavras)) : 0
+    const ordenados = miolo.map((p) => p.palavras).sort((a, b) => a - b)
+    const mediana = ordenados.length ? ordenados[ordenados.length >> 1] : 0
+    if (miolo.length < 3 || maior > corpoTodo * 0.6 || pedacos[0].palavras > corpoTodo * 0.25 || mediana < 300) {
+      return { erro: 'desequilibrado demais (mediana ' + mediana + ' palavras)' }
+    }
+    return { pedacos, maior, perdidos }
+  }
+
+  let resultado = tentar(6)
+  if (resultado.erro) {
+    const comAtoECena = tentar(3)
+    if (!comAtoECena.erro) resultado = comAtoECena
+  }
+  if (resultado.erro) {
     semCorte++
-    linha(t.id, t.titulo, '--  ' + cortes.length + ' cortes, ' + perdidos + ' perdidos')
+    linha(t.id, t.titulo, '--  corte achado mas ' + resultado.erro)
     continue
   }
-
-  // o título do HTML está na língua do original ("Chapter IV", "Kapitel 4"),
-  // não em português — não dá pra mostrar isso ao leitor. Fica só "Capítulo N",
-  // que é honesto e igual ao que o resto do acervo mostra.
-  const limites = [0, ...cortes.map((c) => c.indice), ps.length]
-  const titulosPorLimite = [null, ...cortes.map((_, k) => 'Capítulo ' + (k + 1))]
-  const pedacos = []
-  for (let k = 0; k < limites.length - 1; k++) {
-    const de = limites[k]
-    const ate = limites[k + 1]
-    if (ate <= de) continue
-    const blocos = ps.slice(de, ate)
-    const palavras = blocos.reduce((s, p) => s + (textoDe(p).match(/[^ ]+/g)?.length ?? 0), 0)
-    pedacos.push({ titulo: titulosPorLimite[k], corpo: blocos.join(''), palavras })
-  }
-
-  // as mesmas travas de bom senso do dividir-capitulos.mjs: nenhum pedaço
-  // pode engolir mais da metade do livro, a capa não pode ficar com tudo, e a
-  // MEDIANA não pode ser migalha — é o que pega peça de teatro (Hamlet: o
-  // Gutenberg marca cada FALA como cabeçalho, e sem essa trava viravam 775
-  // "capítulos" de uma linha)
-  const corpoTodo = pedacos.reduce((s, p) => s + p.palavras, 0)
-  const miolo = pedacos.slice(1)
-  const maior = miolo.length ? Math.max(...miolo.map((p) => p.palavras)) : 0
-  const ordenados = miolo.map((p) => p.palavras).sort((a, b) => a - b)
-  const mediana = ordenados.length ? ordenados[ordenados.length >> 1] : 0
-  if (miolo.length < 3 || maior > corpoTodo * 0.6 || pedacos[0].palavras > corpoTodo * 0.25 || mediana < 300) {
-    semCorte++
-    linha(t.id, t.titulo, '--  corte achado mas desequilibrado demais (mediana ' + mediana + ' palavras)')
-    continue
-  }
+  const { pedacos, maior, perdidos } = resultado
 
   // sem ganho de verdade: o novo maior capítulo continua uma parede, ou o
   // número de pedaços não mudou nada — não vale trocar por trocar

@@ -511,6 +511,35 @@ test('o índice de notas de rodapé sai do começo, e o resto do capítulo fica'
   assert.equal(semIndiceDeNotas(null), null)
 })
 
+test('esbocoDoHtml: peça de teatro não vira uma "fala" por capítulo', async () => {
+  const { esbocoDoHtml } = await import('./servicos/estrutura.mjs')
+
+  // a forma do Hamlet no Gutenberg: ATO (h2) > CENA (h3) > rubrica (h4) >
+  // nome de quem fala (h5) > a fala, em <p>. Sem nivelMaximo, cada fala vira
+  // "título" — foi assim que o site ficou com um capítulo de 31 mil palavras.
+  const html = '<h2>ACTO PRIMEIRO</h2>'
+    + '<h3>SCENA I</h3><h4>Elsenor, a explanada do castello</h4>'
+    + '<h5>BERNARDO</h5><p>Quem está aí?</p>'
+    + '<h5>FRANCISCO</h5><p>Não: respondei-me primeiro.</p>'
+    + '<h5>BERNARDO</h5><p>Viva o rei!</p>'
+    + '<h3>SCENA II</h3><h4>Uma sala apparatosa no castello</h4>'
+    + '<h5>REI</h5><p>Embora inda esteja fresca na lembrança a morte do meu irmão.</p>'
+
+  const semLimite = esbocoDoHtml(html)
+  assert.equal(semLimite.titulos.length, 9)   // ato, 2 cenas, 2 rubricas, 4 nomes de quem fala — tudo "título"
+
+  const soAtoECena = esbocoDoHtml(html, { nivelMaximo: 3 })
+  assert.deepEqual(soAtoECena.titulos.map((t) => t.texto), ['ACTO PRIMEIRO', 'SCENA I', 'SCENA II'])
+  // a cena acha âncora atravessando a rubrica e o nome de quem fala — não
+  // pára neles, porque eles não contam como "outro título" abaixo do limite.
+  // A âncora em si é a rubrica (é texto real, casável no .txt igual à fala).
+  assert.equal(soAtoECena.titulos[1].ancora, 'Elsenor, a explanada do castello')
+  assert.equal(soAtoECena.titulos[2].ancora, 'Uma sala apparatosa no castello')
+  // o ATO não tem âncora própria (o texto começa na cena, não nele) — fica
+  // pendente e localizar() o gruda como prefixo da primeira cena
+  assert.equal(soAtoECena.titulos[0].ancora, '')
+})
+
 test('a capa do PDF é nossa, e muda de cara conforme o tema', async () => {
   const { capaDe, familiaDe } = await import('./capa-pdf.mjs')
 

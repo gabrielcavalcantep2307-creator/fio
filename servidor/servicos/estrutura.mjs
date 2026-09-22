@@ -66,9 +66,19 @@ const NAO_E_DIVISAO = /^(contents|table of contents|index|footnotes?|notes?|tran
  * (2 para <h2>…) e a ÂNCORA — o começo do primeiro parágrafo de texto depois
  * dele, que é por onde ele vai ser achado no .txt.
  *
+ * `nivelMaximo`, se vier, é para o livro em que um nível mais fundo não é
+ * divisão nenhuma — é PEÇA DE TEATRO: o Gutenberg marca CADA FALA de
+ * personagem como cabeçalho (Hamlet: 1195 "títulos", quase todos nomes de
+ * personagem em <h5>, embaixo de ATO em <h2> e CENA em <h3>). Sem o filtro,
+ * cada fala vira um corte. Com ele, cabeçalho mais fundo que `nivelMaximo`
+ * não entra na lista E também não interrompe a busca da âncora — se
+ * interrompesse, "ACTO PRIMEIRO" nunca acharia âncora nenhuma, porque o
+ * bloco seguinte é sempre outro cabeçalho (CENA, rubrica, nome de quem
+ * fala), nunca prosa, até chegar na primeira fala de verdade.
+ *
  * @returns {{ titulos: Array<{nivel:number, texto:string, ancora:string}>, paragrafos:number }}
  */
-export function esbocoDoHtml(html) {
+export function esbocoDoHtml(html, { nivelMaximo = 6 } = {}) {
   let corpo = String(html)
   // a moldura do Gutenberg (cabeçalho e rodapé da licença) sai inteira
   corpo = corpo.replace(/<section[^>]*pg-boilerplate[\s\S]*?<\/section>/gi, ' ')
@@ -93,12 +103,15 @@ export function esbocoDoHtml(html) {
     if (b.tag[0] !== 'h') continue
     const nivel = Number(b.tag[1])
     if (nivel === 1) continue                         // o título do livro
+    if (nivel > nivelMaximo) continue                  // fundo demais para ser divisão (fala de personagem)
     if (b.texto.length > 160) continue                // parágrafo marcado como cabeçalho
     if (NAO_E_DIVISAO.test(b.texto)) continue
-    // a âncora: o primeiro parágrafo de texto de verdade depois do título
+    // a âncora: o primeiro parágrafo de texto de verdade depois do título.
+    // Um cabeçalho mais fundo que nivelMaximo não conta como "outro título":
+    // é transparente, a busca atravessa ele como se fosse mais um bloco.
     let ancora = ''
     for (let j = i + 1; j < blocos.length && j < i + 12; j++) {
-      if (blocos[j].tag[0] === 'h') break              // outro título antes de texto: sem âncora própria
+      if (blocos[j].tag[0] === 'h' && Number(blocos[j].tag[1]) <= nivelMaximo) break // outro título de verdade antes de texto: sem âncora própria
       if (chaveDeTrecho(blocos[j].texto).length >= 25) { ancora = blocos[j].texto; break }
     }
     titulos.push({ nivel, texto: b.texto, ancora })
