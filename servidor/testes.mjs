@@ -443,6 +443,32 @@ test('o PDF montado é um arquivo válido, com sumário clicável', async () => 
   assert.ok(texto.includes('/Type /Catalog'))
   assert.ok(texto.includes('/Subtype /Link'))    // o sumário virou link, não só texto
   assert.ok((texto.match(/\/Type \/Page\b/g) ?? []).length >= 3)  // capa + ficha + ao menos 1 de corpo
+  // a fonte do site vai DENTRO do arquivo: sem /FontFile2 o leitor cai numa
+  // fonte qualquer do sistema e o PDF deixa de ter a cara daqui
+  assert.ok(texto.includes('/FontFile2'))
+  assert.ok(texto.includes('/BaseFont /Literata'))
+  assert.ok(texto.includes('/Length1'))          // o tamanho do .ttf descomprimido
+})
+
+test('a capa do PDF é nossa, e muda de cara conforme o tema', async () => {
+  const { capaDe, familiaDe } = await import('./capa-pdf.mjs')
+
+  assert.equal(familiaDe(['Poesia']), 'poesia')
+  assert.equal(familiaDe(['Direito']), 'direito')
+  assert.equal(familiaDe(['Aventura']), 'romance')   // o que não se encaixa cai em romance
+  assert.equal(familiaDe([]), 'romance')
+
+  // o mesmo livro sai sempre igual — capa que muda a cada download não é capa
+  assert.deepEqual(capaDe(42, ['Poesia']), capaDe(42, ['Poesia']))
+  // e dois livros da mesma família não são obrigados a ter a mesma cor
+  const familias = new Set()
+  for (const t of [['Poesia'], ['Teatro'], ['Direito'], ['Religião'], ['Filosofia'], ['História'], ['Ciência natural'], []]) {
+    const c = capaDe(7, t)
+    familias.add(c.familia)
+    assert.match(c.fundo, /^#[0-9a-f]{6}$/)
+    assert.ok(c.formas.length > 0, `família ${c.familia} sem ornamento`)
+  }
+  assert.equal(familias.size, 8)
 })
 
 // ── o índice da edição de papel que virou capítulo ──

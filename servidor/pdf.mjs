@@ -16,6 +16,11 @@
 // por software já faz.
 
 import { deflateSync } from 'node:zlib'
+import { readFileSync } from 'node:fs'
+import { join, dirname } from 'node:path'
+import { fileURLToPath } from 'node:url'
+import { lerTtf } from './fonte-ttf.mjs'
+import { capaDe } from './capa-pdf.mjs'
 
 // ─────────────────────────────────────────────────────────────
 // WinAnsiEncoding — os únicos 256 caracteres que uma fonte padrão do PDF
@@ -35,77 +40,46 @@ const paraWinAnsi = (cp) => (cp < 0x80 || (cp >= 0xa0 && cp <= 0xff)) ? cp : (WI
 const bytesWinAnsi = (s) => Buffer.from(Array.from(String(s ?? '')).map((c) => paraWinAnsi(c.codePointAt(0))))
 
 // ─────────────────────────────────────────────────────────────
-// Largura dos glifos (Times, os 14 padrão do PDF — nenhuma fonte embutida).
-// Tabela ASCII é a métrica publicada da Adobe (AFM), igual em todo leitor de
-// PDF. A faixa acentuada herda a largura da letra-base (é como o AFM real
-// trata acento: o desenho muda, a largura não), e os símbolos tipográficos
-// (aspas, travessão) ganham valor à parte.
+// A FONTE DO SITE, DENTRO DO ARQUIVO
+//
+// Até 22/09 isto usava Times, uma das catorze fontes que todo leitor de PDF
+// já tem: o arquivo saía leve e abria igual em qualquer lugar, mas não tinha
+// cara nenhuma. Agora vai a Literata, que é a fonte com que se lê no site —
+// o PDF que a pessoa leva é o mesmo texto com a mesma letra.
+//
+// Embutir custa 145 KB por arquivo, e só isso porque o que vai é o recorte
+// latino que o Google serve (48 KB por estilo, contra ~300 KB da família
+// inteira). Latin-1 inteiro cabe nele, que é exatamente o que o
+// WinAnsiEncoding endereça — nada do que este arquivo escreve fica de fora.
+//
+// A largura de cada letra vem da própria fonte (ver `fonte-ttf.mjs`), e não
+// mais de uma tabela copiada à mão: com fonte embutida, chutar largura
+// desalinha a justificação e o sumário inteiro.
 // ─────────────────────────────────────────────────────────────
 
-const ASCII_ROMAN = {
-  32: 250, 33: 333, 34: 408, 35: 500, 36: 500, 37: 833, 38: 778, 39: 180, 40: 333, 41: 333,
-  42: 500, 43: 564, 44: 250, 45: 333, 46: 250, 47: 278,
-  48: 500, 49: 500, 50: 500, 51: 500, 52: 500, 53: 500, 54: 500, 55: 500, 56: 500, 57: 500,
-  58: 278, 59: 278, 60: 564, 61: 564, 62: 564, 63: 444, 64: 921,
-  65: 722, 66: 667, 67: 667, 68: 722, 69: 611, 70: 556, 71: 722, 72: 722, 73: 333, 74: 389,
-  75: 722, 76: 611, 77: 889, 78: 722, 79: 722, 80: 556, 81: 722, 82: 667, 83: 556, 84: 611,
-  85: 722, 86: 722, 87: 944, 88: 722, 89: 722, 90: 611,
-  91: 333, 92: 278, 93: 333, 94: 469, 95: 500, 96: 333,
-  97: 444, 98: 500, 99: 444, 100: 500, 101: 444, 102: 333, 103: 500, 104: 500, 105: 278, 106: 278,
-  107: 500, 108: 278, 109: 778, 110: 500, 111: 500, 112: 500, 113: 500, 114: 333, 115: 389, 116: 278,
-  117: 500, 118: 500, 119: 722, 120: 500, 121: 500, 122: 444,
-  123: 480, 124: 200, 125: 480, 126: 541,
-}
-const ASCII_BOLD = {
-  32: 250, 33: 333, 34: 555, 35: 500, 36: 500, 37: 1000, 38: 833, 39: 278, 40: 333, 41: 333,
-  42: 500, 43: 570, 44: 250, 45: 333, 46: 250, 47: 278,
-  48: 500, 49: 500, 50: 500, 51: 500, 52: 500, 53: 500, 54: 500, 55: 500, 56: 500, 57: 500,
-  58: 333, 59: 333, 60: 570, 61: 570, 62: 570, 63: 500, 64: 930,
-  65: 722, 66: 667, 67: 722, 68: 722, 69: 667, 70: 611, 71: 778, 72: 778, 73: 389, 74: 500,
-  75: 778, 76: 667, 77: 944, 78: 722, 79: 778, 80: 611, 81: 778, 82: 722, 83: 556, 84: 667,
-  85: 722, 86: 722, 87: 1000, 88: 722, 89: 722, 90: 667,
-  91: 333, 92: 278, 93: 333, 94: 581, 95: 500, 96: 333,
-  97: 500, 98: 556, 99: 444, 100: 556, 101: 444, 102: 333, 103: 500, 104: 556, 105: 278, 106: 333,
-  107: 556, 108: 278, 109: 833, 110: 556, 111: 500, 112: 556, 113: 556, 114: 444, 115: 389, 116: 333,
-  117: 556, 118: 500, 119: 722, 120: 500, 121: 500, 122: 444,
-  123: 394, 124: 220, 125: 394, 126: 520,
-}
-const ASCII_ITALIC = {
-  32: 250, 33: 333, 34: 420, 35: 500, 36: 500, 37: 833, 38: 778, 39: 214, 40: 333, 41: 333,
-  42: 500, 43: 675, 44: 250, 45: 333, 46: 250, 47: 278,
-  48: 500, 49: 500, 50: 500, 51: 500, 52: 500, 53: 500, 54: 500, 55: 500, 56: 500, 57: 500,
-  58: 333, 59: 333, 60: 675, 61: 675, 62: 675, 63: 500, 64: 920,
-  65: 611, 66: 611, 67: 667, 68: 722, 69: 611, 70: 611, 71: 722, 72: 722, 73: 333, 74: 444,
-  75: 667, 76: 556, 77: 833, 78: 667, 79: 722, 80: 611, 81: 722, 82: 611, 83: 500, 84: 556,
-  85: 722, 86: 611, 87: 833, 88: 611, 89: 556, 90: 556,
-  91: 389, 92: 278, 93: 389, 94: 422, 95: 500, 96: 333,
-  97: 500, 98: 500, 99: 444, 100: 500, 101: 444, 102: 278, 103: 500, 104: 500, 105: 278, 106: 278,
-  107: 444, 108: 278, 109: 722, 110: 500, 111: 500, 112: 500, 113: 500, 114: 389, 115: 389, 116: 278,
-  117: 500, 118: 444, 119: 667, 120: 444, 121: 444, 122: 389,
-  123: 400, 124: 275, 125: 400, 126: 541,
-}
-// acento: a largura segue a letra-base ('á' pesa como 'a')
-const BASE_DE_ACENTO = {
-  0xc0:65,0xc1:65,0xc2:65,0xc3:65,0xc4:65,0xc5:65, 0xe0:97,0xe1:97,0xe2:97,0xe3:97,0xe4:97,0xe5:97,
-  0xc8:69,0xc9:69,0xca:69,0xcb:69, 0xe8:101,0xe9:101,0xea:101,0xeb:101,
-  0xcc:73,0xcd:73,0xce:73,0xcf:73, 0xec:105,0xed:105,0xee:105,0xef:105,
-  0xd2:79,0xd3:79,0xd4:79,0xd5:79,0xd6:79, 0xf2:111,0xf3:111,0xf4:111,0xf5:111,0xf6:111,
-  0xd9:85,0xda:85,0xdb:85,0xdc:85, 0xf9:117,0xfa:117,0xfb:117,0xfc:117,
-  0xc7:67, 0xe7:99, 0xd1:78, 0xf1:110, 0xdd:89, 0xfd:121, 0xff:121,
-}
-const EXTRAS = { 0x91: 180, 0x92: 180, 0x93: 408, 0x94: 408, 0x96: 500, 0x97: 1000, 0x85: 1000, 0x95: 350, 0xa7: 500, 0xb0: 400, 0xaa: 300, 0xba: 300 }
+const PASTA_FONTES = join(dirname(fileURLToPath(import.meta.url)), 'fontes')
 
-function construirLargura(base) {
-  const t = new Map(Object.entries(base).map(([k, v]) => [Number(k), v]))
-  for (const [cod, letra] of Object.entries(BASE_DE_ACENTO)) t.set(Number(cod), base[letra] ?? 500)
-  for (const [cod, larg] of Object.entries(EXTRAS)) if (!t.has(Number(cod))) t.set(Number(cod), larg)
-  return t
+// De byte do WinAnsi para o caractere que ele representa — o caminho inverso
+// de `paraWinAnsi`, necessário para perguntar à fonte a largura de cada
+// posição da tabela de 256.
+const DO_WIN_ANSI = new Map()
+for (let b = 32; b <= 255; b++) if (b < 0x80 || b >= 0xa0) DO_WIN_ANSI.set(b, b)
+for (const [uni, byte] of Object.entries(WIN_ANSI_ALTO)) DO_WIN_ANSI.set(byte, Number(uni))
+
+function carregarFonte(arquivo, nome) {
+  const bytes = readFileSync(join(PASTA_FONTES, arquivo))
+  const ttf = lerTtf(bytes)
+  const larguras = new Map()
+  for (const [byte, cp] of DO_WIN_ANSI) larguras.set(byte, ttf.avancoDe(cp) ?? 500)
+  return { nome, bytes, ttf, larguras }
 }
+
 const FONTES = {
-  F1: { base: 'Times-Roman', larguras: construirLargura(ASCII_ROMAN) },
-  F2: { base: 'Times-Bold', larguras: construirLargura(ASCII_BOLD) },
-  F3: { base: 'Times-Italic', larguras: construirLargura(ASCII_ITALIC) },
+  F1: carregarFonte('literata-regular.ttf', 'Literata'),
+  F2: carregarFonte('literata-bold.ttf', 'Literata-Bold'),
+  F3: carregarFonte('literata-italic.ttf', 'Literata-Italic'),
 }
+
 function largura(fonte, texto, tamanho) {
   const t = FONTES[fonte].larguras
   let soma = 0
@@ -165,29 +139,6 @@ const opLinhaReta = (x1, y1, x2, y2, cor, espessura = 0.75, tracejada = false) =
   const [r, g, b] = corRgb(cor)
   return `${r} ${g} ${b} RG\n${espessura} w\n${tracejada ? '[1 2] 0' : '[] 0'} d\n${x1.toFixed(2)} ${y1.toFixed(2)} m\n${x2.toFixed(2)} ${y2.toFixed(2)} l\nS\n[] 0 d\n`
 }
-const opImagem = (nome, x, y, w, h) => `q\n${w.toFixed(2)} 0 0 ${h.toFixed(2)} ${x.toFixed(2)} ${y.toFixed(2)} cm\n/${nome} Do\nQ\n`
-
-/**
- * Largura e nº de componentes de cor de um JPEG, lendo só os marcadores —
- * sem decodificar a imagem. `null` se não for JPEG ou não achar o SOF.
- */
-function dimensoesJpeg(buf) {
-  if (!buf || buf.length < 4 || buf[0] !== 0xff || buf[1] !== 0xd8) return null
-  let i = 2
-  while (i + 3 < buf.length) {
-    if (buf[i] !== 0xff) { i++; continue }
-    const marca = buf[i + 1]
-    if (marca === 0xd8 || marca === 0xd9 || (marca >= 0xd0 && marca <= 0xd7) || marca === 0x01) { i += 2; continue }
-    const tam = buf.readUInt16BE(i + 2)
-    const ehSOF = marca >= 0xc0 && marca <= 0xcf && marca !== 0xc4 && marca !== 0xc8 && marca !== 0xcc
-    if (ehSOF) {
-      return { altura: buf.readUInt16BE(i + 5), largura: buf.readUInt16BE(i + 7), componentes: buf[i + 9] }
-    }
-    i += 2 + tam
-  }
-  return null
-}
-
 // ─────────────────────────────────────────────────────────────
 // O documento: página a página, com paginação automática
 // ─────────────────────────────────────────────────────────────
@@ -232,7 +183,6 @@ function novoDocumento(topoExtra = 0) {
     espaco(pts) { y -= pts; if (y < MARGEM) this.novaPagina() },
     retangulo(x, y2, w, h, cor) { if (!atual) this.novaPagina(); atual.vetor.push(opRetangulo(x, y2, w, h, cor)) },
     linhaReta(x1, y1, x2, y2, cor, espessura, tracejada) { if (!atual) this.novaPagina(); atual.vetor.push(opLinhaReta(x1, y1, x2, y2, cor, espessura, tracejada)) },
-    imagem(nome, x, y2, w, h) { if (!atual) this.novaPagina(); atual.vetor.push(opImagem(nome, x, y2, w, h)) },
     paragrafo(texto, { fonte = 'F1', tamanho = 11, leading = tamanho * 1.45, indent = 16, justificar = true, cor = '#000000' } = {}) {
       const primeiraColuna = COLUNA - indent
       // a 1ª linha some no recuo (coluna mais estreita); as seguintes usam a
@@ -282,60 +232,52 @@ const semTags = (html) => String(html ?? '')
   .replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(Number(n)))
   .replace(/[ \t]+/g, ' ')
 
-// Uma cor só, neutra e elegante, para o livro que não tem foto de capa real
-// (a maioria do acervo: capa desenhada por tema, em SVG — que este arquivo
-// não sabe rasterizar sem uma dependência nova). Não tenta casar com a cor
-// do tema do site; é o equivalente em PDF da folha de rosto tipográfica
-// simples, só que com fundo de cor em vez de branco.
-const PALETA_CAPA = ['#242b2e', '#efece4', '#b9a06b'] // fundo, texto claro, acento dourado
 const CINZA_ROTULO = '#8a8a86'
 const CINZA_LINHA = '#c9c5ba'
 
 /**
  * Monta o PDF de um livro.
  *
- * `livro` é `{ id, titulo, autor, tituloOriginal, tradutor, fonte, fonteUrl,
- * revisao, direito, capaJpeg, capitulos: [{ordem, titulo, corpo}] }`.
- * `capaJpeg`, se vier, é o BUFFER cru do arquivo — só entra se for JPEG de
- * verdade (checado por assinatura, não pela extensão do nome).
+ * `livro` é `{ id, titulo, autor, temas, tituloOriginal, tradutor, fonte,
+ * fonteUrl, revisao, direito, capitulos: [{ordem, titulo, corpo}] }`.
  */
 export function montarPdf(livro) {
   // ── capa ──
+  //
+  // Nossa, sempre — nunca a foto da capa de outra editora. O porquê, e a
+  // escolha de cor e ornamento por família de tema, estão em `capa-pdf.mjs`.
   const capa = novoDocumento()
   capa.novaPagina()
-  const [fundo, textoClaro, acento] = PALETA_CAPA
-  const jpeg = dimensoesJpeg(livro.capaJpeg)
+  const { fundo, claro: textoClaro, acento, formas } = capaDe(livro.id, livro.temas)
   const autorCapa = (livro.autor || 'AUTORIA NÃO IDENTIFICADA').toUpperCase()
   const linhasTitulo = quebrarLinhas(livro.titulo || 'Sem título', 'F2', 21, COLUNA + 30)
 
-  if (jpeg && jpeg.componentes !== 4) {
-    // a imagem cobre a página inteira (como background-size:cover — pode
-    // sobrar por fora da MediaBox, e a página corta sozinha o que sobra)
-    const escala = Math.max(LARGURA_PAGINA / jpeg.largura, ALTURA_PAGINA / jpeg.altura)
-    const w = jpeg.largura * escala, h = jpeg.altura * escala
-    capa.imagem('CapaFoto', (LARGURA_PAGINA - w) / 2, (ALTURA_PAGINA - h) / 2, w, h)
-    // faixa de cor embaixo, para o título não brigar com a imagem
-    const faixaH = 74 + linhasTitulo.length * 26
-    capa.retangulo(0, 0, LARGURA_PAGINA, faixaH, fundo)
-    capa.textoLivre(autorCapa, 0, faixaH - 28, { fonte: 'F2', tamanho: 10.5, tc: 1.4, cor: acento, centralizado: true })
-    linhasTitulo.forEach((l, i) => {
-      capa.textoLivre(l.palavras.join(' '), 0, faixaH - 54 - i * 26, { fonte: 'F2', tamanho: 18, cor: textoClaro, centralizado: true })
-    })
-    capa.textoLivre('FIOLIB', 0, 22, { fonte: 'F2', tamanho: 9, tc: 1.2, cor: acento, centralizado: true })
-  } else {
-    // sem foto: painel de cor lisa, como uma folha de rosto tipográfica
-    capa.retangulo(0, 0, LARGURA_PAGINA, ALTURA_PAGINA, fundo)
-    const meio = ALTURA_PAGINA / 2
-    capa.textoLivre(autorCapa, 0, meio + 90, { fonte: 'F2', tamanho: 12, tc: 1.8, cor: acento, centralizado: true })
-    const yTitulo = meio + 40
-    linhasTitulo.forEach((l, i) => {
-      capa.textoLivre(l.palavras.join(' '), 0, yTitulo - i * 30, { fonte: 'F2', tamanho: 23, cor: textoClaro, centralizado: true })
-    })
-    const yRegua = yTitulo - linhasTitulo.length * 30 - 14
-    capa.linhaReta(LARGURA_PAGINA / 2 - 40, yRegua, LARGURA_PAGINA / 2 + 40, yRegua, acento, 0.75)
-    capa.textoLivre('FIOLIB', 0, meio - 130, { fonte: 'F2', tamanho: 11, tc: 1.6, cor: acento, centralizado: true })
-    capa.textoLivre(String(new Date().getFullYear()), 0, meio - 148, { fonte: 'F1', tamanho: 10, cor: textoClaro, centralizado: true })
+  capa.retangulo(0, 0, LARGURA_PAGINA, ALTURA_PAGINA, fundo)
+  // filete duplo por dentro da borda, como uma encadernação
+  capa.linhaReta(26, 26, LARGURA_PAGINA - 26, 26, acento, 0.5)
+  capa.linhaReta(26, ALTURA_PAGINA - 26, LARGURA_PAGINA - 26, ALTURA_PAGINA - 26, acento, 0.5)
+  capa.linhaReta(26, 26, 26, ALTURA_PAGINA - 26, acento, 0.5)
+  capa.linhaReta(LARGURA_PAGINA - 26, 26, LARGURA_PAGINA - 26, ALTURA_PAGINA - 26, acento, 0.5)
+
+  for (const f of formas) {
+    const cor = f.cor === 'claro' ? textoClaro : acento
+    if (f.tipo === 'ret') {
+      capa.retangulo(f.x * LARGURA_PAGINA, f.y * ALTURA_PAGINA, f.w * LARGURA_PAGINA, f.h * ALTURA_PAGINA, cor)
+    } else {
+      capa.linhaReta(f.x1 * LARGURA_PAGINA, f.y1 * ALTURA_PAGINA, f.x2 * LARGURA_PAGINA, f.y2 * ALTURA_PAGINA, cor, f.espessura ?? 0.6)
+    }
   }
+
+  const meio = ALTURA_PAGINA / 2
+  capa.textoLivre(autorCapa, 0, meio + 42, { fonte: 'F2', tamanho: 12, tc: 1.8, cor: acento, centralizado: true })
+  const yTitulo = meio - 6
+  linhasTitulo.forEach((l, i) => {
+    capa.textoLivre(l.palavras.join(' '), 0, yTitulo - i * 30, { fonte: 'F2', tamanho: 23, cor: textoClaro, centralizado: true })
+  })
+  const yRegua = yTitulo - linhasTitulo.length * 30 - 6
+  capa.linhaReta(LARGURA_PAGINA / 2 - 40, yRegua, LARGURA_PAGINA / 2 + 40, yRegua, acento, 0.75)
+  capa.textoLivre('FIOLIB', 0, 58, { fonte: 'F2', tamanho: 11, tc: 1.6, cor: acento, centralizado: true })
+  capa.textoLivre(String(new Date().getFullYear()), 0, 42, { fonte: 'F1', tamanho: 10, cor: textoClaro, centralizado: true })
 
   // ── ficha técnica + sobre esta edição + licença ──
   const info = novoDocumento()
@@ -445,7 +387,7 @@ export function montarPdf(livro) {
     p.ops.push(opTexto('F1', 9, MARGEM + (COLUNA - lnum) / 2, MARGEM - 24, 0, num, {}))
   })
 
-  return montarBytes(todas, { titulo: livro.titulo, autor: livro.autor, capaFoto: jpeg && jpeg.componentes !== 4 ? { buf: livro.capaJpeg, ...jpeg } : null })
+  return montarBytes(todas, { titulo: livro.titulo, autor: livro.autor })
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -459,23 +401,37 @@ function montarBytes(paginas, meta) {
   const idCatalogo = novoObj(null)
   const idPages = novoObj(null)
   const idInfo = novoObj(null)
-  const idFonteRoman = novoObj(`<< /Type /Font /Subtype /Type1 /BaseFont /Times-Roman /Encoding /WinAnsiEncoding >>`)
-  const idFonteBold = novoObj(`<< /Type /Font /Subtype /Type1 /BaseFont /Times-Bold /Encoding /WinAnsiEncoding >>`)
-  const idFonteItalic = novoObj(`<< /Type /Font /Subtype /Type1 /BaseFont /Times-Italic /Encoding /WinAnsiEncoding >>`)
-
-  // A foto da capa (se veio uma JPEG de verdade): entra como Image XObject,
-  // com os BYTES CRUS do arquivo — DCTDecode é literalmente o formato JPEG,
-  // então não há recodificação nenhuma, só embrulhar num objeto de PDF.
-  let idImagemCapa = null
-  if (meta.capaFoto) {
-    const espaco = meta.capaFoto.componentes === 1 ? '/DeviceGray' : '/DeviceRGB'
-    idImagemCapa = novoObj({
-      streamCru: meta.capaFoto.buf,
-      cabecalho: `<< /Type /XObject /Subtype /Image /Width ${meta.capaFoto.largura} /Height ${meta.capaFoto.altura} /ColorSpace ${espaco} /BitsPerComponent 8 /Filter /DCTDecode /Length ${meta.capaFoto.buf.length} >>`,
+  // ── a fonte embutida ──
+  //
+  // Três objetos por estilo: o arquivo da fonte (`/FontFile2`, o .ttf inteiro
+  // comprimido), o descritor (as medidas que o leitor usa para encaixar a
+  // linha) e a fonte em si, com a largura de cada uma das 224 posições que o
+  // WinAnsiEncoding endereça.
+  //
+  // `/Length1` é o tamanho do .ttf DESCOMPRIMIDO. Sem ele o leitor não sabe
+  // onde a fonte acaba, e alguns simplesmente desistem de desenhar.
+  const embutir = (f, italico) => {
+    const zip = deflateSync(f.bytes)
+    const idArquivo = novoObj({
+      streamZip: zip,
+      cabecalho: `<< /Length ${zip.length} /Filter /FlateDecode /Length1 ${f.bytes.length} >>`,
     })
+    const idDescritor = novoObj(
+      `<< /Type /FontDescriptor /FontName /${f.nome} /Flags ${italico ? 96 : 32} ` +
+      `/FontBBox [${f.ttf.bbox.join(' ')}] /ItalicAngle ${f.ttf.italicAngle} ` +
+      `/Ascent ${f.ttf.ascent} /Descent ${f.ttf.descent} /CapHeight ${f.ttf.capHeight} ` +
+      `/StemV 80 /FontFile2 ${idArquivo} 0 R >>`)
+    const larguras = []
+    for (let b = 32; b <= 255; b++) larguras.push(f.larguras.get(b) ?? 500)
+    return novoObj(
+      `<< /Type /Font /Subtype /TrueType /BaseFont /${f.nome} /FirstChar 32 /LastChar 255 ` +
+      `/Widths [${larguras.join(' ')}] /Encoding /WinAnsiEncoding /FontDescriptor ${idDescritor} 0 R >>`)
   }
-  const recursos = `<< /Font << /F1 ${idFonteRoman} 0 R /F2 ${idFonteBold} 0 R /F3 ${idFonteItalic} 0 R >> ` +
-    (idImagemCapa ? `/XObject << /CapaFoto ${idImagemCapa} 0 R >> ` : '') + '>>'
+  const idFonteRoman = embutir(FONTES.F1, false)
+  const idFonteBold = embutir(FONTES.F2, false)
+  const idFonteItalic = embutir(FONTES.F3, true)
+
+  const recursos = `<< /Font << /F1 ${idFonteRoman} 0 R /F2 ${idFonteBold} 0 R /F3 ${idFonteItalic} 0 R >> >>`
 
   const idPaginas = paginas.map(() => novoObj(null))
   const idConteudos = paginas.map((p, i) => {
@@ -509,7 +465,8 @@ function montarBytes(paginas, meta) {
     offsets[o.id] = pos
     let bloco
     if (o.corpo && o.corpo.streamZip) {
-      const cab = `${o.id} 0 obj\n<< /Length ${o.corpo.streamZip.length} /Filter /FlateDecode >>\nstream\n`
+      const dicionario = o.corpo.cabecalho ?? `<< /Length ${o.corpo.streamZip.length} /Filter /FlateDecode >>`
+      const cab = `${o.id} 0 obj\n${dicionario}\nstream\n`
       bloco = Buffer.concat([Buffer.from(cab, 'latin1'), o.corpo.streamZip, Buffer.from('\nendstream\nendobj\n', 'latin1')])
     } else if (o.corpo && o.corpo.streamCru) {
       const cab = `${o.id} 0 obj\n${o.corpo.cabecalho}\nstream\n`
