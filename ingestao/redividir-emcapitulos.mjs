@@ -61,9 +61,31 @@ export function redividir(ps, novosCapitulos) {
   const contagemPorCapitulo = novosCapitulos.map((c) => emParagrafos(c.bruto).length)
   const totalNovo = contagemPorCapitulo.reduce((a, b) => a + b, 0)
   const titulosComTexto = novosCapitulos.filter((c) => c.titulo).length
-  if (totalNovo + titulosComTexto !== ps.length) {
-    return { erro: 'parágrafos não batem: divisor de hoje ' + (totalNovo + titulosComTexto) + ' (com títulos) x traduzido ' + ps.length }
+  const esperado = totalNovo + titulosComTexto
+
+  // A FOLHA DE ROSTO CURTA DEMAIS (achado medindo "Um dos Seiscentos" e "A
+  // Jovem Philippa"): quando o que vem antes do primeiro capítulo tem 60
+  // palavras ou menos, `emCapitulos()` DESCARTA o bloco inteiro — ele nem
+  // vira um capítulo `{titulo: null, ...}` na frente. O primeiro pedaço
+  // devolvido já nasce COM título. Na tradução ANTIGA (de antes do livro
+  // ganhar capítulo algum), essa mesma folha de rosto — "Produced by Al
+  // Haines.", título, autor, editora, ano — foi traduzida como parágrafos
+  // comuns, e continua no começo dos <p> de hoje.
+  //
+  // Não precisa comparar conteúdo (traduzido x original, línguas
+  // diferentes) para saber QUANTOS parágrafos são: a tradução preserva a
+  // ordem 1 a 1, então a posição de cada parágrafo é a mesma nos dois
+  // lados. A diferença aqui SÓ pode ser essa folha de rosto — e só quando o
+  // primeiro capítulo novo já nasce com título (sinal de que não sobrou
+  // nada antes dele) e a diferença é do tamanho de uma folha de rosto, não
+  // de um capítulo perdido.
+  let descartarDoInicio = 0
+  if (ps.length !== esperado) {
+    const diferenca = ps.length - esperado
+    if (diferenca > 0 && diferenca <= 20 && novosCapitulos[0].titulo) descartarDoInicio = diferenca
+    else return { erro: 'parágrafos não batem: divisor de hoje ' + esperado + ' (com títulos) x traduzido ' + ps.length }
   }
+  ps = ps.slice(descartarDoInicio)
 
   const pedacos = []
   let cursor = 0
@@ -87,7 +109,7 @@ export function redividir(ps, novosCapitulos) {
   if (semCapa.length < 3 || maiorNovo > corpoTodo * 0.6 || mediana < 200) {
     return { erro: 'desequilibrado (mediana ' + mediana + ' palavras)' }
   }
-  return { pedacos, maior: maiorNovo }
+  return { pedacos, maior: maiorNovo, descartarDoInicio }
 }
 
 if (import.meta.url === `file://${process.argv[1]}` || process.argv[1]?.endsWith('redividir-emcapitulos.mjs')) {
@@ -122,7 +144,8 @@ if (import.meta.url === `file://${process.argv[1]}` || process.argv[1]?.endsWith
     const novosCapitulos = emCapitulos(soOLivro(original))
     const resultado = redividir(ps, novosCapitulos)
     if (resultado.erro) { semCorte++; linha(t.id, t.titulo, '--  ' + resultado.erro); continue }
-    const { pedacos, maior } = resultado
+    const { pedacos, maior, descartarDoInicio } = resultado
+    if (descartarDoInicio) console.log('      (folha de rosto curta demais: ' + descartarDoInicio + ' parágrafo(s) descartado(s))')
 
     if (maior > PAREDE && pedacos.length <= capsAtuais.length) {
       semCorte++

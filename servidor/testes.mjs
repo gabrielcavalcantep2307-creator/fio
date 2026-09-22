@@ -592,6 +592,55 @@ test('redividir: a linha do título, traduzida, some do corpo mas conta na soma'
   assert.ok(rFaltando.erro)
 })
 
+test('redividir: a folha de rosto curta demais some inteira, e só ela', async () => {
+  const { redividir } = await import('../ingestao/redividir-emcapitulos.mjs')
+
+  // "Um dos Seiscentos": quando o que vem antes do primeiro capítulo tem 60
+  // palavras ou menos, emCapitulos() descarta o bloco inteiro — o primeiro
+  // capítulo devolvido já nasce COM título, sem nenhum {titulo:null,...} na
+  // frente. Essa mesma folha de rosto foi traduzida como parágrafo comum na
+  // tradução antiga, e continua no começo dos <p> de hoje.
+  const p = (t) => `<p>${t}</p>`
+  const enche = (frase, n) => Array(n).fill(frase).join(' ')
+  const corpoCap1 = enche('Primeiro capítulo, com bastante texto para não ser migalha.', 40)
+  const corpoCap2 = enche('Segundo capítulo, com bastante texto para não ser migalha.', 40)
+  const corpoCap3 = enche('Terceiro capítulo, com bastante texto para não ser migalha.', 40)
+  const ps = [
+    p('Produzido por Al Haines.'),
+    p('*Um dos seis centos*'),
+    p('Um romance'),
+    p('Por James Grant'),
+    p('Capítulo I.'),
+    p(corpoCap1),
+    p('Capítulo II.'),
+    p(corpoCap2),
+    p('Capítulo III.'),
+    p(corpoCap3),
+  ]
+  const novosCapitulos = [
+    { titulo: 'CHAPTER I.', bruto: corpoCap1 },
+    { titulo: 'CHAPTER II.', bruto: corpoCap2 },
+    { titulo: 'CHAPTER III.', bruto: corpoCap3 },
+  ]
+
+  const r = redividir(ps, novosCapitulos)
+  assert.ok(!r.erro, r.erro)
+  assert.equal(r.descartarDoInicio, 4)     // as 4 linhas de folha de rosto
+  assert.equal(r.pedacos.length, 3)
+  assert.equal(r.pedacos[0].titulo, 'Capítulo I.')  // não "Produzido por Al Haines."
+  assert.ok(!r.pedacos[0].corpo.includes('Produzido por'))
+
+  // uma diferença GRANDE (livro de verdade faltando, não folha de rosto)
+  // continua recusada — o teto de 20 é para folha de rosto, não para
+  // esconder um capítulo inteiro perdido
+  const comCapituloAMais = [
+    ...Array(25).fill(p('Mais uma linha de folha de rosto que não deveria existir.')),
+    ...ps,
+  ]
+  const rGrande = redividir(comCapituloAMais, novosCapitulos)
+  assert.ok(rGrande.erro)
+})
+
 test('a capa do PDF é nossa, e muda de cara conforme o tema', async () => {
   const { capaDe, familiaDe } = await import('./capa-pdf.mjs')
 
