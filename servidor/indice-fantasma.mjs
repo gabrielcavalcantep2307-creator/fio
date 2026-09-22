@@ -130,3 +130,37 @@ export function semIndice(caps) {
   const ordens = new Set(fora.map((c) => c.ordem))
   return caps.filter((c) => !ordens.has(c.ordem))
 }
+
+// ── o índice de NOTAS DE RODAPÉ, que não some sozinho como um capítulo ──
+//
+// "Nota ao Capítulo I. Nota ao Capítulo II. (...) NOTA de rodapé" — Ivanhoé
+// abre assim. Diferente do índice de sumário, este NÃO pode ser resolvido
+// apagando o capítulo inteiro: o que vem depois dele, no mesmo capítulo, é a
+// Introdução de Walter Scott — texto de verdade, milhares de palavras.
+// Apagar o capítulo inteiro (como faz `oQueEhIndice`) jogaria fora o ensaio
+// junto com o lixo.
+//
+// A medida contra o acervo inteiro (22/09/2026) achou este padrão em UM
+// livro só. Não é, hoje, um padrão espalhado — mas a função fica pronta e
+// testada para quando aparecer de novo: livro com nota de rodapé farta
+// (Gibbon, Suetônio) tende a repetir esta forma de front matter.
+const RX_NOTA_INDICE = /\bnotas?\s+(?:ao|para\s+o|de\s+rodap[ée])?\s*cap[ií]tulo\s+[ivxlcdm\d]+/gi
+
+/**
+ * Tira o índice de notas de rodapé do INÍCIO de um capítulo, se houver.
+ * Só corta parágrafos inteiros, do começo, e só quando o primeiro parágrafo
+ * sozinho já tem três ou mais entradas — nunca mexe no meio do texto.
+ *
+ * @param {string} corpoHtml o corpo em HTML (parágrafos `<p>...</p>`)
+ * @returns {string} o mesmo corpo, ou o corpo sem os parágrafos de índice
+ */
+export function semIndiceDeNotas(corpoHtml) {
+  const paragrafos = String(corpoHtml ?? '').match(/<p>.*?<\/p>/gs)
+  if (!paragrafos?.length) return corpoHtml
+
+  const primeiro = paragrafos[0].replace(/<[^>]+>/g, ' ')
+  const achados = primeiro.match(RX_NOTA_INDICE) || []
+  if (achados.length < 3) return corpoHtml
+
+  return paragrafos.slice(1).join('')
+}

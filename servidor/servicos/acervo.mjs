@@ -29,7 +29,7 @@
 // importá-lo EXECUTA a ingestão, que trava o banco (custou cinco livros de
 // seis em 11/09).
 import { limpar } from '../sanear.mjs'
-import { semIndice } from '../indice-fantasma.mjs'
+import { semIndice, semIndiceDeNotas } from '../indice-fantasma.mjs'
 import { porExtenso } from '../banco/base.mjs'
 import { indexarTexto, indexarObra } from '../reindexar.mjs'
 
@@ -49,10 +49,13 @@ export function instalarTraducao(db, t, { obraId, morte = 0, jurisdicao = 'BR', 
   // O índice da edição de papel, que o divisor não tem como distinguir de um
   // capítulo, sai aqui — antes da contagem, para as palavras do índice não
   // entrarem no total do livro. Ver `../indice-fantasma.mjs`.
-  const capitulos = semIndice(t.capitulos)
+  let capitulos = semIndice(t.capitulos)
   if (capitulos.length !== t.capitulos.length) {
     aoDizer(`obra ${obraId}: ${t.capitulos.length - capitulos.length} capítulos eram o índice da edição. Fora.`)
   }
+  // O índice de NOTAS DE RODAPÉ que abre o capítulo (Ivanhoé): diferente do
+  // acima, não é o capítulo inteiro que é lixo — só o primeiro parágrafo.
+  capitulos = capitulos.map((c) => ({ ...c, corpo: semIndiceDeNotas(c.corpo) }))
 
   const palavras = capitulos.reduce((a, c) => a + c.palavras, 0)
   // A mesma trava do tradutor, repetida aqui de propósito. Este é o último

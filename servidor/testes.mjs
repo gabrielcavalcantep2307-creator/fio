@@ -486,6 +486,31 @@ test('ano antes de Cristo sai legível, e o que já caiu não ganha data absurda
   assert.match(recente.motivo, /livre em 2091/)
 })
 
+test('o índice de notas de rodapé sai do começo, e o resto do capítulo fica', async () => {
+  const { semIndiceDeNotas } = await import('./indice-fantasma.mjs')
+
+  // o caso real: Ivanhoé abre com o índice de notas, uma legenda de
+  // ilustração e a Introdução de Walter Scott — só o índice é lixo
+  const ivanhoe = '<p>Nota ao Capítulo I. Nota ao Capítulo II. Nota ao Capítulo XVII. Nota ao '
+    + 'Capítulo XXI. Nota ao capítulo XXII. Nota ao Capítulo XXIX. Nota ao Capítulo '
+    + 'XXXI. Nota ao Capítulo XXXII. Nota ao Capítulo XXXIII. Nota para o capítulo '
+    + 'XLI.. NOTA de rodapé</p><p>[Illustração]</p>'
+    + '<p>Introdução à Ivanhoe.</p><p>O autor dos romances de Waverley...</p>'
+  const limpo = semIndiceDeNotas(ivanhoe)
+  assert.ok(!limpo.includes('Nota ao Capítulo'))
+  assert.ok(limpo.includes('Introdução à Ivanhoe'))
+  assert.ok(limpo.includes('[Illustração]'))   // só o parágrafo do índice sai, o resto fica
+
+  // um capítulo comum, que por acaso cita "nota ao capítulo" uma vez só no
+  // meio do texto (uma referência cruzada legítima), não pode ser mexido
+  const normal = '<p>Como já disse na nota ao capítulo anterior, o rei partiu.</p>'
+  assert.equal(semIndiceDeNotas(normal), normal)
+
+  // sem parágrafo nenhum, ou capítulo vazio: não quebra
+  assert.equal(semIndiceDeNotas(''), '')
+  assert.equal(semIndiceDeNotas(null), null)
+})
+
 test('a capa do PDF é nossa, e muda de cara conforme o tema', async () => {
   const { capaDe, familiaDe } = await import('./capa-pdf.mjs')
 
