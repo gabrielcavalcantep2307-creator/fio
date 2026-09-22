@@ -101,7 +101,7 @@ export function numeroDe(titulo) {
 // ── dividir um texto ────────────────────────────────────────────────────
 const PARAGRAFO = /<p(?:[ ][^>]*)?>[\s\S]*?<\/p>|<h[1-6](?:[ ][^>]*)?>[\s\S]*?<\/h[1-6]>/g
 
-function dividir(corpo) {
+export function dividir(corpo) {
   const ps = corpo.match(PARAGRAFO)
   if (!ps || ps.length < 40) return null
   const textos = ps.map(semTags)
@@ -162,6 +162,24 @@ function dividir(corpo) {
   const numeros = miolo.map((p) => numeroDe(p.titulo)).filter((n) => n != null)
   if (numeros.length >= Math.max(3, miolo.length * 0.5)) {
     for (let k = 1; k < numeros.length; k++) if (numeros[k] <= numeros[k - 1]) return null
+
+    // TRAVA DA LACUNA (22/09/2026): números que SOBEM mas aos saltos.
+    //
+    // "Além do Bem e do Mal" passou pela trava acima com 96 pedaços "1.",
+    // "3.", "5.", "7.", "11.", "12.", "15.", "17 anos.", "19 anos.", "21 -
+    // O que é isso?"… — sempre crescente, e ainda assim errado: são os
+    // aforismos de Nietzsche numerados de 1 a 296, e o que virou "título" foi
+    // só um a cada três, com o resto engolido junto (ou frases da prosa que
+    // por acaso começam com um número e um ano — "17 anos.", "65 a." — e
+    // ganham fama de cabeçalho por estarem sozinhas numa linha).
+    //
+    // O sumário de um livro de verdade é DENSO: cento e poucos capítulos
+    // numerados 1 a 100-e-tantos, sem buracos grandes. Uma sequência que sobe
+    // mas salta longe é sinal de que só uma fração das marcas reais foi
+    // achada — o vão entre a primeira e a última, dividido pela quantidade
+    // de marcas, mede a lacuna.
+    const vao = numeros.at(-1) - numeros[0] + 1
+    if (vao > numeros.length * 1.8) return null
   }
 
   // TRAVA DO TÍTULO REPETIDO: "TALES FÉRICAS" oito vezes não é capítulo, é
