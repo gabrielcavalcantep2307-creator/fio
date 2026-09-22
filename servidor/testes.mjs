@@ -540,6 +540,58 @@ test('esbocoDoHtml: peça de teatro não vira uma "fala" por capítulo', async (
   assert.equal(soAtoECena.titulos[0].ancora, '')
 })
 
+test('redividir: a linha do título, traduzida, some do corpo mas conta na soma', async () => {
+  const { redividir } = await import('../ingestao/redividir-emcapitulos.mjs')
+
+  // Como Além do Bem e do Mal ficou traduzido ANTES de o divisor aprender
+  // "Hauptstück": tudo num só capítulo, cada linha de título junto do resto
+  // como parágrafo comum. `emCapitulos()`, rodado HOJE contra o original, já
+  // separa a linha de título de cada bruto — mas o <p> correspondente, já
+  // traduzido, continua no corpo antigo.
+  const p = (t) => `<p>${t}</p>`
+  const enche = (frase, n) => Array(n).fill(frase).join(' ')
+  const par1 = enche('Do livre-arbítrio dos filósofos, palavra palavra palavra.', 40)
+  const par2 = enche('A mesma ideia continua neste segundo parágrafo do capítulo um.', 40)
+  const par3 = enche('O espírito livre, primeiro parágrafo do segundo capítulo aqui.', 40)
+  const par4 = enche('O espírito livre, segundo parágrafo, ainda no mesmo capítulo dois.', 40)
+  const par5 = enche('A essência religiosa, parágrafo único do terceiro capítulo inteiro.', 40)
+  const abertura = enche('Texto de abertura, sem capítulo nenhum ainda por aqui mesmo.', 40)
+  const ps = [
+    p(abertura),
+    p('Primeira peça:'),                              // era "Erstes Hauptstück:"
+    p(par1), p(par2),
+    p('Segundo, a peça principal:'),                  // era "Zweites Hauptstück:"
+    p(par3), p(par4),
+    p('Terceiro ponto:'),                             // era "Drittes Hauptstück:"
+    p(par5),
+  ]
+  const novosCapitulos = [
+    { titulo: null, bruto: abertura },
+    { titulo: 'Erstes Hauptstück:', bruto: par1 + '\n\n' + par2 },
+    { titulo: 'Zweites Hauptstück:', bruto: par3 + '\n\n' + par4 },
+    { titulo: 'Drittes Hauptstück:', bruto: par5 },
+  ]
+
+  const r = redividir(ps, novosCapitulos)
+  assert.ok(!r.erro, r.erro)
+  assert.equal(r.pedacos.length, 4)
+  assert.equal(r.pedacos[0].titulo, null)
+  // o título mostrado é a linha JÁ TRADUZIDA ("Primeira peça:"), nunca o
+  // texto do original ("Erstes Hauptstück:") — quem lê em português não
+  // pode ver alemão
+  assert.equal(r.pedacos[1].titulo, 'Primeira peça:')
+  assert.equal(r.pedacos[2].titulo, 'Segundo, a peça principal:')
+  assert.equal(r.pedacos[3].titulo, 'Terceiro ponto:')
+  // e a linha do título não aparece DUAS vezes (uma como título, outra como
+  // primeiro parágrafo do corpo)
+  assert.ok(!r.pedacos[1].corpo.includes('Primeira peça'))
+
+  // a mesma contagem, mas faltando um <p> de verdade (livro mudou desde a
+  // tradução, ou o divisor mudou de um jeito que desalinha): recusa
+  const rFaltando = redividir(ps.slice(0, -1), novosCapitulos)
+  assert.ok(rFaltando.erro)
+})
+
 test('a capa do PDF é nossa, e muda de cara conforme o tema', async () => {
   const { capaDe, familiaDe } = await import('./capa-pdf.mjs')
 
