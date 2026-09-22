@@ -29,6 +29,7 @@
 // importá-lo EXECUTA a ingestão, que trava o banco (custou cinco livros de
 // seis em 11/09).
 import { limpar } from '../sanear.mjs'
+import { semIndice } from '../indice-fantasma.mjs'
 import { indexarTexto, indexarObra } from '../reindexar.mjs'
 
 const AVISO = 'Tradução automática do Fio, sem revisão humana, feita a partir '
@@ -44,7 +45,15 @@ export function instalarTraducao(db, t, { obraId, morte = 0, jurisdicao = 'BR', 
   const obra = db.prepare('SELECT id, titulo, trilho FROM obra WHERE id = ?').get(obraId)
   if (!obra) throw new Error(`obra ${obraId} não existe no banco`)
 
-  const palavras = t.capitulos.reduce((a, c) => a + c.palavras, 0)
+  // O índice da edição de papel, que o divisor não tem como distinguir de um
+  // capítulo, sai aqui — antes da contagem, para as palavras do índice não
+  // entrarem no total do livro. Ver `../indice-fantasma.mjs`.
+  const capitulos = semIndice(t.capitulos)
+  if (capitulos.length !== t.capitulos.length) {
+    aoDizer(`obra ${obraId}: ${t.capitulos.length - capitulos.length} capítulos eram o índice da edição. Fora.`)
+  }
+
+  const palavras = capitulos.reduce((a, c) => a + c.palavras, 0)
   // A mesma trava do tradutor, repetida aqui de propósito. Este é o último
   // passo antes de o livro aparecer para gente, e um arquivo antigo — gravado
   // antes de a trava existir — passaria batido se a única guarda fosse lá.
@@ -72,7 +81,7 @@ export function instalarTraducao(db, t, { obraId, morte = 0, jurisdicao = 'BR', 
 
     const poe = db.prepare(
       'INSERT INTO capitulo (texto_id, ordem, titulo, corpo, palavras) VALUES (?,?,?,?,?)')
-    for (const c of t.capitulos) {
+    for (const c of capitulos) {
       // Passa pelo saneador como qualquer texto de fora. O corpo do capítulo
       // vai para `dangerouslySetInnerHTML` no leitor, e "veio de nós" não é
       // motivo para abrir exceção: a exceção é que vira o buraco.
@@ -94,7 +103,7 @@ export function instalarTraducao(db, t, { obraId, morte = 0, jurisdicao = 'BR', 
     db.prepare("UPDATE obra SET trilho = 'A', publicada = 1 WHERE id = ?").run(obraId)
 
     db.exec('COMMIT')
-    return { textoId, palavras, capitulos: t.capitulos.length, titulo: obra.titulo, trilhoAntes: obra.trilho }
+    return { textoId, palavras, capitulos: capitulos.length, titulo: obra.titulo, trilhoAntes: obra.trilho }
   } catch (e) {
     db.exec('ROLLBACK')
     throw e

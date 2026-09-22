@@ -445,6 +445,71 @@ test('o PDF montado é um arquivo válido, com sumário clicável', async () => 
   assert.ok((texto.match(/\/Type \/Page\b/g) ?? []).length >= 3)  // capa + ficha + ao menos 1 de corpo
 })
 
+// ── o índice da edição de papel que virou capítulo ──
+//
+// Os dois casos reais que motivaram a regra, e os dois capítulos curtos DE
+// VERDADE que ela não pode encostar. Sem estes dois últimos o teste passaria
+// com uma regra que estraga o Brás Cubas.
+test('o índice da edição sai, e o capítulo curto de verdade fica', async () => {
+  const { oQueEhIndice, semIndice } = await import('./indice-fantasma.mjs')
+  const prosa = (n) => `<p>${'palavra '.repeat(n)}</p>`
+  const corpo = (o, titulo, palavras, texto) => ({ ordem: o, titulo, palavras, corpo: texto ?? prosa(palavras) })
+
+  // FANTASMA: o Conde de Monte Cristo abria com cinco entradas do índice,
+  // cada uma com o corpo de uma linha, e o capítulo de verdade vinha depois.
+  const monteCristo = [
+    corpo(1, 'Capítulo 27. A história', 2, '<p>Volume dois</p>'),
+    corpo(2, 'Capítulo 47. Os cinzentos', 2, '<p>Volume 3</p>'),
+    corpo(3, 'Capítulo 73. A promessa', 2, '<p>Volume 4</p>'),
+    corpo(4, 'Capítulo 95. Pai e filha', 2, '<p>Volume 5</p>'),
+    corpo(5, 'Capítulo 1 Marselha', 2900),
+    corpo(6, 'Capítulo 27. A história', 2400),
+    corpo(7, 'Capítulo 47. Os cinzentos', 3600),
+    corpo(8, 'Capítulo 73. A promessa', 2100),
+    corpo(9, 'Capítulo 95. Pai e filha', 2200),
+    corpo(10, 'Capítulo 96. O contrato', 1900),
+    corpo(11, 'Capítulo 97. A partida', 2600),
+    corpo(12, 'Capítulo 98. A pousada', 2300),
+  ]
+  const foraDoConde = oQueEhIndice(monteCristo)
+  assert.equal(foraDoConde.length, 4)
+  assert.ok(foraDoConde.every((c) => c.motivo === 'indice-fantasma'))
+  assert.equal(semIndice(monteCristo)[0].titulo, 'Capítulo 1 Marselha')
+
+  // ENGOLIDO: os Karamázov abriam com o índice inteiro dentro do corpo de
+  // quatro capítulos, como um parágrafo corrido que não é frase nenhuma.
+  const karamazov = [
+    corpo(1, 'Parte I', 40, '<p>Livro I. A História de uma Família Capítulo I. Fyodor Capítulo II. Ele se '
+      + 'livrou Capítulo III. O Segundo Casamento Capítulo IV. O Terceiro Filho Capítulo V. Os Anciãos '
+      + 'Livro II. Um Encontro Capítulo VI. Por que Capítulo VII. Um jovem</p>'),
+    corpo(2, 'Parte I', 7, '<p>Livro I. A História de uma família</p>'),
+    corpo(3, 'Capítulo I.', 2800),
+    corpo(4, 'Capítulo II.', 2500),
+    corpo(5, 'Capítulo III.', 2700),
+  ]
+  const foraDosIrmaos = oQueEhIndice(karamazov)
+  assert.equal(foraDosIrmaos.length, 1)
+  assert.equal(foraDosIrmaos[0].ordem, 1)
+  assert.equal(foraDosIrmaos[0].motivo, 'indice-engolido')
+
+  // O capítulo LV do Brás Cubas é o diálogo de reticências entre Brás e
+  // Virgília: trinta palavras, sozinho no meio do livro. Tem de ficar.
+  const brasCubas = [
+    corpo(1, 'CAPITULO LIII', 320), corpo(2, 'CAPITULO LIV', 290),
+    corpo(3, 'CAPITULO LV O velho dialogo de Adão e Eva', 30, '<p>BRAZ CUBAS ....? VIRGILIA ... BRAZ CUBAS .....</p>'),
+    corpo(4, 'CAPITULO LVI', 340), corpo(5, 'CAPITULO LVII', 300),
+  ]
+  assert.deepEqual(oQueEhIndice(brasCubas), [])
+
+  // E um livro que é só índice não pode ser esvaziado: se a medida levaria
+  // mais de um terço dos capítulos, quem está errada é a medida.
+  const soIndice = [
+    corpo(1, 'Capítulo I', 3, '<p>Volume um</p>'), corpo(2, 'Capítulo II', 3, '<p>Volume dois</p>'),
+    corpo(3, 'Capítulo III', 3, '<p>Volume três</p>'), corpo(4, 'Capítulo I', 900),
+  ]
+  assert.deepEqual(oQueEhIndice(soIndice), [])
+})
+
 test('o livro que eu mando é meu, e some da estante de todo mundo', async () => {
   const meusLivros = await import('./meus-livros.mjs')
   const eu = banco.prepare("SELECT id FROM leitor WHERE email = 'gabriel@exemplo.com'").get()
