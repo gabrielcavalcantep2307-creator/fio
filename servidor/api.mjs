@@ -49,6 +49,7 @@ import * as diario from './diario.mjs'
 import * as mangaLista from './manga-lista.mjs'
 import * as qualidade from './qualidade.mjs'
 import * as contato from './contato.mjs'
+import * as idiomas from './idiomas.mjs'
 import { criarRoteador } from './http/roteador.mjs'
 import { criarEstatico } from './http/estatico.mjs'
 import { criarPainel, caminhoDoPainel } from './http/painel.mjs'
@@ -62,13 +63,14 @@ import rotasDoLeitor from './rotas/leitor.mjs'
 import rotasDePublicacoes from './rotas/publicacoes.mjs'
 import rotasDeQuadrinhos from './rotas/quadrinhos.mjs'
 import rotasDoPainel from './rotas/admin.mjs'
+import rotasDeIdiomas from './rotas/idiomas.mjs'
 
 const PORTA = Number(process.env.FIO_PORTA || 8787)
 const SITE = process.env.FIO_SITE || `http://localhost:${PORTA}`
 const ESTATICO = process.env.FIO_ESTATICO || join(RAIZ, 'web', 'dist')
 
 const banco = abrir()
-for (const m of [gosto, planos, publicacoes, acesso, esteira, correcoes, curadoria, extras, google, diario, mangaLista, qualidade, contato]) m.garantirTabelas(banco)
+for (const m of [gosto, planos, publicacoes, acesso, esteira, correcoes, curadoria, extras, google, diario, mangaLista, qualidade, contato, idiomas]) m.garantirTabelas(banco)
 // marca a fundação num banco que já tem dona (ver contas.casaFundada)
 contas.casaFundada(banco)
 
@@ -79,7 +81,7 @@ setInterval(faxina, 3600_000).unref()
 
 const roteador = criarRoteador({ banco })
 const app = { rota: roteador.rota, quemE: roteador.quemE, banco, estatico: ESTATICO, site: SITE }
-for (const rotas of [rotasDeConta, rotasDoGoogle, rotasDeLeitura, rotasDoLeitor, rotasDePublicacoes, rotasDeQuadrinhos, rotasDoPainel]) rotas(app)
+for (const rotas of [rotasDeConta, rotasDoGoogle, rotasDeLeitura, rotasDoLeitor, rotasDePublicacoes, rotasDeQuadrinhos, rotasDoPainel, rotasDeIdiomas]) rotas(app)
 const site = criarEstatico({ banco, estatico: ESTATICO, quemE: roteador.quemE })
 // uma página de verdade por livro e por autor, para o Google (http/vitrine.mjs)
 const vitrine = criarVitrine({ banco, estatico: ESTATICO, site: SITE })

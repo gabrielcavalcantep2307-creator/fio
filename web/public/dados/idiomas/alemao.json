@@ -1,0 +1,46 @@
+{
+  "nome": "Alemão",
+  "bandeira": "🇩🇪",
+  "profundidade": "basico",
+  "voz": "de-DE",
+  "unidades": [
+    {
+      "chave": "u1-sons",
+      "titulo": "1. Sons e pronúncia",
+      "tema": "As letras que mudam tudo: ä, ö, ü e o ch.",
+      "vocabulario": [
+        { "palavra": "ä, ö, ü", "traducao": "vogais com trema — sons que não existem em português", "exemplo": "schön, Bücher, Mädchen", "exemploTraducao": "bonito, livros, menina" },
+        { "palavra": "ch", "traducao": "som aspirado, entre \"r\" e \"x\" — muda de força conforme a vogal antes", "exemplo": "ich, Buch, Nacht", "exemploTraducao": "eu, livro, noite" },
+        { "palavra": "w", "traducao": "soa como \"v\" do português", "exemplo": "wir, Wasser", "exemploTraducao": "nós, água" },
+        { "palavra": "v", "traducao": "soa como \"f\"", "exemplo": "Vater, vier", "exemploTraducao": "pai, quatro" },
+        { "palavra": "z", "traducao": "soa como \"ts\"", "exemplo": "Zeit, zwei", "exemploTraducao": "tempo, dois" },
+        { "palavra": "s (antes de vogal)", "traducao": "soa como \"z\"", "exemplo": "sehen, sagen", "exemploTraducao": "ver, dizer" }
+      ],
+      "associacao": "\"V\" e \"W\" TROCAM de som em relação ao português: \"Vater\" (pai) soa \"Fáter\", e \"wir\" (nós) soa \"vir\". É o oposto do que os olhos esperam.",
+      "dica": "Todo SUBSTANTIVO alemão começa com letra MAIÚSCULA, sempre — não é ênfase nem título, é regra: \"das Buch\" (o livro), \"die Zeit\" (o tempo).",
+      "quiz": [
+        { "tipo": "multipla", "pergunta": "Como soa o \"w\" alemão, como em \"wir\"?", "opcoes": ["Como \"w\" do inglês", "Como \"v\" do português", "Como \"u\""], "certa": 1 },
+        { "tipo": "multipla", "pergunta": "Todo substantivo alemão começa com:", "opcoes": ["Letra minúscula", "Letra maiúscula, sempre", "Depende da frase"], "certa": 1 }
+      ]
+    },
+    {
+      "chave": "u2-saudacoes",
+      "titulo": "2. Saudações e apresentações",
+      "tema": "O básico para começar.",
+      "vocabulario": [
+        { "palavra": "Hallo", "traducao": "olá", "exemplo": "Hallo, wie geht's?", "exemploTraducao": "Olá, como vai?" },
+        { "palavra": "Guten Morgen / Guten Tag / Guten Abend", "traducao": "bom dia / boa tarde / boa noite", "exemplo": "Guten Morgen, Frau Schmidt.", "exemploTraducao": "Bom dia, senhora Schmidt." },
+        { "palavra": "Wie geht's? / Wie geht es Ihnen?", "traducao": "como vai? (informal / formal)", "exemplo": "Gut, danke. Und dir?", "exemploTraducao": "Bem, obrigado. E você?" },
+        { "palavra": "Ich heiße...", "traducao": "eu me chamo...", "exemplo": "Ich heiße Klaus.", "exemploTraducao": "Eu me chamo Klaus." },
+        { "palavra": "Danke / Bitte", "traducao": "obrigado / de nada (ou \"por favor\")", "exemplo": "Danke schön! — Bitte schön!", "exemploTraducao": "Muito obrigado! — De nada!" },
+        { "palavra": "Auf Wiedersehen / Tschüss", "traducao": "até logo (formal) / tchau (informal)", "exemplo": "Tschüss, bis morgen!", "exemploTraducao": "Tchau, até amanhã!" }
+      ],
+      "associacao": "\"Bitte\" faz o trabalho de DUAS palavras em português: \"por favor\" ao pedir, e \"de nada\" ao responder um agradecimento. O contexto decide qual das duas é.",
+      "dica": "O alemão tem \"du\" (você, informal) e \"Sie\" (você, formal, sempre com maiúscula) — como o \"tu\"/\"você\" do português, mas mais rígido: usar \"du\" com um estranho mais velho pode soar deselegante.",
+      "quiz": [
+        { "tipo": "multipla", "pergunta": "\"Bitte\" pode significar:", "opcoes": ["Só \"por favor\"", "Só \"de nada\"", "Por favor OU de nada, depende do contexto"], "certa": 2 },
+        { "tipo": "traduzir", "pergunta": "Como se diz \"eu me chamo\" em alemão?", "resposta": "ich heisse" }
+      ]
+    }
+  ]
+}

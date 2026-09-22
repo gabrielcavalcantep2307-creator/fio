@@ -31,6 +31,7 @@ const BANCO = join(pasta, 'contrato.db')
 
 // ── o site descartável ──
 mkdirSync(join(site, 'dados', 'fichas'), { recursive: true })
+mkdirSync(join(site, 'dados', 'idiomas'), { recursive: true })
 mkdirSync(join(site, 'quadrinhos', 'serie-teste', '02'), { recursive: true })
 mkdirSync(join(site, 'ativos'), { recursive: true })
 writeFileSync(join(site, 'index.html'), '<!doctype html><title>Fio</title>')
@@ -40,6 +41,10 @@ writeFileSync(join(site, 'dados', 'fichas', '1.json'), JSON.stringify({ id: 1, t
 writeFileSync(join(site, 'dados', 'quadrinhos.json'), JSON.stringify({ series: [{ id: 'serie-teste', titulo: 'Série', capa: '/quadrinhos/serie-teste/capa.jpg', capitulos: [{ id: '01' }, { id: '02', capa: '/quadrinhos/serie-teste/02/001.jpg' }] }] }))
 writeFileSync(join(site, 'quadrinhos', 'serie-teste', '02', '002.jpg'), 'jpg')
 writeFileSync(join(site, 'quadrinhos', 'serie-teste', '02', '001.jpg'), 'jpg')
+writeFileSync(join(site, 'dados', 'idiomas', 'frances.json'), JSON.stringify({
+  nome: 'Francês', bandeira: '🇫🇷', profundidade: 'completo', voz: 'fr-FR',
+  unidades: [{ chave: 'u1', titulo: 'Unidade 1', vocabulario: [], quiz: [] }],
+}))
 
 // ── o banco descartável: esquema, duas contas e um livro legível ──
 process.env.FIO_BANCO = BANCO
@@ -140,7 +145,7 @@ for (const c of ['/api/saude', '/api/sugestoes', '/api/nome-livre?u=leitora', '/
   '/api/planos', '/api/novidades', '/api/quadrinhos/vitrine', '/api/google/ligado', '/api/correcoes/resumo?obra=1',
   '/api/publicacoes', '/api/publicacao?id=999', '/api/publicacao/parte?id=999&ordem=1', '/api/procurar?q=palavra',
   '/api/obra/1/avaliacoes', '/api/livro/1', '/api/livro/999', '/api/livro/1/epub', '/api/livro/1/pdf', '/api/mangas/abc', '/api/pub-arquivo/nada.jpg',
-  '/api/nao-existe', '/api/eu']) {
+  '/api/nao-existe', '/api/eu', '/api/idiomas']) {
   await caso('público', 'anon', 'GET', c)
 }
 // contato e planos (19/09/2026)
@@ -149,6 +154,12 @@ await caso('contato sem nome', 'anon', 'POST', '/api/contato', { corpo: { email:
 await caso('quero assinar sem conta', 'anon', 'POST', '/api/planos/quero', { corpo: { plano: 'novelo' } })
 await caso('contas sem ser admin', 'leitora', 'GET', '/api/admin/contas')
 await caso('mensagens sem ser admin', 'leitora', 'GET', '/api/admin/contatos')
+
+// idiomas: exclusivo do plano Tear (22/09/2026)
+await caso('idiomas sem conta', 'anon', 'GET', '/api/idiomas/frances')
+await caso('idiomas sem Tear', 'leitora', 'GET', '/api/idiomas/frances')
+await caso('idiomas com Tear (dona é admin = Tear)', 'dona', 'GET', '/api/idiomas/frances')
+await caso('idiomas idioma que não existe', 'dona', 'GET', '/api/idiomas/klingon')
 
 // a vitrine para o Google (http/vitrine.mjs, 19/09/2026)
 for (const c of ['/robots.txt', '/sitemap.xml', '/livros', '/autores', '/livro/1', '/livro/999999', '/autor/1']) {

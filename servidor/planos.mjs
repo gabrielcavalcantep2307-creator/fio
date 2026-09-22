@@ -92,6 +92,9 @@ export const RECURSOS = [
     { nome: 'Leituras de cada obra e capítulo', leitor: false, novelo: false, trama: true, tear: true },
     { nome: 'Prioridade na revisão', leitor: false, novelo: false, trama: false, tear: true },
   ] },
+  { grupo: 'Idiomas', itens: [
+    { nome: 'Estudo de idiomas (aulas, quiz, repetição, música)', leitor: false, novelo: false, trama: false, tear: true },
+  ] },
 ]
 
 // Os destaques de cada cartão: poucas linhas, o que faz a pessoa escolher.
@@ -99,7 +102,7 @@ export const DESTAQUES = {
   leitor: ['3 livros novos por mês', 'Leis, quadrinhos livres e comunidade à vontade', 'Progresso em todos os aparelhos'],
   novelo: ['Livros sem limite', 'Ouvir em voz alta', 'Baixar em EPUB', '2 pedidos de tradução por mês'],
   trama: ['Tudo do Novelo', 'Publicar até 3 obras', 'Leituras de cada capítulo', '5 pedidos de tradução por mês'],
-  tear: ['Tudo da Trama', 'Publicar até 20 obras', '15 pedidos de tradução, na frente da fila', 'Prioridade na revisão'],
+  tear: ['Tudo da Trama', 'Estudo de idiomas (francês, espanhol, japonês e mais)', 'Publicar até 20 obras', '15 pedidos de tradução, na frente da fila'],
 }
 
 export function garantirTabelas(banco) {

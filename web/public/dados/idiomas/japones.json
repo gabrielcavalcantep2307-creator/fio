@@ -1,0 +1,179 @@
+{
+  "nome": "Japonês",
+  "bandeira": "🇯🇵",
+  "profundidade": "completo",
+  "voz": "ja-JP",
+  "unidades": [
+    {
+      "chave": "u1-escrita",
+      "titulo": "1. Os sons e a escrita",
+      "tema": "Japonês parte do zero de verdade: outro alfabeto, outra lógica. Aqui vai o mínimo para começar a ler.",
+      "vocabulario": [
+        { "palavra": "hiragana", "traducao": "o alfabeto fonético usado para palavras japonesas e gramática", "exemplo": "あ い う え お", "exemploTraducao": "a i u e o (as cinco vogais)" },
+        { "palavra": "katakana", "traducao": "o alfabeto fonético usado para palavras estrangeiras", "exemplo": "コーヒー", "exemploTraducao": "kōhī (café, do inglês \"coffee\")" },
+        { "palavra": "kanji", "traducao": "os ideogramas vindos do chinês — cada um carrega um significado", "exemplo": "山 (montanha), 水 (água)", "exemploTraducao": "yama, mizu" },
+        { "palavra": "romaji", "traducao": "a escrita em letras latinas, só de apoio — ninguém escreve japonês assim de verdade", "exemplo": "konnichiwa = こんにちは", "exemploTraducao": "boa tarde" },
+        { "palavra": "あ い う え お", "traducao": "a, i, u, e, o — as cinco vogais, a base de tudo", "exemplo": "あい (ai) = amor", "exemploTraducao": "ai" },
+        { "palavra": "か き く け こ", "traducao": "ka, ki, ku, ke, ko", "exemplo": "かお (kao) = rosto", "exemploTraducao": "kao" },
+        { "palavra": "さ し す せ そ", "traducao": "sa, shi, su, se, so", "exemplo": "すし (sushi)", "exemploTraducao": "sushi" }
+      ],
+      "associacao": "Toda sílaba japonesa (menos o \"n\" sozinho) termina em vogal — é por isso que palavras emprestadas do português ganham vogais extras: \"pan\" (pão) veio do português mesmo, sem mudar quase nada; mas \"McDonald's\" vira \"makudonarudo\", uma vogal encaixada depois de cada consoante que não existe em japonês.",
+      "dica": "Não tente decorar os três sistemas de uma vez. Comece só pelo hiragana — com ele sozinho já dá para ler e escrever qualquer palavra japonesa foneticamente. Katakana e kanji vêm depois, aos poucos.",
+      "quiz": [
+        { "tipo": "multipla", "pergunta": "Qual alfabeto japonês se usa para palavras estrangeiras, como \"café\"?", "opcoes": ["Hiragana", "Katakana", "Kanji"], "certa": 1 },
+        { "tipo": "multipla", "pergunta": "O que é \"romaji\"?", "opcoes": ["Um quarto alfabeto japonês oficial", "A escrita em letras latinas, só de apoio para quem está aprendendo", "Uma variante do kanji"], "certa": 1 },
+        { "tipo": "traduzir", "pergunta": "Qual alfabeto carrega significado, não só som (vem do chinês)?", "resposta": "kanji" }
+      ]
+    },
+    {
+      "chave": "u2-saudacoes",
+      "titulo": "2. Saudações e apresentações",
+      "tema": "Cumprimentar e se apresentar — com o nível de formalidade certo.",
+      "vocabulario": [
+        { "palavra": "おはようございます (ohayō gozaimasu)", "traducao": "bom dia (formal)", "exemplo": "先生、おはようございます。", "exemploTraducao": "Bom dia, professor(a)." },
+        { "palavra": "こんにちは (konnichiwa)", "traducao": "boa tarde / olá (durante o dia)", "exemplo": "こんにちは、元気ですか。", "exemploTraducao": "Olá, tudo bem?" },
+        { "palavra": "こんばんは (konbanwa)", "traducao": "boa noite (ao chegar)", "exemplo": "こんばんは、皆さん。", "exemploTraducao": "Boa noite a todos." },
+        { "palavra": "さようなら (sayōnara)", "traducao": "adeus (formal, meio definitivo — entre amigos usa-se outra coisa)", "exemplo": "先生、さようなら。", "exemploTraducao": "Adeus, professor(a)." },
+        { "palavra": "じゃあね (jā ne)", "traducao": "tchau (informal, entre amigos)", "exemplo": "じゃあね、また明日。", "exemploTraducao": "Tchau, até amanhã." },
+        { "palavra": "はじめまして (hajimemashite)", "traducao": "prazer (ao conhecer alguém pela primeira vez)", "exemplo": "はじめまして、田中です。", "exemploTraducao": "Prazer, sou o(a) Tanaka." },
+        { "palavra": "私は...です (watashi wa ... desu)", "traducao": "eu sou..." , "exemplo": "私はブラジル人です。", "exemploTraducao": "Eu sou brasileiro(a)." },
+        { "palavra": "よろしくお願いします (yoroshiku onegaishimasu)", "traducao": "sem tradução exata — algo como \"conto com você\" / \"vamos nos entender bem\", dito ao se apresentar ou pedir um favor", "exemplo": "はじめまして、よろしくお願いします。", "exemploTraducao": "Prazer, conto com você (fórmula de cortesia)." },
+        { "palavra": "ありがとうございます (arigatō gozaimasu)", "traducao": "muito obrigado(a) (formal)", "exemplo": "ありがとうございます、助かりました。", "exemploTraducao": "Muito obrigado, você me ajudou." }
+      ],
+      "associacao": "\"Sayōnara\" é bem mais pesado do que \"tchau\" em português — soa quase como \"vamos nos despedir por um bom tempo\". No dia a dia, japoneses usam muito mais \"jā ne\" (informal) ou simplesmente o nome da próxima vez que vão se ver: \"また明日\" (mata ashita, até amanhã).",
+      "dica": "\"Yoroshiku onegaishimasu\" não tem tradução direta pro português — é uma daquelas fórmulas sociais que todo idioma tem e que só se aprende usando. Dito ao se apresentar, ao pedir um favor, ao começar a trabalhar com alguém.",
+      "quiz": [
+        { "tipo": "multipla", "pergunta": "Qual dessas é MENOS pesada para se despedir de um amigo?", "opcoes": ["さようなら (sayōnara)", "じゃあね (jā ne)", "As duas pesam igual"], "certa": 1 },
+        { "tipo": "multipla", "pergunta": "\"Hajimemashite\" se diz:", "opcoes": ["Toda vez que se cumprimenta alguém", "Só ao conhecer alguém pela primeira vez", "Só de manhã"], "certa": 1 },
+        { "tipo": "traduzir", "pergunta": "Como se diz \"bom dia\" formal em romaji?", "resposta": "ohayo gozaimasu" }
+      ]
+    },
+    {
+      "chave": "u3-numeros",
+      "titulo": "3. Números e idade",
+      "tema": "Contar em japonês — com uma armadilha: os \"contadores\".",
+      "vocabulario": [
+        { "palavra": "一、二、三 (ichi, ni, san)", "traducao": "um, dois, três", "exemplo": "一、二、三、四、五", "exemploTraducao": "ichi, ni, san, shi/yon, go" },
+        { "palavra": "四、五、六、七 (shi/yon, go, roku, shichi/nana)", "traducao": "quatro, cinco, seis, sete — quatro e sete têm DUAS leituras", "exemplo": "四人 (yonin) = quatro pessoas", "exemploTraducao": "yonin" },
+        { "palavra": "八、九、十 (hachi, kyū, jū)", "traducao": "oito, nove, dez", "exemplo": "十時 (jūji) = dez horas", "exemploTraducao": "jūji" },
+        { "palavra": "百、千、万 (hyaku, sen, man)", "traducao": "cem, mil, dez mil (o japonês conta de 10.000 em 10.000, não de 1.000 em 1.000!)", "exemplo": "一万円 (ichiman en)", "exemploTraducao": "dez mil ienes" },
+        { "palavra": "～歳 (~sai)", "traducao": "sufixo para idade — \"anos de idade\"", "exemplo": "二十歳です。(hatachi desu)", "exemploTraducao": "Tenho vinte anos." },
+        { "palavra": "何歳ですか (nansai desu ka)", "traducao": "quantos anos você tem?", "exemplo": "何歳ですか。— 二十五歳です。", "exemploTraducao": "Quantos anos você tem? — Tenho vinte e cinco." }
+      ],
+      "associacao": "O número 4 (四) soa igual à palavra \"morte\" (死, shi) — por isso muita gente japonesa evita usar \"shi\" para 4 e prefere \"yon\". O mesmo acontece com o 9 (九, ku), que soa como \"sofrimento\" (苦, ku) — prefere-se \"kyū\". Hospitais e prédios às vezes pulam o 4º andar por esse motivo, igual ao 13 no Ocidente.",
+      "dica": "A partir de 10.000, o japonês conta em blocos de QUATRO zeros (万 man = 10.000), não de três como o português (mil). Isso confunde muito quem está acostumado com \"cem mil\", \"um milhão\" — em japonês, um milhão é \"cem-dez-mil\" (百万, hyakuman).",
+      "quiz": [
+        { "tipo": "multipla", "pergunta": "Por que o número 4 tem duas leituras (shi/yon) e muita gente evita \"shi\"?", "opcoes": ["Shi é mais difícil de pronunciar", "Shi soa igual à palavra \"morte\"", "É só uma questão de dialeto regional"], "certa": 1 },
+        { "tipo": "multipla", "pergunta": "O japonês conta em blocos de quantos zeros a partir de 10.000?", "opcoes": ["Três (como o português)", "Quatro", "Seis"], "certa": 1 },
+        { "tipo": "traduzir", "pergunta": "Como se pergunta a idade de alguém, em romaji?", "resposta": "nansai desu ka" }
+      ]
+    },
+    {
+      "chave": "u4-familia",
+      "titulo": "4. Família",
+      "tema": "Um detalhe importante: os nomes de família MUDAM se é da sua família ou da de outra pessoa.",
+      "vocabulario": [
+        { "palavra": "家族 (kazoku)", "traducao": "família", "exemplo": "私の家族は四人です。", "exemploTraducao": "Minha família tem quatro pessoas." },
+        { "palavra": "父 (chichi) / お父さん (otōsan)", "traducao": "meu pai / o pai de alguém (ou forma respeitosa de chamar o próprio pai)", "exemplo": "父は医者です。", "exemploTraducao": "Meu pai é médico." },
+        { "palavra": "母 (haha) / お母さん (okāsan)", "traducao": "minha mãe / a mãe de alguém", "exemplo": "お母さんは元気ですか。", "exemploTraducao": "Sua mãe está bem?" },
+        { "palavra": "兄 (ani) / お兄さん (onīsan)", "traducao": "meu irmão mais velho / o irmão mais velho de alguém", "exemplo": "兄は東京にいます。", "exemploTraducao": "Meu irmão mais velho está em Tóquio." },
+        { "palavra": "姉 (ane) / お姉さん (onēsan)", "traducao": "minha irmã mais velha / a irmã mais velha de alguém", "exemplo": "姉は先生です。", "exemploTraducao": "Minha irmã mais velha é professora." },
+        { "palavra": "弟 (otōto) / 妹 (imōto)", "traducao": "irmão mais novo / irmã mais nova (não muda entre \"meu\" e \"de alguém\" com a mesma força)", "exemplo": "弟がいます。", "exemploTraducao": "Eu tenho um irmão mais novo." }
+      ],
+      "associacao": "O japonês NÃO tem uma palavra só para \"irmão\" — é sempre \"irmão mais velho\" (兄, ani) ou \"irmão mais novo\" (弟, otōto), palavras completamente diferentes. A hierarquia de idade é embutida na própria palavra, o tempo todo.",
+      "dica": "Use 父・母・兄・姉 (chichi, haha, ani, ane) para falar da SUA PRÓPRIA família com outras pessoas — é a forma humilde. Use お父さん・お母さん (otōsan, okāsan, com o \"o\" e o \"san\") para falar da família de OUTRA pessoa, ou para chamar seus próprios pais diretamente. Trocar os dois soa estranho, mas não é grave — é o tipo de coisa que se ajusta com a prática.",
+      "quiz": [
+        { "tipo": "multipla", "pergunta": "Como o japonês diz \"irmão\", de forma genérica, sem indicar se é mais velho ou mais novo?", "opcoes": ["兄弟 junto sempre resolve isso", "Não existe essa palavra genérica — é sempre \"ani\" (mais velho) ou \"otōto\" (mais novo)", "Usa-se \"kyōdai\" sempre no lugar"], "certa": 1 },
+        { "tipo": "multipla", "pergunta": "Para falar do PRÓPRIO pai com um estranho, usa-se:", "opcoes": ["お父さん (otōsan)", "父 (chichi)", "Tanto faz"], "certa": 1 },
+        { "tipo": "traduzir", "pergunta": "Em romaji, como se diz \"família\"?", "resposta": "kazoku" }
+      ]
+    },
+    {
+      "chave": "u5-comida",
+      "titulo": "5. Comida e bebida",
+      "tema": "Pedir comida e as expressões de mesa.",
+      "vocabulario": [
+        { "palavra": "ご飯 (gohan)", "traducao": "arroz cozido — e também \"refeição\" em geral", "exemplo": "ご飯を食べます。", "exemploTraducao": "Vou comer (arroz/refeição)." },
+        { "palavra": "水 (mizu)", "traducao": "água", "exemplo": "水をください。", "exemploTraducao": "Água, por favor." },
+        { "palavra": "お茶 (ocha)", "traducao": "chá (geralmente chá verde)", "exemplo": "お茶を一杯どうぞ。", "exemploTraducao": "Sirva-se de um chá." },
+        { "palavra": "いただきます (itadakimasu)", "traducao": "dito ANTES de comer — \"vou receber com gratidão\"", "exemplo": "（食べる前に）いただきます！", "exemploTraducao": "(antes de comer) Itadakimasu!" },
+        { "palavra": "ごちそうさまでした (gochisōsama deshita)", "traducao": "dito DEPOIS de comer — agradecendo a refeição", "exemplo": "（食べた後に）ごちそうさまでした。", "exemploTraducao": "(depois de comer) Foi uma refeição farta, obrigado." },
+        { "palavra": "美味しい (oishii)", "traducao": "gostoso, delicioso", "exemplo": "これ、美味しいですね！", "exemploTraducao": "Isso está gostoso, não é?" },
+        { "palavra": "お腹が空きました (onaka ga sukimashita)", "traducao": "estou com fome (literalmente \"minha barriga esvaziou\")", "exemplo": "お腹が空きました。何か食べましょう。", "exemploTraducao": "Estou com fome. Vamos comer alguma coisa." },
+        { "palavra": "お会計お願いします (okaikei onegaishimasu)", "traducao": "a conta, por favor", "exemplo": "すみません、お会計お願いします。", "exemploTraducao": "Com licença, a conta por favor." }
+      ],
+      "associacao": "\"Itadakimasu\" e \"gochisōsama\" não têm equivalente exato em português — são ditos SEMPRE, em toda refeição, mesmo sozinho em casa. É mais perto de um \"bom apetite\" e um \"muito obrigado pela comida\" combinados — um gesto de gratidão que virou hábito automático.",
+      "dica": "Nunca esqueça de dizer \"itadakimasu\" antes de comer numa mesa japonesa — pular isso chama atenção, mesmo informalmente entre amigos.",
+      "quiz": [
+        { "tipo": "multipla", "pergunta": "Quando se diz \"itadakimasu\"?", "opcoes": ["Depois de comer", "Antes de comer", "Só em restaurantes caros"], "certa": 1 },
+        { "tipo": "multipla", "pergunta": "\"Gohan\" pode significar:", "opcoes": ["Só \"arroz\"", "Arroz cozido OU refeição em geral", "Só \"comida japonesa\""], "certa": 1 },
+        { "tipo": "traduzir", "pergunta": "Em romaji, como se diz \"delicioso\"?", "resposta": "oishii" }
+      ]
+    },
+    {
+      "chave": "u6-tempo",
+      "titulo": "6. Tempo, dias e datas",
+      "tema": "Os dias da semana japoneses vêm dos elementos e dos astros.",
+      "vocabulario": [
+        { "palavra": "月曜日 (getsuyōbi)", "traducao": "segunda-feira (dia da Lua)", "exemplo": "月曜日から仕事です。", "exemploTraducao": "Trabalho a partir de segunda." },
+        { "palavra": "火曜日 (kayōbi)", "traducao": "terça-feira (dia do Fogo)", "exemplo": "火曜日に会いましょう。", "exemploTraducao": "Vamos nos encontrar terça." },
+        { "palavra": "水曜日 (suiyōbi)", "traducao": "quarta-feira (dia da Água)", "exemplo": "水曜日は休みです。", "exemploTraducao": "Quarta é folga." },
+        { "palavra": "木曜日、金曜日 (mokuyōbi, kin'yōbi)", "traducao": "quinta (dia da Árvore/Madeira), sexta (dia do Ouro/Metal)", "exemplo": "金曜日の夜は自由です。", "exemploTraducao": "Sexta à noite estou livre." },
+        { "palavra": "土曜日、日曜日 (doyōbi, nichiyōbi)", "traducao": "sábado (dia da Terra), domingo (dia do Sol)", "exemplo": "週末は土曜日と日曜日です。", "exemploTraducao": "O fim de semana é sábado e domingo." },
+        { "palavra": "今日・明日・昨日 (kyō, ashita, kinō)", "traducao": "hoje, amanhã, ontem", "exemplo": "今日は晴れです。", "exemploTraducao": "Hoje está ensolarado." },
+        { "palavra": "何時ですか (nanji desu ka)", "traducao": "que horas são?", "exemplo": "今、三時です。", "exemploTraducao": "Agora são três horas." }
+      ],
+      "associacao": "Os dias da semana japoneses vêm dos CINCO ELEMENTOS chineses (Lua, Fogo, Água, Madeira, Metal/Ouro) mais o Sol e a Terra — a mesma lógica astrológica que deu nome aos dias em português (segunda-FEIRA vem de \"feira\", mas domingo vem do \"dia do Senhor\", sábado do \"sabá\" judaico). Curiosamente, 日曜日 (domingo, dia do Sol) e 月曜日 (segunda, dia da Lua) batem com o inglês \"Sunday\" e \"Monday\" — mesma lógica, línguas diferentes.",
+      "dica": "Todo dia da semana termina em 曜日 (yōbi, \"dia da semana\") — decorando só o elemento antes disso (月火水木金土日), você já reconhece qualquer um dos sete.",
+      "quiz": [
+        { "tipo": "multipla", "pergunta": "Qual elemento dá nome à quarta-feira (水曜日)?", "opcoes": ["Fogo", "Água", "Terra"], "certa": 1 },
+        { "tipo": "traduzir", "pergunta": "Em romaji, como se diz \"hoje\"?", "resposta": "kyo" }
+      ]
+    },
+    {
+      "chave": "u7-verbos",
+      "titulo": "7. O essencial: です (desu) e os verbos です・あります・います",
+      "tema": "A estrutura mais básica de toda frase japonesa.",
+      "vocabulario": [
+        { "palavra": "～です (desu)", "traducao": "\"é\" / \"sou\" / \"está\" — o verbo mais usado de todos, vem no FINAL da frase", "exemplo": "私は学生です。", "exemploTraducao": "Eu sou estudante." },
+        { "palavra": "～ではありません (dewa arimasen)", "traducao": "a forma negativa de です", "exemplo": "学生ではありません。", "exemploTraducao": "Não sou estudante." },
+        { "palavra": "あります (arimasu)", "traducao": "\"há/existe\" — para coisas (objetos, sem vida)", "exemplo": "机の上に本があります。", "exemploTraducao": "Há um livro sobre a mesa." },
+        { "palavra": "います (imasu)", "traducao": "\"há/existe\" — para seres vivos (pessoas, animais)", "exemplo": "部屋に猫がいます。", "exemploTraducao": "Há um gato no quarto." },
+        { "palavra": "好きです (suki desu)", "traducao": "gosto de", "exemplo": "日本語が好きです。", "exemploTraducao": "Eu gosto de japonês." }
+      ],
+      "associacao": "O japonês tem DOIS verbos diferentes para \"existir\" — dependendo se a coisa tem vida ou não. Isso não existe em português (\"há um livro\" e \"há um gato\" usam o mesmo verbo), mas faz sentido se pensar assim: um bicho pode se mexer sozinho, um objeto não — por isso ganham palavras diferentes.",
+      "dica": "です (desu) sempre vai no FIM da frase — essa é a maior mudança de estrutura em relação ao português: o verbo principal fecha a frase, não fica no meio. \"Eu sou estudante\" vira, ao pé da letra, \"eu / estudante / sou\".",
+      "quiz": [
+        { "tipo": "multipla", "pergunta": "Para dizer que há um GATO no quarto, usa-se:", "opcoes": ["あります (arimasu)", "います (imasu)", "です (desu)"], "certa": 1 },
+        { "tipo": "multipla", "pergunta": "Onde fica o verbo です numa frase japonesa comum?", "opcoes": ["No começo", "No meio", "No final"], "certa": 2 },
+        { "tipo": "traduzir", "pergunta": "Em romaji, como se diz \"eu gosto de\"?", "resposta": "suki desu" }
+      ]
+    },
+    {
+      "chave": "u8-frases",
+      "titulo": "8. Frases do dia a dia",
+      "tema": "O essencial pra se virar numa cidade japonesa.",
+      "vocabulario": [
+        { "palavra": "すみません (sumimasen)", "traducao": "com licença / desculpe (a expressão mais útil do idioma — serve pra quase tudo)", "exemplo": "すみません、駅はどこですか。", "exemploTraducao": "Com licença, onde fica a estação?" },
+        { "palavra": "わかりません (wakarimasen)", "traducao": "eu não entendo / não sei", "exemplo": "すみません、わかりません。", "exemploTraducao": "Desculpe, eu não entendo." },
+        { "palavra": "もう一度お願いします (mō ichido onegaishimasu)", "traducao": "mais uma vez, por favor (peça para repetir)", "exemplo": "もう少しゆっくりお願いします。", "exemploTraducao": "Um pouco mais devagar, por favor." },
+        { "palavra": "いくらですか (ikura desu ka)", "traducao": "quanto custa?", "exemplo": "これはいくらですか。", "exemploTraducao": "Quanto custa isto?" },
+        { "palavra": "～はどこですか (~wa doko desu ka)", "traducao": "onde fica...?", "exemplo": "トイレはどこですか。", "exemploTraducao": "Onde fica o banheiro?" },
+        { "palavra": "～をください (~wo kudasai)", "traducao": "me dê..., por favor", "exemplo": "コーヒーをください。", "exemploTraducao": "Um café, por favor." },
+        { "palavra": "大丈夫です (daijōbu desu)", "traducao": "está tudo bem / tudo certo (também serve pra recusar algo educadamente)", "exemplo": "大丈夫ですか。— はい、大丈夫です。", "exemploTraducao": "Está tudo bem? — Sim, tudo bem." }
+      ],
+      "associacao": "\"Sumimasen\" é provavelmente a palavra mais útil de todo o idioma: serve para pedir desculpa, chamar a atenção de alguém, agradecer por um favor e até recusar algo com educação. Se você só puder decorar UMA palavra em japonês, é essa.",
+      "dica": "\"Daijōbu desu\" também é o jeito educado de dizer \"não, obrigado\" quando alguém oferece algo — dizer \"não\" direto (いいえ, iie) sozinho pode soar seco demais.",
+      "quiz": [
+        { "tipo": "multipla", "pergunta": "Qual palavra japonesa serve tanto para pedir desculpa quanto para chamar atenção de alguém?", "opcoes": ["ありがとう (arigatō)", "すみません (sumimasen)", "こんにちは (konnichiwa)"], "certa": 1 },
+        { "tipo": "traduzir", "pergunta": "Em romaji, como se pergunta \"quanto custa\"?", "resposta": "ikura desu ka" }
+      ],
+      "cancao": {
+        "titulo": "さくら さくら (Sakura Sakura)",
+        "autor": "canção tradicional japonesa, folclore",
+        "letra": "さくら さくら\nのやまも さとも\nみわたす かぎり\nかすみか くもか\nあさひに におう\nさくら さくら\nはなざかり\n\n(romaji: Sakura sakura, noyama mo sato mo, miwatasu kagiri, kasumi ka kumo ka, asahi ni niou, sakura sakura, hanazakari)\n\n(tradução: Cerejeiras, cerejeiras, nos campos e nas vilas, até onde a vista alcança, névoa ou nuvens? Perfumadas ao sol da manhã, cerejeiras, cerejeiras, em plena floração.)"
+      },
+      "musicaAtual": { "titulo": "Lemon", "artista": "Kenshi Yonezu", "youtubeId": "SX_ViT4Ra7k" }
+    }
+  ]
+}

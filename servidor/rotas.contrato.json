@@ -419,6 +419,24 @@
    "erro": "Não está entrado."
   }
  },
+ "público :: anon GET /api/idiomas": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "idiomas": [
+    {
+     "bandeira": "string",
+     "chave": "string",
+     "nome": "string",
+     "profundidade": "string",
+     "unidades": "number"
+    }
+   ]
+  }
+ },
  "tipos de contato :: anon GET /api/contato/tipos": {
   "status": 200,
   "tipo": "application/json",
@@ -472,6 +490,61 @@
   "cookie": null,
   "corpo": {
    "erro": "Não existe."
+  }
+ },
+ "idiomas sem conta :: anon GET /api/idiomas/frances": {
+  "status": 401,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não está entrado."
+  }
+ },
+ "idiomas sem Tear :: leitora GET /api/idiomas/frances": {
+  "status": 402,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "O estudo de idiomas é uma área do plano Tear."
+  }
+ },
+ "idiomas com Tear (dona é admin = Tear) :: dona GET /api/idiomas/frances": {
+  "status": 200,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "curso": {
+    "bandeira": "string",
+    "nome": "string",
+    "profundidade": "string",
+    "unidades": [
+     {
+      "chave": "string",
+      "quiz": [],
+      "titulo": "string",
+      "vocabulario": []
+     }
+    ],
+    "voz": "string"
+   },
+   "progresso": {},
+   "revisao": []
+  }
+ },
+ "idiomas idioma que não existe :: dona GET /api/idiomas/klingon": {
+  "status": 404,
+  "tipo": "application/json",
+  "cache": "no-store",
+  "local": null,
+  "cookie": null,
+  "corpo": {
+   "erro": "Não temos este idioma."
   }
  },
  "vitrine :: anon GET /robots.txt": {

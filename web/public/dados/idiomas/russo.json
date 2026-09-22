@@ -1,0 +1,47 @@
+{
+  "nome": "Russo",
+  "bandeira": "🇷🇺",
+  "profundidade": "basico",
+  "voz": "ru-RU",
+  "unidades": [
+    {
+      "chave": "u1-alfabeto",
+      "titulo": "1. O alfabeto cirílico",
+      "tema": "Não é tão estranho quanto parece: metade das letras já soa como no português.",
+      "vocabulario": [
+        { "palavra": "А, О, Е, М, Т, К", "traducao": "soam quase igual ao alfabeto latino: a, o, e, m, t, k", "exemplo": "мама (mama)", "exemploTraducao": "mama = mamãe" },
+        { "palavra": "Н", "traducao": "soa como \"n\" (não como \"h\")", "exemplo": "он (on)", "exemploTraducao": "ele" },
+        { "palavra": "Р", "traducao": "soa como \"r\" vibrante (não como \"p\")", "exemplo": "рука (ruka)", "exemploTraducao": "mão/braço" },
+        { "palavra": "В", "traducao": "soa como \"v\" (não como \"b\")", "exemplo": "вода (voda)", "exemploTraducao": "água" },
+        { "palavra": "Я", "traducao": "soa \"ya\"", "exemplo": "я (ya)", "exemploTraducao": "eu" },
+        { "palavra": "Ы", "traducao": "um som que não existe em português — entre \"i\" e \"u\", bem fechado no fundo da boca", "exemplo": "ты (ty)", "exemploTraducao": "você (informal)" },
+        { "palavra": "Ж, Ш, Ч", "traducao": "\"j\" forte, \"x\" (\"ch\" inglês de \"show\"), \"tch\"", "exemplo": "жена, шоколад, чай", "exemploTraducao": "esposa, chocolate, chá" }
+      ],
+      "associacao": "Cuidado com as letras FALSAS AMIGAS: В soa \"v\" (não \"b\"), Н soa \"n\" (não \"h\"), Р soa \"r\" (não \"p\"), С soa \"s\" (não \"c\") — o alfabeto cirílico usa formas parecidas com o latino para sons DIFERENTES. É a maior armadilha de quem começa.",
+      "dica": "Comece decorando as letras que JÁ soam como no português (А О Е М Т К) — com elas sozinhas já dá pra ler várias palavras. Depois ataque as falsas-amigas (В Н Р С), e por último os sons totalmente novos (Ы Ж Ш Ч Щ).",
+      "quiz": [
+        { "tipo": "multipla", "pergunta": "A letra \"Н\" no russo soa como:", "opcoes": ["h", "n", "p"], "certa": 1 },
+        { "tipo": "multipla", "pergunta": "A letra \"В\" soa como:", "opcoes": ["b", "v", "w"], "certa": 1 }
+      ]
+    },
+    {
+      "chave": "u2-saudacoes",
+      "titulo": "2. Saudações e apresentações",
+      "tema": "O básico para começar.",
+      "vocabulario": [
+        { "palavra": "Привет (privet)", "traducao": "oi (informal)", "exemplo": "Привет! Как дела?", "exemploTraducao": "Oi! Como vai?" },
+        { "palavra": "Здравствуйте (zdravstvuyte)", "traducao": "olá (formal — literalmente \"seja saudável\")", "exemplo": "Здравствуйте, меня зовут Анна.", "exemploTraducao": "Olá, meu nome é Anna." },
+        { "palavra": "Как дела? (kak dela)", "traducao": "como vai?", "exemplo": "Как дела? — Хорошо, спасибо.", "exemploTraducao": "Como vai? — Bem, obrigado." },
+        { "palavra": "Меня зовут... (menya zovut)", "traducao": "meu nome é... (literalmente \"me chamam\")", "exemplo": "Меня зовут Иван.", "exemploTraducao": "Meu nome é Ivan." },
+        { "palavra": "Спасибо / Пожалуйста (spasibo / pozhaluysta)", "traducao": "obrigado / de nada (ou \"por favor\")", "exemplo": "Спасибо большое! — Пожалуйста.", "exemploTraducao": "Muito obrigado! — De nada." },
+        { "palavra": "До свидания / Пока (do svidaniya / poka)", "traducao": "até logo (formal) / tchau (informal)", "exemplo": "Пока! До завтра.", "exemploTraducao": "Tchau! Até amanhã." }
+      ],
+      "associacao": "\"Здравствуйте\" (zdravstvuyte) é comprida e difícil no começo — mas ela literalmente vem de \"saúde\" (здоровье): é como dizer \"seja saudável\" ao cumprimentar alguém formalmente.",
+      "dica": "\"Спасибо\" (obrigado) e \"пожалуйста\" (de nada / por favor) fazem o mesmo trabalho duplo que o \"bitte\" alemão — \"пожалуйста\" serve tanto pra pedir quanto pra responder um agradecimento.",
+      "quiz": [
+        { "tipo": "multipla", "pergunta": "\"Привет\" (privet) é uma saudação:", "opcoes": ["Formal", "Informal, entre amigos", "Só para despedida"], "certa": 1 },
+        { "tipo": "traduzir", "pergunta": "Em transliteração, como se diz \"obrigado\"?", "resposta": "spasibo" }
+      ]
+    }
+  ]
+}

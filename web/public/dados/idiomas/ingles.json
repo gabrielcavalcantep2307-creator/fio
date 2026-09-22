@@ -1,0 +1,46 @@
+{
+  "nome": "Inglês",
+  "bandeira": "🇬🇧",
+  "profundidade": "basico",
+  "voz": "en-US",
+  "unidades": [
+    {
+      "chave": "u1-sons",
+      "titulo": "1. Sons e pronúncia",
+      "tema": "O inglês não lê como escreve — cada palavra praticamente decora o próprio som.",
+      "vocabulario": [
+        { "palavra": "th (voiced)", "traducao": "língua entre os dentes, vibrando — como em \"this\", \"the\"", "exemplo": "this, that, mother", "exemploTraducao": "isto, aquilo, mãe" },
+        { "palavra": "th (voiceless)", "traducao": "a mesma posição, mas sem vibrar a garganta", "exemplo": "think, three, bath", "exemploTraducao": "pensar, três, banho" },
+        { "palavra": "r", "traducao": "a língua não toca em lugar nenhum da boca — bem diferente do \"r\" do português", "exemplo": "red, car, right", "exemploTraducao": "vermelho, carro, direito/certo" },
+        { "palavra": "sh / ch", "traducao": "\"x\" e \"tch\" do português", "exemplo": "shoe, cheese", "exemploTraducao": "sapato, queijo" },
+        { "palavra": "a em \"cat\" vs \"a\" em \"father\"", "traducao": "o inglês tem vogais que não existem em português — o mesmo \"a\" muda de som conforme a palavra", "exemplo": "cat /kæt/, father /ˈfɑːðər/", "exemploTraducao": "gato, pai" }
+      ],
+      "associacao": "O jeito mais fácil de sentir a diferença do \"th\": ponha a língua levemente entre os dentes e sopre, sem tocar em lugar nenhum da boca. Trocar \"th\" por \"f\" ou \"t\" (comum entre falantes de português) é a marca de sotaque mais fácil de identificar.",
+      "dica": "Diferente do português e do espanhol, o inglês NÃO tem regra confiável de pronúncia pela escrita — \"read\" muda de som entre presente e passado (\"I read\" no presente rima com \"reed\"; \"I read\" no passado rima com \"red\"). Vale aprender cada palavra nova já ouvindo, não só lendo.",
+      "quiz": [
+        { "tipo": "multipla", "pergunta": "Como se pronuncia o \"th\" em inglês?", "opcoes": ["Como \"f\"", "Língua entre os dentes", "Como \"t\""], "certa": 1 },
+        { "tipo": "multipla", "pergunta": "O inglês tem regra confiável de pronúncia pela escrita?", "opcoes": ["Sim, sempre", "Não — a mesma letra muda de som entre palavras"], "certa": 1 }
+      ]
+    },
+    {
+      "chave": "u2-saudacoes",
+      "titulo": "2. Saudações e apresentações",
+      "tema": "O básico para começar (ou revisar).",
+      "vocabulario": [
+        { "palavra": "Hi / Hello", "traducao": "oi / olá", "exemplo": "Hi, how are you?", "exemploTraducao": "Oi, como você está?" },
+        { "palavra": "Good morning / afternoon / evening", "traducao": "bom dia / boa tarde / boa noite (ao chegar)", "exemplo": "Good morning, everyone.", "exemploTraducao": "Bom dia a todos." },
+        { "palavra": "How are you? / I'm fine, thanks", "traducao": "como você está? / estou bem, obrigado", "exemplo": "How are you? — I'm fine, thanks. And you?", "exemploTraducao": "Como você está? — Estou bem, obrigado. E você?" },
+        { "palavra": "My name is...", "traducao": "meu nome é...", "exemplo": "My name is John.", "exemploTraducao": "Meu nome é John." },
+        { "palavra": "Nice to meet you", "traducao": "prazer em te conhecer", "exemplo": "Nice to meet you too.", "exemploTraducao": "Prazer em te conhecer também." },
+        { "palavra": "Please / Thank you / You're welcome", "traducao": "por favor / obrigado / de nada", "exemplo": "Thank you so much! — You're welcome!", "exemploTraducao": "Muito obrigado! — De nada!" },
+        { "palavra": "Goodbye / See you later", "traducao": "adeus / até logo", "exemplo": "See you later, bye!", "exemploTraducao": "Até logo, tchau!" }
+      ],
+      "associacao": "\"Good night\" (boa noite) só se usa para SE DESPEDIR, nunca para chegar — quem chega à noite diz \"good evening\". É uma armadilha clássica de quem traduz direto do português.",
+      "dica": "\"How are you?\" no dia a dia americano é quase uma saudação automática, tipo \"e aí\" — a resposta esperada é curta e positiva (\"good\", \"fine\", \"not bad\"), não uma resposta longa e sincera sobre como o dia está indo.",
+      "quiz": [
+        { "tipo": "multipla", "pergunta": "\"Good night\" se usa para:", "opcoes": ["Chegar à noite", "Se despedir à noite", "Os dois"], "certa": 1 },
+        { "tipo": "traduzir", "pergunta": "Como se diz \"prazer em te conhecer\"?", "resposta": "nice to meet you" }
+      ]
+    }
+  ]
+}

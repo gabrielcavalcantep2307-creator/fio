@@ -1,0 +1,172 @@
+{
+  "nome": "Espanhol",
+  "bandeira": "🇪🇸",
+  "profundidade": "completo",
+  "voz": "es-ES",
+  "unidades": [
+    {
+      "chave": "u1-sons",
+      "titulo": "1. Sons, pronúncia e variações",
+      "tema": "O espanhol soa perto do português — e é aí que mora a armadilha: várias letras enganam.",
+      "vocabulario": [
+        { "palavra": "j", "traducao": "soa como o \"rr\" forte do português (não como \"j\" de \"janela\")", "exemplo": "jamón, jugar, joven", "exemploTraducao": "presunto, jogar, jovem" },
+        { "palavra": "ll / y", "traducao": "na Espanha soa como \"lh\"; em boa parte da América Latina soa como \"j\" ou \"xh\" (yeísmo)", "exemplo": "llamar, yo", "exemploTraducao": "chamar, eu" },
+        { "palavra": "z / c (antes de e, i)", "traducao": "na Espanha soa como \"th\" de \"think\" (ceceo); na América Latina soa como \"s\"", "exemplo": "cerveza, gracias", "exemploTraducao": "cerveja, obrigado" },
+        { "palavra": "h", "traducao": "é sempre muda, como em português \"hoje\"", "exemplo": "hola, hermano", "exemploTraducao": "olá, irmão" },
+        { "palavra": "ñ", "traducao": "é o nosso \"nh\"", "exemplo": "niño, mañana, España", "exemploTraducao": "criança, amanhã, Espanha" },
+        { "palavra": "rr", "traducao": "\"r\" vibrante forte, a língua bate várias vezes", "exemplo": "perro, carro", "exemploTraducao": "cachorro, carro" }
+      ],
+      "associacao": "\"J\" espanhol é o nosso \"R\" forte disfarçado: \"jamón\" soa quase \"rramón\". E \"año\" (ano) NUNCA é \"ano\" em português — o til do ñ é obrigatório, senão vira outra palavra completamente diferente (e vulgar).",
+      "dica": "Espanhol tem DOIS grandes sotaques a aprender a reconhecer: o da Espanha (com o \"th\" no z/c) e o da América Latina (tudo com \"s\"). Nenhum dos dois é \"errado\" — são variações regionais, como o \"tu\" e o \"você\" no português.",
+      "quiz": [
+        { "tipo": "multipla", "pergunta": "Como soa o \"j\" espanhol em \"jamón\"?", "opcoes": ["Como \"j\" de \"janela\"", "Como o \"rr\" forte do português", "Como \"y\""], "certa": 1 },
+        { "tipo": "multipla", "pergunta": "\"Año\" (com til no n) significa ano. Sem o til, \"ano\" vira:", "opcoes": ["A mesma palavra, sem diferença", "Uma palavra bem diferente — o til é obrigatório", "Um erro de digitação sem problema"], "certa": 1 },
+        { "tipo": "traduzir", "pergunta": "Complete: na Espanha, \"gracias\" soa com um \"th\" — esse traço se chama ___.", "resposta": "ceceo" }
+      ]
+    },
+    {
+      "chave": "u2-saudacoes",
+      "titulo": "2. Saudações e apresentações",
+      "tema": "Cumprimentar e se apresentar.",
+      "vocabulario": [
+        { "palavra": "Hola", "traducao": "olá", "exemplo": "¡Hola! ¿Cómo estás?", "exemploTraducao": "Olá! Como você está?" },
+        { "palavra": "Buenos días", "traducao": "bom dia", "exemplo": "Buenos días, señora.", "exemploTraducao": "Bom dia, senhora." },
+        { "palavra": "Buenas tardes / Buenas noches", "traducao": "boa tarde / boa noite", "exemplo": "Buenas noches, hasta mañana.", "exemploTraducao": "Boa noite, até amanhã." },
+        { "palavra": "¿Cómo te llamas?", "traducao": "como você se chama?", "exemplo": "Me llamo Ana.", "exemploTraducao": "Eu me chamo Ana." },
+        { "palavra": "Mucho gusto", "traducao": "muito prazer", "exemplo": "Mucho gusto en conocerte.", "exemploTraducao": "Muito prazer em te conhecer." },
+        { "palavra": "¿De dónde eres?", "traducao": "de onde você é?", "exemplo": "Soy de Brasil.", "exemploTraducao": "Sou do Brasil." },
+        { "palavra": "Por favor / Gracias / De nada", "traducao": "por favor / obrigado / de nada", "exemplo": "Un café, por favor. — Gracias. — De nada.", "exemploTraducao": "Um café, por favor. — Obrigado. — De nada." },
+        { "palavra": "Adiós / Hasta luego", "traducao": "adeus / até logo", "exemplo": "¡Hasta luego!", "exemploTraducao": "Até logo!" }
+      ],
+      "associacao": "\"Buenos días\" no plural (buenoS díaS) é diferente do português \"bom dia\", que é no singular — é assim em toda a saudação: buenaS tardeS, buenaS nocheS.",
+      "dica": "Pergunta e resposta em espanhol usam sinais de pontuação ANTES e depois: \"¿Cómo estás?\" e \"¡Hola!\" — esse \"¿\" e \"¡\" de abertura não existem em português, mas são obrigatórios na escrita formal do espanhol.",
+      "cancao": {
+        "titulo": "La Cucaracha",
+        "autor": "canção tradicional mexicana, autoria anônima",
+        "letra": "La cucaracha, la cucaracha,\nya no puede caminar,\nporque no tiene, porque le falta,\nlas dos patitas de atrás.\n\nUna cucaracha pinta\nle dijo a una colorada:\nvámonos para mi tierra\na pasar la temporada."
+      },
+      "musicaAtual": { "titulo": "Me Gustas Tu", "artista": "Manu Chao", "youtubeId": "b22wgo919FM" },
+      "quiz": [
+        { "tipo": "multipla", "pergunta": "\"¿Cómo te llamas?\" pergunta:", "opcoes": ["De onde você é", "Como você se chama", "Quantos anos você tem"], "certa": 1 },
+        { "tipo": "multipla", "pergunta": "O sinal \"¿\" no começo de uma pergunta é:", "opcoes": ["Um erro comum", "Opcional", "Obrigatório na escrita formal"], "certa": 2 },
+        { "tipo": "traduzir", "pergunta": "Traduza: muito prazer", "resposta": "mucho gusto" }
+      ]
+    },
+    {
+      "chave": "u3-numeros",
+      "titulo": "3. Números e idade",
+      "tema": "Contar e perguntar idade.",
+      "vocabulario": [
+        { "palavra": "uno, dos, tres, cuatro, cinco", "traducao": "um, dois, três, quatro, cinco", "exemplo": "Tengo cinco libros.", "exemploTraducao": "Tenho cinco livros." },
+        { "palavra": "seis, siete, ocho, nueve, diez", "traducao": "seis, sete, oito, nove, dez", "exemplo": "Son las diez.", "exemploTraducao": "São dez horas." },
+        { "palavra": "veinte, treinta, cuarenta", "traducao": "vinte, trinta, quarenta", "exemplo": "Treinta días.", "exemploTraducao": "Trinta dias." },
+        { "palavra": "cien, mil", "traducao": "cem, mil", "exemplo": "Cien por ciento.", "exemploTraducao": "Cem por cento." },
+        { "palavra": "¿Cuántos años tienes?", "traducao": "quantos anos você tem?", "exemplo": "Tengo veintiocho años.", "exemploTraducao": "Tenho vinte e oito anos." }
+      ],
+      "associacao": "Do 16 ao 19 e do 21 ao 29, o espanhol GRUDA os números numa palavra só: dieciséis (16), veintiuno (21), veintidós (22)... É \"dez-e-seis\" e \"vinte-e-um\" viraram uma palavra.",
+      "dica": "Igual ao francês (e diferente do português), idade em espanhol usa o verbo TER: \"tengo veinte años\" (tenho vinte anos), nunca \"eu sou\".",
+      "quiz": [
+        { "tipo": "multipla", "pergunta": "Como se escreve 21 em espanhol (uma palavra só)?", "opcoes": ["veinte y uno", "veintiuno", "vigésimo uno"], "certa": 1 },
+        { "tipo": "traduzir", "pergunta": "Traduza: tenho trinta anos", "resposta": "tengo treinta años" }
+      ]
+    },
+    {
+      "chave": "u4-familia",
+      "titulo": "4. Família",
+      "tema": "Quem é quem em casa.",
+      "vocabulario": [
+        { "palavra": "la familia", "traducao": "a família", "exemplo": "Mi familia es grande.", "exemploTraducao": "Minha família é grande." },
+        { "palavra": "el padre / la madre", "traducao": "o pai / a mãe", "exemplo": "Mi madre cocina muy bien.", "exemploTraducao": "Minha mãe cozinha muito bem." },
+        { "palavra": "el hermano / la hermana", "traducao": "o irmão / a irmã", "exemplo": "Tengo dos hermanos.", "exemploTraducao": "Tenho dois irmãos." },
+        { "palavra": "el hijo / la hija", "traducao": "o filho / a filha", "exemplo": "Su hija tiene diez años.", "exemploTraducao": "A filha dele(a) tem dez anos." },
+        { "palavra": "los abuelos", "traducao": "os avós", "exemplo": "Mis abuelos viven en Sevilla.", "exemploTraducao": "Meus avós moram em Sevilha." },
+        { "palavra": "el esposo / la esposa", "traducao": "o esposo / a esposa", "exemplo": "Ella es mi esposa.", "exemploTraducao": "Ela é minha esposa." },
+        { "palavra": "mi, tu, su", "traducao": "meu/minha, teu/tua, seu/sua (dele/dela)", "exemplo": "mi padre, tu madre, su hijo", "exemploTraducao": "meu pai, tua mãe, o filho dele/dela" }
+      ],
+      "associacao": "\"Embarazada\" NÃO é embaraçada — é GRÁVIDA. Um dos falsos amigos mais famosos entre espanhol e português; confundir os dois já rendeu situações constrangedoras de verdade.",
+      "dica": "\"Su\" serve tanto para \"seu/sua dele\" quanto \"seu/sua dela\" quanto \"de vocês\" — o contexto é que desfaz a ambiguidade, ou se acrescenta \"de él\"/\"de ella\" quando precisa deixar claro.",
+      "quiz": [
+        { "tipo": "multipla", "pergunta": "\"Embarazada\" em espanhol quer dizer:", "opcoes": ["Envergonhada", "Grávida", "Embaraçada com o cabelo"], "certa": 1 },
+        { "tipo": "traduzir", "pergunta": "Traduza: meus avós", "resposta": "mis abuelos" }
+      ]
+    },
+    {
+      "chave": "u5-comida",
+      "titulo": "5. Comida e bebida",
+      "tema": "Pedir e comentar sobre comida.",
+      "vocabulario": [
+        { "palavra": "el desayuno", "traducao": "o café da manhã", "exemplo": "Desayuno a las siete.", "exemploTraducao": "Tomo café às sete." },
+        { "palavra": "el almuerzo / la comida", "traducao": "o almoço", "exemplo": "¿Qué hay para el almuerzo?", "exemploTraducao": "O que tem para o almoço?" },
+        { "palavra": "la cena", "traducao": "o jantar", "exemplo": "La cena está lista.", "exemploTraducao": "O jantar está pronto." },
+        { "palavra": "el agua / el vino / la cerveza", "traducao": "a água / o vinho / a cerveja", "exemplo": "Una cerveza, por favor.", "exemploTraducao": "Uma cerveja, por favor." },
+        { "palavra": "Tengo hambre / Tengo sed", "traducao": "estou com fome / estou com sede", "exemplo": "Tengo mucha hambre.", "exemploTraducao": "Estou com muita fome." },
+        { "palavra": "Está rico / Está delicioso", "traducao": "está gostoso / está delicioso", "exemplo": "¡Qué rico está esto!", "exemploTraducao": "Que gostoso está isso!" },
+        { "palavra": "La cuenta, por favor", "traducao": "a conta, por favor", "exemplo": "La cuenta, por favor. ¿Aceptan tarjeta?", "exemploTraducao": "A conta, por favor. Vocês aceitam cartão?" }
+      ],
+      "associacao": "\"El agua\" usa o artigo MASCULINO (el), mesmo \"agua\" sendo palavra feminina — regra do espanhol para palavras femininas que começam com \"a\" tônico. No plural volta ao normal: \"las aguas\".",
+      "dica": "\"Comida\" em espanhol quer dizer tanto \"comida\" em geral quanto, especificamente na Espanha, \"o almoço\" — é o mesmo tipo de ambiguidade regional que existe no francês com \"déjeuner\".",
+      "quiz": [
+        { "tipo": "multipla", "pergunta": "Por que se diz \"el agua\" (artigo masculino) se \"agua\" é palavra feminina?", "opcoes": ["Água é masculina em espanhol", "Regra para palavra feminina começando com \"a\" tônico", "Erro comum que virou norma"], "certa": 1 },
+        { "tipo": "traduzir", "pergunta": "Traduza: estou com fome", "resposta": "tengo hambre" }
+      ]
+    },
+    {
+      "chave": "u6-tempo",
+      "titulo": "6. Tempo, dias e datas",
+      "tema": "Marcar hora, dia e mês.",
+      "vocabulario": [
+        { "palavra": "lunes, martes, miércoles", "traducao": "segunda, terça, quarta", "exemplo": "El lunes trabajo.", "exemploTraducao": "Segunda eu trabalho." },
+        { "palavra": "jueves, viernes", "traducao": "quinta, sexta", "exemplo": "El viernes salimos.", "exemploTraducao": "Sexta a gente sai." },
+        { "palavra": "sábado, domingo", "traducao": "sábado, domingo", "exemplo": "El fin de semana es sábado y domingo.", "exemploTraducao": "O fim de semana é sábado e domingo." },
+        { "palavra": "hoy / mañana / ayer", "traducao": "hoje / amanhã / ontem", "exemplo": "Hoy hace sol.", "exemploTraducao": "Hoje está fazendo sol." },
+        { "palavra": "¿Qué hora es?", "traducao": "que horas são?", "exemplo": "Son las tres.", "exemploTraducao": "São três horas." },
+        { "palavra": "la mañana / la tarde / la noche", "traducao": "a manhã / a tarde / a noite", "exemplo": "Por la mañana estudio.", "exemploTraducao": "De manhã eu estudo." }
+      ],
+      "associacao": "\"Mañana\" é uma palavra com dois sentidos: MANHÃ e AMANHÃ — o contexto decide. \"Por la mañana\" é \"de manhã\"; \"hasta mañana\" é \"até amanhã\".",
+      "dica": "Para dizer as horas, o espanhol usa \"son las...\" no plural (son las tres, son las diez), mas \"es la una\" no singular para 1 hora — é a única exceção.",
+      "quiz": [
+        { "tipo": "multipla", "pergunta": "\"Mañana\" pode significar:", "opcoes": ["Só \"manhã\"", "Só \"amanhã\"", "Manhã OU amanhã, depende do contexto"], "certa": 2 },
+        { "tipo": "traduzir", "pergunta": "Como se diz \"é uma hora\" (1h)?", "resposta": "es la una" }
+      ]
+    },
+    {
+      "chave": "u7-verbos",
+      "titulo": "7. Verbos essenciais: ser, estar, tener",
+      "tema": "A diferença mais importante do espanhol: SER x ESTAR.",
+      "vocabulario": [
+        { "palavra": "soy, eres, es", "traducao": "eu sou, você é, ele/ela é (verbo SER — o que é permanente)", "exemplo": "Soy brasileño.", "exemploTraducao": "Sou brasileiro." },
+        { "palavra": "estoy, estás, está", "traducao": "eu estou, você está, ele/ela está (verbo ESTAR — o que é temporário/estado)", "exemplo": "Estoy cansado hoy.", "exemploTraducao": "Estou cansado hoje." },
+        { "palavra": "tengo, tienes, tiene", "traducao": "eu tenho, você tem, ele/ela tem (verbo TENER)", "exemplo": "Tengo un perro.", "exemploTraducao": "Tenho um cachorro." },
+        { "palavra": "somos, sois/son, son", "traducao": "nós somos, vocês são, eles são", "exemplo": "Somos amigos.", "exemploTraducao": "Somos amigos." },
+        { "palavra": "estamos, estáis/están, están", "traducao": "nós estamos, vocês estão, eles estão", "exemplo": "Estamos en casa.", "exemploTraducao": "Estamos em casa." }
+      ],
+      "associacao": "A mesma frase muda de sentido conforme o verbo: \"Él es aburrido\" (ele É chato, é da personalidade dele) contra \"Él está aburrido\" (ele ESTÁ entediado agora, é passageiro). SER é o que a coisa É; ESTAR é como ela está NESTE momento.",
+      "dica": "Um truque prático: se dá pra trocar por \"fica sendo\" sem soar estranho, é SER. Se dá pra trocar por \"está passando por isso agora\", é ESTAR.",
+      "quiz": [
+        { "tipo": "multipla", "pergunta": "\"Él es aburrido\" e \"Él está aburrido\" têm o mesmo significado?", "opcoes": ["Sim, são idênticas", "Não — a primeira é traço de personalidade, a segunda é estado temporário"], "certa": 1 },
+        { "tipo": "multipla", "pergunta": "\"Estoy cansado\" usa qual verbo, e por quê?", "opcoes": ["Ser, porque cansaço é permanente", "Estar, porque cansaço é temporário"], "certa": 1 },
+        { "tipo": "traduzir", "pergunta": "Traduza: nós somos amigos", "resposta": "somos amigos" }
+      ]
+    },
+    {
+      "chave": "u8-frases",
+      "titulo": "8. Frases do dia a dia",
+      "tema": "O que resolve na rua e numa conversa curta.",
+      "vocabulario": [
+        { "palavra": "Perdón / Disculpe", "traducao": "desculpe / com licença", "exemplo": "Perdón, ¿dónde está la estación?", "exemploTraducao": "Desculpe, onde fica a estação?" },
+        { "palavra": "No entiendo", "traducao": "eu não entendo", "exemplo": "Lo siento, no entiendo.", "exemploTraducao": "Desculpe, eu não entendo." },
+        { "palavra": "¿Puede repetir, por favor?", "traducao": "pode repetir, por favor?", "exemplo": "Más despacio, por favor.", "exemploTraducao": "Mais devagar, por favor." },
+        { "palavra": "¿Cuánto cuesta?", "traducao": "quanto custa?", "exemplo": "¿Cuánto cuesta esto?", "exemploTraducao": "Quanto custa isto?" },
+        { "palavra": "¿Dónde está...?", "traducao": "onde fica...?", "exemplo": "¿Dónde está el baño?", "exemploTraducao": "Onde fica o banheiro?" },
+        { "palavra": "Quisiera...", "traducao": "eu gostaria de...", "exemplo": "Quisiera un café, por favor.", "exemploTraducao": "Eu gostaria de um café, por favor." },
+        { "palavra": "¡Qué padre! / ¡Qué guay! / ¡Qué chévere!", "traducao": "que legal! (México / Espanha / vários países da América Latina)", "exemplo": "¡Qué padre está esta canción!", "exemploTraducao": "Que legal está essa música!" }
+      ],
+      "associacao": "\"Que legal\" tem um nome DIFERENTE em quase cada país de língua espanhola: \"qué padre\" no México, \"qué guay\" na Espanha, \"qué chévere\" na Colômbia e Venezuela, \"qué bacán\" no Chile e Peru. Vale a pena aprender a do lugar que te interessa.",
+      "dica": "\"Quisiera\" (eu gostaria) é sempre mais educado que \"quiero\" (eu quero) — o jeito certo de pedir algo numa loja ou restaurante.",
+      "quiz": [
+        { "tipo": "multipla", "pergunta": "Qual é o jeito mais educado de pedir algo?", "opcoes": ["Quiero un café", "Quisiera un café", "Dame un café"], "certa": 1 },
+        { "tipo": "traduzir", "pergunta": "Traduza: quanto custa?", "resposta": "cuánto cuesta" }
+      ]
+    }
+  ]
+}

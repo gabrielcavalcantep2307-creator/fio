@@ -1,0 +1,47 @@
+{
+  "nome": "Italiano",
+  "bandeira": "🇮🇹",
+  "profundidade": "basico",
+  "voz": "it-IT",
+  "unidades": [
+    {
+      "chave": "u1-sons",
+      "titulo": "1. Sons e pronúncia",
+      "tema": "O italiano é o mais próximo do português entre os sete — e ainda assim tem pegadinhas.",
+      "vocabulario": [
+        { "palavra": "c / g (antes de e, i)", "traducao": "soam \"tch\" e \"dj\"", "exemplo": "ciao, gelato", "exemploTraducao": "oi/tchau, sorvete" },
+        { "palavra": "c / g (antes de a, o, u)", "traducao": "voltam a soar \"k\" e \"g\" duro", "exemplo": "casa, gatto", "exemploTraducao": "casa, gato" },
+        { "palavra": "gli", "traducao": "soa parecido com \"lh\"", "exemplo": "gli amici, famiglia", "exemploTraducao": "os amigos, família" },
+        { "palavra": "gn", "traducao": "soa como \"nh\"", "exemplo": "gnocchi, bagno", "exemploTraducao": "nhoque, banheiro" },
+        { "palavra": "z", "traducao": "soa \"ts\" ou \"dz\", nunca como \"z\" do português", "exemplo": "pizza, zero", "exemploTraducao": "pizza, zero" },
+        { "palavra": "doppia (consoante dobrada)", "traducao": "pronuncia-se mais LONGA — é uma palavra diferente da versão com uma letra só", "exemplo": "papa / pappa; sono / sonno", "exemploTraducao": "papa (do Vaticano) / papinha; sou / sono" }
+      ],
+      "associacao": "\"Ciao\" muda de som conforme a vogal: CIao (tch) mas CAsa (k) — a regra é sempre a mesma: C e G antes de E/I ficam \"moles\" (tch, dj); antes de A/O/U ficam \"duros\" (k, g).",
+      "dica": "As consoantes DOBRADAS mudam o significado, não é só estilo: \"sono\" (eu sou) e \"sonno\" (sono, de dormir) são palavras diferentes — a diferença está em segurar o som da consoante um pouco mais.",
+      "quiz": [
+        { "tipo": "multipla", "pergunta": "\"Ciao\" tem o \"c\" com som de:", "opcoes": ["k", "tch", "s"], "certa": 1 },
+        { "tipo": "multipla", "pergunta": "\"Sono\" e \"sonno\" são:", "opcoes": ["A mesma palavra escrita diferente", "Palavras diferentes — a consoante dobrada muda o sentido", "Erro de digitação"], "certa": 1 }
+      ]
+    },
+    {
+      "chave": "u2-saudacoes",
+      "titulo": "2. Saudações e apresentações",
+      "tema": "O básico para começar.",
+      "vocabulario": [
+        { "palavra": "Ciao", "traducao": "oi / tchau (informal, serve pros dois)", "exemplo": "Ciao, come stai?", "exemploTraducao": "Oi, como você está?" },
+        { "palavra": "Buongiorno / Buonasera", "traducao": "bom dia / boa tarde-noite (ao chegar)", "exemplo": "Buongiorno, signora.", "exemploTraducao": "Bom dia, senhora." },
+        { "palavra": "Come stai? / Come sta?", "traducao": "como vai? (informal / formal)", "exemplo": "Bene, grazie. E tu?", "exemploTraducao": "Bem, obrigado. E você?" },
+        { "palavra": "Mi chiamo...", "traducao": "eu me chamo...", "exemplo": "Mi chiamo Marco.", "exemploTraducao": "Eu me chamo Marco." },
+        { "palavra": "Piacere", "traducao": "prazer (em conhecer)", "exemplo": "Piacere di conoscerti.", "exemploTraducao": "Prazer em te conhecer." },
+        { "palavra": "Grazie / Prego", "traducao": "obrigado / de nada", "exemplo": "Grazie mille! — Prego!", "exemploTraducao": "Muito obrigado! — De nada!" },
+        { "palavra": "Arrivederci", "traducao": "até logo", "exemplo": "Arrivederci, a presto!", "exemploTraducao": "Até logo, até breve!" }
+      ],
+      "associacao": "\"Ciao\" é uma das poucas palavras do mundo que serve pra CHEGAR e pra SAIR ao mesmo tempo — só se usa entre gente próxima; com desconhecidos ou em contexto formal, usa-se \"buongiorno\"/\"buonasera\" para chegar e \"arrivederci\" para sair.",
+      "dica": "\"Prego\" é uma daquelas palavras camaleão do italiano: serve pra \"de nada\", pra \"pois não\" (ao atender alguém), e pra \"por favor, sirva-se\" — o contexto define o sentido.",
+      "quiz": [
+        { "tipo": "multipla", "pergunta": "\"Ciao\" pode ser usado para:", "opcoes": ["Só chegar", "Só sair", "Chegar E sair, entre gente próxima"], "certa": 2 },
+        { "tipo": "traduzir", "pergunta": "Como se diz \"eu me chamo\" em italiano?", "resposta": "mi chiamo" }
+      ]
+    }
+  ]
+}
