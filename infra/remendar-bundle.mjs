@@ -379,6 +379,27 @@ const REMENDOS = [
     de: 'function Wn({catalogo:e}){',
     para: 'function Wn({catalogo:e}){return null;',
   },
+  // ── baixar em PDF, ao lado do EPUB ──
+  //
+  // A rota `/api/livro/:id/pdf` existe desde 22/09 e ninguém achava: o bundle
+  // só oferecia EPUB. Vem ANTES do EPUB nos dois lugares porque é o formato
+  // que a maioria sabe o que fazer com — quem quer EPUB sabe procurar.
+  //
+  // O servidor é que decide quem pode: sem plano, a rota redireciona para
+  // /assinaturas.html. O botão aparecer para todo mundo é de propósito — é
+  // assim que alguém descobre que o plano existe.
+  {
+    nome: 'baixar em PDF na página do livro',
+    de: 'a.trilho===`A`&&(0,N.jsx)(`a`,{href:`/api/livro/${e}/epub`,download:!0,className:`px-5 py-2.5 rounded text-sm`,style:{border:`1px solid var(--linha)`},children:`Baixar (EPUB)`})',
+    para: 'a.trilho===`A`&&(0,N.jsx)(`a`,{href:`/api/livro/${e}/pdf`,download:!0,className:`px-5 py-2.5 rounded text-sm`,style:{border:`1px solid var(--linha)`},children:`Baixar (PDF)`}),'
+      + 'a.trilho===`A`&&(0,N.jsx)(`a`,{href:`/api/livro/${e}/epub`,download:!0,className:`px-5 py-2.5 rounded text-sm`,style:{border:`1px solid var(--linha)`},children:`Baixar (EPUB)`})',
+  },
+  {
+    nome: 'baixar em PDF no painel do leitor',
+    de: '(0,N.jsx)(`a`,{href:`/api/livro/${t.id}/epub`,download:!0,className:`block text-center py-2 rounded text-sm`,style:{border:`1px solid var(--linha)`,color:`var(--tinta)`}',
+    para: '(0,N.jsx)(`a`,{href:`/api/livro/${t.id}/pdf`,download:!0,className:`block text-center py-2 rounded text-sm`,style:{border:`1px solid var(--linha)`,color:`var(--tinta)`,marginBottom:`.5rem`},children:`Baixar este livro (PDF)`}),'
+      + '(0,N.jsx)(`a`,{href:`/api/livro/${t.id}/epub`,download:!0,className:`block text-center py-2 rounded text-sm`,style:{border:`1px solid var(--linha)`,color:`var(--tinta)`}',
+  },
 ]
 
 let s = readFileSync(arg('base'), 'utf8')
