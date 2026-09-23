@@ -90,7 +90,7 @@ export function concluirUnidade(banco, leitorId, idioma, unidade, { acertos, tot
 //
 // `qualidade`: 0 a 5, o quanto foi fácil lembrar (aqui só usamos 2 = errou,
 // 4 = acertou — o quiz não pede para a pessoa se autoavaliar, isso cansa).
-function sm2(atual, qualidade) {
+export function sm2(atual, qualidade) {
   let { facilidade, intervalo, acertos_seguidos: seguidos } = atual
   if (qualidade < 3) {
     seguidos = 0

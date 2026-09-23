@@ -2905,3 +2905,88 @@ test('capítulos: linha quebrada no meio do parágrafo não é cabeçalho', asyn
   const txt = livroDe('CHAPTER I', 'Ele escreveu a\nfirst letter. And when it came back\nnada mudou.', miolo(3), 'CHAPTER II', miolo(3))
   assert.equal(emCapitulos(txt).length, 2)
 })
+
+// ── idiomas: SM-2 (repetição espaçada) ──
+
+test('sm2: errar zera acertos seguidos e intervalo, não importa o estado anterior', async () => {
+  const { sm2 } = await import('./idiomas.mjs')
+  const r = sm2({ facilidade: 2.8, intervalo: 30, acertos_seguidos: 5 }, 2)
+  assert.equal(r.intervalo, 1)
+  assert.equal(r.acertos_seguidos, 0)
+})
+
+test('sm2: acertar a primeira vez dá intervalo 1, a segunda dá intervalo 6', async () => {
+  const { sm2 } = await import('./idiomas.mjs')
+  const r1 = sm2({ facilidade: 2.5, intervalo: 1, acertos_seguidos: 0 }, 4)
+  assert.equal(r1.intervalo, 1)
+  assert.equal(r1.acertos_seguidos, 1)
+  const r2 = sm2(r1, 4)
+  assert.equal(r2.intervalo, 6)
+  assert.equal(r2.acertos_seguidos, 2)
+})
+
+test('sm2: a partir da terceira vez seguida, o intervalo multiplica pela facilidade', async () => {
+  const { sm2 } = await import('./idiomas.mjs')
+  const r3 = sm2({ facilidade: 2.5, intervalo: 6, acertos_seguidos: 2 }, 4)
+  assert.equal(r3.intervalo, Math.round(6 * 2.5))
+  assert.equal(r3.acertos_seguidos, 3)
+})
+
+test('sm2: a facilidade nunca cai abaixo do piso de 1.3, mesmo errando sempre', async () => {
+  const { sm2 } = await import('./idiomas.mjs')
+  let atual = { facilidade: 1.3, intervalo: 1, acertos_seguidos: 0 }
+  for (let i = 0; i < 20; i++) atual = sm2(atual, 2)
+  assert.equal(atual.facilidade, 1.3)
+})
+
+// ── idiomas: os sete cursos — o schema e as armadilhas de teclado ──
+
+test('idiomas: os sete arquivos existem, têm JSON válido e batem o schema mínimo', async () => {
+  const { listaIdiomas, cursoDe } = await import('./idiomas.mjs')
+  const lista = listaIdiomas()
+  assert.equal(lista.length, 7, 'os sete idiomas: ' + lista.map((i) => i.chave).join(', '))
+  for (const { chave } of lista) {
+    const curso = cursoDe(chave)
+    assert.ok(curso, `${chave}: não carregou`)
+    assert.ok(curso.unidades.length >= 2, `${chave}: menos de duas unidades`)
+    for (const u of curso.unidades) {
+      assert.ok(u.chave && u.titulo, `${chave}/${u.chave ?? '?'}: falta chave ou título`)
+      assert.ok(Array.isArray(u.vocabulario) && u.vocabulario.length > 0, `${chave}/${u.chave}: sem vocabulário`)
+      for (const v of u.vocabulario) {
+        assert.ok(v.palavra && v.traducao, `${chave}/${u.chave}: item de vocabulário sem palavra ou tradução`)
+      }
+      assert.ok(Array.isArray(u.quiz) && u.quiz.length > 0, `${chave}/${u.chave}: sem quiz`)
+      for (const [i, q] of u.quiz.entries()) {
+        if (q.tipo === 'multipla') {
+          assert.ok(Array.isArray(q.opcoes) && q.opcoes.length >= 2, `${chave}/${u.chave}/q${i}: menos de duas opções`)
+          assert.ok(Number.isInteger(q.certa) && q.certa >= 0 && q.certa < q.opcoes.length,
+            `${chave}/${u.chave}/q${i}: "certa" (${q.certa}) fora do alcance de opções`)
+        } else if (q.tipo === 'traduzir') {
+          assert.ok(typeof q.resposta === 'string' && q.resposta.trim().length > 0, `${chave}/${u.chave}/q${i}: "traduzir" sem resposta`)
+        } else {
+          assert.fail(`${chave}/${u.chave}/q${i}: tipo de quiz desconhecido: ${q.tipo}`)
+        }
+        assert.ok(q.pergunta, `${chave}/${u.chave}/q${i}: sem pergunta`)
+      }
+      if (u.cancao) assert.ok(u.cancao.titulo && u.cancao.autor && u.cancao.letra, `${chave}/${u.chave}: canção incompleta`)
+      if (u.musicaAtual) assert.ok(u.musicaAtual.titulo && u.musicaAtual.artista, `${chave}/${u.chave}: música atual incompleta`)
+    }
+  }
+})
+
+test('idiomas: nenhuma resposta de "traduzir" pede caractere que o teclado BR não digita', async () => {
+  const { cursoDe } = await import('./idiomas.mjs')
+  // cirílico (russo), hiragana/katakana/kanji (japonês) e macron (ō, ū) não
+  // têm tecla no teclado ABNT — a resposta esperada tem que ser digitável.
+  const semTeclaBr = /[Ѐ-ӿ぀-ヿ一-鿿Ā-ſ]/
+  for (const chave of ['frances', 'espanhol', 'japones', 'alemao', 'russo', 'italiano', 'ingles']) {
+    const curso = cursoDe(chave)
+    for (const u of curso.unidades) {
+      for (const [i, q] of u.quiz.entries()) {
+        if (q.tipo !== 'traduzir') continue
+        assert.ok(!semTeclaBr.test(q.resposta),
+          `${chave}/${u.chave}/q${i}: resposta "${q.resposta}" tem caractere que o teclado BR não digita`)
+      }
+    }
+  }
+})

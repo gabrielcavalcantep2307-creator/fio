@@ -1,7 +1,7 @@
 {
   "nome": "Inglês",
   "bandeira": "🇬🇧",
-  "profundidade": "basico",
+  "profundidade": "completo",
   "voz": "en-US",
   "unidades": [
     {
@@ -13,13 +13,26 @@
         { "palavra": "th (voiceless)", "traducao": "a mesma posição, mas sem vibrar a garganta", "exemplo": "think, three, bath", "exemploTraducao": "pensar, três, banho" },
         { "palavra": "r", "traducao": "a língua não toca em lugar nenhum da boca — bem diferente do \"r\" do português", "exemplo": "red, car, right", "exemploTraducao": "vermelho, carro, direito/certo" },
         { "palavra": "sh / ch", "traducao": "\"x\" e \"tch\" do português", "exemplo": "shoe, cheese", "exemploTraducao": "sapato, queijo" },
-        { "palavra": "a em \"cat\" vs \"a\" em \"father\"", "traducao": "o inglês tem vogais que não existem em português — o mesmo \"a\" muda de som conforme a palavra", "exemplo": "cat /kæt/, father /ˈfɑːðər/", "exemploTraducao": "gato, pai" }
+        { "palavra": "a em \"cat\" vs \"a\" em \"father\"", "traducao": "o inglês tem vogais que não existem em português — o mesmo \"a\" muda de som conforme a palavra", "exemplo": "cat /kæt/, father /ˈfɑːðər/", "exemploTraducao": "gato, pai" },
+        { "palavra": "ee vs i curto", "traducao": "duas vogais diferentes que os brasileiros costumam ouvir como iguais", "exemplo": "sheep /iː/ vs ship /ɪ/", "exemploTraducao": "ovelha vs navio" },
+        { "palavra": "w", "traducao": "os lábios se arredondam e soltam o ar, sem os dentes tocarem no lábio (diferente do \"v\")", "exemplo": "word, wine, west", "exemploTraducao": "palavra, vinho, oeste" },
+        { "palavra": "h", "traducao": "é sempre soprado, puxando ar da garganta — não é mudo como em português", "exemplo": "hat, house, hello", "exemploTraducao": "chapéu, casa, olá" },
+        { "palavra": "-ed no passado", "traducao": "tem três sons possíveis: /t/, /d/ ou /ɪd/, dependendo da última letra do verbo", "exemplo": "walked /t/, played /d/, wanted /ɪd/", "exemploTraducao": "andou, jogou, quis" },
+        { "palavra": "-s final (plural/3ª pessoa)", "traducao": "soa como \"z\" na maioria das vezes, não como \"s\"", "exemplo": "dogs, boys, she runs", "exemploTraducao": "cachorros, meninos, ela corre" },
+        { "palavra": "sílaba tônica muda o sentido", "traducao": "a mesma palavra escrita pode ser substantivo ou verbo dependendo de qual sílaba é mais forte", "exemplo": "REcord (substantivo) vs reCORD (verbo)", "exemploTraducao": "registro/disco vs gravar" },
+        { "palavra": "schwa (ə)", "traducao": "o som mais comum do inglês — um \"a\" fraco e neutro, em sílabas sem força", "exemplo": "about, banana, the", "exemploTraducao": "sobre, banana, o/a" },
+        { "palavra": "consoantes mudas", "traducao": "algumas letras estão escritas mas não se pronunciam", "exemplo": "know, write, island", "exemploTraducao": "saber, escrever, ilha" },
+        { "palavra": "entonação de pergunta sim/não", "traducao": "a voz sobe no final da pergunta", "exemplo": "Are you ready?", "exemploTraducao": "Você está pronto?" }
       ],
       "associacao": "O jeito mais fácil de sentir a diferença do \"th\": ponha a língua levemente entre os dentes e sopre, sem tocar em lugar nenhum da boca. Trocar \"th\" por \"f\" ou \"t\" (comum entre falantes de português) é a marca de sotaque mais fácil de identificar.",
       "dica": "Diferente do português e do espanhol, o inglês NÃO tem regra confiável de pronúncia pela escrita — \"read\" muda de som entre presente e passado (\"I read\" no presente rima com \"reed\"; \"I read\" no passado rima com \"red\"). Vale aprender cada palavra nova já ouvindo, não só lendo.",
       "quiz": [
         { "tipo": "multipla", "pergunta": "Como se pronuncia o \"th\" em inglês?", "opcoes": ["Como \"f\"", "Língua entre os dentes", "Como \"t\""], "certa": 1 },
-        { "tipo": "multipla", "pergunta": "O inglês tem regra confiável de pronúncia pela escrita?", "opcoes": ["Sim, sempre", "Não — a mesma letra muda de som entre palavras"], "certa": 1 }
+        { "tipo": "multipla", "pergunta": "O inglês tem regra confiável de pronúncia pela escrita?", "opcoes": ["Sim, sempre", "Não — a mesma letra muda de som entre palavras"], "certa": 1 },
+        { "tipo": "multipla", "pergunta": "Qual é o som mais comum do inglês, aquele \"a\" fraco em sílabas sem força (about, banana)?", "opcoes": ["O schwa (ə)", "O th", "O r"], "certa": 0 },
+        { "tipo": "multipla", "pergunta": "A terminação \"-ed\" do passado (walked, played, wanted) tem quantos sons possíveis?", "opcoes": ["Um só", "Dois", "Três"], "certa": 2 },
+        { "tipo": "multipla", "pergunta": "\"REcord\" (substantivo) e \"reCORD\" (verbo) mudam de sentido por causa de:", "opcoes": ["A ortografia", "A sílaba tônica", "O gênero"], "certa": 1 },
+        { "tipo": "traduzir", "pergunta": "Complete: em inglês, letras como o \"k\" de \"know\" ou o \"w\" de \"write\" costumam ser ___.", "resposta": "mudas" }
       ]
     },
     {
@@ -33,13 +46,221 @@
         { "palavra": "My name is...", "traducao": "meu nome é...", "exemplo": "My name is John.", "exemploTraducao": "Meu nome é John." },
         { "palavra": "Nice to meet you", "traducao": "prazer em te conhecer", "exemplo": "Nice to meet you too.", "exemploTraducao": "Prazer em te conhecer também." },
         { "palavra": "Please / Thank you / You're welcome", "traducao": "por favor / obrigado / de nada", "exemplo": "Thank you so much! — You're welcome!", "exemploTraducao": "Muito obrigado! — De nada!" },
-        { "palavra": "Goodbye / See you later", "traducao": "adeus / até logo", "exemplo": "See you later, bye!", "exemploTraducao": "Até logo, tchau!" }
+        { "palavra": "Goodbye / See you later", "traducao": "adeus / até logo", "exemplo": "See you later, bye!", "exemploTraducao": "Até logo, tchau!" },
+        { "palavra": "What's up? / Not much", "traducao": "e aí? / nada demais (cumprimento bem informal, entre jovens/amigos)", "exemplo": "What's up? — Not much, you?", "exemploTraducao": "E aí? — Nada demais, e você?" },
+        { "palavra": "How's it going?", "traducao": "como vai? (informal, tão automático quanto \"how are you\")", "exemplo": "Hey, how's it going?", "exemploTraducao": "E aí, como vai?" },
+        { "palavra": "Excuse me", "traducao": "com licença (para chamar atenção antes de falar ou passar por alguém)", "exemplo": "Excuse me, is this seat taken?", "exemploTraducao": "Com licença, esse lugar está ocupado?" },
+        { "palavra": "I'm sorry / Sorry", "traducao": "desculpa (depois de errar ou incomodar alguém — diferente de \"excuse me\")", "exemplo": "Sorry, I'm late.", "exemploTraducao": "Desculpa, estou atrasado." },
+        { "palavra": "Take care", "traducao": "se cuida (despedida informal, carinhosa)", "exemplo": "Bye, take care!", "exemploTraducao": "Tchau, se cuida!" },
+        { "palavra": "Have a nice day", "traducao": "tenha um bom dia", "exemplo": "Thanks, you too — have a nice day!", "exemploTraducao": "Obrigado, você também — tenha um bom dia!" },
+        { "palavra": "See you soon / See you tomorrow", "traducao": "até breve / até amanhã", "exemplo": "See you tomorrow, then!", "exemploTraducao": "Até amanhã, então!" },
+        { "palavra": "Long time no see", "traducao": "há quanto tempo! (expressão fixa, não se traduz palavra por palavra)", "exemplo": "Hey, long time no see!", "exemploTraducao": "Ei, há quanto tempo!" },
+        { "palavra": "What's your name?", "traducao": "qual é o seu nome?", "exemplo": "What's your name? — My name is Ana.", "exemploTraducao": "Qual é o seu nome? — Meu nome é Ana." }
       ],
       "associacao": "\"Good night\" (boa noite) só se usa para SE DESPEDIR, nunca para chegar — quem chega à noite diz \"good evening\". É uma armadilha clássica de quem traduz direto do português.",
-      "dica": "\"How are you?\" no dia a dia americano é quase uma saudação automática, tipo \"e aí\" — a resposta esperada é curta e positiva (\"good\", \"fine\", \"not bad\"), não uma resposta longa e sincera sobre como o dia está indo.",
+      "dica": "\"How are you?\" no dia a dia americano é quase uma saudação automática, tipo \"e aí\" — a resposta esperada é curta e positiva (\"good\", \"fine\", \"not bad\"), não uma resposta longa e sincera sobre como o dia está indo. E repare a diferença entre \"excuse me\" (antes de falar ou incomodar) e \"sorry\" (depois de já ter incomodado).",
+      "cancao": {
+        "titulo": "Twinkle, Twinkle, Little Star",
+        "autor": "letra de Jane Taylor (1783–1824), publicada em 1806 — domínio público; melodia tradicional francesa do século XVIII",
+        "letra": "Twinkle, twinkle, little star,\nHow I wonder what you are!\nUp above the world so high,\nLike a diamond in the sky.\nTwinkle, twinkle, little star,\nHow I wonder what you are!"
+      },
       "quiz": [
         { "tipo": "multipla", "pergunta": "\"Good night\" se usa para:", "opcoes": ["Chegar à noite", "Se despedir à noite", "Os dois"], "certa": 1 },
-        { "tipo": "traduzir", "pergunta": "Como se diz \"prazer em te conhecer\"?", "resposta": "nice to meet you" }
+        { "tipo": "traduzir", "pergunta": "Como se diz \"prazer em te conhecer\"?", "resposta": "nice to meet you" },
+        { "tipo": "multipla", "pergunta": "\"What's up?\" normalmente funciona como:", "opcoes": ["Uma pergunta literal sobre o céu", "Um cumprimento informal, tipo \"e aí\"", "Um jeito de perguntar as horas"], "certa": 1 },
+        { "tipo": "multipla", "pergunta": "Qual se usa para chamar a atenção de alguém ANTES de falar?", "opcoes": ["Sorry", "Excuse me", "Take care"], "certa": 1 },
+        { "tipo": "multipla", "pergunta": "\"Long time no see\" quer dizer:", "opcoes": ["Não consigo te ver", "Há quanto tempo!", "Vejo você depois"], "certa": 1 },
+        { "tipo": "traduzir", "pergunta": "Como se diz \"com licença\" para chamar a atenção de alguém?", "resposta": "excuse me" },
+        { "tipo": "traduzir", "pergunta": "Como se diz \"se cuida\", como despedida informal?", "resposta": "take care" }
+      ]
+    },
+    {
+      "chave": "u3-numeros",
+      "titulo": "3. Números e idade",
+      "tema": "Contar e perguntar idade — a base para preço, hora e data.",
+      "vocabulario": [
+        { "palavra": "one, two, three", "traducao": "um, dois, três", "exemplo": "one, two, three, four, five", "exemploTraducao": "um, dois, três, quatro, cinco" },
+        { "palavra": "six, seven, eight, nine, ten", "traducao": "seis, sete, oito, nove, dez", "exemplo": "ten minutes", "exemploTraducao": "dez minutos" },
+        { "palavra": "eleven, twelve", "traducao": "onze, doze (não seguem o padrão \"-teen\")", "exemplo": "twelve months", "exemploTraducao": "doze meses" },
+        { "palavra": "thirteen ... nineteen", "traducao": "treze a dezenove — todos terminam em \"-teen\"", "exemplo": "thirteen, fourteen, fifteen", "exemploTraducao": "treze, quatorze, quinze" },
+        { "palavra": "twenty, thirty", "traducao": "vinte, trinta", "exemplo": "twenty dollars", "exemploTraducao": "vinte dólares" },
+        { "palavra": "forty", "traducao": "quarenta — repare: sem o \"u\" de \"four\"", "exemplo": "forty years old", "exemploTraducao": "quarenta anos de idade" },
+        { "palavra": "fifty, sixty, seventy, eighty, ninety", "traducao": "cinquenta, sessenta, setenta, oitenta, noventa", "exemplo": "ninety percent", "exemploTraducao": "noventa por cento" },
+        { "palavra": "a hundred", "traducao": "cem — não usa \"s\" no plural quando conta algo (\"two hundred\", nunca \"two hundreds\")", "exemplo": "two hundred people", "exemploTraducao": "duzentas pessoas" },
+        { "palavra": "a thousand", "traducao": "mil", "exemplo": "a thousand thanks", "exemploTraducao": "mil agradecimentos" },
+        { "palavra": "How old are you?", "traducao": "quantos anos você tem?", "exemplo": "How old are you? — I'm twenty-five.", "exemploTraducao": "Quantos anos você tem? — Eu tenho vinte e cinco." },
+        { "palavra": "I am ... years old", "traducao": "eu tenho ... anos (usa o verbo SER/ESTAR, não TER)", "exemplo": "She is thirty years old.", "exemploTraducao": "Ela tem trinta anos." },
+        { "palavra": "first, second, third", "traducao": "primeiro, segundo, terceiro (ordinais irregulares)", "exemplo": "the first day", "exemploTraducao": "o primeiro dia" },
+        { "palavra": "fourth, fifth, sixth...", "traducao": "a partir do quarto, os ordinais seguem o padrão: número + \"-th\"", "exemplo": "the fifth floor", "exemploTraducao": "o quinto andar" },
+        { "palavra": "zero / oh", "traducao": "zero — em números de telefone, os americanos costumam falar \"oh\" no lugar de \"zero\"", "exemplo": "My number is five-oh-two.", "exemploTraducao": "Meu número é cinco-zero-dois." }
+      ],
+      "associacao": "Depois do 20, o inglês é regular: junta a dezena com a unidade (twenty-one, twenty-two...). O ponto de atenção real é antes disso — \"eleven\" e \"twelve\" não têm nada a ver com \"one\" e \"two\", e \"forty\" perde o \"u\" que \"four\" tem.",
+      "dica": "Diferente do português (e do francês, que usa \"avoir\"), a idade em inglês usa o verbo TO BE: \"I am 25 years old\", nunca \"I have 25 years\" — esse é um dos erros mais comuns de quem traduz direto do português.",
+      "quiz": [
+        { "tipo": "multipla", "pergunta": "Como se pergunta a idade de alguém em inglês?", "opcoes": ["What's your age number?", "How old are you?", "How many years you have?"], "certa": 1 },
+        { "tipo": "multipla", "pergunta": "Qual verbo o inglês usa para falar idade?", "opcoes": ["To have (ter)", "To be (ser/estar)", "To get (conseguir)"], "certa": 1 },
+        { "tipo": "multipla", "pergunta": "Como se escreve corretamente o número 40?", "opcoes": ["fourty", "forty", "fourtty"], "certa": 1 },
+        { "tipo": "multipla", "pergunta": "\"Eleven\" e \"twelve\" seguem o padrão \"-teen\" de treze a dezenove?", "opcoes": ["Sim", "Não — são formas irregulares"], "certa": 1 },
+        { "tipo": "traduzir", "pergunta": "Escreva em inglês: quinze", "resposta": "fifteen" },
+        { "tipo": "traduzir", "pergunta": "Escreva em inglês: primeiro (ordinal)", "resposta": "first" }
+      ]
+    },
+    {
+      "chave": "u4-familia",
+      "titulo": "4. Família",
+      "tema": "Quem é quem em casa.",
+      "vocabulario": [
+        { "palavra": "family", "traducao": "a família", "exemplo": "My family is big.", "exemploTraducao": "Minha família é grande." },
+        { "palavra": "father / dad, mother / mom", "traducao": "pai / papai, mãe / mamãe", "exemplo": "My dad works a lot.", "exemploTraducao": "Meu pai trabalha muito." },
+        { "palavra": "brother, sister", "traducao": "irmão, irmã", "exemplo": "I have one sister.", "exemploTraducao": "Eu tenho uma irmã." },
+        { "palavra": "son, daughter", "traducao": "filho, filha", "exemplo": "Her daughter is ten.", "exemploTraducao": "A filha dela tem dez anos." },
+        { "palavra": "grandparents / grandfather / grandmother", "traducao": "avós / avô / avó", "exemplo": "My grandparents live in Bahia.", "exemploTraducao": "Meus avós moram na Bahia." },
+        { "palavra": "grandson / granddaughter", "traducao": "neto / neta", "exemplo": "He is my grandson.", "exemploTraducao": "Ele é meu neto." },
+        { "palavra": "husband, wife", "traducao": "marido, esposa", "exemplo": "This is my husband.", "exemploTraducao": "Este é meu marido." },
+        { "palavra": "aunt, uncle", "traducao": "tia, tio", "exemplo": "My aunt is a doctor.", "exemploTraducao": "Minha tia é médica." },
+        { "palavra": "cousin", "traducao": "primo ou prima — a MESMA palavra serve para os dois, sem marcar gênero", "exemplo": "She is my cousin.", "exemploTraducao": "Ela é minha prima." },
+        { "palavra": "nephew, niece", "traducao": "sobrinho, sobrinha", "exemplo": "My niece is very smart.", "exemploTraducao": "Minha sobrinha é muito esperta." },
+        { "palavra": "parents", "traducao": "pais (mãe + pai) — cuidado, NÃO é \"parentes\"", "exemplo": "My parents live nearby.", "exemploTraducao": "Meus pais moram perto." },
+        { "palavra": "relatives", "traducao": "parentes (no sentido amplo, tios, primos etc.) — esta é a palavra certa para \"parentes\"", "exemplo": "We have relatives in Portugal.", "exemploTraducao": "Temos parentes em Portugal." },
+        { "palavra": "stepmother / stepfather", "traducao": "madrasta / padrasto", "exemplo": "His stepfather is kind.", "exemploTraducao": "O padrasto dele é gentil." },
+        { "palavra": "my, your, his, her, their", "traducao": "meu, seu, dele, dela, deles — mudam conforme QUEM é o dono, não conforme o objeto", "exemplo": "He loves his mother. She loves her father.", "exemploTraducao": "Ele ama a mãe dele. Ela ama o pai dela." }
+      ],
+      "associacao": "\"Cousin\" serve tanto para primo quanto para prima — diferente do português, o inglês não marca gênero nesse parentesco (nem em \"parent\", \"friend\", \"teacher\"...).",
+      "dica": "Cuidado com o falso cognato: \"parents\" é PAIS (mãe e pai), não \"parentes\" — para \"parentes\" em geral, a palavra certa é \"relatives\". E os possessivos (his/her) concordam com o DONO, não com a coisa possuída — diferente do francês \"mon/ma\", que muda de acordo com o objeto.",
+      "quiz": [
+        { "tipo": "multipla", "pergunta": "\"Cousin\" se refere a:", "opcoes": ["Só primo (homem)", "Só prima (mulher)", "Primo ou prima, sem indicar gênero"], "certa": 2 },
+        { "tipo": "multipla", "pergunta": "A tradução correta de \"parents\" é:", "opcoes": ["Parentes em geral", "Pais (mãe e pai)", "Avós"], "certa": 1 },
+        { "tipo": "multipla", "pergunta": "Em \"He loves his mother\", o \"his\" concorda com:", "opcoes": ["A mãe (objeto)", "Ele (o dono)", "Não concorda com nada"], "certa": 1 },
+        { "tipo": "multipla", "pergunta": "Para falar \"parentes\" em geral (tios, primos etc.), a palavra certa é:", "opcoes": ["parents", "relatives", "familiars"], "certa": 1 },
+        { "tipo": "traduzir", "pergunta": "Traduza: sobrinha", "resposta": "niece" },
+        { "tipo": "traduzir", "pergunta": "Traduza: madrasta", "resposta": "stepmother" }
+      ]
+    },
+    {
+      "chave": "u5-comida",
+      "titulo": "5. Comida e bebida",
+      "tema": "Pedir, comprar e comentar sobre o que se come.",
+      "vocabulario": [
+        { "palavra": "bread", "traducao": "o pão", "exemplo": "A loaf of bread.", "exemploTraducao": "Um pão (uma peça de pão)." },
+        { "palavra": "cheese", "traducao": "o queijo", "exemplo": "I like cheese.", "exemploTraducao": "Eu gosto de queijo." },
+        { "palavra": "water", "traducao": "a água", "exemplo": "A glass of water, please.", "exemploTraducao": "Um copo de água, por favor." },
+        { "palavra": "wine", "traducao": "o vinho", "exemplo": "A glass of red wine.", "exemploTraducao": "Um copo de vinho tinto." },
+        { "palavra": "breakfast", "traducao": "o café da manhã (literalmente \"quebrar o jejum\")", "exemplo": "I have breakfast at eight.", "exemploTraducao": "Eu tomo café da manhã às oito." },
+        { "palavra": "lunch", "traducao": "o almoço", "exemplo": "Let's have lunch together.", "exemploTraducao": "Vamos almoçar juntos." },
+        { "palavra": "dinner / supper", "traducao": "o jantar", "exemplo": "Dinner is ready.", "exemploTraducao": "O jantar está pronto." },
+        { "palavra": "I'm hungry / I'm thirsty", "traducao": "estou com fome / estou com sede (usa TO BE, não TO HAVE)", "exemplo": "I'm hungry, let's eat.", "exemploTraducao": "Estou com fome, vamos comer." },
+        { "palavra": "The check, please (US) / The bill, please (UK)", "traducao": "a conta, por favor", "exemplo": "Can I have the check, please?", "exemploTraducao": "Pode trazer a conta, por favor?" },
+        { "palavra": "I would like... / Can I have...?", "traducao": "eu gostaria de... / posso pedir...?", "exemplo": "I would like a coffee, please.", "exemploTraducao": "Eu gostaria de um café, por favor." },
+        { "palavra": "meat, chicken, fish", "traducao": "carne, frango, peixe", "exemplo": "I don't eat meat.", "exemploTraducao": "Eu não como carne." },
+        { "palavra": "fruit, vegetables", "traducao": "frutas, legumes e verduras", "exemplo": "Eat more fruit and vegetables.", "exemploTraducao": "Coma mais frutas e verduras." },
+        { "palavra": "sweet / salty / spicy", "traducao": "doce / salgado / picante", "exemplo": "This soup is too spicy.", "exemploTraducao": "Essa sopa está muito picante." },
+        { "palavra": "delicious / tasty", "traducao": "delicioso / saboroso", "exemplo": "This cake is delicious!", "exemploTraducao": "Esse bolo está delicioso!" }
+      ],
+      "associacao": "Fome e sede em inglês são um ESTADO, com o verbo TO BE: \"I'm hungry\" é literalmente \"eu estou faminto\", nunca \"eu tenho fome\" traduzido ao pé da letra.",
+      "dica": "Nos Estados Unidos se pede \"the check, please\"; no Reino Unido, \"the bill, please\" — a mesma coisa, palavras diferentes conforme o país.",
+      "quiz": [
+        { "tipo": "multipla", "pergunta": "Que verbo o inglês usa em \"I'm hungry\"?", "opcoes": ["To have (ter)", "To be (ser/estar)", "To get (conseguir)"], "certa": 1 },
+        { "tipo": "multipla", "pergunta": "Nos Estados Unidos, como se pede a conta num restaurante?", "opcoes": ["The bill, please", "The check, please", "The account, please"], "certa": 1 },
+        { "tipo": "multipla", "pergunta": "Qual é o jeito mais educado de pedir algo?", "opcoes": ["I want a coffee", "I would like a coffee", "Give me a coffee"], "certa": 1 },
+        { "tipo": "multipla", "pergunta": "\"Vegetables\" se traduz como:", "opcoes": ["Frutas", "Legumes e verduras", "Doces"], "certa": 1 },
+        { "tipo": "traduzir", "pergunta": "Traduza: água", "resposta": "water" },
+        { "tipo": "traduzir", "pergunta": "Traduza: café da manhã", "resposta": "breakfast" }
+      ]
+    },
+    {
+      "chave": "u6-tempo",
+      "titulo": "6. Tempo, dias e datas",
+      "tema": "Marcar hora, dia da semana e mês.",
+      "vocabulario": [
+        { "palavra": "Monday, Tuesday, Wednesday", "traducao": "segunda, terça, quarta", "exemplo": "I work on Monday.", "exemploTraducao": "Eu trabalho na segunda." },
+        { "palavra": "Thursday, Friday", "traducao": "quinta, sexta", "exemplo": "We go out on Friday night.", "exemploTraducao": "A gente sai na sexta à noite." },
+        { "palavra": "Saturday, Sunday", "traducao": "sábado, domingo", "exemplo": "The weekend is Saturday and Sunday.", "exemploTraducao": "O fim de semana é sábado e domingo." },
+        { "palavra": "today / tomorrow / yesterday", "traducao": "hoje / amanhã / ontem", "exemplo": "It's raining today.", "exemploTraducao": "Hoje está chovendo." },
+        { "palavra": "What time is it?", "traducao": "que horas são?", "exemplo": "What time is it? — It's three o'clock.", "exemploTraducao": "Que horas são? — São três horas." },
+        { "palavra": "morning / afternoon / evening / night", "traducao": "manhã / tarde / início da noite / noite (de dormir)", "exemplo": "I work in the morning.", "exemploTraducao": "Eu trabalho de manhã." },
+        { "palavra": "January, February, March", "traducao": "janeiro, fevereiro, março", "exemplo": "My birthday is in March.", "exemploTraducao": "Meu aniversário é em março." },
+        { "palavra": "What's the date today?", "traducao": "qual é a data hoje?", "exemplo": "What's the date today? — It's May 3rd.", "exemploTraducao": "Qual é a data hoje? — É 3 de maio." },
+        { "palavra": "day / week / month / year", "traducao": "dia / semana / mês / ano", "exemplo": "See you next week.", "exemploTraducao": "Até a semana que vem." },
+        { "palavra": "on Monday / in March / at 3 o'clock", "traducao": "regra fixa de preposição: ON com dias, IN com meses/anos, AT com horários", "exemplo": "The meeting is on Monday, at 3 o'clock.", "exemploTraducao": "A reunião é na segunda, às três horas." },
+        { "palavra": "this week / next week / last week", "traducao": "esta semana / semana que vem / semana passada", "exemplo": "I was sick last week.", "exemploTraducao": "Eu fiquei doente semana passada." },
+        { "palavra": "early / late", "traducao": "cedo / tarde (atraso) — não confundir com \"afternoon\"", "exemplo": "Sorry, I'm late.", "exemploTraducao": "Desculpa, estou atrasado." },
+        { "palavra": "weekend", "traducao": "fim de semana", "exemplo": "Have a good weekend!", "exemploTraducao": "Bom fim de semana!" },
+        { "palavra": "o'clock", "traducao": "usado só com horas cheias (nunca com \"3:15 o'clock\")", "exemplo": "It's five o'clock.", "exemploTraducao": "São cinco horas." }
+      ],
+      "associacao": "Decore o trio ON / IN / AT pelo tamanho do tempo: AT para o ponto exato (at 3 o'clock), ON para o dia certo (on Monday), IN para o período mais longo (in March, in 2026).",
+      "dica": "Em português, \"tarde\" serve tanto para o período do dia quanto para atraso. Em inglês são palavras diferentes: \"afternoon\" (período da tarde) e \"late\" (atrasado) — \"I'm in the afternoon\" não existe, o certo é \"I'm late\".",
+      "quiz": [
+        { "tipo": "multipla", "pergunta": "Qual preposição usamos com dias da semana? (\"___ Monday\")", "opcoes": ["on", "in", "at"], "certa": 0 },
+        { "tipo": "multipla", "pergunta": "Qual preposição usamos com meses? (\"___ March\")", "opcoes": ["on", "in", "at"], "certa": 1 },
+        { "tipo": "multipla", "pergunta": "Qual preposição usamos com horários? (\"___ 3 o'clock\")", "opcoes": ["on", "in", "at"], "certa": 2 },
+        { "tipo": "multipla", "pergunta": "\"I'm late\" quer dizer:", "opcoes": ["Estou à tarde", "Estou atrasado", "Estou cedo"], "certa": 1 },
+        { "tipo": "traduzir", "pergunta": "Traduza: ontem", "resposta": "yesterday" },
+        { "tipo": "traduzir", "pergunta": "Traduza: que horas são?", "resposta": "what time is it" }
+      ]
+    },
+    {
+      "chave": "u7-verbos",
+      "titulo": "7. Verbos essenciais: to be, to have, to go",
+      "tema": "Os três verbos que carregam a maior parte das frases do dia a dia — mais o \"presente contínuo\", que não existe do mesmo jeito em português.",
+      "vocabulario": [
+        { "palavra": "I am, you are, he/she/it is", "traducao": "eu sou/estou, você é/está, ele/ela é/está (verbo TO BE)", "exemplo": "I am tired.", "exemploTraducao": "Eu estou cansado." },
+        { "palavra": "we are, you are, they are", "traducao": "nós somos/estamos, vocês são/estão, eles são/estão", "exemplo": "We are ready.", "exemploTraducao": "Nós estamos prontos." },
+        { "palavra": "I have, you have, he/she/it has", "traducao": "eu tenho, você tem, ele/ela tem (verbo TO HAVE — \"has\" é irregular)", "exemplo": "She has a cat.", "exemploTraducao": "Ela tem um gato." },
+        { "palavra": "we have, you have, they have", "traducao": "nós temos, vocês têm, eles têm", "exemplo": "They have a big house.", "exemploTraducao": "Eles têm uma casa grande." },
+        { "palavra": "I go, you go, he/she/it goes", "traducao": "eu vou, você vai, ele/ela vai (verbo TO GO — ganha \"-es\" na terceira pessoa)", "exemplo": "He goes to work by bus.", "exemploTraducao": "Ele vai ao trabalho de ônibus." },
+        { "palavra": "we go, you go, they go", "traducao": "nós vamos, vocês vão, eles vão", "exemplo": "We go to the beach every summer.", "exemploTraducao": "A gente vai à praia todo verão." },
+        { "palavra": "Do you...? / Does he...?", "traducao": "uso de DO/DOES para montar perguntas — não existe equivalente direto em português", "exemplo": "Do you like pizza? Does she work here?", "exemploTraducao": "Você gosta de pizza? Ela trabalha aqui?" },
+        { "palavra": "I don't / He doesn't", "traducao": "negação com DO NOT / DOES NOT", "exemplo": "I don't know. He doesn't like coffee.", "exemploTraducao": "Eu não sei. Ele não gosta de café." },
+        { "palavra": "I am + verb-ing", "traducao": "presente contínuo — algo acontecendo agora", "exemplo": "I am studying English.", "exemploTraducao": "Eu estou estudando inglês." },
+        { "palavra": "What are you doing?", "traducao": "o que você está fazendo?", "exemplo": "What are you doing right now?", "exemploTraducao": "O que você está fazendo agora?" },
+        { "palavra": "going to", "traducao": "\"be going to\" — futuro próximo, igual à construção do português \"vou fazer\"", "exemplo": "I am going to eat.", "exemploTraducao": "Eu vou comer." },
+        { "palavra": "there is / there are", "traducao": "há/existe (singular) / há/existem (plural)", "exemplo": "There is a book on the table. There are two chairs.", "exemploTraducao": "Há um livro na mesa. Há duas cadeiras." },
+        { "palavra": "can", "traducao": "poder/conseguir — não usa \"to\" nem \"does\" nas perguntas", "exemplo": "Can you help me?", "exemploTraducao": "Você pode me ajudar?" },
+        { "palavra": "would like", "traducao": "forma educada de \"querer\"", "exemplo": "I would like some water.", "exemploTraducao": "Eu gostaria de um pouco de água." }
+      ],
+      "associacao": "Pense no \"do/does\" como uma palavrinha de apoio que aparece do nada nas perguntas e negações em inglês — o português não tem nada parecido, então é preciso simplesmente decorar que ele sempre entra ali.",
+      "dica": "Na terceira pessoa (he/she/it), o verbo ganha \"-s\" ou \"-es\" no presente simples: \"I go\" mas \"he goes\"; \"I have\" mas \"she has\" (irregular, nunca \"haves\").",
+      "quiz": [
+        { "tipo": "multipla", "pergunta": "Como fica o verbo \"have\" na terceira pessoa (he/she/it)?", "opcoes": ["haves", "has", "haing"], "certa": 1 },
+        { "tipo": "multipla", "pergunta": "Como fica o verbo \"go\" na terceira pessoa (he/she/it)?", "opcoes": ["gos", "go", "goes"], "certa": 2 },
+        { "tipo": "multipla", "pergunta": "Qual é a negativa correta de \"She likes pizza\"?", "opcoes": ["She not likes pizza", "She doesn't like pizza", "She don't likes pizza"], "certa": 1 },
+        { "tipo": "multipla", "pergunta": "\"What are you doing?\" pergunta sobre uma ação:", "opcoes": ["No passado", "Acontecendo agora", "No futuro distante"], "certa": 1 },
+        { "tipo": "multipla", "pergunta": "Qual frase expressa corretamente o futuro próximo (\"eu vou comer\")?", "opcoes": ["I eat go", "I am going to eat", "I have eat"], "certa": 1 },
+        { "tipo": "traduzir", "pergunta": "Como se diz \"eles têm\" em inglês?", "resposta": "they have" },
+        { "tipo": "traduzir", "pergunta": "Como se diz \"você pode me ajudar?\"", "resposta": "can you help me" }
+      ]
+    },
+    {
+      "chave": "u8-frases",
+      "titulo": "8. Frases do dia a dia",
+      "tema": "O que resolve na rua, no café e numa conversa curta — e dois falsos amigos clássicos do português.",
+      "vocabulario": [
+        { "palavra": "Excuse me", "traducao": "com licença / desculpe", "exemplo": "Excuse me, where's the station?", "exemploTraducao": "Com licença, onde fica a estação?" },
+        { "palavra": "I don't understand", "traducao": "eu não entendo", "exemplo": "Sorry, I don't understand.", "exemploTraducao": "Desculpe, eu não entendo." },
+        { "palavra": "Can you repeat that?", "traducao": "você pode repetir isso?", "exemplo": "Can you repeat that, please?", "exemploTraducao": "Você pode repetir isso, por favor?" },
+        { "palavra": "How much is this? / How much does it cost?", "traducao": "quanto custa isso?", "exemplo": "How much is this, please?", "exemploTraducao": "Quanto custa isso, por favor?" },
+        { "palavra": "Where is...?", "traducao": "onde fica...?", "exemplo": "Where is the bathroom?", "exemploTraducao": "Onde fica o banheiro?" },
+        { "palavra": "I would like...", "traducao": "eu gostaria de...", "exemplo": "I would like a coffee, please.", "exemploTraducao": "Eu gostaria de um café, por favor." },
+        { "palavra": "That's great! / Awesome!", "traducao": "que ótimo! / incrível!", "exemplo": "You got the job? That's great!", "exemploTraducao": "Você conseguiu o emprego? Que ótimo!" },
+        { "palavra": "Actually", "traducao": "na verdade (FALSO AMIGO: não é \"atualmente\")", "exemplo": "Actually, I don't agree.", "exemploTraducao": "Na verdade, eu não concordo." },
+        { "palavra": "Currently / Nowadays", "traducao": "atualmente, hoje em dia (a palavra certa para o que parece com \"actually\")", "exemplo": "I'm currently working from home.", "exemploTraducao": "Atualmente eu trabalho de casa." },
+        { "palavra": "Pretend", "traducao": "fingir (FALSO AMIGO: não é \"pretender\")", "exemplo": "He pretended to be asleep.", "exemploTraducao": "Ele fingiu que estava dormindo." },
+        { "palavra": "Intend / Plan to", "traducao": "pretender, planejar (a palavra certa para o que parece com \"pretend\")", "exemplo": "I intend to visit Brazil next year.", "exemploTraducao": "Eu pretendo visitar o Brasil ano que vem." },
+        { "palavra": "I'm looking for...", "traducao": "estou procurando...", "exemplo": "I'm looking for the exit.", "exemploTraducao": "Estou procurando a saída." },
+        { "palavra": "Can I help you?", "traducao": "posso ajudar? (comum em lojas)", "exemplo": "Can I help you find something?", "exemploTraducao": "Posso ajudar a encontrar algo?" },
+        { "palavra": "No problem / You're welcome", "traducao": "sem problema / de nada", "exemplo": "— Thanks a lot! — No problem!", "exemploTraducao": "— Muito obrigado! — Sem problema!" }
+      ],
+      "associacao": "\"Actually\" parece \"atualmente\" mas quer dizer \"na verdade\" — para \"atualmente\", use \"currently\" ou \"nowadays\". \"Pretend\" parece \"pretender\" mas quer dizer \"fingir\" — para \"pretender\", use \"intend to\" ou \"plan to\".",
+      "dica": "Falsos amigos são os erros mais silenciosos: a frase sai gramaticalmente perfeita, só o sentido é outro — quem ouve entende algo bem diferente do que você quis dizer.",
+      "musicaAtual": { "titulo": "Happy", "artista": "Pharrell Williams", "youtubeId": "ZbZSe6N_BXs" },
+      "quiz": [
+        { "tipo": "multipla", "pergunta": "\"Actually\" significa:", "opcoes": ["Atualmente", "Na verdade", "Eventualmente"], "certa": 1 },
+        { "tipo": "multipla", "pergunta": "\"Pretend\" significa:", "opcoes": ["Pretender", "Fingir", "Pressionar"], "certa": 1 },
+        { "tipo": "multipla", "pergunta": "Para dizer \"atualmente\" em inglês, a palavra certa é:", "opcoes": ["actually", "currently", "eventually"], "certa": 1 },
+        { "tipo": "multipla", "pergunta": "Para dizer \"pretender\" (planejar fazer algo) em inglês, a palavra certa é:", "opcoes": ["pretend", "intend to", "prevent"], "certa": 1 },
+        { "tipo": "multipla", "pergunta": "Qual pergunta serve para saber o preço de algo?", "opcoes": ["Where is this?", "How much is this?", "What is this?"], "certa": 1 },
+        { "tipo": "traduzir", "pergunta": "Traduza: eu não entendo", "resposta": "i don't understand" },
+        { "tipo": "traduzir", "pergunta": "Traduza: sem problema", "resposta": "no problem" }
       ]
     }
   ]

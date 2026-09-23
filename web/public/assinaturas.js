@@ -68,6 +68,7 @@ const POR = {
   epub: 'Baixar livros em EPUB faz parte dos planos pagos, a partir do Novelo.',
   voz: 'Ouvir em voz alta faz parte dos planos pagos, a partir do Novelo.',
   limite: 'Você já abriu os livros deste mês no plano grátis.',
+  idiomas: 'O estudo de idiomas é uma área do plano Tear.',
 }
 
 async function iniciar() {

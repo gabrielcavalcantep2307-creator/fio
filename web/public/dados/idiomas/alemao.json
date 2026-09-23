@@ -1,7 +1,7 @@
 {
   "nome": "Alemão",
   "bandeira": "🇩🇪",
-  "profundidade": "basico",
+  "profundidade": "completo",
   "voz": "de-DE",
   "unidades": [
     {
@@ -14,32 +14,233 @@
         { "palavra": "w", "traducao": "soa como \"v\" do português", "exemplo": "wir, Wasser", "exemploTraducao": "nós, água" },
         { "palavra": "v", "traducao": "soa como \"f\"", "exemplo": "Vater, vier", "exemploTraducao": "pai, quatro" },
         { "palavra": "z", "traducao": "soa como \"ts\"", "exemplo": "Zeit, zwei", "exemploTraducao": "tempo, dois" },
-        { "palavra": "s (antes de vogal)", "traducao": "soa como \"z\"", "exemplo": "sehen, sagen", "exemploTraducao": "ver, dizer" }
+        { "palavra": "s (antes de vogal)", "traducao": "soa como \"z\"", "exemplo": "sehen, sagen", "exemploTraducao": "ver, dizer" },
+        { "palavra": "sch", "traducao": "soa como \"x\" do português", "exemplo": "Schule, schön, Tisch", "exemploTraducao": "escola, bonito, mesa" },
+        { "palavra": "sp / st (início de palavra)", "traducao": "o \"s\" vira \"x\": soam \"schp\" / \"scht\"", "exemplo": "Sport, Straße, sprechen", "exemploTraducao": "esporte, rua, falar" },
+        { "palavra": "ei", "traducao": "soa \"ai\", como em \"pai\"", "exemplo": "mein, zwei, Wein", "exemploTraducao": "meu, dois, vinho" },
+        { "palavra": "ie", "traducao": "soa \"i\" longo, nunca \"i-e\"", "exemplo": "die, sieben, Bier", "exemploTraducao": "a/o (artigo), sete, cerveja" },
+        { "palavra": "eu / äu", "traducao": "soam \"oi\"", "exemplo": "neun, Häuser, Freund", "exemploTraducao": "nove, casas, amigo" },
+        { "palavra": "j", "traducao": "soa como \"i\" consoante (o \"y\" do inglês \"yes\")", "exemplo": "ja, Jahr, jung", "exemploTraducao": "sim, ano, jovem" },
+        { "palavra": "qu", "traducao": "soa \"kv\", nunca \"k\" sozinho", "exemplo": "Quelle, Qualität", "exemploTraducao": "fonte, qualidade" },
+        { "palavra": "b, d, g (final de palavra)", "traducao": "ensurdecem: viram p, t, k", "exemplo": "Hund, Tag, gelb", "exemploTraducao": "cachorro (soa \"hunt\"), dia (soa \"tak\"), amarelo (soa \"gelp\")" }
       ],
       "associacao": "\"V\" e \"W\" TROCAM de som em relação ao português: \"Vater\" (pai) soa \"Fáter\", e \"wir\" (nós) soa \"vir\". É o oposto do que os olhos esperam.",
-      "dica": "Todo SUBSTANTIVO alemão começa com letra MAIÚSCULA, sempre — não é ênfase nem título, é regra: \"das Buch\" (o livro), \"die Zeit\" (o tempo).",
+      "dica": "Todo SUBSTANTIVO alemão começa com letra MAIÚSCULA, sempre — não é ênfase nem título, é regra: \"das Buch\" (o livro), \"die Zeit\" (o tempo). E cuidado para não trocar \"ei\" (soa \"ai\") com \"ie\" (soa \"i\" longo) — são exatamente invertidos do que os olhos de quem fala português esperam.",
       "quiz": [
         { "tipo": "multipla", "pergunta": "Como soa o \"w\" alemão, como em \"wir\"?", "opcoes": ["Como \"w\" do inglês", "Como \"v\" do português", "Como \"u\""], "certa": 1 },
-        { "tipo": "multipla", "pergunta": "Todo substantivo alemão começa com:", "opcoes": ["Letra minúscula", "Letra maiúscula, sempre", "Depende da frase"], "certa": 1 }
+        { "tipo": "multipla", "pergunta": "Todo substantivo alemão começa com:", "opcoes": ["Letra minúscula", "Letra maiúscula, sempre", "Depende da frase"], "certa": 1 },
+        { "tipo": "multipla", "pergunta": "Como soa \"ei\", como em \"mein\" e \"zwei\"?", "opcoes": ["Como \"ei\" em \"lei\"", "Como \"ai\" em \"pai\"", "Como \"e\" fechado"], "certa": 1 },
+        { "tipo": "multipla", "pergunta": "Como soa \"sch\", como em \"Schule\"?", "opcoes": ["Como \"sk\"", "Como \"x\" em \"xadrez\"", "Como \"s\" simples"], "certa": 1 },
+        { "tipo": "multipla", "pergunta": "\"sp\" e \"st\" no início de uma palavra alemã soam como:", "opcoes": ["sp / st, igual está escrito", "schp / scht", "zp / zt"], "certa": 1 },
+        { "tipo": "traduzir", "pergunta": "Como soa a consoante final de \"Tag\" (dia)? Escreva a letra.", "resposta": "t" }
       ]
     },
     {
       "chave": "u2-saudacoes",
       "titulo": "2. Saudações e apresentações",
-      "tema": "O básico para começar.",
+      "tema": "O básico para começar qualquer conversa.",
       "vocabulario": [
         { "palavra": "Hallo", "traducao": "olá", "exemplo": "Hallo, wie geht's?", "exemploTraducao": "Olá, como vai?" },
         { "palavra": "Guten Morgen / Guten Tag / Guten Abend", "traducao": "bom dia / boa tarde / boa noite", "exemplo": "Guten Morgen, Frau Schmidt.", "exemploTraducao": "Bom dia, senhora Schmidt." },
         { "palavra": "Wie geht's? / Wie geht es Ihnen?", "traducao": "como vai? (informal / formal)", "exemplo": "Gut, danke. Und dir?", "exemploTraducao": "Bem, obrigado. E você?" },
         { "palavra": "Ich heiße...", "traducao": "eu me chamo...", "exemplo": "Ich heiße Klaus.", "exemploTraducao": "Eu me chamo Klaus." },
         { "palavra": "Danke / Bitte", "traducao": "obrigado / de nada (ou \"por favor\")", "exemplo": "Danke schön! — Bitte schön!", "exemploTraducao": "Muito obrigado! — De nada!" },
-        { "palavra": "Auf Wiedersehen / Tschüss", "traducao": "até logo (formal) / tchau (informal)", "exemplo": "Tschüss, bis morgen!", "exemploTraducao": "Tchau, até amanhã!" }
+        { "palavra": "Auf Wiedersehen / Tschüss", "traducao": "até logo (formal) / tchau (informal)", "exemplo": "Tschüss, bis morgen!", "exemploTraducao": "Tchau, até amanhã!" },
+        { "palavra": "Wie heißen Sie?", "traducao": "como o senhor/a senhora se chama? (formal)", "exemplo": "Wie heißen Sie, bitte?", "exemploTraducao": "Como o senhor se chama, por favor?" },
+        { "palavra": "Mein Name ist...", "traducao": "meu nome é...", "exemplo": "Mein Name ist Anna.", "exemploTraducao": "Meu nome é Anna." },
+        { "palavra": "Freut mich", "traducao": "prazer (em conhecer)", "exemplo": "Freut mich, Sie kennenzulernen.", "exemploTraducao": "Prazer em conhecê-lo." },
+        { "palavra": "Herr / Frau", "traducao": "senhor / senhora (antes do sobrenome)", "exemplo": "Herr Müller, das ist Frau Klein.", "exemploTraducao": "Senhor Müller, esta é a senhora Klein." },
+        { "palavra": "Entschuldigung", "traducao": "desculpe / com licença", "exemplo": "Entschuldigung, wie spät ist es?", "exemploTraducao": "Com licença, que horas são?" },
+        { "palavra": "Ja / Nein", "traducao": "sim / não", "exemplo": "Ja, gerne! — Nein, danke.", "exemploTraducao": "Sim, com prazer! — Não, obrigado." },
+        { "palavra": "Woher kommst du?", "traducao": "de onde você é? (informal)", "exemplo": "Woher kommst du?", "exemploTraducao": "De onde você é?" },
+        { "palavra": "Ich komme aus Brasilien", "traducao": "eu sou do Brasil (literal \"eu venho do Brasil\")", "exemplo": "Ich komme aus Brasilien.", "exemploTraducao": "Eu sou do Brasil." },
+        { "palavra": "Bis bald / Bis später", "traducao": "até breve / até mais tarde", "exemplo": "Tschüss, bis bald!", "exemploTraducao": "Tchau, até breve!" }
       ],
       "associacao": "\"Bitte\" faz o trabalho de DUAS palavras em português: \"por favor\" ao pedir, e \"de nada\" ao responder um agradecimento. O contexto decide qual das duas é.",
-      "dica": "O alemão tem \"du\" (você, informal) e \"Sie\" (você, formal, sempre com maiúscula) — como o \"tu\"/\"você\" do português, mas mais rígido: usar \"du\" com um estranho mais velho pode soar deselegante.",
+      "dica": "O alemão tem \"du\" (você, informal) e \"Sie\" (você, formal, sempre com maiúscula) — como o \"tu\"/\"você\" do português, mas mais rígido: usar \"du\" com um estranho mais velho pode soar deselegante. \"Wie heißt du?\" é informal; \"Wie heißen Sie?\" é a versão formal da mesma pergunta.",
+      "cancao": {
+        "titulo": "Der Mond ist aufgegangen",
+        "autor": "Matthias Claudius (1740–1815), poema de 1779 — melodia de Johann Abraham Peter Schulz; canção de ninar tradicional alemã, domínio público",
+        "letra": "Der Mond ist aufgegangen,\nDie goldnen Sternlein prangen\nAm Himmel hell und klar;\nDer Wald steht schwarz und schweiget,\nUnd aus den Wiesen steiget\nDer weiße Nebel wunderbar.\n\nWie ist die Welt so stille,\nUnd in der Dämmrung Hülle\nSo traulich und so hold,\nAls eine stille Kammer,\nWo ihr des Tages Jammer\nVerschlafen und vergessen sollt.\n\nSeht ihr den Mond dort stehen?\nEr ist nur halb zu sehen,\nUnd ist doch rund und schön.\nSo sind wohl manche Sachen,\nDie wir getrost belachen,\nWeil unsre Augen sie nicht sehn."
+      },
       "quiz": [
         { "tipo": "multipla", "pergunta": "\"Bitte\" pode significar:", "opcoes": ["Só \"por favor\"", "Só \"de nada\"", "Por favor OU de nada, depende do contexto"], "certa": 2 },
-        { "tipo": "traduzir", "pergunta": "Como se diz \"eu me chamo\" em alemão?", "resposta": "ich heisse" }
+        { "tipo": "traduzir", "pergunta": "Como se diz \"eu me chamo\" em alemão?", "resposta": "ich heiße" },
+        { "tipo": "multipla", "pergunta": "\"Wie heißen Sie?\" é a versão ___ de perguntar o nome.", "opcoes": ["informal", "formal", "não existe diferença"], "certa": 1 },
+        { "tipo": "multipla", "pergunta": "\"Entschuldigung\" serve para:", "opcoes": ["Se despedir", "Pedir desculpa ou chamar atenção educadamente", "Perguntar a hora"], "certa": 1 },
+        { "tipo": "traduzir", "pergunta": "Como se diz \"obrigado\" (informal) em alemão?", "resposta": "danke" },
+        { "tipo": "traduzir", "pergunta": "Complete: de onde você é? (informal) — Woher ___ du?", "resposta": "kommst" }
+      ]
+    },
+    {
+      "chave": "u3-numeros",
+      "titulo": "3. Números e idade",
+      "tema": "Contar e perguntar idade — a base para preço, hora e data.",
+      "vocabulario": [
+        { "palavra": "eins, zwei, drei", "traducao": "um, dois, três", "exemplo": "eins, zwei, drei, vier, fünf", "exemploTraducao": "um, dois, três, quatro, cinco" },
+        { "palavra": "vier, fünf", "traducao": "quatro, cinco", "exemplo": "vier Jahre", "exemploTraducao": "quatro anos" },
+        { "palavra": "sechs, sieben, acht", "traducao": "seis, sete, oito", "exemplo": "acht Euro", "exemploTraducao": "oito euros" },
+        { "palavra": "neun, zehn", "traducao": "nove, dez", "exemplo": "zehn Minuten", "exemploTraducao": "dez minutos" },
+        { "palavra": "elf, zwölf", "traducao": "onze, doze — os teens têm nomes próprios, não seguem padrão", "exemplo": "zwölf Monate", "exemploTraducao": "doze meses" },
+        { "palavra": "null", "traducao": "zero", "exemplo": "unter null", "exemploTraducao": "abaixo de zero" },
+        { "palavra": "zwanzig", "traducao": "vinte", "exemplo": "zwanzig Jahre", "exemploTraducao": "vinte anos" },
+        { "palavra": "einundzwanzig", "traducao": "vinte e um (literalmente \"um-e-vinte\")", "exemplo": "einundzwanzig Jahre alt", "exemploTraducao": "vinte e um anos de idade" },
+        { "palavra": "dreißig, vierzig, fünfzig", "traducao": "trinta, quarenta, cinquenta", "exemplo": "fünfzig Prozent", "exemploTraducao": "cinquenta por cento" },
+        { "palavra": "hundert", "traducao": "cem", "exemplo": "hundert Euro", "exemploTraducao": "cem euros" },
+        { "palavra": "tausend", "traducao": "mil", "exemplo": "tausend Dank", "exemploTraducao": "mil agradecimentos (muitíssimo obrigado)" },
+        { "palavra": "Wie alt bist du?", "traducao": "quantos anos você tem? (informal)", "exemplo": "Wie alt bist du?", "exemploTraducao": "Quantos anos você tem?" },
+        { "palavra": "Ich bin ... Jahre alt", "traducao": "eu tenho ... anos (literal: \"eu sou ... anos velho\")", "exemplo": "Ich bin fünfundzwanzig Jahre alt.", "exemploTraducao": "Eu tenho vinte e cinco anos." },
+        { "palavra": "Wie viele?", "traducao": "quantos/quantas?", "exemplo": "Wie viele Bücher hast du?", "exemploTraducao": "Quantos livros você tem?" }
+      ],
+      "associacao": "De 21 a 99, o alemão fala a UNIDADE antes da DEZENA: \"einundzwanzig\" é literalmente \"um-e-vinte\" — pense em ler o número alemão de trás para frente para chegar no português.",
+      "dica": "A idade em alemão usa o verbo SER (sein), o oposto do francês/espanhol: \"Ich bin zwanzig Jahre alt\" é \"eu SOU vinte anos de idade\", nunca \"eu tenho\".",
+      "quiz": [
+        { "tipo": "multipla", "pergunta": "Como se diz 21 em alemão?", "opcoes": ["zwanzigeins", "einundzwanzig", "eins-zwanzig"], "certa": 1 },
+        { "tipo": "multipla", "pergunta": "\"Wie alt bist du?\" pergunta:", "opcoes": ["Onde você mora", "Quantos anos você tem", "Como você se chama"], "certa": 1 },
+        { "tipo": "multipla", "pergunta": "A idade em alemão usa qual verbo?", "opcoes": ["sein (ser)", "haben (ter)", "werden (ficar)"], "certa": 0 },
+        { "tipo": "traduzir", "pergunta": "Escreva em alemão: quarenta", "resposta": "vierzig" },
+        { "tipo": "traduzir", "pergunta": "Complete em alemão: Eu tenho vinte anos.", "resposta": "ich bin zwanzig jahre alt" },
+        { "tipo": "multipla", "pergunta": "\"Einundzwanzig\" significa literalmente:", "opcoes": ["um e vinte", "vinte e um", "vinte um"], "certa": 0 }
+      ]
+    },
+    {
+      "chave": "u4-familia",
+      "titulo": "4. Família",
+      "tema": "Quem é quem em casa.",
+      "vocabulario": [
+        { "palavra": "die Familie", "traducao": "a família", "exemplo": "Meine Familie ist groß.", "exemploTraducao": "Minha família é grande." },
+        { "palavra": "der Vater / die Mutter", "traducao": "o pai / a mãe", "exemplo": "Mein Vater arbeitet viel.", "exemploTraducao": "Meu pai trabalha muito." },
+        { "palavra": "die Eltern", "traducao": "os pais (pai e mãe juntos)", "exemplo": "Meine Eltern wohnen in Berlin.", "exemploTraducao": "Meus pais moram em Berlim." },
+        { "palavra": "der Bruder / die Schwester", "traducao": "o irmão / a irmã", "exemplo": "Ich habe eine Schwester.", "exemploTraducao": "Eu tenho uma irmã." },
+        { "palavra": "die Geschwister", "traducao": "os irmãos (irmãos e irmãs juntos, sem separar por gênero)", "exemplo": "Wir sind drei Geschwister.", "exemploTraducao": "Nós somos três irmãos (entre irmãos e irmãs)." },
+        { "palavra": "der Sohn / die Tochter", "traducao": "o filho / a filha", "exemplo": "Ihre Tochter ist zehn Jahre alt.", "exemploTraducao": "A filha dela tem dez anos." },
+        { "palavra": "die Großeltern", "traducao": "os avós", "exemplo": "Meine Großeltern wohnen auf dem Land.", "exemploTraducao": "Meus avós moram no campo." },
+        { "palavra": "der Großvater (Opa) / die Großmutter (Oma)", "traducao": "o avô / a avó", "exemplo": "Opa erzählt gern Geschichten.", "exemploTraducao": "O vovô gosta de contar histórias." },
+        { "palavra": "der Mann / die Frau", "traducao": "o marido / a esposa (\"Frau\" também é \"mulher\")", "exemplo": "Das ist mein Mann.", "exemploTraducao": "Este é meu marido." },
+        { "palavra": "mein, meine", "traducao": "meu, minha — muda com o gênero da coisa, não da pessoa", "exemplo": "mein Vater, meine Mutter, mein Kind", "exemploTraducao": "meu pai, minha mãe, meu filho/filha" },
+        { "palavra": "der Onkel / die Tante", "traducao": "o tio / a tia", "exemplo": "Mein Onkel wohnt in München.", "exemploTraducao": "Meu tio mora em Munique." },
+        { "palavra": "der Cousin / die Cousine", "traducao": "o primo / a prima", "exemplo": "Meine Cousine kommt heute.", "exemploTraducao": "Minha prima vem hoje." },
+        { "palavra": "das Kind / die Kinder", "traducao": "a criança / as crianças (neutro, mesmo sendo pessoa)", "exemplo": "Das Kind spielt draußen.", "exemploTraducao": "A criança está brincando lá fora." }
+      ],
+      "associacao": "\"Die Geschwister\" não tem tradução direta em português — é a palavra que junta irmãos e irmãs num grupo só, sem separar por gênero, algo que o português sempre faz.",
+      "dica": "Artigos: der (masculino), die (feminino), das (neutro). \"Mein/meine\" concorda com o gênero gramatical da palavra que vem depois, não com quem fala — mesma armadilha do francês \"mon/ma\", só que com 3 gêneros: \"mein Vater\" (der Vater), \"meine Mutter\" (die Mutter), \"mein Kind\" (das Kind, neutro mesmo sendo uma pessoa).",
+      "quiz": [
+        { "tipo": "multipla", "pergunta": "\"Die Geschwister\" significa:", "opcoes": ["Só irmãos homens", "Irmãos e irmãs juntos, sem separar por gênero", "Só irmãs"], "certa": 1 },
+        { "tipo": "multipla", "pergunta": "Como se diz \"meu pai\" (der Vater)?", "opcoes": ["meine Vater", "mein Vater", "mein Mutter"], "certa": 1 },
+        { "tipo": "multipla", "pergunta": "\"Das Kind\" usa qual artigo, seja menino ou menina?", "opcoes": ["der", "die", "das"], "certa": 2 },
+        { "tipo": "traduzir", "pergunta": "Traduza: os avós", "resposta": "die Großeltern" },
+        { "tipo": "traduzir", "pergunta": "Como se diz \"a irmã\" em alemão?", "resposta": "die Schwester" },
+        { "tipo": "multipla", "pergunta": "\"Frau\" pode significar:", "opcoes": ["Só \"esposa\"", "Só \"mulher\"", "Esposa OU mulher, depende do contexto"], "certa": 2 }
+      ]
+    },
+    {
+      "chave": "u5-comida",
+      "titulo": "5. Comida e bebida",
+      "tema": "Pedir, comprar e comentar sobre o que se come.",
+      "vocabulario": [
+        { "palavra": "das Brot", "traducao": "o pão", "exemplo": "Ein Brot, bitte.", "exemploTraducao": "Um pão, por favor." },
+        { "palavra": "der Käse", "traducao": "o queijo", "exemplo": "Ich mag Käse.", "exemploTraducao": "Eu gosto de queijo." },
+        { "palavra": "das Wasser", "traducao": "a água", "exemplo": "Ein Glas Wasser, bitte.", "exemploTraducao": "Um copo de água, por favor." },
+        { "palavra": "der Wein / das Bier", "traducao": "o vinho / a cerveja", "exemplo": "Ein Glas Bier, bitte.", "exemploTraducao": "Um copo de cerveja, por favor." },
+        { "palavra": "das Frühstück", "traducao": "o café da manhã", "exemplo": "Ich esse um acht Uhr Frühstück.", "exemploTraducao": "Eu tomo café da manhã às oito." },
+        { "palavra": "das Mittagessen", "traducao": "o almoço", "exemplo": "Isst du mit mir Mittagessen?", "exemploTraducao": "Você almoça comigo?" },
+        { "palavra": "das Abendessen", "traducao": "o jantar", "exemplo": "Das Abendessen ist fertig.", "exemploTraducao": "O jantar está pronto." },
+        { "palavra": "Ich habe Hunger / Ich habe Durst", "traducao": "estou com fome / estou com sede", "exemplo": "Ich habe Hunger, essen wir?", "exemploTraducao": "Estou com fome, vamos comer?" },
+        { "palavra": "Die Rechnung, bitte", "traducao": "a conta, por favor", "exemplo": "Die Rechnung, bitte. — Sofort.", "exemploTraducao": "A conta, por favor. — Já vem." },
+        { "palavra": "lecker", "traducao": "gostoso, saboroso", "exemplo": "Das ist sehr lecker!", "exemploTraducao": "Isso está muito gostoso!" },
+        { "palavra": "Guten Appetit!", "traducao": "bom apetite!", "exemplo": "Guten Appetit allen!", "exemploTraducao": "Bom apetite a todos!" },
+        { "palavra": "das Obst / das Gemüse", "traducao": "fruta(s) / verdura(s) — sempre singular coletivo", "exemplo": "Ich esse gern Obst.", "exemploTraducao": "Eu gosto de comer frutas." },
+        { "palavra": "Ich möchte...", "traducao": "eu gostaria de...", "exemplo": "Ich möchte einen Kaffee.", "exemploTraducao": "Eu gostaria de um café." },
+        { "palavra": "der Kaffee / der Tee", "traducao": "o café / o chá", "exemplo": "Ein Tee, bitte.", "exemploTraducao": "Um chá, por favor." }
+      ],
+      "associacao": "Fome e sede usam o verbo TER (haben), igual ao francês: \"ich habe Hunger\" é literalmente \"eu tenho fome\", nunca \"eu estou com fome\" ao pé da letra.",
+      "dica": "\"Das Obst\" e \"das Gemüse\" são sempre SINGULAR coletivo em alemão, mesmo falando de várias frutas ou verduras — nunca existe um plural comum como \"Obste\", diferente do português que pluraliza \"frutas\".",
+      "quiz": [
+        { "tipo": "multipla", "pergunta": "\"Ich habe Durst\" quer dizer:", "opcoes": ["Estou com fome", "Estou com sede", "Estou com sono"], "certa": 1 },
+        { "tipo": "multipla", "pergunta": "\"Das Frühstück\" é:", "opcoes": ["O almoço", "O jantar", "O café da manhã"], "certa": 2 },
+        { "tipo": "multipla", "pergunta": "Como se fala de várias frutas em alemão (das Obst)?", "opcoes": ["Sempre no plural", "Sempre no singular coletivo", "Depende da região"], "certa": 1 },
+        { "tipo": "traduzir", "pergunta": "Como se pede a conta num restaurante?", "resposta": "die Rechnung, bitte" },
+        { "tipo": "traduzir", "pergunta": "Traduza: eu gostaria de um café", "resposta": "ich möchte einen Kaffee" },
+        { "tipo": "multipla", "pergunta": "\"Guten Appetit!\" se diz:", "opcoes": ["Antes de comer", "Depois de comer", "Ao brindar com bebida"], "certa": 0 }
+      ]
+    },
+    {
+      "chave": "u6-tempo",
+      "titulo": "6. Tempo, dias e datas",
+      "tema": "Marcar hora, dia da semana e mês.",
+      "vocabulario": [
+        { "palavra": "Montag, Dienstag, Mittwoch", "traducao": "segunda, terça, quarta", "exemplo": "Montag arbeite ich.", "exemploTraducao": "Segunda, eu trabalho." },
+        { "palavra": "Donnerstag, Freitag", "traducao": "quinta, sexta", "exemplo": "Freitagabend gehen wir aus.", "exemploTraducao": "Sexta à noite, a gente sai." },
+        { "palavra": "Samstag (Sonnabend), Sonntag", "traducao": "sábado, domingo", "exemplo": "Das Wochenende ist Samstag und Sonntag.", "exemploTraducao": "O fim de semana é sábado e domingo." },
+        { "palavra": "heute / morgen / gestern", "traducao": "hoje / amanhã / ontem", "exemplo": "Heute regnet es.", "exemploTraducao": "Hoje está chovendo." },
+        { "palavra": "Wie spät ist es? / Wie viel Uhr ist es?", "traducao": "que horas são?", "exemplo": "Es ist drei Uhr.", "exemploTraducao": "São três horas." },
+        { "palavra": "der Morgen / der Nachmittag / der Abend", "traducao": "a manhã / a tarde / a noite (substantivos, com maiúscula)", "exemplo": "Ich arbeite am Morgen.", "exemploTraducao": "Eu trabalho de manhã." },
+        { "palavra": "Januar, Februar, März", "traducao": "janeiro, fevereiro, março", "exemplo": "Mein Geburtstag ist im März.", "exemploTraducao": "Meu aniversário é em março." },
+        { "palavra": "die Woche / der Monat / das Jahr", "traducao": "a semana / o mês / o ano", "exemplo": "Nächste Woche fahre ich weg.", "exemploTraducao": "Semana que vem eu viajo." },
+        { "palavra": "Es ist ... Uhr", "traducao": "são ... horas", "exemplo": "Es ist vierzehn Uhr.", "exemploTraducao": "São quatorze horas." }
+      ],
+      "associacao": "Quase todos os dias da semana em alemão terminam em \"-tag\" (dia): montag, dienstag, donnerstag, freitag, samstag, sonntag. Só \"Mittwoch\" (meio da semana) foge do padrão — assim como \"dimanche\" foge em francês.",
+      "dica": "Cuidado com maiúscula/minúscula: \"morgen\" minúsculo (advérbio) é AMANHÃ; \"der Morgen\" maiúsculo (substantivo) é A MANHÃ — mesma palavra, sentido diferente, só a letra maiúscula muda tudo. A hora formal também vai até 24h, como no francês: \"Es ist vierzehn Uhr\" são 14h.",
+      "quiz": [
+        { "tipo": "multipla", "pergunta": "Qual dia da semana NÃO termina em \"-tag\"?", "opcoes": ["Montag", "Mittwoch", "Freitag"], "certa": 1 },
+        { "tipo": "multipla", "pergunta": "\"gestern\" quer dizer:", "opcoes": ["amanhã", "ontem", "hoje"], "certa": 1 },
+        { "tipo": "multipla", "pergunta": "\"Wie spät ist es?\" pergunta:", "opcoes": ["Que dia é hoje", "Que horas são", "Em que mês estamos"], "certa": 1 },
+        { "tipo": "multipla", "pergunta": "\"Der Morgen\", com letra maiúscula, é:", "opcoes": ["A manhã (substantivo)", "Amanhã (advérbio)", "O dia inteiro"], "certa": 0 },
+        { "tipo": "traduzir", "pergunta": "Traduza: amanhã", "resposta": "morgen" },
+        { "tipo": "traduzir", "pergunta": "Como se diz \"são três horas\"?", "resposta": "es ist drei Uhr" }
+      ]
+    },
+    {
+      "chave": "u7-verbos",
+      "titulo": "7. Verbos essenciais: sein, haben, werden",
+      "tema": "Os três verbos que carregam a maior parte das frases do dia a dia.",
+      "vocabulario": [
+        { "palavra": "ich bin, du bist, er/sie/es ist", "traducao": "eu sou/estou, você é/está, ele/ela é/está (verbo SEIN)", "exemplo": "Ich bin müde.", "exemploTraducao": "Eu estou cansado." },
+        { "palavra": "wir sind, ihr seid, sie/Sie sind", "traducao": "nós somos, vós sois, eles são / o(a) senhor(a) é", "exemplo": "Wir sind bereit.", "exemploTraducao": "Nós estamos prontos." },
+        { "palavra": "ich habe, du hast, er/sie/es hat", "traducao": "eu tenho, você tem, ele/ela tem (verbo HABEN)", "exemplo": "Ich habe eine Katze.", "exemploTraducao": "Eu tenho um gato." },
+        { "palavra": "wir haben, ihr habt, sie/Sie haben", "traducao": "nós temos, vós tendes, eles têm", "exemplo": "Sie haben Glück.", "exemploTraducao": "Eles têm sorte." },
+        { "palavra": "ich werde, du wirst, er/sie/es wird", "traducao": "eu fico/me torno, você fica, ele/ela fica (verbo WERDEN)", "exemplo": "Ich werde müde.", "exemploTraducao": "Eu fico cansado." },
+        { "palavra": "wir werden, ihr werdet, sie/Sie werden", "traducao": "nós ficamos, vós ficais, eles ficam", "exemplo": "Wir werden alt.", "exemploTraducao": "Nós ficamos velhos." }
+      ],
+      "associacao": "\"Werden\" é usado tanto para \"ficar/tornar-se\" (ich werde müde = eu fico cansado) quanto para formar o FUTURO — é o \"vou\" do português, só que o verbo principal vai lá para o FINAL da frase.",
+      "dica": "Em alemão, o verbo conjugado sempre fica na segunda posição da frase. No futuro com \"werden\", o infinitivo do outro verbo vai para o final: \"Ich werde morgen ins Kino gehen\" (eu vou ao cinema amanhã), literalmente \"eu me-tornarei amanhã ao cinema ir\".",
+      "quiz": [
+        { "tipo": "multipla", "pergunta": "\"Wir haben\" quer dizer:", "opcoes": ["Nós somos", "Nós temos", "Nós vamos"], "certa": 1 },
+        { "tipo": "multipla", "pergunta": "Qual verbo forma o futuro em alemão?", "opcoes": ["sein", "haben", "werden"], "certa": 2 },
+        { "tipo": "multipla", "pergunta": "Em \"Ich werde ins Kino gehen\", onde fica o infinitivo \"gehen\"?", "opcoes": ["No início", "No meio", "No final da frase"], "certa": 2 },
+        { "tipo": "traduzir", "pergunta": "Como se diz \"eles têm\" em alemão?", "resposta": "sie haben" },
+        { "tipo": "traduzir", "pergunta": "Como se diz \"eu sou\" em alemão?", "resposta": "ich bin" },
+        { "tipo": "multipla", "pergunta": "\"Ich werde müde\" quer dizer:", "opcoes": ["Eu sou cansado", "Eu fico cansado", "Eu tenho cansaço"], "certa": 1 }
+      ]
+    },
+    {
+      "chave": "u8-frases",
+      "titulo": "8. Frases do dia a dia",
+      "tema": "O que resolve na rua, no café e numa conversa curta.",
+      "vocabulario": [
+        { "palavra": "Entschuldigung", "traducao": "com licença / desculpe", "exemplo": "Entschuldigung, wo ist der Bahnhof?", "exemploTraducao": "Com licença, onde fica a estação?" },
+        { "palavra": "Ich verstehe nicht", "traducao": "eu não entendo", "exemplo": "Tut mir leid, ich verstehe nicht.", "exemploTraducao": "Desculpe, eu não entendo." },
+        { "palavra": "Können Sie das wiederholen?", "traducao": "você pode repetir isso? (formal)", "exemplo": "Langsamer, bitte, können Sie das wiederholen?", "exemploTraducao": "Mais devagar, por favor, pode repetir?" },
+        { "palavra": "Wie viel kostet das?", "traducao": "quanto custa isso?", "exemplo": "Wie viel kostet das, bitte?", "exemploTraducao": "Quanto custa isso, por favor?" },
+        { "palavra": "Wo ist...?", "traducao": "onde fica...?", "exemplo": "Wo ist die Toilette?", "exemploTraducao": "Onde fica o banheiro?" },
+        { "palavra": "Ich möchte...", "traducao": "eu gostaria de...", "exemplo": "Ich möchte einen Kaffee, bitte.", "exemploTraducao": "Eu gostaria de um café, por favor." },
+        { "palavra": "Das schmeckt gut!", "traducao": "isso está gostoso!", "exemplo": "Mmm, das schmeckt sehr gut.", "exemploTraducao": "Mmm, está muito gostoso." },
+        { "palavra": "Bis bald", "traducao": "até breve", "exemplo": "Danke, bis bald!", "exemploTraducao": "Obrigado, até breve!" },
+        { "palavra": "Sprechen Sie Englisch?", "traducao": "você fala inglês? (formal)", "exemplo": "Entschuldigung, sprechen Sie Englisch?", "exemploTraducao": "Com licença, você fala inglês?" },
+        { "palavra": "Langsamer, bitte", "traducao": "mais devagar, por favor", "exemplo": "Langsamer, bitte, ich verstehe nicht.", "exemploTraducao": "Mais devagar, por favor, eu não entendo." },
+        { "palavra": "Kein Problem", "traducao": "sem problema", "exemplo": "— Entschuldigung! — Kein Problem.", "exemploTraducao": "— Desculpe! — Sem problema." },
+        { "palavra": "Alles klar", "traducao": "tudo bem / entendido (literalmente \"tudo claro\")", "exemplo": "Alles klar, bis morgen!", "exemploTraducao": "Tudo certo, até amanhã!" }
+      ],
+      "associacao": "\"Alles klar\" é usado o tempo todo no alemão falado para dizer \"entendi\" ou \"tá tudo bem\" — literalmente \"tudo claro\".",
+      "dica": "Comece toda frase com estranhos por \"Entschuldigung\" — assim como em francês, pular a saudação ou o pedido de licença antes de perguntar algo soa deselegante em alemão, mesmo para uma pergunta rápida na rua.",
+      "musicaAtual": { "titulo": "Atemlos durch die Nacht", "artista": "Helene Fischer", "youtubeId": "haECT-SerHk" },
+      "quiz": [
+        { "tipo": "multipla", "pergunta": "\"Wie viel kostet das?\" pergunta:", "opcoes": ["Onde fica", "Quanto custa", "Que horas são"], "certa": 1 },
+        { "tipo": "multipla", "pergunta": "Qual é o jeito formal de perguntar \"você fala inglês?\"?", "opcoes": ["Sprechen Sie Englisch?", "Du Englisch sprechen?", "Englisch gut?"], "certa": 0 },
+        { "tipo": "multipla", "pergunta": "\"Kein Problem\" quer dizer:", "opcoes": ["Grande problema", "Sem problema", "Qual é o problema"], "certa": 1 },
+        { "tipo": "traduzir", "pergunta": "Traduza: eu não entendo", "resposta": "ich verstehe nicht" },
+        { "tipo": "traduzir", "pergunta": "Como se diz \"mais devagar, por favor\"?", "resposta": "langsamer, bitte" },
+        { "tipo": "multipla", "pergunta": "\"Alles klar\" costuma ser usado para dizer:", "opcoes": ["Eu não sei", "Entendi, tudo bem", "Com licença"], "certa": 1 }
       ]
     }
   ]
