@@ -9,51 +9,305 @@
       "titulo": "1. Sons e pronúncia",
       "tema": "O italiano é o mais próximo do português entre os sete — e ainda assim tem pegadinhas.",
       "vocabulario": [
-        { "palavra": "c / g (antes de e, i)", "traducao": "soam \"tch\" e \"dj\"", "exemplo": "ciao, gelato", "exemploTraducao": "oi/tchau, sorvete" },
-        { "palavra": "c / g (antes de a, o, u)", "traducao": "voltam a soar \"k\" e \"g\" duro", "exemplo": "casa, gatto", "exemploTraducao": "casa, gato" },
-        { "palavra": "gli", "traducao": "soa parecido com \"lh\"", "exemplo": "gli amici, famiglia", "exemploTraducao": "os amigos, família" },
-        { "palavra": "gn", "traducao": "soa como \"nh\"", "exemplo": "gnocchi, bagno", "exemploTraducao": "nhoque, banheiro" },
-        { "palavra": "z", "traducao": "soa \"ts\" ou \"dz\", nunca como \"z\" do português", "exemplo": "pizza, zero", "exemploTraducao": "pizza, zero" },
-        { "palavra": "doppia (consoante dobrada)", "traducao": "pronuncia-se mais LONGA — é uma palavra diferente da versão com uma letra só", "exemplo": "papa / pappa; sono / sonno", "exemploTraducao": "papa (do Vaticano) / papinha; sou / sono" },
-        { "palavra": "h", "traducao": "nunca se pronuncia — só existe para diferenciar palavras na escrita", "exemplo": "ho, hai, ha, hanno", "exemploTraducao": "(eu) tenho, (você) tem, (ele) tem, (eles) têm" },
-        { "palavra": "sc (antes de e, i)", "traducao": "soa \"x\", como em \"xarope\"", "exemplo": "pesce, scienza", "exemploTraducao": "peixe, ciência" },
-        { "palavra": "sc (antes de a, o, u, h)", "traducao": "soa \"sk\"", "exemplo": "scuola, schema", "exemploTraducao": "escola, esquema" },
-        { "palavra": "qu", "traducao": "sempre \"ku\", nunca vira \"k\" mudo como o \"que\" do português", "exemplo": "quando, quattro, questo", "exemploTraducao": "quando, quatro, este" },
-        { "palavra": "r", "traducao": "vibrante simples, batida única da língua — mais curto que o \"rr\" do português", "exemplo": "Roma, caro, amore", "exemploTraducao": "Roma, caro, amor" },
-        { "palavra": "vogais", "traducao": "sete sons puros — o italiano não \"engole\" vogal átona como o português", "exemplo": "e (aberto/fechado), o (aberto/fechado)", "exemploTraducao": "cada vogal mantém o som claro, mesmo sem acento" },
-        { "palavra": "acento tônico", "traducao": "cai geralmente na penúltima sílaba, mas há exceções marcadas com acento", "exemplo": "città, perché, però", "exemploTraducao": "cidade, porque/por quê, porém" }
+        {
+          "palavra": "c / g (antes de e, i)",
+          "traducao": "soam \"tch\" e \"dj\"",
+          "exemplo": "ciao, gelato",
+          "exemploTraducao": "oi/tchau, sorvete"
+        },
+        {
+          "palavra": "c / g (antes de a, o, u)",
+          "traducao": "voltam a soar \"k\" e \"g\" duro",
+          "exemplo": "casa, gatto",
+          "exemploTraducao": "casa, gato"
+        },
+        {
+          "palavra": "gli",
+          "traducao": "soa parecido com \"lh\"",
+          "exemplo": "gli amici, famiglia",
+          "exemploTraducao": "os amigos, família"
+        },
+        {
+          "palavra": "gn",
+          "traducao": "soa como \"nh\"",
+          "exemplo": "gnocchi, bagno",
+          "exemploTraducao": "nhoque, banheiro"
+        },
+        {
+          "palavra": "z",
+          "traducao": "soa \"ts\" ou \"dz\", nunca como \"z\" do português",
+          "exemplo": "pizza, zero",
+          "exemploTraducao": "pizza, zero"
+        },
+        {
+          "palavra": "doppia (consoante dobrada)",
+          "traducao": "pronuncia-se mais LONGA — é uma palavra diferente da versão com uma letra só",
+          "exemplo": "papa / pappa; sono / sonno",
+          "exemploTraducao": "papa (do Vaticano) / papinha; sou / sono"
+        },
+        {
+          "palavra": "h",
+          "traducao": "nunca se pronuncia — só existe para diferenciar palavras na escrita",
+          "exemplo": "ho, hai, ha, hanno",
+          "exemploTraducao": "(eu) tenho, (você) tem, (ele) tem, (eles) têm"
+        },
+        {
+          "palavra": "sc (antes de e, i)",
+          "traducao": "soa \"x\", como em \"xarope\"",
+          "exemplo": "pesce, scienza",
+          "exemploTraducao": "peixe, ciência"
+        },
+        {
+          "palavra": "sc (antes de a, o, u, h)",
+          "traducao": "soa \"sk\"",
+          "exemplo": "scuola, schema",
+          "exemploTraducao": "escola, esquema"
+        },
+        {
+          "palavra": "qu",
+          "traducao": "sempre \"ku\", nunca vira \"k\" mudo como o \"que\" do português",
+          "exemplo": "quando, quattro, questo",
+          "exemploTraducao": "quando, quatro, este"
+        },
+        {
+          "palavra": "r",
+          "traducao": "vibrante simples, batida única da língua — mais curto que o \"rr\" do português",
+          "exemplo": "Roma, caro, amore",
+          "exemploTraducao": "Roma, caro, amor"
+        },
+        {
+          "palavra": "vogais",
+          "traducao": "sete sons puros — o italiano não \"engole\" vogal átona como o português",
+          "exemplo": "e (aberto/fechado), o (aberto/fechado)",
+          "exemploTraducao": "cada vogal mantém o som claro, mesmo sem acento"
+        },
+        {
+          "palavra": "acento tônico",
+          "traducao": "cai geralmente na penúltima sílaba, mas há exceções marcadas com acento",
+          "exemplo": "città, perché, però",
+          "exemploTraducao": "cidade, porque/por quê, porém"
+        }
       ],
       "associacao": "\"Ciao\" muda de som conforme a vogal: CIao (tch) mas CAsa (k) — a regra é sempre a mesma: C e G antes de E/I ficam \"moles\" (tch, dj); antes de A/O/U ficam \"duros\" (k, g).",
       "dica": "As consoantes DOBRADAS mudam o significado, não é só estilo: \"sono\" (eu sou) e \"sonno\" (sono, de dormir) são palavras diferentes — a diferença está em segurar o som da consoante um pouco mais.",
       "quiz": [
-        { "tipo": "multipla", "pergunta": "\"Ciao\" tem o \"c\" com som de:", "opcoes": ["k", "tch", "s"], "certa": 1 },
-        { "tipo": "multipla", "pergunta": "\"Sono\" e \"sonno\" são:", "opcoes": ["A mesma palavra escrita diferente", "Palavras diferentes — a consoante dobrada muda o sentido", "Erro de digitação"], "certa": 1 },
-        { "tipo": "multipla", "pergunta": "\"Pesce\" (peixe) tem o \"sc\" com som de:", "opcoes": ["sk", "x, como em xarope", "s comum"], "certa": 1 },
-        { "tipo": "multipla", "pergunta": "\"Scuola\" (escola) tem o \"sc\" com som de:", "opcoes": ["sk", "x", "ch"], "certa": 0 },
-        { "tipo": "multipla", "pergunta": "O \"h\" em italiano (como em \"ho\", eu tenho):", "opcoes": ["Soa como \"rr\"", "Nunca se pronuncia", "Soa como em inglês"], "certa": 1 },
-        { "tipo": "traduzir", "pergunta": "Como se escreve \"quatro\" em italiano (lembre: \"qu\" sempre soa \"ku\")?", "resposta": "quattro" },
-        { "tipo": "multipla", "pergunta": "O acento tônico do italiano, na maioria das palavras, cai:", "opcoes": ["Na última sílaba", "Na penúltima sílaba", "Sempre na primeira sílaba"], "certa": 1 }
-      ]
+        {
+          "tipo": "multipla",
+          "pergunta": "\"Ciao\" tem o \"c\" com som de:",
+          "opcoes": [
+            "k",
+            "tch",
+            "s"
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "\"Sono\" e \"sonno\" são:",
+          "opcoes": [
+            "A mesma palavra escrita diferente",
+            "Palavras diferentes — a consoante dobrada muda o sentido",
+            "Erro de digitação"
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "\"Pesce\" (peixe) tem o \"sc\" com som de:",
+          "opcoes": [
+            "sk",
+            "x, como em xarope",
+            "s comum"
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "\"Scuola\" (escola) tem o \"sc\" com som de:",
+          "opcoes": [
+            "sk",
+            "x",
+            "ch"
+          ],
+          "certa": 0
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "O \"h\" em italiano (como em \"ho\", eu tenho):",
+          "opcoes": [
+            "Soa como \"rr\"",
+            "Nunca se pronuncia",
+            "Soa como em inglês"
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "Como se escreve \"quatro\" em italiano (lembre: \"qu\" sempre soa \"ku\")?",
+          "resposta": "quattro"
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "O acento tônico do italiano, na maioria das palavras, cai:",
+          "opcoes": [
+            "Na última sílaba",
+            "Na penúltima sílaba",
+            "Sempre na primeira sílaba"
+          ],
+          "certa": 1
+        }
+      ],
+      "gramatica": {
+        "titulo": "C e G: moles e duros",
+        "explicacao": "C e G mudam de som dependendo da vogal seguinte. Antes de E/I ficam \"moles\" (CI = tchi, GI = dji). Antes de A/O/U ficam \"duros\" (CA = ka, GA = ga). Para forçar o som duro antes de E/I, adiciona-se H: CHI = ki, GHI = gui.",
+        "exemplos": [
+          {
+            "frase": "cielo, ciao → som de \"tch\"",
+            "traducao": "céu, oi/tchau"
+          },
+          {
+            "frase": "che, chi → som de \"k\" (o H endurece)",
+            "traducao": "que, quem"
+          },
+          {
+            "frase": "gelato → som de \"dj\"; ghiaccio → som de \"gui\"",
+            "traducao": "sorvete; gelo"
+          }
+        ]
+      },
+      "dialogo": {
+        "situacao": "No aeroporto, um turista pergunta sobre pronúncia",
+        "falas": [
+          {
+            "quem": "A",
+            "fala": "Scusi, come si pronuncia \"gnocchi\"?",
+            "traducao": "Com licença, como se pronuncia \"gnocchi\"?"
+          },
+          {
+            "quem": "B",
+            "fala": "Si dice \"nioki\", con il suono \"gn\" come \"nh\" in portoghese.",
+            "traducao": "Se diz \"nioki\", com o som \"gn\" como \"nh\" em português."
+          },
+          {
+            "quem": "A",
+            "fala": "E \"bruschetta\"?",
+            "traducao": "E \"bruschetta\"?"
+          },
+          {
+            "quem": "B",
+            "fala": "\"Brusketta\", con il suono \"sch\" duro. L'errore più comune è dire \"brushetta\"!",
+            "traducao": "\"Brusketta\", com o som \"sch\" duro. O erro mais comum é dizer \"brushetta\"!"
+          }
+        ]
+      },
+      "expressoes": [
+        {
+          "expressao": "Come si pronuncia...?",
+          "significado": "Como se pronuncia...?",
+          "uso": "Pergunta essencial para quem está aprendendo"
+        },
+        {
+          "expressao": "Non ho capito",
+          "significado": "Não entendi",
+          "uso": "Quando alguém fala rápido demais"
+        },
+        {
+          "expressao": "Può parlare più lentamente?",
+          "significado": "Pode falar mais devagar?",
+          "uso": "Forma educada de pedir para desacelerar"
+        }
+      ],
+      "cultura": "O italiano é a língua da música: toda a terminologia musical do mundo vem do italiano — piano, forte, allegro, adagio, soprano, tempo, staccato. Até a palavra 'ópera' é italiana. Quando você lê 'forte' numa partitura, está lendo italiano."
     },
     {
       "chave": "u2-saudacoes",
       "titulo": "2. Saudações e apresentações",
       "tema": "O básico para começar.",
       "vocabulario": [
-        { "palavra": "Ciao", "traducao": "oi / tchau (informal, serve pros dois)", "exemplo": "Ciao, come stai?", "exemploTraducao": "Oi, como você está?" },
-        { "palavra": "Buongiorno / Buonasera", "traducao": "bom dia / boa tarde-noite (ao chegar)", "exemplo": "Buongiorno, signora.", "exemploTraducao": "Bom dia, senhora." },
-        { "palavra": "Buonanotte", "traducao": "boa noite (só para se despedir, ao dormir)", "exemplo": "Buonanotte, sogni d'oro!", "exemploTraducao": "Boa noite, sonhos dourados!" },
-        { "palavra": "Come stai? / Come sta?", "traducao": "como vai? (informal / formal)", "exemplo": "Bene, grazie. E tu?", "exemploTraducao": "Bem, obrigado. E você?" },
-        { "palavra": "Mi chiamo...", "traducao": "eu me chamo...", "exemplo": "Mi chiamo Marco.", "exemploTraducao": "Eu me chamo Marco." },
-        { "palavra": "Come ti chiami? / Come si chiama?", "traducao": "qual é seu nome? (informal / formal)", "exemplo": "Come ti chiami?", "exemploTraducao": "Qual é seu nome?" },
-        { "palavra": "Piacere", "traducao": "prazer (em conhecer)", "exemplo": "Piacere di conoscerti.", "exemploTraducao": "Prazer em te conhecer." },
-        { "palavra": "Di dove sei?", "traducao": "de onde você é?", "exemplo": "Sono del Brasile.", "exemploTraducao": "Eu sou do Brasil." },
-        { "palavra": "Per favore", "traducao": "por favor", "exemplo": "Un caffè, per favore.", "exemploTraducao": "Um café, por favor." },
-        { "palavra": "Scusa / Scusi", "traducao": "desculpa / com licença (informal / formal)", "exemplo": "Scusi, dov'è la stazione?", "exemploTraducao": "Com licença, onde fica a estação?" },
-        { "palavra": "Grazie / Prego", "traducao": "obrigado / de nada", "exemplo": "Grazie mille! — Prego!", "exemploTraducao": "Muito obrigado! — De nada!" },
-        { "palavra": "Signore / Signora / Signorina", "traducao": "senhor / senhora / senhorita", "exemplo": "Buongiorno, signor Rossi.", "exemploTraducao": "Bom dia, senhor Rossi." },
-        { "palavra": "Arrivederci", "traducao": "até logo", "exemplo": "Arrivederci, a presto!", "exemploTraducao": "Até logo, até breve!" },
-        { "palavra": "A presto / A domani", "traducao": "até breve / até amanhã", "exemplo": "Ci vediamo domani. A domani!", "exemploTraducao": "A gente se vê amanhã. Até amanhã!" }
+        {
+          "palavra": "Ciao",
+          "traducao": "oi / tchau (informal, serve pros dois)",
+          "exemplo": "Ciao, come stai?",
+          "exemploTraducao": "Oi, como você está?"
+        },
+        {
+          "palavra": "Buongiorno / Buonasera",
+          "traducao": "bom dia / boa tarde-noite (ao chegar)",
+          "exemplo": "Buongiorno, signora.",
+          "exemploTraducao": "Bom dia, senhora."
+        },
+        {
+          "palavra": "Buonanotte",
+          "traducao": "boa noite (só para se despedir, ao dormir)",
+          "exemplo": "Buonanotte, sogni d'oro!",
+          "exemploTraducao": "Boa noite, sonhos dourados!"
+        },
+        {
+          "palavra": "Come stai? / Come sta?",
+          "traducao": "como vai? (informal / formal)",
+          "exemplo": "Bene, grazie. E tu?",
+          "exemploTraducao": "Bem, obrigado. E você?"
+        },
+        {
+          "palavra": "Mi chiamo...",
+          "traducao": "eu me chamo...",
+          "exemplo": "Mi chiamo Marco.",
+          "exemploTraducao": "Eu me chamo Marco."
+        },
+        {
+          "palavra": "Come ti chiami? / Come si chiama?",
+          "traducao": "qual é seu nome? (informal / formal)",
+          "exemplo": "Come ti chiami?",
+          "exemploTraducao": "Qual é seu nome?"
+        },
+        {
+          "palavra": "Piacere",
+          "traducao": "prazer (em conhecer)",
+          "exemplo": "Piacere di conoscerti.",
+          "exemploTraducao": "Prazer em te conhecer."
+        },
+        {
+          "palavra": "Di dove sei?",
+          "traducao": "de onde você é?",
+          "exemplo": "Sono del Brasile.",
+          "exemploTraducao": "Eu sou do Brasil."
+        },
+        {
+          "palavra": "Per favore",
+          "traducao": "por favor",
+          "exemplo": "Un caffè, per favore.",
+          "exemploTraducao": "Um café, por favor."
+        },
+        {
+          "palavra": "Scusa / Scusi",
+          "traducao": "desculpa / com licença (informal / formal)",
+          "exemplo": "Scusi, dov'è la stazione?",
+          "exemploTraducao": "Com licença, onde fica a estação?"
+        },
+        {
+          "palavra": "Grazie / Prego",
+          "traducao": "obrigado / de nada",
+          "exemplo": "Grazie mille! — Prego!",
+          "exemploTraducao": "Muito obrigado! — De nada!"
+        },
+        {
+          "palavra": "Signore / Signora / Signorina",
+          "traducao": "senhor / senhora / senhorita",
+          "exemplo": "Buongiorno, signor Rossi.",
+          "exemploTraducao": "Bom dia, senhor Rossi."
+        },
+        {
+          "palavra": "Arrivederci",
+          "traducao": "até logo",
+          "exemplo": "Arrivederci, a presto!",
+          "exemploTraducao": "Até logo, até breve!"
+        },
+        {
+          "palavra": "A presto / A domani",
+          "traducao": "até breve / até amanhã",
+          "exemplo": "Ci vediamo domani. A domani!",
+          "exemploTraducao": "A gente se vê amanhã. Até amanhã!"
+        }
       ],
       "associacao": "\"Ciao\" é uma das poucas palavras do mundo que serve pra CHEGAR e pra SAIR ao mesmo tempo — só se usa entre gente próxima; com desconhecidos ou em contexto formal, usa-se \"buongiorno\"/\"buonasera\" para chegar e \"arrivederci\" para sair.",
       "dica": "\"Prego\" é uma daquelas palavras camaleão do italiano: serve pra \"de nada\", pra \"pois não\" (ao atender alguém), e pra \"por favor, sirva-se\" — o contexto define o sentido.",
@@ -62,15 +316,135 @@
         "autor": "canção tradicional italiana, folclore infantil (adaptação da francesa \"Frère Jacques\"; primeiro registro documentado em 1780, autoria anônima)",
         "letra": "Fra Martino, campanaro,\nDormi tu? Dormi tu?\nSuona le campane! Suona le campane!\nDin don dan, din don dan.\n\n(Canta-se em cânone: cada grupo entra uma linha depois do anterior, repetindo.)"
       },
-      "musicaAtual": { "titulo": "Zitti e buoni", "artista": "Måneskin", "youtubeId": "QN1odfjtMoo" },
       "quiz": [
-        { "tipo": "multipla", "pergunta": "\"Ciao\" pode ser usado para:", "opcoes": ["Só chegar", "Só sair", "Chegar E sair, entre gente próxima"], "certa": 2 },
-        { "tipo": "traduzir", "pergunta": "Como se diz \"eu me chamo\" em italiano?", "resposta": "mi chiamo" },
-        { "tipo": "multipla", "pergunta": "\"Buonanotte\" se usa para:", "opcoes": ["Chegar de manhã", "Se despedir à noite, antes de dormir", "Cumprimentar ao meio-dia"], "certa": 1 },
-        { "tipo": "multipla", "pergunta": "\"Di dove sei?\" pergunta:", "opcoes": ["Como você se chama", "De onde você é", "Quantos anos você tem"], "certa": 1 },
-        { "tipo": "multipla", "pergunta": "A forma FORMAL de \"desculpa/com licença\" é:", "opcoes": ["Scusa", "Scusi", "Prego"], "certa": 1 },
-        { "tipo": "traduzir", "pergunta": "Como se diz \"até amanhã\" em italiano?", "resposta": "a domani" },
-        { "tipo": "traduzir", "pergunta": "Como se responde educadamente a \"Grazie\"?", "resposta": "prego" }
+        {
+          "tipo": "multipla",
+          "pergunta": "\"Ciao\" pode ser usado para:",
+          "opcoes": [
+            "Só chegar",
+            "Só sair",
+            "Chegar E sair, entre gente próxima"
+          ],
+          "certa": 2
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "Como se diz \"eu me chamo\" em italiano?",
+          "resposta": "mi chiamo"
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "\"Buonanotte\" se usa para:",
+          "opcoes": [
+            "Chegar de manhã",
+            "Se despedir à noite, antes de dormir",
+            "Cumprimentar ao meio-dia"
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "\"Di dove sei?\" pergunta:",
+          "opcoes": [
+            "Como você se chama",
+            "De onde você é",
+            "Quantos anos você tem"
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "A forma FORMAL de \"desculpa/com licença\" é:",
+          "opcoes": [
+            "Scusa",
+            "Scusi",
+            "Prego"
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "Como se diz \"até amanhã\" em italiano?",
+          "resposta": "a domani"
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "Como se responde educadamente a \"Grazie\"?",
+          "resposta": "prego"
+        }
+      ],
+      "gramatica": {
+        "titulo": "Tu e Lei: o formal e o informal",
+        "explicacao": "\"Tu\" é informal (amigos, família) e \"Lei\" (com maiúscula) é formal (desconhecidos, superiores). O verbo muda: \"tu sei\" vs \"Lei è\", \"tu hai\" vs \"Lei ha\". Parecido com \"você / o senhor\" do português.",
+        "exemplos": [
+          {
+            "frase": "Come stai? (informal) / Come sta? (formal)",
+            "traducao": "Como vai?"
+          },
+          {
+            "frase": "Di dove sei? (informal) / Di dov'è? (formal)",
+            "traducao": "De onde você é?"
+          },
+          {
+            "frase": "Scusa (informal) / Scusi (formal)",
+            "traducao": "Desculpa / Com licença"
+          }
+        ]
+      },
+      "dialogo": {
+        "situacao": "Pedindo café num bar italiano",
+        "falas": [
+          {
+            "quem": "A",
+            "fala": "Buongiorno! Un caffè, per favore.",
+            "traducao": "Bom dia! Um café, por favor."
+          },
+          {
+            "quem": "B",
+            "fala": "Subito! Americano o espresso?",
+            "traducao": "Já sai! Americano ou espresso?"
+          },
+          {
+            "quem": "A",
+            "fala": "Espresso, grazie. Quanto costa?",
+            "traducao": "Espresso, obrigado. Quanto custa?"
+          },
+          {
+            "quem": "B",
+            "fala": "Un euro e venti. Ecco!",
+            "traducao": "Um euro e vinte. Aqui está!"
+          },
+          {
+            "quem": "A",
+            "fala": "Grazie mille, buona giornata!",
+            "traducao": "Muito obrigado, bom dia!"
+          }
+        ]
+      },
+      "expressoes": [
+        {
+          "expressao": "In bocca al lupo!",
+          "significado": "Boa sorte! (literalmente: na boca do lobo)",
+          "uso": "Responde-se com 'Crepi!' (morra!)"
+        },
+        {
+          "expressao": "Che bello!",
+          "significado": "Que lindo! Que bonito!",
+          "uso": "Expressão comum de admiração"
+        },
+        {
+          "expressao": "Mamma mia!",
+          "significado": "Nossa! Caramba!",
+          "uso": "Expressão de surpresa, realmente usada na Itália"
+        }
+      ],
+      "cultura": "O café em pé no balcão (al banco) custa entre 1 e 1,50 euro; sentado à mesa (al tavolo) pode custar o dobro. Os italianos não pedem cappuccino depois das 11 da manhã — é considerado bebida de café da manhã.",
+      "musicas": [
+        {
+          "titulo": "Zitti e buoni",
+          "artista": "Måneskin",
+          "youtubeId": "QN1odfjtMoo"
+        }
       ]
     },
     {
@@ -78,163 +452,1063 @@
       "titulo": "3. Números e idade",
       "tema": "Contar e perguntar idade — a base para preço, hora e data.",
       "vocabulario": [
-        { "palavra": "uno, due, tre", "traducao": "um, dois, três", "exemplo": "uno, due, tre, quattro, cinque", "exemploTraducao": "um, dois, três, quatro, cinco" },
-        { "palavra": "sei, sette, otto, nove, dieci", "traducao": "seis, sete, oito, nove, dez", "exemplo": "dieci euro", "exemploTraducao": "dez euros" },
-        { "palavra": "undici, dodici, tredici", "traducao": "onze, doze, treze", "exemplo": "tredici anni", "exemploTraducao": "treze anos" },
-        { "palavra": "venti", "traducao": "vinte", "exemplo": "venti minuti", "exemploTraducao": "vinte minutos" },
-        { "palavra": "ventuno, ventidue, ventotto", "traducao": "vinte e um, vinte e dois, vinte e oito — a vogal final de \"venti\" cai antes de \"uno\" e \"otto\"", "exemplo": "Ho ventotto anni.", "exemploTraducao": "Eu tenho vinte e oito anos." },
-        { "palavra": "trenta, quaranta, cinquanta", "traducao": "trinta, quarenta, cinquenta", "exemplo": "trenta giorni", "exemploTraducao": "trinta dias" },
-        { "palavra": "sessanta, settanta, ottanta, novanta", "traducao": "sessenta, setenta, oitenta, noventa", "exemplo": "novanta euro", "exemploTraducao": "noventa euros" },
-        { "palavra": "cento, mille", "traducao": "cem, mil", "exemplo": "cento per cento", "exemploTraducao": "cem por cento" },
-        { "palavra": "duemila", "traducao": "dois mil — no plural, \"mille\" vira \"-mila\"", "exemplo": "duemila persone", "exemploTraducao": "duas mil pessoas" },
-        { "palavra": "ventitré, trentatré", "traducao": "vinte e três, trinta e três — o \"tre\" final ganha acento quando é o último número", "exemplo": "Ho trentatré anni.", "exemploTraducao": "Eu tenho trinta e três anos." },
-        { "palavra": "Quanti anni hai? / Quanti anni ha?", "traducao": "quantos anos você tem? (informal / formal)", "exemplo": "Ho venticinque anni.", "exemploTraducao": "Eu tenho vinte e cinco anos." },
-        { "palavra": "primo, secondo, terzo", "traducao": "primeiro, segundo, terceiro (números ordinais)", "exemplo": "Il primo giorno.", "exemploTraducao": "O primeiro dia." }
+        {
+          "palavra": "uno, due, tre",
+          "traducao": "um, dois, três",
+          "exemplo": "uno, due, tre, quattro, cinque",
+          "exemploTraducao": "um, dois, três, quatro, cinco"
+        },
+        {
+          "palavra": "sei, sette, otto, nove, dieci",
+          "traducao": "seis, sete, oito, nove, dez",
+          "exemplo": "dieci euro",
+          "exemploTraducao": "dez euros"
+        },
+        {
+          "palavra": "undici, dodici, tredici",
+          "traducao": "onze, doze, treze",
+          "exemplo": "tredici anni",
+          "exemploTraducao": "treze anos"
+        },
+        {
+          "palavra": "venti",
+          "traducao": "vinte",
+          "exemplo": "venti minuti",
+          "exemploTraducao": "vinte minutos"
+        },
+        {
+          "palavra": "ventuno, ventidue, ventotto",
+          "traducao": "vinte e um, vinte e dois, vinte e oito — a vogal final de \"venti\" cai antes de \"uno\" e \"otto\"",
+          "exemplo": "Ho ventotto anni.",
+          "exemploTraducao": "Eu tenho vinte e oito anos."
+        },
+        {
+          "palavra": "trenta, quaranta, cinquanta",
+          "traducao": "trinta, quarenta, cinquenta",
+          "exemplo": "trenta giorni",
+          "exemploTraducao": "trinta dias"
+        },
+        {
+          "palavra": "sessanta, settanta, ottanta, novanta",
+          "traducao": "sessenta, setenta, oitenta, noventa",
+          "exemplo": "novanta euro",
+          "exemploTraducao": "noventa euros"
+        },
+        {
+          "palavra": "cento, mille",
+          "traducao": "cem, mil",
+          "exemplo": "cento per cento",
+          "exemploTraducao": "cem por cento"
+        },
+        {
+          "palavra": "duemila",
+          "traducao": "dois mil — no plural, \"mille\" vira \"-mila\"",
+          "exemplo": "duemila persone",
+          "exemploTraducao": "duas mil pessoas"
+        },
+        {
+          "palavra": "ventitré, trentatré",
+          "traducao": "vinte e três, trinta e três — o \"tre\" final ganha acento quando é o último número",
+          "exemplo": "Ho trentatré anni.",
+          "exemploTraducao": "Eu tenho trinta e três anos."
+        },
+        {
+          "palavra": "Quanti anni hai? / Quanti anni ha?",
+          "traducao": "quantos anos você tem? (informal / formal)",
+          "exemplo": "Ho venticinque anni.",
+          "exemploTraducao": "Eu tenho vinte e cinco anos."
+        },
+        {
+          "palavra": "primo, secondo, terzo",
+          "traducao": "primeiro, segundo, terceiro (números ordinais)",
+          "exemplo": "Il primo giorno.",
+          "exemploTraducao": "O primeiro dia."
+        }
       ],
       "associacao": "Diferente do francês (que soma \"sessenta+dez\" pra dizer setenta), o italiano tem uma palavra própria pra cada dezena — mas repare na ELISÃO: \"venti\" perde o \"i\" antes de \"uno\" e \"otto\" (ventuno, ventotto), e o mesmo vale para trenta, quaranta etc.",
       "dica": "Para idade, o italiano usa o verbo AVERE (ter), igual o português: \"ho venticinque anni\" é \"tenho vinte e cinco anos\" — construção idêntica, ao contrário do inglês, que usa \"to be\".",
       "quiz": [
-        { "tipo": "multipla", "pergunta": "Como se diz 28 em italiano?", "opcoes": ["ventiotto", "ventotto", "vintiotto"], "certa": 1 },
-        { "tipo": "multipla", "pergunta": "\"Quanti anni hai?\" pergunta:", "opcoes": ["Onde você mora", "Quantos anos você tem", "Como você se chama"], "certa": 1 },
-        { "tipo": "multipla", "pergunta": "Para dizer a idade, o italiano usa o verbo:", "opcoes": ["essere (ser)", "avere (ter)", "stare (estar)"], "certa": 1 },
-        { "tipo": "traduzir", "pergunta": "Escreva em italiano: trinta e três (repare no acento)", "resposta": "trentatré" },
-        { "tipo": "traduzir", "pergunta": "Escreva em italiano: dez", "resposta": "dieci" },
-        { "tipo": "multipla", "pergunta": "\"Duemila persone\" quer dizer:", "opcoes": ["Duas mil pessoas", "Dois mil euros", "Vinte pessoas"], "certa": 0 }
-      ]
+        {
+          "tipo": "multipla",
+          "pergunta": "Como se diz 28 em italiano?",
+          "opcoes": [
+            "ventiotto",
+            "ventotto",
+            "vintiotto"
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "\"Quanti anni hai?\" pergunta:",
+          "opcoes": [
+            "Onde você mora",
+            "Quantos anos você tem",
+            "Como você se chama"
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "Para dizer a idade, o italiano usa o verbo:",
+          "opcoes": [
+            "essere (ser)",
+            "avere (ter)",
+            "stare (estar)"
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "Escreva em italiano: trinta e três (repare no acento)",
+          "resposta": "trentatré"
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "Escreva em italiano: dez",
+          "resposta": "dieci"
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "\"Duemila persone\" quer dizer:",
+          "opcoes": [
+            "Duas mil pessoas",
+            "Dois mil euros",
+            "Vinte pessoas"
+          ],
+          "certa": 0
+        }
+      ],
+      "gramatica": {
+        "titulo": "Elisão nos números compostos",
+        "explicacao": "Quando \"venti\", \"trenta\" etc. se juntam a \"uno\" ou \"otto\", a vogal final da dezena cai: ventuno (não \"ventiuno\"), ventotto (não \"ventiotto\"). Quando termina em \"tre\", ganha acento: ventitré, trentatré.",
+        "exemplos": [
+          {
+            "frase": "ventuno (21) — o 'i' de venti cai antes de 'uno'",
+            "traducao": "vinte e um"
+          },
+          {
+            "frase": "ventotto (28) — o 'i' cai antes de 'otto'",
+            "traducao": "vinte e oito"
+          },
+          {
+            "frase": "trentatré (33) — acento no 'tre' final",
+            "traducao": "trinta e três"
+          }
+        ]
+      },
+      "dialogo": {
+        "situacao": "Comprando frutas no mercado",
+        "falas": [
+          {
+            "quem": "A",
+            "fala": "Buongiorno! Quanto costano le mele?",
+            "traducao": "Bom dia! Quanto custam as maçãs?"
+          },
+          {
+            "quem": "B",
+            "fala": "Due euro al chilo.",
+            "traducao": "Dois euros o quilo."
+          },
+          {
+            "quem": "A",
+            "fala": "Vorrei un chilo, per favore. E le arance?",
+            "traducao": "Quero um quilo, por favor. E as laranjas?"
+          },
+          {
+            "quem": "B",
+            "fala": "Un euro e cinquanta. Quant'è in tutto? Tre euro e settantacinque.",
+            "traducao": "Um euro e cinquenta. Quanto dá no total? Três euros e setenta e cinco."
+          }
+        ]
+      },
+      "expressoes": [
+        {
+          "expressao": "Quant'è?",
+          "significado": "Quanto dá? (total)",
+          "uso": "Para perguntar o total de uma compra"
+        },
+        {
+          "expressao": "Mezzo chilo",
+          "significado": "Meio quilo",
+          "uso": "Muito usado em feiras e mercados"
+        },
+        {
+          "expressao": "Il resto",
+          "significado": "O troco",
+          "uso": "Para quando pagar em dinheiro"
+        }
+      ],
+      "cultura": "Os italianos ainda usam bastante dinheiro em espécie, especialmente em mercados e bares de bairro. A gorjeta (mancia) não é obrigatória na Itália, mas arredondar a conta para cima é um gesto apreciado."
     },
     {
       "chave": "u4-familia",
       "titulo": "4. Família",
       "tema": "Quem é quem em casa.",
       "vocabulario": [
-        { "palavra": "la famiglia", "traducao": "a família", "exemplo": "La mia famiglia è grande.", "exemploTraducao": "Minha família é grande." },
-        { "palavra": "il padre / la madre", "traducao": "o pai / a mãe", "exemplo": "Mio padre lavora molto.", "exemploTraducao": "Meu pai trabalha muito." },
-        { "palavra": "il fratello / la sorella", "traducao": "o irmão / a irmã", "exemplo": "Ho una sorella.", "exemploTraducao": "Eu tenho uma irmã." },
-        { "palavra": "il figlio / la figlia", "traducao": "o filho / a filha", "exemplo": "Sua figlia ha dieci anni.", "exemploTraducao": "A filha dele(a) tem dez anos." },
-        { "palavra": "il nonno / la nonna", "traducao": "o avô / a avó", "exemplo": "I miei nonni abitano a Roma.", "exemploTraducao": "Meus avós moram em Roma." },
-        { "palavra": "il marito / la moglie", "traducao": "o marido / a esposa", "exemplo": "Lui è mio marito.", "exemploTraducao": "Ele é meu marido." },
-        { "palavra": "lo zio / la zia", "traducao": "o tio / a tia", "exemplo": "Mia zia vive in Sicilia.", "exemploTraducao": "Minha tia mora na Sicília." },
-        { "palavra": "il cugino / la cugina", "traducao": "o primo / a prima", "exemplo": "Il mio cugino è simpatico.", "exemploTraducao": "Meu primo é simpático." },
-        { "palavra": "i genitori", "traducao": "os pais (pai e mãe)", "exemplo": "I miei genitori sono in vacanza.", "exemploTraducao": "Meus pais estão de férias." },
-        { "palavra": "i parenti", "traducao": "os parentes — falso cognato: NÃO é \"os pais\"", "exemplo": "Ho molti parenti in Italia.", "exemploTraducao": "Eu tenho muitos parentes na Itália." },
-        { "palavra": "il nipote / la nipote", "traducao": "neto(a) OU sobrinho(a) — a mesma palavra serve pros dois, o contexto decide", "exemplo": "Mio nipote ha tre anni.", "exemploTraducao": "Meu neto/sobrinho tem três anos." },
-        { "palavra": "mio, mia, miei, mie", "traducao": "meu, minha, meus, minhas — concorda em gênero e número com a coisa", "exemplo": "mio padre, mia madre, i miei fratelli", "exemploTraducao": "meu pai, minha mãe, meus irmãos" }
+        {
+          "palavra": "la famiglia",
+          "traducao": "a família",
+          "exemplo": "La mia famiglia è grande.",
+          "exemploTraducao": "Minha família é grande."
+        },
+        {
+          "palavra": "il padre / la madre",
+          "traducao": "o pai / a mãe",
+          "exemplo": "Mio padre lavora molto.",
+          "exemploTraducao": "Meu pai trabalha muito."
+        },
+        {
+          "palavra": "il fratello / la sorella",
+          "traducao": "o irmão / a irmã",
+          "exemplo": "Ho una sorella.",
+          "exemploTraducao": "Eu tenho uma irmã."
+        },
+        {
+          "palavra": "il figlio / la figlia",
+          "traducao": "o filho / a filha",
+          "exemplo": "Sua figlia ha dieci anni.",
+          "exemploTraducao": "A filha dele(a) tem dez anos."
+        },
+        {
+          "palavra": "il nonno / la nonna",
+          "traducao": "o avô / a avó",
+          "exemplo": "I miei nonni abitano a Roma.",
+          "exemploTraducao": "Meus avós moram em Roma."
+        },
+        {
+          "palavra": "il marito / la moglie",
+          "traducao": "o marido / a esposa",
+          "exemplo": "Lui è mio marito.",
+          "exemploTraducao": "Ele é meu marido."
+        },
+        {
+          "palavra": "lo zio / la zia",
+          "traducao": "o tio / a tia",
+          "exemplo": "Mia zia vive in Sicilia.",
+          "exemploTraducao": "Minha tia mora na Sicília."
+        },
+        {
+          "palavra": "il cugino / la cugina",
+          "traducao": "o primo / a prima",
+          "exemplo": "Il mio cugino è simpatico.",
+          "exemploTraducao": "Meu primo é simpático."
+        },
+        {
+          "palavra": "i genitori",
+          "traducao": "os pais (pai e mãe)",
+          "exemplo": "I miei genitori sono in vacanza.",
+          "exemploTraducao": "Meus pais estão de férias."
+        },
+        {
+          "palavra": "i parenti",
+          "traducao": "os parentes — falso cognato: NÃO é \"os pais\"",
+          "exemplo": "Ho molti parenti in Italia.",
+          "exemploTraducao": "Eu tenho muitos parentes na Itália."
+        },
+        {
+          "palavra": "il nipote / la nipote",
+          "traducao": "neto(a) OU sobrinho(a) — a mesma palavra serve pros dois, o contexto decide",
+          "exemplo": "Mio nipote ha tre anni.",
+          "exemploTraducao": "Meu neto/sobrinho tem três anos."
+        },
+        {
+          "palavra": "mio, mia, miei, mie",
+          "traducao": "meu, minha, meus, minhas — concorda em gênero e número com a coisa",
+          "exemplo": "mio padre, mia madre, i miei fratelli",
+          "exemploTraducao": "meu pai, minha mãe, meus irmãos"
+        }
       ],
       "associacao": "\"Parenti\" é um dos falsos cognatos mais traiçoeiros do italiano: parece \"pais\", mas quer dizer PARENTES em geral (\"genitori\" é que são pai e mãe). \"Nipote\" também engana, mas ao contrário: a MESMA palavra serve para neto e para sobrinho.",
       "dica": "Com parentes no singular e sem outro adjetivo, o artigo some antes do possessivo: \"mio padre\" (não \"il mio padre\"), mas no plural o artigo volta: \"i miei fratelli\".",
       "quiz": [
-        { "tipo": "multipla", "pergunta": "\"Parenti\" em italiano quer dizer:", "opcoes": ["Pais (pai e mãe)", "Parentes, em geral", "Padrinhos"], "certa": 1 },
-        { "tipo": "multipla", "pergunta": "Para dizer \"pai e mãe\" juntos, usa-se:", "opcoes": ["parenti", "genitori", "nipoti"], "certa": 1 },
-        { "tipo": "multipla", "pergunta": "\"Nipote\" pode significar:", "opcoes": ["Só neto", "Só sobrinho", "Neto OU sobrinho, depende do contexto"], "certa": 2 },
-        { "tipo": "traduzir", "pergunta": "Traduza: meus avós", "resposta": "i miei nonni" },
-        { "tipo": "traduzir", "pergunta": "Como se diz \"minha família\" em italiano?", "resposta": "la mia famiglia" },
-        { "tipo": "multipla", "pergunta": "Complete sem artigo: \"___ padre lavora molto\" (meu pai trabalha muito)", "opcoes": ["Il mio", "Mio", "La mia"], "certa": 1 }
-      ]
+        {
+          "tipo": "multipla",
+          "pergunta": "\"Parenti\" em italiano quer dizer:",
+          "opcoes": [
+            "Pais (pai e mãe)",
+            "Parentes, em geral",
+            "Padrinhos"
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "Para dizer \"pai e mãe\" juntos, usa-se:",
+          "opcoes": [
+            "parenti",
+            "genitori",
+            "nipoti"
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "\"Nipote\" pode significar:",
+          "opcoes": [
+            "Só neto",
+            "Só sobrinho",
+            "Neto OU sobrinho, depende do contexto"
+          ],
+          "certa": 2
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "Traduza: meus avós",
+          "resposta": "i miei nonni"
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "Como se diz \"minha família\" em italiano?",
+          "resposta": "la mia famiglia"
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "Complete sem artigo: \"___ padre lavora molto\" (meu pai trabalha muito)",
+          "opcoes": [
+            "Il mio",
+            "Mio",
+            "La mia"
+          ],
+          "certa": 1
+        }
+      ],
+      "gramatica": {
+        "titulo": "Possessivos com família: quando o artigo some",
+        "explicacao": "Com membros da família no SINGULAR, o artigo some: \"mio padre\" (não \"il mio padre\"). No PLURAL, o artigo volta: \"i miei fratelli\". Com \"loro\", o artigo SEMPRE aparece: \"il loro padre\".",
+        "exemplos": [
+          {
+            "frase": "mio padre (sem artigo)",
+            "traducao": "meu pai"
+          },
+          {
+            "frase": "i miei fratelli (com artigo, é plural)",
+            "traducao": "meus irmãos"
+          },
+          {
+            "frase": "il loro padre (com artigo, 'loro' exige)",
+            "traducao": "o pai deles"
+          }
+        ]
+      },
+      "dialogo": {
+        "situacao": "Apresentando a família a um novo amigo",
+        "falas": [
+          {
+            "quem": "A",
+            "fala": "Questa è la mia famiglia. Mio padre si chiama Giuseppe.",
+            "traducao": "Esta é minha família. Meu pai se chama Giuseppe."
+          },
+          {
+            "quem": "B",
+            "fala": "Piacere! E tua madre?",
+            "traducao": "Prazer! E sua mãe?"
+          },
+          {
+            "quem": "A",
+            "fala": "Mia madre si chiama Anna. Ho anche due fratelli.",
+            "traducao": "Minha mãe se chama Anna. Tenho também dois irmãos."
+          },
+          {
+            "quem": "B",
+            "fala": "Che bella famiglia!",
+            "traducao": "Que família bonita!"
+          }
+        ]
+      },
+      "expressoes": [
+        {
+          "expressao": "Tale padre, tale figlio",
+          "significado": "Tal pai, tal filho",
+          "uso": "Quando o filho se parece com o pai"
+        },
+        {
+          "expressao": "Casa dolce casa",
+          "significado": "Lar doce lar",
+          "uso": "Expressão universal adaptada ao italiano"
+        },
+        {
+          "expressao": "Il sangue non è acqua",
+          "significado": "Sangue não é água",
+          "uso": "Laços de família são fortes"
+        }
+      ],
+      "cultura": "O almoço de domingo em família (il pranzo della domenica) é quase sagrado. A nonna comanda a cozinha, e recusar uma segunda porção é quase uma ofensa. É uma tradição que resiste mesmo entre os mais jovens."
     },
     {
       "chave": "u5-comida",
       "titulo": "5. Comida e bebida",
       "tema": "Pedir, comprar e comentar sobre o que se come.",
       "vocabulario": [
-        { "palavra": "il pane", "traducao": "o pão", "exemplo": "Un panino con formaggio.", "exemploTraducao": "Um sanduíche com queijo." },
-        { "palavra": "il formaggio", "traducao": "o queijo", "exemplo": "Mi piace il formaggio.", "exemploTraducao": "Eu gosto de queijo." },
-        { "palavra": "l'acqua", "traducao": "a água", "exemplo": "Un bicchiere d'acqua, per favore.", "exemploTraducao": "Um copo de água, por favor." },
-        { "palavra": "il vino", "traducao": "o vinho", "exemplo": "Un bicchiere di vino rosso.", "exemploTraducao": "Um copo de vinho tinto." },
-        { "palavra": "il burro", "traducao": "a manteiga — falso cognato: NÃO é o animal \"burro\"!", "exemplo": "Pane e burro.", "exemploTraducao": "Pão com manteiga." },
-        { "palavra": "la cena", "traducao": "o jantar — falso cognato: NÃO é \"cena\" de filme!", "exemplo": "La cena è pronta.", "exemploTraducao": "O jantar está pronto." },
-        { "palavra": "la colazione", "traducao": "o café da manhã", "exemplo": "Faccio colazione alle otto.", "exemploTraducao": "Eu tomo café da manhã às oito." },
-        { "palavra": "il pranzo", "traducao": "o almoço", "exemplo": "Pranziamo insieme?", "exemploTraducao": "Almoçamos juntos?" },
-        { "palavra": "Ho fame / Ho sete", "traducao": "estou com fome / estou com sede", "exemplo": "Ho fame, mangiamo?", "exemploTraducao": "Estou com fome, vamos comer?" },
-        { "palavra": "Il conto, per favore", "traducao": "a conta, por favor", "exemplo": "— Il conto, per favore. — Subito!", "exemploTraducao": "— A conta, por favor. — Já vem!" },
-        { "palavra": "la frutta / la verdura", "traducao": "a fruta / a verdura", "exemplo": "Mangio molta frutta.", "exemploTraducao": "Eu como muita fruta." },
-        { "palavra": "buono / buonissimo", "traducao": "bom / ótimo, muito gostoso", "exemplo": "Questo gelato è buonissimo!", "exemploTraducao": "Esse sorvete está ótimo!" }
+        {
+          "palavra": "il pane",
+          "traducao": "o pão",
+          "exemplo": "Un panino con formaggio.",
+          "exemploTraducao": "Um sanduíche com queijo."
+        },
+        {
+          "palavra": "il formaggio",
+          "traducao": "o queijo",
+          "exemplo": "Mi piace il formaggio.",
+          "exemploTraducao": "Eu gosto de queijo."
+        },
+        {
+          "palavra": "l'acqua",
+          "traducao": "a água",
+          "exemplo": "Un bicchiere d'acqua, per favore.",
+          "exemploTraducao": "Um copo de água, por favor."
+        },
+        {
+          "palavra": "il vino",
+          "traducao": "o vinho",
+          "exemplo": "Un bicchiere di vino rosso.",
+          "exemploTraducao": "Um copo de vinho tinto."
+        },
+        {
+          "palavra": "il burro",
+          "traducao": "a manteiga — falso cognato: NÃO é o animal \"burro\"!",
+          "exemplo": "Pane e burro.",
+          "exemploTraducao": "Pão com manteiga."
+        },
+        {
+          "palavra": "la cena",
+          "traducao": "o jantar — falso cognato: NÃO é \"cena\" de filme!",
+          "exemplo": "La cena è pronta.",
+          "exemploTraducao": "O jantar está pronto."
+        },
+        {
+          "palavra": "la colazione",
+          "traducao": "o café da manhã",
+          "exemplo": "Faccio colazione alle otto.",
+          "exemploTraducao": "Eu tomo café da manhã às oito."
+        },
+        {
+          "palavra": "il pranzo",
+          "traducao": "o almoço",
+          "exemplo": "Pranziamo insieme?",
+          "exemploTraducao": "Almoçamos juntos?"
+        },
+        {
+          "palavra": "Ho fame / Ho sete",
+          "traducao": "estou com fome / estou com sede",
+          "exemplo": "Ho fame, mangiamo?",
+          "exemploTraducao": "Estou com fome, vamos comer?"
+        },
+        {
+          "palavra": "Il conto, per favore",
+          "traducao": "a conta, por favor",
+          "exemplo": "— Il conto, per favore. — Subito!",
+          "exemploTraducao": "— A conta, por favor. — Já vem!"
+        },
+        {
+          "palavra": "la frutta / la verdura",
+          "traducao": "a fruta / a verdura",
+          "exemplo": "Mangio molta frutta.",
+          "exemploTraducao": "Eu como muita fruta."
+        },
+        {
+          "palavra": "buono / buonissimo",
+          "traducao": "bom / ótimo, muito gostoso",
+          "exemplo": "Questo gelato è buonissimo!",
+          "exemploTraducao": "Esse sorvete está ótimo!"
+        }
       ],
       "associacao": "\"Burro\" e \"cena\" são dois dos falsos cognatos mais famosos do italiano: \"burro\" é MANTEIGA (não o animal), e \"cena\" é JANTAR (não uma cena de filme) — decore esses dois primeiro, porque a semelhança com o português engana direto.",
       "dica": "\"Ho fame\" e \"ho sete\" usam o verbo AVERE, exatamente como em português (\"eu tenho fome/sede\") — aqui o italiano e o português caminham juntos, sem pegadinha.",
       "quiz": [
-        { "tipo": "multipla", "pergunta": "\"Burro\" em italiano quer dizer:", "opcoes": ["O animal burro", "Manteiga", "Burrice"], "certa": 1 },
-        { "tipo": "multipla", "pergunta": "\"La cena\" quer dizer:", "opcoes": ["Uma cena de filme", "O jantar", "O almoço"], "certa": 1 },
-        { "tipo": "multipla", "pergunta": "\"Ho fame\" quer dizer:", "opcoes": ["Estou com sede", "Estou com fome", "Estou com sono"], "certa": 1 },
-        { "tipo": "traduzir", "pergunta": "Como se pede a conta num restaurante italiano?", "resposta": "il conto, per favore" },
-        { "tipo": "traduzir", "pergunta": "Traduza: café da manhã", "resposta": "la colazione" },
-        { "tipo": "multipla", "pergunta": "\"Buonissimo\" é o superlativo de:", "opcoes": ["cattivo (ruim)", "buono (bom)", "grande"], "certa": 1 }
-      ]
+        {
+          "tipo": "multipla",
+          "pergunta": "\"Burro\" em italiano quer dizer:",
+          "opcoes": [
+            "O animal burro",
+            "Manteiga",
+            "Burrice"
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "\"La cena\" quer dizer:",
+          "opcoes": [
+            "Uma cena de filme",
+            "O jantar",
+            "O almoço"
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "\"Ho fame\" quer dizer:",
+          "opcoes": [
+            "Estou com sede",
+            "Estou com fome",
+            "Estou com sono"
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "Como se pede a conta num restaurante italiano?",
+          "resposta": "il conto, per favore"
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "Traduza: café da manhã",
+          "resposta": "la colazione"
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "\"Buonissimo\" é o superlativo de:",
+          "opcoes": [
+            "cattivo (ruim)",
+            "buono (bom)",
+            "grande"
+          ],
+          "certa": 1
+        }
+      ],
+      "gramatica": {
+        "titulo": "Artigos partitivos: del, della, dei, delle",
+        "explicacao": "Para dizer 'um pouco de' ou 'alguns', combina-se 'di' com o artigo definido: di+il=del, di+la=della, di+i=dei, di+le=delle. É como o 'du/de la/des' do francês.",
+        "exemplos": [
+          {
+            "frase": "Vorrei del pane",
+            "traducao": "Gostaria de (um pouco de) pão"
+          },
+          {
+            "frase": "Ho comprato delle mele",
+            "traducao": "Comprei (algumas) maçãs"
+          },
+          {
+            "frase": "C'è della frutta?",
+            "traducao": "Tem (alguma) fruta?"
+          }
+        ]
+      },
+      "dialogo": {
+        "situacao": "Num restaurante, pedindo o jantar",
+        "falas": [
+          {
+            "quem": "A",
+            "fala": "Buonasera! Un tavolo per due, per favore.",
+            "traducao": "Boa noite! Uma mesa para dois, por favor."
+          },
+          {
+            "quem": "B",
+            "fala": "Certo, prego. Ecco il menù.",
+            "traducao": "Claro, por favor. Aqui está o cardápio."
+          },
+          {
+            "quem": "A",
+            "fala": "Cosa mi consiglia come primo?",
+            "traducao": "O que recomenda de primeiro prato?"
+          },
+          {
+            "quem": "B",
+            "fala": "Le tagliatelle al ragù sono ottime oggi.",
+            "traducao": "O tagliatelle ao ragú está ótimo hoje."
+          },
+          {
+            "quem": "A",
+            "fala": "Perfetto. E come secondo, il pollo arrosto.",
+            "traducao": "Perfeito. E de segundo, o frango assado."
+          },
+          {
+            "quem": "B",
+            "fala": "Da bere? — Una bottiglia d'acqua naturale, grazie.",
+            "traducao": "Para beber? — Uma garrafa de água sem gás, obrigado."
+          }
+        ]
+      },
+      "expressoes": [
+        {
+          "expressao": "Buon appetito!",
+          "significado": "Bom apetite!",
+          "uso": "Dito antes de começar a comer"
+        },
+        {
+          "expressao": "Alla salute!",
+          "significado": "À saúde!",
+          "uso": "Brinde com bebida"
+        },
+        {
+          "expressao": "Il conto, per favore",
+          "significado": "A conta, por favor",
+          "uso": "Para pedir a conta no restaurante"
+        }
+      ],
+      "cultura": "Uma refeição italiana completa tem estrutura fixa: antipasto (entrada), primo (massa ou risoto), secondo (carne ou peixe), contorno (legumes), dolce (sobremesa), caffè. No dia a dia nem todo mundo come tudo, mas num almoço de família a sequência aparece."
     },
     {
       "chave": "u6-tempo",
       "titulo": "6. Tempo, dias e datas",
       "tema": "Marcar hora, dia da semana e mês.",
       "vocabulario": [
-        { "palavra": "lunedì, martedì, mercoledì", "traducao": "segunda, terça, quarta", "exemplo": "Lunedì lavoro.", "exemploTraducao": "Segunda eu trabalho." },
-        { "palavra": "giovedì, venerdì", "traducao": "quinta, sexta", "exemplo": "Venerdì sera usciamo.", "exemploTraducao": "Sexta à noite a gente sai." },
-        { "palavra": "sabato, domenica", "traducao": "sábado, domingo", "exemplo": "Il weekend è sabato e domenica.", "exemploTraducao": "O fim de semana é sábado e domingo." },
-        { "palavra": "oggi / domani / ieri", "traducao": "hoje / amanhã / ontem", "exemplo": "Oggi piove.", "exemploTraducao": "Hoje está chovendo." },
-        { "palavra": "Che ore sono?", "traducao": "que horas são?", "exemplo": "Sono le tre.", "exemploTraducao": "São três horas." },
-        { "palavra": "È l'una", "traducao": "é uma hora — só \"l'una\" usa \"è\" no singular, o resto usa \"sono le\"", "exemplo": "È l'una del pomeriggio.", "exemploTraducao": "É uma da tarde." },
-        { "palavra": "la mattina / il pomeriggio / la sera / la notte", "traducao": "a manhã / a tarde / a noite (cedo) / a noite (tarde)", "exemplo": "Lavoro la mattina.", "exemploTraducao": "Eu trabalho de manhã." },
-        { "palavra": "gennaio, febbraio, marzo", "traducao": "janeiro, fevereiro, março", "exemplo": "Il mio compleanno è a marzo.", "exemploTraducao": "Meu aniversário é em março." },
-        { "palavra": "la settimana / il mese / l'anno", "traducao": "a semana / o mês / o ano", "exemplo": "Ogni settimana.", "exemploTraducao": "Toda semana." },
-        { "palavra": "adesso / dopo / presto", "traducao": "agora / depois / cedo, logo", "exemplo": "Arrivo presto.", "exemploTraducao": "Eu chego logo." },
-        { "palavra": "Quando?", "traducao": "quando?", "exemplo": "Quando parti?", "exemploTraducao": "Quando você parte/viaja?" },
-        { "palavra": "Che giorno è oggi?", "traducao": "que dia é hoje?", "exemplo": "Oggi è lunedì.", "exemploTraducao": "Hoje é segunda." }
+        {
+          "palavra": "lunedì, martedì, mercoledì",
+          "traducao": "segunda, terça, quarta",
+          "exemplo": "Lunedì lavoro.",
+          "exemploTraducao": "Segunda eu trabalho."
+        },
+        {
+          "palavra": "giovedì, venerdì",
+          "traducao": "quinta, sexta",
+          "exemplo": "Venerdì sera usciamo.",
+          "exemploTraducao": "Sexta à noite a gente sai."
+        },
+        {
+          "palavra": "sabato, domenica",
+          "traducao": "sábado, domingo",
+          "exemplo": "Il weekend è sabato e domenica.",
+          "exemploTraducao": "O fim de semana é sábado e domingo."
+        },
+        {
+          "palavra": "oggi / domani / ieri",
+          "traducao": "hoje / amanhã / ontem",
+          "exemplo": "Oggi piove.",
+          "exemploTraducao": "Hoje está chovendo."
+        },
+        {
+          "palavra": "Che ore sono?",
+          "traducao": "que horas são?",
+          "exemplo": "Sono le tre.",
+          "exemploTraducao": "São três horas."
+        },
+        {
+          "palavra": "È l'una",
+          "traducao": "é uma hora — só \"l'una\" usa \"è\" no singular, o resto usa \"sono le\"",
+          "exemplo": "È l'una del pomeriggio.",
+          "exemploTraducao": "É uma da tarde."
+        },
+        {
+          "palavra": "la mattina / il pomeriggio / la sera / la notte",
+          "traducao": "a manhã / a tarde / a noite (cedo) / a noite (tarde)",
+          "exemplo": "Lavoro la mattina.",
+          "exemploTraducao": "Eu trabalho de manhã."
+        },
+        {
+          "palavra": "gennaio, febbraio, marzo",
+          "traducao": "janeiro, fevereiro, março",
+          "exemplo": "Il mio compleanno è a marzo.",
+          "exemploTraducao": "Meu aniversário é em março."
+        },
+        {
+          "palavra": "la settimana / il mese / l'anno",
+          "traducao": "a semana / o mês / o ano",
+          "exemplo": "Ogni settimana.",
+          "exemploTraducao": "Toda semana."
+        },
+        {
+          "palavra": "adesso / dopo / presto",
+          "traducao": "agora / depois / cedo, logo",
+          "exemplo": "Arrivo presto.",
+          "exemploTraducao": "Eu chego logo."
+        },
+        {
+          "palavra": "Quando?",
+          "traducao": "quando?",
+          "exemplo": "Quando parti?",
+          "exemploTraducao": "Quando você parte/viaja?"
+        },
+        {
+          "palavra": "Che giorno è oggi?",
+          "traducao": "que dia é hoje?",
+          "exemplo": "Oggi è lunedì.",
+          "exemploTraducao": "Hoje é segunda."
+        }
       ],
       "associacao": "Os dias da semana em italiano terminam em \"-dì\" (do latim \"dies\", dia), igual ao francês: lune, marte, mercole, giove, vener + \"-dì\". Só \"sabato\" e \"domenica\" fogem do padrão.",
       "dica": "Para as horas, só \"l'una\" (uma hora) usa o verbo no singular (\"è l'una\"); todas as outras usam o plural: \"sono le due\", \"sono le tre\" — porque em italiano \"as horas\" são plural (le ore), exceto quando é só uma.",
       "quiz": [
-        { "tipo": "multipla", "pergunta": "Qual dia NÃO termina em \"-dì\"?", "opcoes": ["lunedì", "domenica", "giovedì"], "certa": 1 },
-        { "tipo": "multipla", "pergunta": "\"Ieri\" quer dizer:", "opcoes": ["amanhã", "ontem", "hoje"], "certa": 1 },
-        { "tipo": "multipla", "pergunta": "Para dizer \"uma hora\", usa-se:", "opcoes": ["Sono l'una", "È l'una", "Sono le una"], "certa": 1 },
-        { "tipo": "traduzir", "pergunta": "Traduza: que horas são?", "resposta": "che ore sono" },
-        { "tipo": "traduzir", "pergunta": "Como se diz \"hoje\" em italiano?", "resposta": "oggi" },
-        { "tipo": "multipla", "pergunta": "\"Sono le tre\" significa:", "opcoes": ["É uma hora", "São três horas", "São treze horas"], "certa": 1 }
-      ]
+        {
+          "tipo": "multipla",
+          "pergunta": "Qual dia NÃO termina em \"-dì\"?",
+          "opcoes": [
+            "lunedì",
+            "domenica",
+            "giovedì"
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "\"Ieri\" quer dizer:",
+          "opcoes": [
+            "amanhã",
+            "ontem",
+            "hoje"
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "Para dizer \"uma hora\", usa-se:",
+          "opcoes": [
+            "Sono l'una",
+            "È l'una",
+            "Sono le una"
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "Traduza: que horas são?",
+          "resposta": "che ore sono"
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "Como se diz \"hoje\" em italiano?",
+          "resposta": "oggi"
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "\"Sono le tre\" significa:",
+          "opcoes": [
+            "É uma hora",
+            "São três horas",
+            "São treze horas"
+          ],
+          "certa": 1
+        }
+      ],
+      "gramatica": {
+        "titulo": "As horas: 'è l'una' vs 'sono le...'",
+        "explicacao": "As horas usam 'essere' no plural: 'Sono le due', 'Sono le tre'. Mas 'l'una' (uma hora) é singular: 'È l'una'. 'E mezza' = e meia. 'Meno un quarto' = menos um quarto.",
+        "exemplos": [
+          {
+            "frase": "È l'una (singular)",
+            "traducao": "É uma hora"
+          },
+          {
+            "frase": "Sono le tre e mezza",
+            "traducao": "São três e meia"
+          },
+          {
+            "frase": "Sono le cinque meno un quarto",
+            "traducao": "São quinze para as cinco"
+          }
+        ]
+      },
+      "dialogo": {
+        "situacao": "Combinando um encontro por telefone",
+        "falas": [
+          {
+            "quem": "A",
+            "fala": "Quando ci vediamo domani?",
+            "traducao": "Quando a gente se vê amanhã?"
+          },
+          {
+            "quem": "B",
+            "fala": "Che ne dici alle tre del pomeriggio?",
+            "traducao": "O que acha às três da tarde?"
+          },
+          {
+            "quem": "A",
+            "fala": "Le tre è un po' presto. Alle cinque va bene?",
+            "traducao": "Três é um pouco cedo. Às cinco pode ser?"
+          },
+          {
+            "quem": "B",
+            "fala": "Sì, perfetto. Al bar vicino alla piazza!",
+            "traducao": "Sim, perfeito. No bar perto da praça!"
+          }
+        ]
+      },
+      "expressoes": [
+        {
+          "expressao": "A che ora?",
+          "significado": "A que horas?",
+          "uso": "Para perguntar o horário de algo"
+        },
+        {
+          "expressao": "In ritardo / In anticipo",
+          "significado": "Atrasado / Adiantado",
+          "uso": "Para descrever pontualidade"
+        },
+        {
+          "expressao": "Più o meno",
+          "significado": "Mais ou menos",
+          "uso": "Para dar uma estimativa aproximada"
+        }
+      ],
+      "cultura": "O 'quarto d'ora accademico' é real: em universidades e eventos sociais italianos, chegar 15 minutos atrasado é considerado normal. Mas nos negócios e compromissos formais, a pontualidade é a mesma de qualquer país europeu."
     },
     {
       "chave": "u7-verbos",
       "titulo": "7. Verbos essenciais: essere, avere, andare",
       "tema": "Os três verbos que carregam a maior parte das frases do dia a dia.",
       "vocabulario": [
-        { "palavra": "io sono, tu sei, lui/lei è", "traducao": "eu sou/estou, você é/está, ele/ela é/está (verbo ESSERE)", "exemplo": "Sono stanco.", "exemploTraducao": "Eu estou cansado." },
-        { "palavra": "noi siamo, voi siete, loro sono", "traducao": "nós somos/estamos, vocês são/estão, eles são/estão", "exemplo": "Siamo pronti.", "exemploTraducao": "Nós estamos prontos." },
-        { "palavra": "io ho, tu hai, lui/lei ha", "traducao": "eu tenho, você tem, ele/ela tem (verbo AVERE)", "exemplo": "Ho un gatto.", "exemploTraducao": "Eu tenho um gato." },
-        { "palavra": "noi abbiamo, voi avete, loro hanno", "traducao": "nós temos, vocês têm, eles têm", "exemplo": "Hanno fortuna.", "exemploTraducao": "Eles têm sorte." },
-        { "palavra": "io vado, tu vai, lui/lei va", "traducao": "eu vou, você vai, ele/ela vai (verbo ANDARE)", "exemplo": "Vado al mercato.", "exemploTraducao": "Eu vou ao mercado." },
-        { "palavra": "noi andiamo, voi andate, loro vanno", "traducao": "nós vamos, vocês vão, eles vão", "exemplo": "Andiamo!", "exemploTraducao": "Vamos!" },
-        { "palavra": "Ho fretta / Ho ragione / Ho torto", "traducao": "estou com pressa / estou certo / estou errado — usam AVERE, não ESSERE como seria de esperar", "exemplo": "Scusa, ho fretta!", "exemploTraducao": "Desculpa, estou com pressa!" },
-        { "palavra": "C'è / Ci sono", "traducao": "há, tem (um) / há, tem (vários) — vem do verbo ESSERE", "exemplo": "C'è un problema. Ci sono due strade.", "exemploTraducao": "Há um problema. Há dois caminhos." },
-        { "palavra": "Vado a... / Vado al...", "traducao": "\"a\" antes de cidade/lugar sem artigo, \"al/allo/alla\" (a+artigo) antes de lugar com artigo", "exemplo": "Vado a Roma. Vado al cinema.", "exemploTraducao": "Eu vou a Roma. Eu vou ao cinema." },
-        { "palavra": "vado a fare / vado a prendere", "traducao": "vou fazer / vou pegar (andare + a + infinitivo = futuro próximo)", "exemplo": "Vado a mangiare qualcosa.", "exemploTraducao": "Eu vou comer alguma coisa." },
-        { "palavra": "essere vs avere", "traducao": "cuidado: idade, fome, sede, pressa e razão usam AVERE em italiano — em português muitas vezes usamos SER/ESTAR", "exemplo": "Ho vent'anni. Ho fame.", "exemploTraducao": "Eu tenho vinte anos. Estou com fome." },
-        { "palavra": "Chi sei? / Chi è?", "traducao": "quem é você? / quem é? (do verbo essere)", "exemplo": "Chi sei tu?", "exemploTraducao": "Quem é você?" }
+        {
+          "palavra": "io sono, tu sei, lui/lei è",
+          "traducao": "eu sou/estou, você é/está, ele/ela é/está (verbo ESSERE)",
+          "exemplo": "Sono stanco.",
+          "exemploTraducao": "Eu estou cansado."
+        },
+        {
+          "palavra": "noi siamo, voi siete, loro sono",
+          "traducao": "nós somos/estamos, vocês são/estão, eles são/estão",
+          "exemplo": "Siamo pronti.",
+          "exemploTraducao": "Nós estamos prontos."
+        },
+        {
+          "palavra": "io ho, tu hai, lui/lei ha",
+          "traducao": "eu tenho, você tem, ele/ela tem (verbo AVERE)",
+          "exemplo": "Ho un gatto.",
+          "exemploTraducao": "Eu tenho um gato."
+        },
+        {
+          "palavra": "noi abbiamo, voi avete, loro hanno",
+          "traducao": "nós temos, vocês têm, eles têm",
+          "exemplo": "Hanno fortuna.",
+          "exemploTraducao": "Eles têm sorte."
+        },
+        {
+          "palavra": "io vado, tu vai, lui/lei va",
+          "traducao": "eu vou, você vai, ele/ela vai (verbo ANDARE)",
+          "exemplo": "Vado al mercato.",
+          "exemploTraducao": "Eu vou ao mercado."
+        },
+        {
+          "palavra": "noi andiamo, voi andate, loro vanno",
+          "traducao": "nós vamos, vocês vão, eles vão",
+          "exemplo": "Andiamo!",
+          "exemploTraducao": "Vamos!"
+        },
+        {
+          "palavra": "Ho fretta / Ho ragione / Ho torto",
+          "traducao": "estou com pressa / estou certo / estou errado — usam AVERE, não ESSERE como seria de esperar",
+          "exemplo": "Scusa, ho fretta!",
+          "exemploTraducao": "Desculpa, estou com pressa!"
+        },
+        {
+          "palavra": "C'è / Ci sono",
+          "traducao": "há, tem (um) / há, tem (vários) — vem do verbo ESSERE",
+          "exemplo": "C'è un problema. Ci sono due strade.",
+          "exemploTraducao": "Há um problema. Há dois caminhos."
+        },
+        {
+          "palavra": "Vado a... / Vado al...",
+          "traducao": "\"a\" antes de cidade/lugar sem artigo, \"al/allo/alla\" (a+artigo) antes de lugar com artigo",
+          "exemplo": "Vado a Roma. Vado al cinema.",
+          "exemploTraducao": "Eu vou a Roma. Eu vou ao cinema."
+        },
+        {
+          "palavra": "vado a fare / vado a prendere",
+          "traducao": "vou fazer / vou pegar (andare + a + infinitivo = futuro próximo)",
+          "exemplo": "Vado a mangiare qualcosa.",
+          "exemploTraducao": "Eu vou comer alguma coisa."
+        },
+        {
+          "palavra": "essere vs avere",
+          "traducao": "cuidado: idade, fome, sede, pressa e razão usam AVERE em italiano — em português muitas vezes usamos SER/ESTAR",
+          "exemplo": "Ho vent'anni. Ho fame.",
+          "exemploTraducao": "Eu tenho vinte anos. Estou com fome."
+        },
+        {
+          "palavra": "Chi sei? / Chi è?",
+          "traducao": "quem é você? / quem é? (do verbo essere)",
+          "exemplo": "Chi sei tu?",
+          "exemploTraducao": "Quem é você?"
+        }
       ],
       "associacao": "\"Essere\" e \"avere\" são irregulares em todas as línguas latinas — não tem atalho, são seis formas de cada pra decorar de uma vez, porque abrem praticamente toda frase.",
       "dica": "\"Andare\" também forma o futuro próximo, igual português: \"vado a mangiare\" é \"eu vou comer\" — mesma construção, é só usar andare + a + infinitivo.",
       "quiz": [
-        { "tipo": "multipla", "pergunta": "\"Abbiamo\" quer dizer:", "opcoes": ["Nós somos", "Nós temos", "Nós vamos"], "certa": 1 },
-        { "tipo": "multipla", "pergunta": "\"Vado a mangiare\" significa:", "opcoes": ["Eu como", "Eu vou comer", "Eu comi"], "certa": 1 },
-        { "tipo": "multipla", "pergunta": "\"Ho ragione\" quer dizer:", "opcoes": ["Estou errado", "Estou certo", "Estou com pressa"], "certa": 1 },
-        { "tipo": "traduzir", "pergunta": "Como se diz \"eles têm\" em italiano?", "resposta": "hanno" },
-        { "tipo": "traduzir", "pergunta": "Como se diz \"nós vamos\" em italiano?", "resposta": "andiamo" },
-        { "tipo": "multipla", "pergunta": "\"C'è un problema\" significa:", "opcoes": ["Há um problema", "Há dois problemas", "Não há problema"], "certa": 0 }
-      ]
+        {
+          "tipo": "multipla",
+          "pergunta": "\"Abbiamo\" quer dizer:",
+          "opcoes": [
+            "Nós somos",
+            "Nós temos",
+            "Nós vamos"
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "\"Vado a mangiare\" significa:",
+          "opcoes": [
+            "Eu como",
+            "Eu vou comer",
+            "Eu comi"
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "\"Ho ragione\" quer dizer:",
+          "opcoes": [
+            "Estou errado",
+            "Estou certo",
+            "Estou com pressa"
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "Como se diz \"eles têm\" em italiano?",
+          "resposta": "hanno"
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "Como se diz \"nós vamos\" em italiano?",
+          "resposta": "andiamo"
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "\"C'è un problema\" significa:",
+          "opcoes": [
+            "Há um problema",
+            "Há dois problemas",
+            "Não há problema"
+          ],
+          "certa": 0
+        }
+      ],
+      "gramatica": {
+        "titulo": "Os três grupos: -are, -ere, -ire",
+        "explicacao": "Verbos italianos se dividem em três grupos pelo infinitivo: -are (parlare), -ere (scrivere), -ire (dormire). Cada grupo tem sua conjugação regular. Decorando o padrão de um, aplica a todos do mesmo grupo.",
+        "exemplos": [
+          {
+            "frase": "Parlo, parli, parla, parliamo, parlate, parlano (PARLARE)",
+            "traducao": "Eu falo, tu falas, ele fala, nós falamos, vós falais, eles falam"
+          },
+          {
+            "frase": "Scrivo, scrivi, scrive, scriviamo, scrivete, scrivono (SCRIVERE)",
+            "traducao": "Eu escrevo, tu escreves, ele escreve..."
+          },
+          {
+            "frase": "Dormo, dormi, dorme, dormiamo, dormite, dormono (DORMIRE)",
+            "traducao": "Eu durmo, tu dormes, ele dorme..."
+          }
+        ]
+      },
+      "dialogo": {
+        "situacao": "Conversando sobre a rotina diária",
+        "falas": [
+          {
+            "quem": "A",
+            "fala": "A che ora ti alzi la mattina?",
+            "traducao": "A que horas você se levanta de manhã?"
+          },
+          {
+            "quem": "B",
+            "fala": "Mi alzo alle sette. Poi faccio colazione e vado al lavoro.",
+            "traducao": "Me levanto às sete. Depois tomo café e vou trabalhar."
+          },
+          {
+            "quem": "A",
+            "fala": "Come vai al lavoro?",
+            "traducao": "Como você vai ao trabalho?"
+          },
+          {
+            "quem": "B",
+            "fala": "Prendo l'autobus. Ci metto venti minuti.",
+            "traducao": "Pego o ônibus. Levo vinte minutos."
+          },
+          {
+            "quem": "A",
+            "fala": "Io vado in bici. È più veloce!",
+            "traducao": "Eu vou de bicicleta. É mais rápido!"
+          }
+        ]
+      },
+      "expressoes": [
+        {
+          "expressao": "Ci metto...",
+          "significado": "Eu levo (tanto tempo)...",
+          "uso": "Para dizer quanto tempo demora algo"
+        },
+        {
+          "expressao": "Fare una passeggiata",
+          "significado": "Dar uma caminhada",
+          "uso": "A passeggiata é uma tradição italiana"
+        },
+        {
+          "expressao": "Mi alzo / Mi sveglio",
+          "significado": "Eu me levanto / Eu acordo",
+          "uso": "Verbos reflexivos da rotina"
+        }
+      ],
+      "cultura": "A 'passeggiata' é um dos rituais mais italianos: no fim da tarde, especialmente aos domingos, as famílias saem para caminhar sem pressa pelo centro, encontrar vizinhos, tomar um gelato. Não é exercício — é vida social ao ar livre."
     },
     {
       "chave": "u8-frases",
       "titulo": "8. Frases do dia a dia",
       "tema": "O que resolve na rua, no café e numa conversa curta.",
       "vocabulario": [
-        { "palavra": "Scusi / Scusa", "traducao": "com licença / desculpa (formal / informal)", "exemplo": "Scusi, dov'è la stazione?", "exemploTraducao": "Com licença, onde fica a estação?" },
-        { "palavra": "Non capisco", "traducao": "eu não entendo", "exemplo": "Mi dispiace, non capisco.", "exemploTraducao": "Desculpe, eu não entendo." },
-        { "palavra": "Può ripetere? / Puoi ripetere?", "traducao": "pode repetir? (formal / informal)", "exemplo": "Più lentamente, per favore?", "exemploTraducao": "Mais devagar, por favor?" },
-        { "palavra": "Quanto costa?", "traducao": "quanto custa?", "exemplo": "Quanto costa, per favore?", "exemploTraducao": "Quanto custa, por favor?" },
-        { "palavra": "Dov'è...? / Dove sono...?", "traducao": "onde fica...? / onde ficam...?", "exemplo": "Dove sono i bagni?", "exemploTraducao": "Onde fica o banheiro?" },
-        { "palavra": "Vorrei...", "traducao": "eu gostaria de...", "exemplo": "Vorrei un caffè, per favore.", "exemploTraducao": "Eu gostaria de um café, por favor." },
-        { "palavra": "Che buono!", "traducao": "que gostoso! que bom!", "exemplo": "Mmm, che buono questo gelato!", "exemploTraducao": "Mmm, que gostoso esse sorvete!" },
-        { "palavra": "A presto", "traducao": "até breve", "exemplo": "Grazie, a presto!", "exemploTraducao": "Obrigado, até breve!" },
-        { "palavra": "Non lo so", "traducao": "eu não sei", "exemplo": "Non lo so, mi dispiace.", "exemploTraducao": "Eu não sei, desculpe." },
-        { "palavra": "Come si dice...?", "traducao": "como se diz...?", "exemplo": "Come si dice \"livro\" in italiano?", "exemploTraducao": "Como se diz \"livro\" em italiano?" },
-        { "palavra": "Aiuto!", "traducao": "socorro!", "exemplo": "Aiuto, per favore!", "exemploTraducao": "Socorro, por favor!" },
-        { "palavra": "Va bene", "traducao": "está bem, tudo bem, combinado", "exemplo": "Ci vediamo alle otto, va bene?", "exemploTraducao": "A gente se vê às oito, tá bem?" }
+        {
+          "palavra": "Scusi / Scusa",
+          "traducao": "com licença / desculpa (formal / informal)",
+          "exemplo": "Scusi, dov'è la stazione?",
+          "exemploTraducao": "Com licença, onde fica a estação?"
+        },
+        {
+          "palavra": "Non capisco",
+          "traducao": "eu não entendo",
+          "exemplo": "Mi dispiace, non capisco.",
+          "exemploTraducao": "Desculpe, eu não entendo."
+        },
+        {
+          "palavra": "Può ripetere? / Puoi ripetere?",
+          "traducao": "pode repetir? (formal / informal)",
+          "exemplo": "Più lentamente, per favore?",
+          "exemploTraducao": "Mais devagar, por favor?"
+        },
+        {
+          "palavra": "Quanto costa?",
+          "traducao": "quanto custa?",
+          "exemplo": "Quanto costa, per favore?",
+          "exemploTraducao": "Quanto custa, por favor?"
+        },
+        {
+          "palavra": "Dov'è...? / Dove sono...?",
+          "traducao": "onde fica...? / onde ficam...?",
+          "exemplo": "Dove sono i bagni?",
+          "exemploTraducao": "Onde fica o banheiro?"
+        },
+        {
+          "palavra": "Vorrei...",
+          "traducao": "eu gostaria de...",
+          "exemplo": "Vorrei un caffè, per favore.",
+          "exemploTraducao": "Eu gostaria de um café, por favor."
+        },
+        {
+          "palavra": "Che buono!",
+          "traducao": "que gostoso! que bom!",
+          "exemplo": "Mmm, che buono questo gelato!",
+          "exemploTraducao": "Mmm, que gostoso esse sorvete!"
+        },
+        {
+          "palavra": "A presto",
+          "traducao": "até breve",
+          "exemplo": "Grazie, a presto!",
+          "exemploTraducao": "Obrigado, até breve!"
+        },
+        {
+          "palavra": "Non lo so",
+          "traducao": "eu não sei",
+          "exemplo": "Non lo so, mi dispiace.",
+          "exemploTraducao": "Eu não sei, desculpe."
+        },
+        {
+          "palavra": "Come si dice...?",
+          "traducao": "como se diz...?",
+          "exemplo": "Come si dice \"livro\" in italiano?",
+          "exemploTraducao": "Como se diz \"livro\" em italiano?"
+        },
+        {
+          "palavra": "Aiuto!",
+          "traducao": "socorro!",
+          "exemplo": "Aiuto, per favore!",
+          "exemploTraducao": "Socorro, por favor!"
+        },
+        {
+          "palavra": "Va bene",
+          "traducao": "está bem, tudo bem, combinado",
+          "exemplo": "Ci vediamo alle otto, va bene?",
+          "exemploTraducao": "A gente se vê às oito, tá bem?"
+        }
       ],
       "associacao": "\"Vorrei\" (eu gostaria) é sempre mais educado que \"voglio\" (eu quero) — é o jeito certo de pedir algo numa loja ou num café, igual em português.",
       "dica": "\"Scusi\" é formal (com desconhecidos, gente mais velha), \"scusa\" é informal (amigos, gente da sua idade) — trocar os dois soa estranho ou até rude, dependendo do contexto.",
@@ -244,13 +1518,123 @@
         "letra": "Giro giro tondo,\nGira il mondo,\nGira la terra,\nTutti giù per terra!"
       },
       "quiz": [
-        { "tipo": "multipla", "pergunta": "Qual é o jeito mais educado de pedir algo?", "opcoes": ["Voglio un caffè", "Vorrei un caffè", "Dammi un caffè"], "certa": 1 },
-        { "tipo": "multipla", "pergunta": "\"Quanto costa?\" pergunta:", "opcoes": ["Onde fica", "Quanto custa", "Que horas são"], "certa": 1 },
-        { "tipo": "multipla", "pergunta": "A forma FORMAL de \"desculpa/com licença\" é:", "opcoes": ["Scusa", "Scusi", "Prego"], "certa": 1 },
-        { "tipo": "traduzir", "pergunta": "Traduza: eu não entendo", "resposta": "non capisco" },
-        { "tipo": "traduzir", "pergunta": "Como se diz \"eu gostaria\" em italiano?", "resposta": "vorrei" },
-        { "tipo": "multipla", "pergunta": "\"Va bene\" quer dizer:", "opcoes": ["Não sei", "Está bem, combinado", "Socorro"], "certa": 1 }
-      ]
+        {
+          "tipo": "multipla",
+          "pergunta": "Qual é o jeito mais educado de pedir algo?",
+          "opcoes": [
+            "Voglio un caffè",
+            "Vorrei un caffè",
+            "Dammi un caffè"
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "\"Quanto costa?\" pergunta:",
+          "opcoes": [
+            "Onde fica",
+            "Quanto custa",
+            "Que horas são"
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "A forma FORMAL de \"desculpa/com licença\" é:",
+          "opcoes": [
+            "Scusa",
+            "Scusi",
+            "Prego"
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "Traduza: eu não entendo",
+          "resposta": "non capisco"
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "Como se diz \"eu gostaria\" em italiano?",
+          "resposta": "vorrei"
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "\"Va bene\" quer dizer:",
+          "opcoes": [
+            "Não sei",
+            "Está bem, combinado",
+            "Socorro"
+          ],
+          "certa": 1
+        }
+      ],
+      "gramatica": {
+        "titulo": "O condicional 'vorrei' para pedidos educados",
+        "explicacao": "'Vorrei' (eu gostaria) é a forma condicional de 'volere' (querer). É MUITO mais educado que 'voglio' (eu quero) para pedir algo. Compare: 'Voglio un caffè' (seco) vs 'Vorrei un caffè' (educado).",
+        "exemplos": [
+          {
+            "frase": "Vorrei un'informazione",
+            "traducao": "Gostaria de uma informação"
+          },
+          {
+            "frase": "Vorrei prenotare un tavolo",
+            "traducao": "Gostaria de reservar uma mesa"
+          },
+          {
+            "frase": "Vorremmo il menù",
+            "traducao": "Nós gostaríamos do cardápio"
+          }
+        ]
+      },
+      "dialogo": {
+        "situacao": "Perdido em Roma, pedindo direções",
+        "falas": [
+          {
+            "quem": "A",
+            "fala": "Scusi, dov'è il Colosseo?",
+            "traducao": "Com licença, onde fica o Coliseu?"
+          },
+          {
+            "quem": "B",
+            "fala": "Vada dritto per duecento metri, poi giri a destra.",
+            "traducao": "Siga reto por duzentos metros, depois vire à direita."
+          },
+          {
+            "quem": "A",
+            "fala": "Quanto ci vuole a piedi?",
+            "traducao": "Quanto tempo leva a pé?"
+          },
+          {
+            "quem": "B",
+            "fala": "Dieci minuti, più o meno. Buona passeggiata!",
+            "traducao": "Dez minutos, mais ou menos. Boa caminhada!"
+          }
+        ]
+      },
+      "expressoes": [
+        {
+          "expressao": "Non c'è problema",
+          "significado": "Sem problema",
+          "uso": "Resposta tranquila a um pedido ou desculpa"
+        },
+        {
+          "expressao": "Ma dai!",
+          "significado": "Não me diga! Sério?",
+          "uso": "Expressão de surpresa ou incredulidade"
+        },
+        {
+          "expressao": "Basta!",
+          "significado": "Chega! Basta!",
+          "uso": "Igual ao português"
+        },
+        {
+          "expressao": "Che schifo!",
+          "significado": "Que nojo!",
+          "uso": "Reação forte de desagrado"
+        }
+      ],
+      "cultura": "Os gestos italianos são parte REAL da comunicação: juntar os dedos e balançar significa 'o que você quer?'. Contar nos dedos começa pelo polegar (1), não pelo indicador. Tocar o queixo com as costas da mão e jogar pra frente significa 'não estou nem aí'."
     }
   ]
 }

@@ -2970,6 +2970,17 @@ test('idiomas: os sete arquivos existem, têm JSON válido e batem o schema mín
       }
       if (u.cancao) assert.ok(u.cancao.titulo && u.cancao.autor && u.cancao.letra, `${chave}/${u.chave}: canção incompleta`)
       if (u.musicaAtual) assert.ok(u.musicaAtual.titulo && u.musicaAtual.artista, `${chave}/${u.chave}: música atual incompleta`)
+      if (u.musicas) {
+        assert.ok(Array.isArray(u.musicas), `${chave}/${u.chave}: musicas deveria ser array`)
+        for (const m of u.musicas) assert.ok(m.titulo && m.artista, `${chave}/${u.chave}: música sem titulo ou artista`)
+      }
+      if (u.gramatica) {
+        assert.ok(u.gramatica.explicacao, `${chave}/${u.chave}: gramática sem explicação`)
+        assert.ok(Array.isArray(u.gramatica.exemplos) && u.gramatica.exemplos.length > 0, `${chave}/${u.chave}: gramática sem exemplos`)
+      }
+      if (u.dialogo) {
+        assert.ok(Array.isArray(u.dialogo.falas) && u.dialogo.falas.length >= 2, `${chave}/${u.chave}: diálogo com menos de 2 falas`)
+      }
     }
   }
 })

@@ -8,6 +8,7 @@
       "chave": "u1-alfabeto",
       "titulo": "1. O alfabeto cirílico",
       "tema": "Não é tão estranho quanto parece: metade das letras já soa como no português.",
+      "nivel": "A1",
       "vocabulario": [
         { "palavra": "А, О, Е, М, Т, К", "traducao": "soam quase igual ao alfabeto latino: a, o, e, m, t, k", "exemplo": "мама (mama)", "exemploTraducao": "mama = mamãe" },
         { "palavra": "Н", "traducao": "soa como \"n\" (não como \"h\")", "exemplo": "он (on)", "exemploTraducao": "ele" },
@@ -28,6 +29,32 @@
       ],
       "associacao": "Cuidado com as letras FALSAS AMIGAS: В soa \"v\" (não \"b\"), Н soa \"n\" (não \"h\"), Р soa \"r\" (não \"p\"), С soa \"s\" (não \"c\") — o alfabeto cirílico usa formas parecidas com o latino para sons DIFERENTES. É a maior armadilha de quem começa.",
       "dica": "Comece decorando as letras que JÁ soam como no português (А О Е М Т К) — com elas sozinhas já dá pra ler várias palavras. Depois ataque as falsas-amigas (В Н Р С), e por último os sons totalmente novos (Ы Ж Ш Ч Щ).",
+      "gramatica": {
+        "titulo": "Vogais duras e brandas: o sistema de pares",
+        "explicacao": "O russo organiza suas vogais em pares: duras (А, О, У, Э, Ы) e brandas (Я, Ё, Ю, Е, И). A vogal branda amolece (palataliza) a consoante que vem antes dela. Esse é o princípio que rege toda a pronúncia russa e explica por que a mesma consoante pode soar diferente dependendo da vogal seguinte.",
+        "exemplos": [
+          { "frase": "мат (mat)", "traducao": "tapete (\"m\" duro antes de А)" },
+          { "frase": "мять (myat')", "traducao": "amassar (\"m\" brando antes de Я)" },
+          { "frase": "нос (nos)", "traducao": "nariz (\"n\" duro antes de О)" },
+          { "frase": "нёс (nyos)", "traducao": "carregava (\"n\" brando antes de Ё)" }
+        ]
+      },
+      "dialogo": {
+        "situacao": "Um professor ensina o alfabeto cirílico a um aluno brasileiro.",
+        "falas": [
+          { "quem": "A", "fala": "Это буква \"М\". Она звучит как в португальском.", "traducao": "Esta é a letra \"M\". Ela soa como em português." },
+          { "quem": "B", "fala": "А буква \"В\"?", "traducao": "E a letra \"V\"?" },
+          { "quem": "A", "fala": "\"В\" звучит как \"v\", не как \"b\".", "traducao": "\"V\" soa como \"v\", não como \"b\"." },
+          { "quem": "B", "fala": "А \"Р\"? Это не \"p\"?", "traducao": "E \"R\"? Não é \"p\"?" },
+          { "quem": "A", "fala": "Нет! \"Р\" — это \"r\". Рука — mão.", "traducao": "Não! \"R\" é \"r\". Ruka (mão)." },
+          { "quem": "B", "fala": "Понятно! Много ложных друзей.", "traducao": "Entendi! Muitos falsos amigos." }
+        ]
+      },
+      "expressoes": [
+        { "expressao": "Ложные друзья (lozhnye druz'ya)", "significado": "Falsos amigos", "uso": "Termo usado para letras ou palavras que parecem familiares mas têm outro significado ou som." },
+        { "expressao": "По буквам (po bukvam)", "significado": "Letra por letra / Soletrando", "uso": "Quando você precisa soletrar algo: \"Повторите по буквам\" (Repita soletrando)." }
+      ],
+      "cultura": "O alfabeto cirílico foi criado no século IX pelos monges Cirilo e Metódio para levar textos religiosos aos povos eslavos. Hoje ele é usado não só na Rússia, mas também na Ucrânia, Sérvia, Bulgária, Mongólia e vários países da Ásia Central. Aprender a ler cirílico abre a porta para entender placas e cardápios em dezenas de países.",
       "quiz": [
         { "tipo": "multipla", "pergunta": "A letra \"Н\" no russo soa como:", "opcoes": ["h", "n", "p"], "certa": 1 },
         { "tipo": "multipla", "pergunta": "A letra \"В\" soa como:", "opcoes": ["b", "v", "w"], "certa": 1 },
@@ -42,6 +69,7 @@
       "chave": "u2-saudacoes",
       "titulo": "2. Saudações e apresentações",
       "tema": "O básico para começar.",
+      "nivel": "A1",
       "vocabulario": [
         { "palavra": "Привет (privet)", "traducao": "oi (informal)", "exemplo": "Привет! Как дела?", "exemploTraducao": "Oi! Como vai?" },
         { "palavra": "Здравствуйте (zdravstvuyte)", "traducao": "olá (formal — literalmente \"seja saudável\")", "exemplo": "Здравствуйте, меня зовут Анна.", "exemploTraducao": "Olá, meu nome é Anna." },
@@ -62,12 +90,43 @@
       ],
       "associacao": "\"Здравствуйте\" (zdravstvuyte) é comprida e difícil no começo — mas ela literalmente vem de \"saúde\" (здоровье): é como dizer \"seja saudável\" ao cumprimentar alguém formalmente.",
       "dica": "\"Спасибо\" (obrigado) e \"пожалуйста\" (de nada / por favor) fazem o mesmo trabalho duplo que o \"bitte\" alemão — \"пожалуйста\" serve tanto pra pedir quanto pra responder um agradecimento.",
+      "gramatica": {
+        "titulo": "Ты (ty) vs. Вы (vy): o tratamento formal e informal",
+        "explicacao": "Assim como o alemão tem du/Sie, o russo distingue \"ты\" (informal, singular) de \"Вы\" (formal ou plural). \"Вы\" com maiúscula é usado com desconhecidos, pessoas mais velhas e em contextos profissionais. A conjugação do verbo muda: com \"ты\" termina geralmente em -ешь/-ишь, e com \"вы\" em -ете/-ите.",
+        "exemplos": [
+          { "frase": "Как тебя зовут? (ty)", "traducao": "Como você se chama? (informal)" },
+          { "frase": "Как Вас зовут? (vy)", "traducao": "Como o senhor se chama? (formal)" },
+          { "frase": "Откуда ты? (ty)", "traducao": "De onde você é? (informal)" },
+          { "frase": "Откуда Вы? (vy)", "traducao": "De onde o senhor é? (formal)" }
+        ]
+      },
+      "dialogo": {
+        "situacao": "Dois estrangeiros se conhecem num hostel em Moscou.",
+        "falas": [
+          { "quem": "A", "fala": "Привет! Меня зовут Марко.", "traducao": "Oi! Meu nome é Marco." },
+          { "quem": "B", "fala": "Привет! Я Наташа. Очень приятно!", "traducao": "Oi! Eu sou Natasha. Muito prazer!" },
+          { "quem": "A", "fala": "Откуда ты, Наташа?", "traducao": "De onde você é, Natasha?" },
+          { "quem": "B", "fala": "Я из Петербурга. А ты?", "traducao": "Eu sou de Petersburgo. E você?" },
+          { "quem": "A", "fala": "Я из Бразилии.", "traducao": "Eu sou do Brasil." },
+          { "quem": "B", "fala": "О, здорово! Как дела?", "traducao": "Oh, legal! Como vai?" },
+          { "quem": "A", "fala": "Хорошо, спасибо! А у тебя?", "traducao": "Bem, obrigado! E você?" },
+          { "quem": "B", "fala": "Тоже хорошо. Добро пожаловать в Россию!", "traducao": "Também bem. Bem-vindo à Rússia!" }
+        ]
+      },
+      "expressoes": [
+        { "expressao": "Добро пожаловать! (dobro pozhalovat')", "significado": "Bem-vindo!", "uso": "Saudação de boas-vindas, usada em hotéis, restaurantes e ao receber alguém em casa." },
+        { "expressao": "Ничего себе! (nichego sebe)", "significado": "Nossa! / Uau!", "uso": "Expressão de surpresa, equivale ao nosso \"nossa!\" ou \"caramba!\"." },
+        { "expressao": "Ладно (ladno)", "significado": "Beleza / Tá bom / Ok", "uso": "Forma casual de concordar ou encerrar um assunto, equivale ao nosso \"beleza\" ou \"tá bom\"." }
+      ],
+      "cultura": "Os russos costumam parecer sérios e distantes em público, mas são extremamente calorosos e hospitaleiros em casa. Sorrir para estranhos na rua é incomum na Rússia e pode até parecer estranho. Quando um russo te convida para sua casa, espere muita comida e insistência para que você coma mais: recusar comida é quase uma ofensa para o anfitrião.",
       "cancao": {
         "titulo": "Калинка (Kalinka)",
         "autor": "Ivan Larionov (1830–1889) — canção russa de 1860, domínio público",
         "letra": "Калинка, калинка, калинка моя!\nВ саду ягода малинка, малинка моя!\n\nАх! Под сосною под зеленою\nСпать положите вы меня;\nАй, люли, люли, ай, люли, люли,\nСпать положите вы меня.\n\nКалинка, калинка, калинка моя!\nВ саду ягода малинка, малинка моя!\n\nАх! Сосенушка ты зеленая,\nНе шуми же надо мной!\nАй, люли, люли, ай, люли, люли,\nНе шуми же надо мной!\n\nКалинка, калинка, калинка моя!\nВ саду ягода малинка, малинка моя!\nАх! Красавица, душа-девица,\nПолюби же ты меня!\n\nАй, люли, люли, ай, люли, люли,\nПолюби же ты меня!\n\nКалинка, калинка, калинка моя!\nВ саду ягода малинка, малинка моя!\n\n— Transliteração —\n\nKalinka, kalinka, kalinka moya!\nV sadu yagoda malinka, malinka moya!\n\nAkh! Pod sosnoyu pod zelenoyu\nSpat' polozhite vy menya;\nAy, lyuli, lyuli, ay, lyuli, lyuli,\nSpat' polozhite vy menya.\n\nKalinka, kalinka, kalinka moya!\nV sadu yagoda malinka, malinka moya!\n\nAkh! Sosenushka ty zelenaya,\nNe shumi zhe nado mnoy!\nAy, lyuli, lyuli, ay, lyuli, lyuli,\nNe shumi zhe nado mnoy!\n\nKalinka, kalinka, kalinka moya!\nV sadu yagoda malinka, malinka moya!\nAkh! Krasavitsa, dusha-devitsa,\nPolyubi zhe ty menya!\n\nAy, lyuli, lyuli, ay, lyuli, lyuli,\nPolyubi zhe ty menya!\n\nKalinka, kalinka, kalinka moya!\nV sadu yagoda malinka, malinka moya!"
       },
-      "musicaAtual": { "titulo": "Ягода малинка (Yagoda Malinka)", "artista": "Хабиб (Khabib)", "youtubeId": "Rt2zZSaOFtw" },
+      "musicas": [
+        { "titulo": "Ягода малинка (Yagoda Malinka)", "artista": "Хабиб (Khabib)", "youtubeId": "Rt2zZSaOFtw", "trechoLetra": "Ягода малинка, ягода малинка, а-а-а", "traducaoTrecho": "Framboesinha, framboesinha, a-a-a" }
+      ],
       "quiz": [
         { "tipo": "multipla", "pergunta": "\"Привет\" (privet) é uma saudação:", "opcoes": ["Formal", "Informal, entre amigos", "Só para despedida"], "certa": 1 },
         { "tipo": "traduzir", "pergunta": "Em transliteração, como se diz \"obrigado\"?", "resposta": "spasibo" },
@@ -82,6 +141,7 @@
       "chave": "u3-numeros",
       "titulo": "3. Números e idade",
       "tema": "Contar e perguntar idade — a base para preço, hora e data.",
+      "nivel": "A1",
       "vocabulario": [
         { "palavra": "один, два, три (odin, dva, tri)", "traducao": "um, dois, três", "exemplo": "Один, два, три, четыре, пять.", "exemploTraducao": "Um, dois, três, quatro, cinco." },
         { "palavra": "четыре, пять (chetyre, pyat')", "traducao": "quatro, cinco", "exemplo": "У меня пять книг.", "exemploTraducao": "Eu tenho cinco livros." },
@@ -99,6 +159,32 @@
       ],
       "associacao": "A idade em russo usa a construção \"Мне ... лет\" (literalmente \"para mim são ... anos\") — nunca \"eu sou\" nem \"eu tenho\" ao pé da letra, é uma terceira lógica só do russo.",
       "dica": "A palavra para \"ano(s)\" muda conforme o número: depois de 1 é \"год\", depois de 2, 3, 4 é \"года\", e depois de 5 (e de 0, 11-20) é \"лет\". Complicado no começo — mas \"лет\" funciona como \"coringa seguro\" pra maioria dos números.",
+      "gramatica": {
+        "titulo": "A concordância numérica: год, года, лет",
+        "explicacao": "Em russo, o substantivo que segue um número muda de forma conforme o último dígito. Depois de 1 (e 21, 31...) usa-se o nominativo singular (год). Depois de 2, 3 e 4 usa-se o genitivo singular (года). Depois de 5 a 20 e de qualquer número terminado em 5-9 ou 0, usa-se o genitivo plural (лет).",
+        "exemplos": [
+          { "frase": "Мне двадцать один год.", "traducao": "Eu tenho vinte e um anos. (termina em 1 = год)" },
+          { "frase": "Ей двадцать два года.", "traducao": "Ela tem vinte e dois anos. (termina em 2 = года)" },
+          { "frase": "Ему тридцать пять лет.", "traducao": "Ele tem trinta e cinco anos. (termina em 5 = лет)" }
+        ]
+      },
+      "dialogo": {
+        "situacao": "Dois novos colegas de trabalho se apresentam no escritório.",
+        "falas": [
+          { "quem": "A", "fala": "Привет! Сколько тебе лет?", "traducao": "Oi! Quantos anos você tem?" },
+          { "quem": "B", "fala": "Мне двадцать шесть. А тебе?", "traducao": "Tenho vinte e seis. E você?" },
+          { "quem": "A", "fala": "Мне тридцать один год.", "traducao": "Eu tenho trinta e um anos." },
+          { "quem": "B", "fala": "У тебя есть дети?", "traducao": "Você tem filhos?" },
+          { "quem": "A", "fala": "Да, у меня есть дочь. Ей четыре года.", "traducao": "Sim, eu tenho uma filha. Ela tem quatro anos." },
+          { "quem": "B", "fala": "Как мило! Сколько стоит обед здесь?", "traducao": "Que fofa! Quanto custa o almoço aqui?" },
+          { "quem": "A", "fala": "Около трёхсот рублей.", "traducao": "Cerca de trezentos rublos." }
+        ]
+      },
+      "expressoes": [
+        { "expressao": "Сколько стоит? (skol'ko stoit)", "significado": "Quanto custa?", "uso": "Pergunta essencial para compras e restaurantes — funciona para qualquer coisa." },
+        { "expressao": "Раз, два, три! (raz, dva, tri)", "significado": "Um, dois, três! (na contagem)", "uso": "Ao contar para começar algo (corrida, foto), usa-se \"раз\" em vez de \"один\" para o número 1." }
+      ],
+      "cultura": "O rublo russo se divide em 100 copeques (копейка/kopeyka). Na Rússia, os preços costumam parecer altos em números absolutos: um almoço simples pode custar 300-500 rublos. Para ter referência, o salário médio em Moscou gira em torno de 100.000 rublos por mês. Barganha não é costume em lojas, mas nos mercados ao ar livre ainda acontece.",
       "quiz": [
         { "tipo": "multipla", "pergunta": "Como se diz \"vinte\" em russo?", "opcoes": ["десять", "двадцать", "тридцать"], "certa": 1 },
         { "tipo": "multipla", "pergunta": "\"Сколько тебе лет?\" pergunta:", "opcoes": ["Que horas são", "Quantos anos você tem", "Quanto custa"], "certa": 1 },
@@ -112,6 +198,7 @@
       "chave": "u4-familia",
       "titulo": "4. Família",
       "tema": "Quem é quem em casa.",
+      "nivel": "A1",
       "vocabulario": [
         { "palavra": "семья (sem'ya)", "traducao": "a família", "exemplo": "Моя семья большая.", "exemploTraducao": "Minha família é grande." },
         { "palavra": "мама, папа (mama, papa)", "traducao": "mãe, pai (informal, carinhoso)", "exemplo": "Мама дома?", "exemploTraducao": "A mamãe está em casa?" },
@@ -128,6 +215,33 @@
       ],
       "associacao": "O russo não tem um verbo simples como \"ter\": usa \"у меня есть\" (literalmente \"por mim há/existe\"). É a mesma peça que reaparece no verbo \"ter\" da unidade 7 — decorada aqui, fica fácil lá.",
       "dica": "\"Мама/папа\" são carinhosos (tipo \"mamãe/papai\"); \"мать/отец\" são neutros e formais (tipo \"mãe/pai\" num documento). Use \"мама/папа\" no dia a dia.",
+      "gramatica": {
+        "titulo": "Possessivos: мой/моя/моё/мои",
+        "explicacao": "O possessivo \"meu\" em russo muda conforme o gênero e número do substantivo: \"мой\" (masculino), \"моя\" (feminino), \"моё\" (neutro) e \"мои\" (plural). A mesma regra vale para outros possessivos como твой (teu), наш (nosso) e ваш (seu/de vocês).",
+        "exemplos": [
+          { "frase": "Мой брат живёт в Москве.", "traducao": "Meu irmão mora em Moscou. (брат = masculino)" },
+          { "frase": "Моя сестра учится.", "traducao": "Minha irmã estuda. (сестра = feminino)" },
+          { "frase": "Моё имя — Иван.", "traducao": "Meu nome é Ivan. (имя = neutro)" },
+          { "frase": "Мои родители здесь.", "traducao": "Meus pais estão aqui. (родители = plural)" }
+        ]
+      },
+      "dialogo": {
+        "situacao": "Uma amiga russa mostra fotos de família a um colega brasileiro.",
+        "falas": [
+          { "quem": "A", "fala": "Это моя семья. Вот мама и папа.", "traducao": "Esta é minha família. Aqui estão mamãe e papai." },
+          { "quem": "B", "fala": "Какая большая семья! У тебя есть братья?", "traducao": "Que família grande! Você tem irmãos?" },
+          { "quem": "A", "fala": "Да, у меня есть старший брат и младшая сестра.", "traducao": "Sim, eu tenho um irmão mais velho e uma irmã mais nova." },
+          { "quem": "B", "fala": "А это кто? Твоя бабушка?", "traducao": "E quem é essa? Sua avó?" },
+          { "quem": "A", "fala": "Да, это моя бабушка. Она печёт лучшие пироги!", "traducao": "Sim, é minha avó. Ela faz as melhores tortas!" },
+          { "quem": "B", "fala": "Как в Бразилии! Бабушки везде готовят лучше всех.", "traducao": "Como no Brasil! Avós cozinham melhor em todo lugar." }
+        ]
+      },
+      "expressoes": [
+        { "expressao": "Бабушкин рецепт (babushkin retsept)", "significado": "Receita da vovó", "uso": "Expressão carinhosa para algo caseiro e tradicional — a bабушка é o centro da cozinha russa." },
+        { "expressao": "Яблоко от яблони (yabloko ot yabloni)", "significado": "A maçã não cai longe da árvore", "uso": "Provérbio usado quando o filho se parece com o pai ou a mãe em comportamento." },
+        { "expressao": "Родная душа (rodnaya dusha)", "significado": "Alma querida / parente de alma", "uso": "Expressão carinhosa para alguém muito próximo, da família ou não." }
+      ],
+      "cultura": "A família é o pilar da vida russa. A \"бабушка\" (avó) tem papel central: muitas vezes ela cuida dos netos enquanto os pais trabalham, e é a guardiã das receitas e tradições. Nas famílias russas, é comum três gerações morarem juntas ou muito perto. O Dia Internacional da Mulher (8 de março) é um dos feriados mais importantes na Rússia, celebrado com flores e presentes para todas as mulheres da família.",
       "quiz": [
         { "tipo": "multipla", "pergunta": "\"У меня есть сестра\" quer dizer:", "opcoes": ["Eu sou uma irmã", "Eu tenho uma irmã", "Ela é minha irmã"], "certa": 1 },
         { "tipo": "multipla", "pergunta": "\"Родители\" significa:", "opcoes": ["Avós", "Os pais (pai e mãe)", "Irmãos"], "certa": 1 },
@@ -140,6 +254,7 @@
       "chave": "u5-comida",
       "titulo": "5. Comida e bebida",
       "tema": "Pedir, comprar e comentar sobre o que se come.",
+      "nivel": "A1",
       "vocabulario": [
         { "palavra": "хлеб (khleb)", "traducao": "pão", "exemplo": "Свежий хлеб пахнет вкусно.", "exemploTraducao": "Pão fresco tem cheiro gostoso." },
         { "palavra": "вода (voda)", "traducao": "água", "exemplo": "Стакан воды, пожалуйста.", "exemploTraducao": "Um copo de água, por favor." },
@@ -157,6 +272,35 @@
       ],
       "associacao": "Fome e sede em russo usam o verbo \"querer\" (хотеть) + \"comer/beber\" — \"я хочу есть\" é literalmente \"eu quero comer\", diferente do \"tenho fome\" do português ou do francês.",
       "dica": "\"Обед\" é o ALMOÇO em russo, a refeição principal do dia — não confunda com \"ужин\" (jantar), que costuma ser mais leve.",
+      "gramatica": {
+        "titulo": "O verbo хотеть (querer) no presente",
+        "explicacao": "\"Хотеть\" (querer) é um dos verbos mais úteis e também um dos mais irregulares. Ele mistura duas conjugações: no singular segue a primeira conjugação (хочу, хочешь, хочет), mas no plural segue a segunda (хотим, хотите, хотят). É essencial para pedir comida e expressar desejos.",
+        "exemplos": [
+          { "frase": "Я хочу чай.", "traducao": "Eu quero chá." },
+          { "frase": "Ты хочешь есть?", "traducao": "Você quer comer?" },
+          { "frase": "Мы хотим пить.", "traducao": "Nós queremos beber." },
+          { "frase": "Они хотят суп.", "traducao": "Eles querem sopa." }
+        ]
+      },
+      "dialogo": {
+        "situacao": "Num café em São Petersburgo, um turista brasileiro faz o pedido.",
+        "falas": [
+          { "quem": "A", "fala": "Здравствуйте! Меню, пожалуйста.", "traducao": "Olá! O cardápio, por favor." },
+          { "quem": "B", "fala": "Вот, пожалуйста. Что будете?", "traducao": "Aqui, por favor. O que vai querer?" },
+          { "quem": "A", "fala": "Я хочу борщ и хлеб.", "traducao": "Eu quero borsch e pão." },
+          { "quem": "B", "fala": "Хороший выбор! Что-нибудь пить?", "traducao": "Boa escolha! Algo para beber?" },
+          { "quem": "A", "fala": "Чай, пожалуйста.", "traducao": "Chá, por favor." },
+          { "quem": "B", "fala": "С сахаром?", "traducao": "Com açúcar?" },
+          { "quem": "A", "fala": "Нет, спасибо. Без сахара.", "traducao": "Não, obrigado. Sem açúcar." },
+          { "quem": "B", "fala": "Хорошо, сейчас всё будет!", "traducao": "Certo, já vem tudo!" }
+        ]
+      },
+      "expressoes": [
+        { "expressao": "Приятного аппетита! (priyatnogo appetita)", "significado": "Bom apetite!", "uso": "Diz-se antes de começar a comer, equivale ao \"bon appétit\" e \"Guten Appetit\"." },
+        { "expressao": "На здоровье! (na zdorov'ye)", "significado": "De nada! / Saúde!", "uso": "Resposta quando alguém agradece pela comida. Também é usado como brinde ao beber, embora o brinde tradicional seja \"За здоровье!\" (pela saúde)." },
+        { "expressao": "Добавки? (dobavki)", "significado": "Quer repetir? (mais comida)", "uso": "A anfitriã russa pergunta isso insistentemente — recusar na primeira vez é quase obrigatório por educação, e ela vai oferecer de novo." }
+      ],
+      "cultura": "A culinária russa é marcada por sopas quentes, essenciais no inverno rigoroso: o borsch (борщ, sopa de beterraba), a shchi (щи, sopa de repolho) e a solyanka (солянка, sopa picante) estão em todo cardápio. O chá (чай) é a bebida nacional, servido com um samovar em ocasiões especiais. Os russos normalmente tomam chá preto, muitas vezes com geléia em vez de açúcar.",
       "quiz": [
         { "tipo": "multipla", "pergunta": "\"Я хочу пить\" quer dizer:", "opcoes": ["Estou com fome", "Estou com sede", "Estou com sono"], "certa": 1 },
         { "tipo": "multipla", "pergunta": "\"Обед\" é:", "opcoes": ["O café da manhã", "O almoço", "O jantar"], "certa": 1 },
@@ -170,6 +314,7 @@
       "chave": "u6-tempo",
       "titulo": "6. Tempo, dias e datas",
       "tema": "Marcar hora, dia da semana e mês.",
+      "nivel": "A1",
       "vocabulario": [
         { "palavra": "понедельник, вторник (ponedel'nik, vtornik)", "traducao": "segunda, terça", "exemplo": "В понедельник я работаю.", "exemploTraducao": "Na segunda eu trabalho." },
         { "palavra": "среда, четверг (sreda, chetverg)", "traducao": "quarta, quinta", "exemplo": "Встреча в среду.", "exemploTraducao": "A reunião é na quarta." },
@@ -186,6 +331,32 @@
       ],
       "associacao": "Os dias da semana em russo vêm de números e da ideia de \"semana\": среда é \"o do meio\" (meio da semana), четверг vem de \"quarto\", пятница de \"quinto\" — como о \"-di\" do francês, mas usando a lógica da posição.",
       "dica": "No registro formal (rádio, horário de trem) o russo também usa 24h: \"тринадцать часов\" são 13h. No dia a dia falado, basta dizer a hora simples e o contexto (manhã/tarde/noite) resolve.",
+      "gramatica": {
+        "titulo": "Preposição \"в\" para dias da semana e meses",
+        "explicacao": "Para dizer \"na segunda\", \"na quarta\" etc., o russo usa a preposição \"в\" + o dia no acusativo. Para meses, usa-se \"в\" + o mês no prepositivo (forma que termina em -е na maioria dos casos). Essa preposição \"в\" é equivalente ao \"em/no/na\" do português para tempo.",
+        "exemplos": [
+          { "frase": "В понедельник я работаю.", "traducao": "Na segunda eu trabalho." },
+          { "frase": "В среду у нас встреча.", "traducao": "Na quarta temos uma reunião." },
+          { "frase": "В январе очень холодно.", "traducao": "Em janeiro faz muito frio." }
+        ]
+      },
+      "dialogo": {
+        "situacao": "Dois amigos combinam um passeio durante a semana.",
+        "falas": [
+          { "quem": "A", "fala": "Когда ты свободен на этой неделе?", "traducao": "Quando você está livre esta semana?" },
+          { "quem": "B", "fala": "В среду вечером. А ты?", "traducao": "Na quarta à noite. E você?" },
+          { "quem": "A", "fala": "В среду я занят. А в пятницу?", "traducao": "Na quarta estou ocupado. E na sexta?" },
+          { "quem": "B", "fala": "В пятницу — отлично! Во сколько?", "traducao": "Na sexta fica ótimo! A que horas?" },
+          { "quem": "A", "fala": "В семь часов вечера?", "traducao": "Às sete da noite?" },
+          { "quem": "B", "fala": "Договорились! До пятницы!", "traducao": "Combinado! Até sexta!" }
+        ]
+      },
+      "expressoes": [
+        { "expressao": "Договорились! (dogovorilis')", "significado": "Combinado! / Fechado!", "uso": "Expressão para confirmar um plano ou acordo entre amigos." },
+        { "expressao": "На днях (na dnyakh)", "significado": "Nos próximos dias / outro dia", "uso": "Expressão vaga de tempo, como o nosso \"um dia desses\" ou \"qualquer dia\"." },
+        { "expressao": "Который час? (kotoryy chas)", "significado": "Que horas são?", "uso": "A pergunta mais direta para saber as horas. A resposta usa o sistema de час/часа/часов conforme o número." }
+      ],
+      "cultura": "A Rússia abrange 11 fusos horários, do enclave de Kaliningrado no oeste até Kamchatka no extremo leste. Quando é meio-dia em Moscou, já passa das 20h em Vladivostok. Os russos têm uma relação diferente com o frio: -10 graus em Moscou no inverno é considerado normal, e as crianças vão à escola mesmo com neve pesada. O conceito de \"выходной\" (dia de folga) é sagrado, e os russos valorizam muito seus fins de semana com a família.",
       "quiz": [
         { "tipo": "multipla", "pergunta": "Qual dia da semana significa literalmente \"o do meio\" (referência ao meio da semana)?", "opcoes": ["среда", "пятница", "воскресенье"], "certa": 0 },
         { "tipo": "multipla", "pergunta": "\"Вчера\" quer dizer:", "opcoes": ["Amanhã", "Ontem", "Hoje"], "certa": 1 },
@@ -198,6 +369,7 @@
       "chave": "u7-verbos",
       "titulo": "7. Verbos essenciais: быть, иметь/у меня есть, идти/ехать",
       "tema": "Os verbos que carregam a maior parte das frases do dia a dia — com uma pegadinha: o russo esconde o \"ser\" no presente.",
+      "nivel": "A1",
       "vocabulario": [
         { "palavra": "быть (byt')", "traducao": "ser/estar (infinitivo) — quase não se usa no presente", "exemplo": "Я хочу быть врачом.", "exemploTraducao": "Eu quero ser médico." },
         { "palavra": "Он врач (on vrach)", "traducao": "no presente, o russo geralmente OMITE o verbo \"ser\": \"ele [é] médico\"", "exemplo": "Она — врач.", "exemploTraducao": "Ela [é] médica." },
@@ -215,6 +387,33 @@
       ],
       "associacao": "O russo tem DOIS verbos para \"ir\" onde o português tem só um: идти (a pé) e ехать (de veículo) — e \"быть\" (ser/estar) quase desaparece no presente, diferente do être francês que aparece o tempo todo.",
       "dica": "No presente, não procure uma palavra para \"é/está\": o russo só junta sujeito e predicado, \"Он врач\" = \"Ele [é] médico\", sem verbo nenhum no meio.",
+      "gramatica": {
+        "titulo": "Omissão do verbo \"ser\" no presente e os dois verbos de \"ir\"",
+        "explicacao": "Em russo, o verbo \"быть\" (ser/estar) é omitido no presente: diz-se \"Я студент\" (Eu [sou] estudante) sem verbo. No passado e no futuro ele reaparece (был/будет). Para \"ir\", o russo distingue \"идти\" (a pé) de \"ехать\" (de veículo), uma diferença que o português não faz.",
+        "exemplos": [
+          { "frase": "Он студент.", "traducao": "Ele [é] estudante. (sem verbo no presente)" },
+          { "frase": "Она была дома.", "traducao": "Ela estava em casa. (passado feminino)" },
+          { "frase": "Я иду в магазин.", "traducao": "Eu vou à loja. (a pé)" },
+          { "frase": "Мы едем на дачу.", "traducao": "Nós vamos para a dacha. (de carro)" }
+        ]
+      },
+      "dialogo": {
+        "situacao": "Dois amigos decidem como vão ao parque no fim de semana.",
+        "falas": [
+          { "quem": "A", "fala": "Пойдём в парк в субботу?", "traducao": "Vamos ao parque no sábado?" },
+          { "quem": "B", "fala": "Давай! Парк далеко? Мы идём пешком или едем?", "traducao": "Vamos! O parque é longe? Vamos a pé ou de carro?" },
+          { "quem": "A", "fala": "Лучше поехать на метро. Это далеко.", "traducao": "Melhor ir de metrô. É longe." },
+          { "quem": "B", "fala": "Хорошо. У тебя есть карта метро?", "traducao": "Certo. Você tem cartão de metrô?" },
+          { "quem": "A", "fala": "Да, у меня есть. А у тебя?", "traducao": "Sim, eu tenho. E você?" },
+          { "quem": "B", "fala": "У меня нет. Куплю на станции.", "traducao": "Eu não tenho. Vou comprar na estação." }
+        ]
+      },
+      "expressoes": [
+        { "expressao": "Пойдём! (poydyom)", "significado": "Vamos! (a pé)", "uso": "Convite informal para ir junto a algum lugar. Se for de carro, seria \"Поехали!\" (poyekhali)." },
+        { "expressao": "Поехали! (poyekhali)", "significado": "Vamos! / Bora! (de veículo, ou para começar algo)", "uso": "Famosa frase de Yuri Gagarin ao decolar para o espaço em 1961. Hoje é usada para \"bora começar!\" em qualquer contexto." },
+        { "expressao": "Куда ни шло (kuda ni shlo)", "significado": "Tá bom, pode ser / Ainda vai", "uso": "Expressão para aceitar algo com certa resignação, como o nosso \"tá bom, vai\"." }
+      ],
+      "cultura": "O metrô de Moscou é considerado um dos mais bonitos do mundo: as estações parecem palácios, com lustres, mosaicos e esculturas. Foi inaugurado em 1935 e transporta cerca de 9 milhões de pessoas por dia. O conceito de \"дача\" (dacha, casa de campo) é central na vida russa: muitas famílias urbanas têm uma dacha onde passam fins de semana e feriados cultivando horta e descansando da cidade.",
       "quiz": [
         { "tipo": "multipla", "pergunta": "No presente, como se diz \"Ele é médico\" em russo?", "opcoes": ["Он есть врач", "Он врач (sem verbo)", "Он быть врач"], "certa": 1 },
         { "tipo": "multipla", "pergunta": "\"У меня есть машина\" quer dizer:", "opcoes": ["Eu vou de carro", "Eu tenho um carro", "Eu sou motorista"], "certa": 1 },
@@ -228,6 +427,7 @@
       "chave": "u8-frases",
       "titulo": "8. Frases do dia a dia",
       "tema": "O que resolve na rua, no café e numa conversa curta.",
+      "nivel": "A1",
       "vocabulario": [
         { "palavra": "Извините, пожалуйста (izvinite, pozhaluysta)", "traducao": "com licença / desculpe, por favor", "exemplo": "Извините, где метро?", "exemploTraducao": "Com licença, onde fica o metrô?" },
         { "palavra": "Я не понимаю (ya ne ponimayu)", "traducao": "eu não entendo", "exemplo": "Простите, я не понимаю.", "exemploTraducao": "Desculpe, eu não entendo." },
@@ -244,7 +444,38 @@
       ],
       "associacao": "\"Я хотел бы\" muda de terminação com o gênero de quem fala — homem diz \"хотел\", mulher diz \"хотела\" — a mesma concordância do passado de \"быть\" (был/была) da unidade 7.",
       "dica": "Comece toda frase com estranhos por \"извините\" (com licença) — pular a saudação/desculpa soa mal-educado em russo, mesmo perguntando algo rápido na rua.",
-      "musicaAtual": { "titulo": "Uno", "artista": "Little Big", "youtubeId": "L_dWvTCdDQ4" },
+      "gramatica": {
+        "titulo": "Можно e нельзя: permissão e proibição",
+        "explicacao": "\"Можно\" (pode/é permitido) e \"нельзя\" (não pode/é proibido) são palavras impessoais muito usadas no russo do dia a dia. Não precisam de sujeito: \"Можно войти?\" (Posso entrar?) e \"Здесь нельзя курить\" (Aqui não pode fumar). São essenciais para pedir permissão e entender regras.",
+        "exemplos": [
+          { "frase": "Можно сесть здесь?", "traducao": "Posso sentar aqui?" },
+          { "frase": "Можно вопрос?", "traducao": "Posso fazer uma pergunta?" },
+          { "frase": "Здесь нельзя фотографировать.", "traducao": "Aqui não pode fotografar." },
+          { "frase": "Нельзя! Это опасно.", "traducao": "Não pode! É perigoso." }
+        ]
+      },
+      "dialogo": {
+        "situacao": "Um turista brasileiro pede informações no metrô de Moscou.",
+        "falas": [
+          { "quem": "A", "fala": "Извините, где станция метро?", "traducao": "Com licença, onde fica a estação de metrô?" },
+          { "quem": "B", "fala": "Прямо и потом налево.", "traducao": "Em frente e depois à esquerda." },
+          { "quem": "A", "fala": "Повторите медленнее, пожалуйста.", "traducao": "Repita mais devagar, por favor." },
+          { "quem": "B", "fala": "Прямо. Потом налево.", "traducao": "Em frente. Depois à esquerda." },
+          { "quem": "A", "fala": "Спасибо большое! Это далеко?", "traducao": "Muito obrigado! É longe?" },
+          { "quem": "B", "fala": "Нет, пять минут пешком.", "traducao": "Não, cinco minutos a pé." },
+          { "quem": "A", "fala": "Отлично! Спасибо!", "traducao": "Ótimo! Obrigado!" },
+          { "quem": "B", "fala": "Не за что! Удачи!", "traducao": "De nada! Boa sorte!" }
+        ]
+      },
+      "expressoes": [
+        { "expressao": "Не за что! (ne za chto)", "significado": "De nada! / Não há de quê!", "uso": "Resposta comum a \"спасибо\", literalmente \"não há pelo quê\" — mais informal que \"пожалуйста\"." },
+        { "expressao": "Без проблем (bez problem)", "significado": "Sem problemas", "uso": "Equivale ao nosso \"tranquilo\" ou \"sem problema\", usado para aceitar ou minimizar algo." },
+        { "expressao": "Удачи! (udachi)", "significado": "Boa sorte!", "uso": "Desejo muito usado ao se despedir, especialmente quando a pessoa vai fazer algo importante." }
+      ],
+      "cultura": "O metrô de Moscou funciona das 5h30 às 1h da manhã e é o meio de transporte mais eficiente da cidade. As placas são em cirílico, mas as estações maiores têm transliteração em latim. Os russos são muito diretos nas interações de rua: não estranhe se alguém responder secamente à sua pergunta, isso é considerado eficiente, não rude. Ao entrar numa casa russa, sempre tire os sapatos na porta: o anfitrião geralmente oferece pantufas (тапочки).",
+      "musicas": [
+        { "titulo": "Uno", "artista": "Little Big", "youtubeId": "L_dWvTCdDQ4", "trechoLetra": "Uno, dos, quatro — dancing on the stage", "traducaoTrecho": "Um, dois, quatro (mistura proposital de espanhol) — dançando no palco" }
+      ],
       "quiz": [
         { "tipo": "multipla", "pergunta": "Qual é o jeito mais educado de pedir algo?", "opcoes": ["Дай мне кофе", "Я хотел(а) бы кофе, пожалуйста", "Хочу кофе"], "certa": 1 },
         { "tipo": "multipla", "pergunta": "\"Сколько это стоит?\" pergunta:", "opcoes": ["Onde fica", "Quanto custa", "Que horas são"], "certa": 1 },

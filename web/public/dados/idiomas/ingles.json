@@ -8,6 +8,35 @@
       "chave": "u1-sons",
       "titulo": "1. Sons e pronúncia",
       "tema": "O inglês não lê como escreve — cada palavra praticamente decora o próprio som.",
+      "nivel": "A1",
+      "gramatica": {
+        "titulo": "O alfabeto e o sistema de sons",
+        "explicacao": "O inglês tem 26 letras, mas mais de 40 sons diferentes. A mesma letra pode soar de formas completamente distintas dependendo da palavra — não existe regra fixa como no português. Por isso, ao aprender uma palavra nova, é essencial ouvir a pronúncia, não só ler a escrita.",
+        "exemplos": [
+          { "frase": "The 'a' in 'cat' and 'cake' sounds completely different.", "traducao": "O 'a' de 'cat' e de 'cake' soa completamente diferente." },
+          { "frase": "The 'k' in 'know' is silent — you only say 'no'.", "traducao": "O 'k' de 'know' é mudo — você só diz 'no'." },
+          { "frase": "'Read' in the present rhymes with 'reed'; 'read' in the past rhymes with 'red'.", "traducao": "'Read' no presente rima com 'reed'; 'read' no passado rima com 'red'." }
+        ]
+      },
+      "dialogo": {
+        "situacao": "Um estudante brasileiro pede ajuda com pronúncia ao professor.",
+        "falas": [
+          { "quem": "A", "fala": "Teacher, how do I pronounce 'thought'?", "traducao": "Professor, como eu pronuncio 'thought'?" },
+          { "quem": "B", "fala": "Put your tongue between your teeth and blow gently.", "traducao": "Ponha a língua entre os dentes e sopre de leve." },
+          { "quem": "A", "fala": "Like this? Thought?", "traducao": "Assim? Thought?" },
+          { "quem": "B", "fala": "Almost! Don't touch the roof of your mouth with your tongue.", "traducao": "Quase! Não encoste a língua no céu da boca." },
+          { "quem": "A", "fala": "It's so different from Portuguese!", "traducao": "É tão diferente do português!" },
+          { "quem": "B", "fala": "Yes, but it gets easier with practice.", "traducao": "Sim, mas fica mais fácil com a prática." },
+          { "quem": "A", "fala": "Can you say 'three' slowly for me?", "traducao": "Pode dizer 'three' devagar pra mim?" },
+          { "quem": "B", "fala": "Sure: three. Remember, tongue between the teeth!", "traducao": "Claro: three. Lembra, língua entre os dentes!" }
+        ]
+      },
+      "expressoes": [
+        { "expressao": "How do you say...?", "significado": "Como se diz...?", "uso": "Quando quer saber como pronunciar ou traduzir uma palavra." },
+        { "expressao": "Can you spell that?", "significado": "Pode soletrar?", "uso": "Quando não entendeu a palavra e precisa ver letra por letra." },
+        { "expressao": "Say that again, please.", "significado": "Fale de novo, por favor.", "uso": "Quando alguém falou rápido demais e você precisa ouvir outra vez." }
+      ],
+      "cultura": "O inglês é falado como língua nativa em dezenas de países, e a pronúncia muda drasticamente entre eles. Um americano do Texas, um britânico de Londres e um australiano de Sydney podem pronunciar as mesmas palavras de formas tão diferentes que até entre eles pode haver confusão. Não existe um \"inglês certo\" — existem sotaques, e todos são legítimos.",
       "vocabulario": [
         { "palavra": "th (voiced)", "traducao": "língua entre os dentes, vibrando — como em \"this\", \"the\"", "exemplo": "this, that, mother", "exemploTraducao": "isto, aquilo, mãe" },
         { "palavra": "th (voiceless)", "traducao": "a mesma posição, mas sem vibrar a garganta", "exemplo": "think, three, bath", "exemploTraducao": "pensar, três, banho" },
@@ -39,6 +68,38 @@
       "chave": "u2-saudacoes",
       "titulo": "2. Saudações e apresentações",
       "tema": "O básico para começar (ou revisar).",
+      "nivel": "A1",
+      "gramatica": {
+        "titulo": "Pronomes pessoais e o verbo 'to be'",
+        "explicacao": "Em inglês, o sujeito NUNCA pode ser omitido — diferente do português, onde 'estou bem' já basta, em inglês é obrigatório dizer 'I am fine'. Os pronomes pessoais são: I (eu), you (você/vocês), he (ele), she (ela), it (ele/ela para coisas e animais), we (nós), they (eles/elas). O verbo 'to be' (ser/estar) muda conforme o sujeito: I am, you are, he/she/it is, we are, they are.",
+        "exemplos": [
+          { "frase": "I am a student.", "traducao": "Eu sou estudante." },
+          { "frase": "She is my friend.", "traducao": "Ela é minha amiga." },
+          { "frase": "We are from Brazil.", "traducao": "Nós somos do Brasil." }
+        ]
+      },
+      "dialogo": {
+        "situacao": "Duas pessoas se conhecem numa festa.",
+        "falas": [
+          { "quem": "A", "fala": "Hi! My name is Lucas. What's your name?", "traducao": "Oi! Meu nome é Lucas. Qual é o seu nome?" },
+          { "quem": "B", "fala": "Hi, Lucas! I'm Sarah. Nice to meet you.", "traducao": "Oi, Lucas! Eu sou Sarah. Prazer em te conhecer." },
+          { "quem": "A", "fala": "Nice to meet you too! Where are you from?", "traducao": "Prazer também! De onde você é?" },
+          { "quem": "B", "fala": "I'm from Canada. And you?", "traducao": "Sou do Canadá. E você?" },
+          { "quem": "A", "fala": "I'm from Brazil. How are you enjoying the party?", "traducao": "Sou do Brasil. Está gostando da festa?" },
+          { "quem": "B", "fala": "It's great! The music is awesome.", "traducao": "Está ótima! A música está incrível." },
+          { "quem": "A", "fala": "Well, it was nice talking to you. See you later!", "traducao": "Bom, foi bom conversar com você. Até mais!" },
+          { "quem": "B", "fala": "See you later! Take care.", "traducao": "Até mais! Se cuida." }
+        ]
+      },
+      "expressoes": [
+        { "expressao": "What's up?", "significado": "E aí? / Tudo bem?", "uso": "Cumprimento bem informal entre amigos ou conhecidos. A resposta esperada é curta: 'Not much' ou 'All good'." },
+        { "expressao": "Long time no see!", "significado": "Quanto tempo!", "uso": "Quando você reencontra alguém que não via há muito tempo." },
+        { "expressao": "How's it going?", "significado": "Como vai?", "uso": "Pergunta informal, quase automática. Funciona como um 'tudo bem?' que não espera resposta longa." }
+      ],
+      "cultura": "Nos Estados Unidos e no Reino Unido, 'How are you?' funciona quase como um cumprimento automático, não uma pergunta real. A resposta esperada é sempre curta e positiva ('Good', 'Fine, thanks'), mesmo que o dia esteja péssimo. Responder com detalhes sinceros sobre seus problemas pode deixar a outra pessoa sem graça — é uma diferença cultural grande em relação ao Brasil, onde às vezes o 'tudo bem?' puxa uma conversa de verdade.",
+      "musicas": [
+        { "titulo": "Empire State of Mind", "artista": "Jay-Z ft. Alicia Keys", "youtubeId": "vk6014HuxcE", "trechoLetra": "In New York, concrete jungle where dreams are made of", "traducaoTrecho": "Em Nova York, selva de concreto onde sonhos são feitos" }
+      ],
       "vocabulario": [
         { "palavra": "Hi / Hello", "traducao": "oi / olá", "exemplo": "Hi, how are you?", "exemploTraducao": "Oi, como você está?" },
         { "palavra": "Good morning / afternoon / evening", "traducao": "bom dia / boa tarde / boa noite (ao chegar)", "exemplo": "Good morning, everyone.", "exemploTraducao": "Bom dia a todos." },
@@ -78,6 +139,32 @@
       "chave": "u3-numeros",
       "titulo": "3. Números e idade",
       "tema": "Contar e perguntar idade — a base para preço, hora e data.",
+      "nivel": "A1",
+      "gramatica": {
+        "titulo": "Plurais regulares com números",
+        "explicacao": "Em inglês, o plural regular se faz adicionando -s ou -es ao substantivo. Mas cuidado: 'hundred', 'thousand' e 'million' NÃO levam -s quando estão contando algo ('two hundred people', nunca 'two hundreds people'). Só levam -s quando usados de forma vaga: 'hundreds of people' (centenas de pessoas).",
+        "exemplos": [
+          { "frase": "I have two brothers.", "traducao": "Eu tenho dois irmãos." },
+          { "frase": "Three hundred dollars.", "traducao": "Trezentos dólares." },
+          { "frase": "Thousands of stars in the sky.", "traducao": "Milhares de estrelas no céu." }
+        ]
+      },
+      "dialogo": {
+        "situacao": "Numa loja, o cliente pergunta o preço de um produto.",
+        "falas": [
+          { "quem": "A", "fala": "Excuse me, how much is this shirt?", "traducao": "Com licença, quanto custa esta camisa?" },
+          { "quem": "B", "fala": "It's twenty-five dollars.", "traducao": "São vinte e cinco dólares." },
+          { "quem": "A", "fala": "And the blue one? How much is that?", "traducao": "E a azul? Quanto custa aquela?" },
+          { "quem": "B", "fala": "That one is thirty dollars.", "traducao": "Aquela é trinta dólares." },
+          { "quem": "A", "fala": "I'll take the blue one, please.", "traducao": "Vou levar a azul, por favor." },
+          { "quem": "B", "fala": "Sure. That's thirty dollars. Cash or card?", "traducao": "Certo. São trinta dólares. Dinheiro ou cartão?" }
+        ]
+      },
+      "expressoes": [
+        { "expressao": "A couple of...", "significado": "Uns dois, alguns poucos.", "uso": "Quando a quantidade é pequena e não precisa ser exata: 'a couple of minutes' (uns dois minutos)." },
+        { "expressao": "Give or take", "significado": "Mais ou menos, aproximadamente.", "uso": "Depois de um número para indicar que é estimativa: 'about thirty, give or take'." }
+      ],
+      "cultura": "Nos Estados Unidos, as temperaturas são em Fahrenheit (não Celsius), as distâncias em milhas (não quilômetros) e o peso em libras (não quilos). Isso pode confundir bastante: quando um americano diz que está '80 degrees' lá fora, não está fervendo — são uns 27 graus Celsius.",
       "vocabulario": [
         { "palavra": "one, two, three", "traducao": "um, dois, três", "exemplo": "one, two, three, four, five", "exemploTraducao": "um, dois, três, quatro, cinco" },
         { "palavra": "six, seven, eight, nine, ten", "traducao": "seis, sete, oito, nove, dez", "exemplo": "ten minutes", "exemploTraducao": "dez minutos" },
@@ -109,6 +196,38 @@
       "chave": "u4-familia",
       "titulo": "4. Família",
       "tema": "Quem é quem em casa.",
+      "nivel": "A1",
+      "gramatica": {
+        "titulo": "Adjetivos possessivos (my, your, his, her...)",
+        "explicacao": "Em inglês, os possessivos concordam com o DONO do objeto, não com o objeto em si. 'His' é sempre 'dele', independente de a coisa possuída ser masculina ou feminina. 'Her' é sempre 'dela'. Isso é muito diferente do português, onde 'seu/sua' muda de acordo com o substantivo. Os possessivos são: my (meu), your (seu), his (dele), her (dela), its (dele/dela para coisas), our (nosso), their (deles).",
+        "exemplos": [
+          { "frase": "His mother is a teacher.", "traducao": "A mãe dele é professora." },
+          { "frase": "Her brother lives in London.", "traducao": "O irmão dela mora em Londres." },
+          { "frase": "Their parents are from Italy.", "traducao": "Os pais deles são da Itália." }
+        ]
+      },
+      "dialogo": {
+        "situacao": "Dois colegas de trabalho conversam sobre suas famílias.",
+        "falas": [
+          { "quem": "A", "fala": "Do you have any brothers or sisters?", "traducao": "Você tem irmãos ou irmãs?" },
+          { "quem": "B", "fala": "Yes, I have one brother and two sisters.", "traducao": "Sim, tenho um irmão e duas irmãs." },
+          { "quem": "A", "fala": "Wow, that's a big family! Are they older or younger?", "traducao": "Nossa, família grande! São mais velhos ou mais novos?" },
+          { "quem": "B", "fala": "My brother is older, and my sisters are younger.", "traducao": "Meu irmão é mais velho, e minhas irmãs são mais novas." },
+          { "quem": "A", "fala": "What about your parents? Do they live nearby?", "traducao": "E seus pais? Moram perto?" },
+          { "quem": "B", "fala": "My mom lives here, but my dad lives in another city.", "traducao": "Minha mãe mora aqui, mas meu pai mora em outra cidade." },
+          { "quem": "A", "fala": "I see. I only have one cousin, and we're very close.", "traducao": "Entendo. Eu só tenho um primo, e somos bem próximos." },
+          { "quem": "B", "fala": "That's nice. Family is important.", "traducao": "Que bom. Família é importante." }
+        ]
+      },
+      "expressoes": [
+        { "expressao": "Run in the family", "significado": "Ser de família, ser hereditário.", "uso": "Quando algo é comum entre parentes: 'Blue eyes run in my family' (olhos azuis são de família)." },
+        { "expressao": "Black sheep of the family", "significado": "Ovelha negra da família.", "uso": "A pessoa que é diferente do resto da família, geralmente de um jeito que a família desaprova." },
+        { "expressao": "Like father, like son", "significado": "Tal pai, tal filho.", "uso": "Quando o filho se parece com o pai no comportamento ou na aparência." }
+      ],
+      "cultura": "Nos países anglófonos, é comum sair da casa dos pais aos 18 anos, quando se vai para a faculdade (college). Muitos jovens moram em repúblicas (dorms) ou apartamentos divididos. Ficar na casa dos pais depois dos 20 e poucos pode ser visto com estranheza — uma diferença cultural enorme em relação ao Brasil, onde morar com os pais até casar é perfeitamente normal.",
+      "musicas": [
+        { "titulo": "Hit Em Up", "artista": "2Pac ft. Outlawz", "youtubeId": "41qC3w3UUkU", "trechoLetra": "That's why I fucked your bitch, you fat motherfucker", "traducaoTrecho": "Letra pesada de rap dos anos 90 — conteúdo adulto" }
+      ],
       "vocabulario": [
         { "palavra": "family", "traducao": "a família", "exemplo": "My family is big.", "exemploTraducao": "Minha família é grande." },
         { "palavra": "father / dad, mother / mom", "traducao": "pai / papai, mãe / mamãe", "exemplo": "My dad works a lot.", "exemploTraducao": "Meu pai trabalha muito." },
@@ -140,6 +259,35 @@
       "chave": "u5-comida",
       "titulo": "5. Comida e bebida",
       "tema": "Pedir, comprar e comentar sobre o que se come.",
+      "nivel": "A1",
+      "gramatica": {
+        "titulo": "Contáveis e incontáveis (a, an, some)",
+        "explicacao": "Em inglês, alguns substantivos são 'contáveis' (dá pra contar: one apple, two apples) e outros são 'incontáveis' (não se conta: water, bread, rice). Os incontáveis NUNCA levam 'a/an' nem plural direto — para quantificar, usa-se uma medida: 'a glass of water', 'a loaf of bread', 'a bowl of rice'. 'Some' funciona para ambos: 'some apples' (algumas maçãs), 'some water' (um pouco de água).",
+        "exemplos": [
+          { "frase": "I'd like a cup of coffee, please.", "traducao": "Eu gostaria de uma xícara de café, por favor." },
+          { "frase": "Can I have some water?", "traducao": "Posso pedir um pouco de água?" },
+          { "frase": "Two slices of pizza, please.", "traducao": "Duas fatias de pizza, por favor." }
+        ]
+      },
+      "dialogo": {
+        "situacao": "Num restaurante, um cliente pede o jantar.",
+        "falas": [
+          { "quem": "A", "fala": "Good evening! Are you ready to order?", "traducao": "Boa noite! Pronto para pedir?" },
+          { "quem": "B", "fala": "Yes, I would like the grilled chicken, please.", "traducao": "Sim, eu gostaria do frango grelhado, por favor." },
+          { "quem": "A", "fala": "Would you like something to drink?", "traducao": "Gostaria de algo para beber?" },
+          { "quem": "B", "fala": "A glass of red wine, please.", "traducao": "Um copo de vinho tinto, por favor." },
+          { "quem": "A", "fala": "And for dessert?", "traducao": "E de sobremesa?" },
+          { "quem": "B", "fala": "What do you recommend?", "traducao": "O que você recomenda?" },
+          { "quem": "A", "fala": "The chocolate cake is delicious.", "traducao": "O bolo de chocolate está delicioso." },
+          { "quem": "B", "fala": "I'll have that, then. Thank you!", "traducao": "Vou querer esse, então. Obrigado!" }
+        ]
+      },
+      "expressoes": [
+        { "expressao": "I'm starving!", "significado": "Estou morrendo de fome!", "uso": "Forma exagerada e informal de dizer que está com muita fome." },
+        { "expressao": "It's on me.", "significado": "Eu pago. / É por minha conta.", "uso": "Quando você quer pagar a conta de alguém." },
+        { "expressao": "Grab a bite", "significado": "Comer alguma coisa rápida.", "uso": "Informal: 'Let's grab a bite' (vamos comer alguma coisa)." }
+      ],
+      "cultura": "Gorjeta (tip) nos Estados Unidos não é opcional — faz parte do salário do garçom. O esperado é entre 15% e 20% do valor da conta. Não deixar gorjeta é considerado extremamente rude e pode até causar constrangimento. No Reino Unido, a gorjeta existe mas é menos obrigatória, e em muitos restaurantes já vem incluída na conta como 'service charge'.",
       "vocabulario": [
         { "palavra": "bread", "traducao": "o pão", "exemplo": "A loaf of bread.", "exemploTraducao": "Um pão (uma peça de pão)." },
         { "palavra": "cheese", "traducao": "o queijo", "exemplo": "I like cheese.", "exemploTraducao": "Eu gosto de queijo." },
@@ -171,6 +319,36 @@
       "chave": "u6-tempo",
       "titulo": "6. Tempo, dias e datas",
       "tema": "Marcar hora, dia da semana e mês.",
+      "nivel": "A1",
+      "gramatica": {
+        "titulo": "Preposições de tempo: ON, IN, AT",
+        "explicacao": "As preposições de tempo em inglês seguem uma regra simples pelo tamanho do período: AT para o ponto exato (horários), ON para um dia específico, IN para períodos mais longos (meses, anos, estações, partes do dia). Exceção importante: 'at night' (à noite) usa AT, não IN.",
+        "exemplos": [
+          { "frase": "The meeting is at 3 o'clock.", "traducao": "A reunião é às 3 horas." },
+          { "frase": "I was born on July 15th.", "traducao": "Eu nasci em 15 de julho." },
+          { "frase": "It snows a lot in December.", "traducao": "Neva muito em dezembro." }
+        ]
+      },
+      "dialogo": {
+        "situacao": "Dois amigos combinam de se encontrar.",
+        "falas": [
+          { "quem": "A", "fala": "Are you free this weekend?", "traducao": "Você está livre neste fim de semana?" },
+          { "quem": "B", "fala": "On Saturday I'm busy, but Sunday is fine.", "traducao": "No sábado estou ocupado, mas domingo está bom." },
+          { "quem": "A", "fala": "Great! What time works for you?", "traducao": "Ótimo! Que hora funciona pra você?" },
+          { "quem": "B", "fala": "How about at two in the afternoon?", "traducao": "Que tal às duas da tarde?" },
+          { "quem": "A", "fala": "Perfect. Where do you want to meet?", "traducao": "Perfeito. Onde você quer se encontrar?" },
+          { "quem": "B", "fala": "Let's meet at the park. See you on Sunday!", "traducao": "Vamos nos encontrar no parque. Te vejo no domingo!" }
+        ]
+      },
+      "expressoes": [
+        { "expressao": "Better late than never.", "significado": "Antes tarde do que nunca.", "uso": "Quando alguém chega atrasado ou faz algo com atraso." },
+        { "expressao": "Around the clock", "significado": "24 horas por dia, sem parar.", "uso": "'They work around the clock' (eles trabalham sem parar, dia e noite)." },
+        { "expressao": "In the nick of time", "significado": "No último instante, por um triz.", "uso": "Quando algo acontece justo a tempo: 'We arrived in the nick of time' (chegamos por um triz)." }
+      ],
+      "cultura": "O formato de data americano coloca o MES antes do DIA: 03/15 é 15 de março, não 3 de janeiro e quinze dias. Isso causa confusão constante — e o formato de hora pode ser em 12h com AM/PM em vez de 24h. '2 PM' é 14h, '2 AM' é 2h da madrugada. O Reino Unido usa dia/mes como o Brasil, mas os Estados Unidos invertem.",
+      "musicas": [
+        { "titulo": "Back to Black", "artista": "Amy Winehouse", "youtubeId": "TJAfLE39ZZ8", "trechoLetra": "We only said goodbye with words, I died a hundred times", "traducaoTrecho": "A gente só disse adeus com palavras, eu morri cem vezes" }
+      ],
       "vocabulario": [
         { "palavra": "Monday, Tuesday, Wednesday", "traducao": "segunda, terça, quarta", "exemplo": "I work on Monday.", "exemploTraducao": "Eu trabalho na segunda." },
         { "palavra": "Thursday, Friday", "traducao": "quinta, sexta", "exemplo": "We go out on Friday night.", "exemploTraducao": "A gente sai na sexta à noite." },
@@ -202,6 +380,35 @@
       "chave": "u7-verbos",
       "titulo": "7. Verbos essenciais: to be, to have, to go",
       "tema": "Os três verbos que carregam a maior parte das frases do dia a dia — mais o \"presente contínuo\", que não existe do mesmo jeito em português.",
+      "nivel": "A1",
+      "gramatica": {
+        "titulo": "Presente simples: a regra do -s na terceira pessoa",
+        "explicacao": "No presente simples, todos os verbos recebem -s ou -es na terceira pessoa do singular (he, she, it). 'I go' mas 'he goes'; 'I watch' mas 'she watches'. Para perguntas e negações, entra o auxiliar DO/DOES — e quando o DOES aparece, o verbo principal volta para a forma base (sem -s): 'Does she like pizza?', nunca 'Does she likes pizza?'.",
+        "exemplos": [
+          { "frase": "She works every day.", "traducao": "Ela trabalha todo dia." },
+          { "frase": "Does he speak English?", "traducao": "Ele fala inglês?" },
+          { "frase": "He doesn't like coffee.", "traducao": "Ele não gosta de café." }
+        ]
+      },
+      "dialogo": {
+        "situacao": "Um casal conversa sobre a rotina do dia.",
+        "falas": [
+          { "quem": "A", "fala": "What are you doing right now?", "traducao": "O que você está fazendo agora?" },
+          { "quem": "B", "fala": "I'm making dinner. Are you hungry?", "traducao": "Estou fazendo o jantar. Está com fome?" },
+          { "quem": "A", "fala": "Yes, I'm starving! What are we having?", "traducao": "Sim, morrendo de fome! O que vamos comer?" },
+          { "quem": "B", "fala": "Pasta with chicken. Do you want salad too?", "traducao": "Macarrão com frango. Quer salada também?" },
+          { "quem": "A", "fala": "Sure. Can I help with anything?", "traducao": "Claro. Posso ajudar em alguma coisa?" },
+          { "quem": "B", "fala": "Yes, there are some tomatoes on the table. Can you wash them?", "traducao": "Sim, tem uns tomates na mesa. Pode lavá-los?" },
+          { "quem": "A", "fala": "Of course. Is the food almost ready?", "traducao": "Claro. A comida está quase pronta?" },
+          { "quem": "B", "fala": "Five more minutes. It's going to be delicious!", "traducao": "Mais cinco minutos. Vai ficar delicioso!" }
+        ]
+      },
+      "expressoes": [
+        { "expressao": "Go for it!", "significado": "Vai em frente! / Manda ver!", "uso": "Quando alguém está hesitando e você quer encorajar." },
+        { "expressao": "Have a go", "significado": "Tentar, experimentar.", "uso": "'Let me have a go' (deixa eu tentar)." },
+        { "expressao": "Be yourself", "significado": "Seja você mesmo.", "uso": "Conselho dado antes de uma entrevista ou encontro: 'Just be yourself' (só seja você mesmo)." }
+      ],
+      "cultura": "O inglês coloquial americano encurta quase tudo nas contrações: 'I'm' (I am), 'don't' (do not), 'can't' (cannot), 'gonna' (going to), 'wanna' (want to). Na fala do dia a dia, usar a forma longa completa ('I do not want') soa formal ou enfático demais — quase sempre se contrai. Já na escrita formal (e-mails de trabalho, redações), o esperado é a forma por extenso.",
       "vocabulario": [
         { "palavra": "I am, you are, he/she/it is", "traducao": "eu sou/estou, você é/está, ele/ela é/está (verbo TO BE)", "exemplo": "I am tired.", "exemploTraducao": "Eu estou cansado." },
         { "palavra": "we are, you are, they are", "traducao": "nós somos/estamos, vocês são/estão, eles são/estão", "exemplo": "We are ready.", "exemploTraducao": "Nós estamos prontos." },
@@ -234,6 +441,38 @@
       "chave": "u8-frases",
       "titulo": "8. Frases do dia a dia",
       "tema": "O que resolve na rua, no café e numa conversa curta — e dois falsos amigos clássicos do português.",
+      "nivel": "A1",
+      "gramatica": {
+        "titulo": "Palavras interrogativas (question words)",
+        "explicacao": "As perguntas em inglês começam com uma palavra interrogativa: What (o quê), Where (onde), When (quando), Why (por quê), Who (quem), How (como). Depois da palavra interrogativa, a ordem muda: vem o auxiliar (do/does/is/are/can) antes do sujeito. 'Where do you live?' (onde você mora?), nunca 'Where you live?'. 'How much' pergunta preço ou quantidade de incontáveis; 'How many' pergunta quantidade de contáveis.",
+        "exemplos": [
+          { "frase": "What do you do for a living?", "traducao": "O que você faz da vida? (profissão)" },
+          { "frase": "Where is the nearest subway station?", "traducao": "Onde fica a estação de metrô mais perto?" },
+          { "frase": "How much does this cost?", "traducao": "Quanto isso custa?" }
+        ]
+      },
+      "dialogo": {
+        "situacao": "Um turista brasileiro pede informação na rua em Nova York.",
+        "falas": [
+          { "quem": "A", "fala": "Excuse me, I'm looking for the subway station.", "traducao": "Com licença, estou procurando a estação de metrô." },
+          { "quem": "B", "fala": "Sure! Go straight for two blocks, then turn left.", "traducao": "Claro! Siga em frente por dois quarteirões, depois vire à esquerda." },
+          { "quem": "A", "fala": "Two blocks and then left. Got it. Is it far?", "traducao": "Dois quarteirões e depois esquerda. Entendi. É longe?" },
+          { "quem": "B", "fala": "No, it's about a five-minute walk.", "traducao": "Não, são uns cinco minutos a pé." },
+          { "quem": "A", "fala": "Great, thank you so much!", "traducao": "Ótimo, muito obrigado!" },
+          { "quem": "B", "fala": "No problem! Are you a tourist?", "traducao": "Sem problema! Você é turista?" },
+          { "quem": "A", "fala": "Yes, I'm from Brazil. It's my first time in New York.", "traducao": "Sim, sou do Brasil. É minha primeira vez em Nova York." },
+          { "quem": "B", "fala": "Welcome! Enjoy the city. Have a great day!", "traducao": "Bem-vindo! Aproveite a cidade. Tenha um ótimo dia!" }
+        ]
+      },
+      "expressoes": [
+        { "expressao": "My bad!", "significado": "Foi mal! / Erro meu!", "uso": "Admitir um erro pequeno de forma informal e rápida." },
+        { "expressao": "You bet!", "significado": "Com certeza! / Pode apostar!", "uso": "Forma enfática e informal de dizer 'sim': 'Can you help me? — You bet!'" },
+        { "expressao": "I have no clue.", "significado": "Não faço a menor ideia.", "uso": "Quando você realmente não sabe a resposta de algo." }
+      ],
+      "cultura": "O 'small talk' (conversa fiada) é uma habilidade social valorizada nos Estados Unidos e no Reino Unido. Falar sobre o tempo, perguntar 'how was your weekend?' e comentar sobre coisas leves com estranhos (no elevador, na fila, no caixa) é considerado educado e normal. No Brasil, conversa com estranhos também existe, mas nos EUA ela é quase obrigatória em certos contextos sociais.",
+      "musicas": [
+        { "titulo": "Life Goes On", "artista": "2Pac", "youtubeId": "KrHmzJI8z3M", "trechoLetra": "How many brothas fell victim to the streets", "traducaoTrecho": "Quantos irmãos foram vítimas das ruas" }
+      ],
       "vocabulario": [
         { "palavra": "Excuse me", "traducao": "com licença / desculpe", "exemplo": "Excuse me, where's the station?", "exemploTraducao": "Com licença, onde fica a estação?" },
         { "palavra": "I don't understand", "traducao": "eu não entendo", "exemplo": "Sorry, I don't understand.", "exemploTraducao": "Desculpe, eu não entendo." },
@@ -252,7 +491,6 @@
       ],
       "associacao": "\"Actually\" parece \"atualmente\" mas quer dizer \"na verdade\" — para \"atualmente\", use \"currently\" ou \"nowadays\". \"Pretend\" parece \"pretender\" mas quer dizer \"fingir\" — para \"pretender\", use \"intend to\" ou \"plan to\".",
       "dica": "Falsos amigos são os erros mais silenciosos: a frase sai gramaticalmente perfeita, só o sentido é outro — quem ouve entende algo bem diferente do que você quis dizer.",
-      "musicaAtual": { "titulo": "Happy", "artista": "Pharrell Williams", "youtubeId": "ZbZSe6N_BXs" },
       "quiz": [
         { "tipo": "multipla", "pergunta": "\"Actually\" significa:", "opcoes": ["Atualmente", "Na verdade", "Eventualmente"], "certa": 1 },
         { "tipo": "multipla", "pergunta": "\"Pretend\" significa:", "opcoes": ["Pretender", "Fingir", "Pressionar"], "certa": 1 },
