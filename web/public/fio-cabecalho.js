@@ -279,7 +279,7 @@
     const grupo = (titulo, itens) => h('div', { class: 'grupo' }, titulo ? h('p', {}, titulo) : null, itens)
     const link = (rot, href) => h('a', { href, onclick: () => { menuAberto = false } }, rot)
     return h('nav', { class: 'fio-menu', 'aria-label': 'Menu' },
-      grupo(null, [h('button', { type: 'button', onclick: () => { menuAberto = false; desenhar(); buscar() } }, 'Buscar'), link('Estante', '/#/estante')]),
+      grupo(null, [h('button', { type: 'button', onclick: () => { menuAberto = false; desenhar(); buscar() } }, 'Buscar'), link('Estante', '/#/estante'), link('Idiomas', '/idiomas.html')]),
       grupo('Quadrinhos', MENUS.quadrinhos.itens.map(([r, u]) => link(r, u))),
       grupo('Comunidade', MENUS.comunidade.itens.map(([r, u]) => link(r, u))),
       eu ? grupo(`Conta · ${primeiroNome()}`, [link('Minha conta', '/conta.html'), link('Notificações', '/central.html#avisos'), link('Recomendações para você', '/central.html#recs'),
@@ -300,7 +300,8 @@
           h('button', { class: 'm', type: 'button', title: 'Buscar ( / )', onclick: buscar }, icone('busca', 15), 'Buscar'),
           h('a', { class: 'm', href: '/#/estante', 'aria-current': area === 'estante' ? 'page' : null }, 'Estante'),
           menuArea('quadrinhos'),
-          menuArea('comunidade')),
+          menuArea('comunidade'),
+          h('a', { class: 'm', href: '/idiomas.html', 'aria-current': area === 'idiomas' ? 'page' : null }, 'Idiomas')),
         h('div', { class: 'largo-cantos' }, cantos(true)),
         h('div', { class: 'curto' },
           h('button', { type: 'button', class: 'ico', 'aria-label': 'Buscar', onclick: buscar }, icone('busca', 20)),
