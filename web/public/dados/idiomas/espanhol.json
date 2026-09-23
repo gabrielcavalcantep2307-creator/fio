@@ -2015,31 +2015,5 @@
         }
       ]
     }
-  ],
-  "livrosRecomendados": [
-    {
-      "titulo": "El Principito",
-      "autor": "Antoine de Saint-Exupéry",
-      "nivel": "A1–A2",
-      "porque": "Vocabulário simples, frases curtas e universais — ótimo para começar."
-    },
-    {
-      "titulo": "Cuentos de la selva",
-      "autor": "Horacio Quiroga",
-      "nivel": "A2–B1",
-      "porque": "Narrativa direta com vocabulário de natureza e aventura."
-    },
-    {
-      "titulo": "Como agua para chocolate",
-      "autor": "Laura Esquivel",
-      "nivel": "B1–B2",
-      "porque": "Espanhol mexicano, cultura culinária e expressões regionais."
-    },
-    {
-      "titulo": "Cien años de soledad",
-      "autor": "Gabriel García Márquez",
-      "nivel": "B2–C1",
-      "porque": "Prosa rica, expressões colombianas, referência do realismo mágico."
-    }
   ]
 }

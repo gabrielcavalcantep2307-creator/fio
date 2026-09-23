@@ -54,14 +54,16 @@
   .painel-card h3{margin:0 0 2px;font:500 16px Literata,Georgia,serif}
   .painel-card p{margin:0;font-size:12.5px;color:var(--tinta2)}
 
-  /* ── estudo: sidebar + conteudo ── */
-  .estudo{display:grid;grid-template-columns:230px 1fr;gap:24px;align-items:start}
-  .lista-unidades{position:sticky;top:110px;display:flex;flex-direction:column;gap:2px;max-height:calc(100vh - 140px);overflow-y:auto}
-  .item-unidade{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;text-align:left;background:none;border:none;font:inherit;font-size:13.5px;color:var(--tinta2);cursor:pointer;transition:background .1s}
-  .item-unidade:hover{background:var(--papel2)}
-  .item-unidade[aria-current=true]{background:var(--papel2);color:var(--tinta);font-weight:600}
-  .item-unidade .marca{width:18px;text-align:center;flex:none}
-  .item-unidade.feita .marca{color:var(--bom)}
+  /* ── unidades em abas horizontais ── */
+  .unidades-tabs{display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding:4px 0 14px;margin-bottom:8px;scrollbar-width:thin}
+  .unidade-tab{display:flex;align-items:center;gap:8px;padding:10px 16px;border:1px solid var(--linha);border-radius:10px;background:var(--papel2);font:inherit;font-size:13px;color:var(--tinta2);cursor:pointer;white-space:nowrap;transition:border-color .15s,background .15s}
+  .unidade-tab:hover{border-color:var(--acento);color:var(--tinta)}
+  .unidade-tab.ativa{border-color:var(--acento);background:color-mix(in srgb,var(--acento) 10%,var(--papel2));color:var(--acento);font-weight:600}
+  .unidade-tab.feita{border-color:color-mix(in srgb,var(--bom) 40%,var(--linha))}
+  .unidade-tab.feita .tab-num{color:var(--bom)}
+  .tab-num{font-weight:700;font-size:14px;width:22px;height:22px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:color-mix(in srgb,var(--acento) 10%,transparent)}
+  .unidade-tab.ativa .tab-num{background:color-mix(in srgb,var(--acento) 20%,transparent);color:var(--acento)}
+  .tab-titulo{max-width:140px;overflow:hidden;text-overflow:ellipsis}
 
   /* ── abas ── */
   .abas{display:flex;gap:0;border-bottom:2px solid var(--linha);margin-bottom:20px;overflow-x:auto;-webkit-overflow-scrolling:touch}
@@ -77,6 +79,7 @@
   .bloco h2{margin-top:0}
   .bloco-titulo{display:flex;align-items:center;gap:8px;margin-bottom:2px}
   .bloco-titulo .ico{font-size:18px}
+  .nivel-tag{display:inline-block;font-size:11px;font-weight:600;color:var(--acento);text-transform:uppercase;letter-spacing:.5px;padding:2px 8px;background:color-mix(in srgb,var(--acento) 10%,transparent);border-radius:4px;margin-top:6px}
 
   /* ── vocabulario ── */
   .vocab{display:flex;flex-direction:column;gap:10px}
@@ -84,6 +87,7 @@
   .palavra:first-child{border-top:none}
   .palavra .fala,.fala.mini{flex:none;background:none;border:1px solid var(--linha);border-radius:50%;width:34px;height:34px;cursor:pointer;font-size:15px;color:var(--acento);transition:border-color .15s;display:inline-flex;align-items:center;justify-content:center}
   .fala.mini{width:28px;height:28px;font-size:13px}
+  .fala.card-fala{position:absolute;top:12px;right:12px;z-index:1}
   .palavra .fala:hover,.fala.mini:hover{border-color:var(--acento)}
   .palavra .txt{flex:1;min-width:0}
   .palavra .orig,.resultado-item .orig{font:500 16px Literata,Georgia,serif}
@@ -129,36 +133,45 @@
   .dica{padding:12px 14px;background:color-mix(in srgb,var(--bom) 10%,transparent);border-radius:10px;font-size:13.5px;line-height:1.6}
 
   /* ── flashcards ── */
-  .flashcards-area{display:flex;flex-direction:column;align-items:center;gap:20px;padding:10px 0}
-  .flashcard-progresso{font-size:13px;color:var(--tinta2);display:flex;align-items:center;gap:12px}
-  .flashcard-barra{width:200px;height:5px;border-radius:3px;background:var(--linha);overflow:hidden}
-  .flashcard-barra i{display:block;height:100%;background:var(--acento);transition:width .3s}
-  .flashcard{width:100%;max-width:420px;min-height:220px;perspective:800px;cursor:pointer;-webkit-tap-highlight-color:transparent}
-  .flashcard-inner{position:relative;width:100%;min-height:220px;transition:transform .5s;transform-style:preserve-3d}
+  .flashcards-area{display:flex;flex-direction:column;align-items:center;gap:16px;padding:10px 0}
+  .flashcard-header{display:flex;align-items:center;justify-content:space-between;width:100%;max-width:420px}
+  .flashcard-progresso{display:flex;align-items:center;gap:12px;width:100%;max-width:420px}
+  .progresso-txt{font-size:13px;color:var(--tinta2);white-space:nowrap}
+  .flashcard-barra{flex:1;height:6px;border-radius:3px;background:var(--linha);overflow:hidden}
+  .flashcard-barra i{display:block;height:100%;background:var(--acento);border-radius:3px;transition:width .3s}
+  .flashcard-container{width:100%;display:flex;justify-content:center}
+  .flashcard{width:100%;max-width:420px;min-height:240px;perspective:800px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+  .flashcard-inner{position:relative;width:100%;min-height:240px;transition:transform .5s;transform-style:preserve-3d}
   .flashcard.virada .flashcard-inner{transform:rotateY(180deg)}
-  .flashcard-face{position:absolute;inset:0;-webkit-backface-visibility:hidden;backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px;border-radius:16px;border:2px solid var(--linha);text-align:center}
+  .flashcard-face{position:absolute;inset:0;-webkit-backface-visibility:hidden;backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px;border-radius:18px;border:2px solid var(--linha);text-align:center;box-shadow:0 4px 20px color-mix(in srgb,var(--tinta) 6%,transparent)}
   .flashcard-frente{background:var(--papel2)}
   .flashcard-verso{transform:rotateY(180deg);background:color-mix(in srgb,var(--bom) 8%,var(--papel2));border-color:color-mix(in srgb,var(--bom) 40%,var(--linha))}
-  .flashcard-palavra{font:500 26px Literata,Georgia,serif}
-  .flashcard-instrucao{font-size:12px;color:var(--tinta2);margin-top:10px}
-  .flashcard-traducao{font:500 22px Literata,Georgia,serif;color:var(--bom)}
+  .flashcard-palavra{font:500 28px Literata,Georgia,serif}
+  .flashcard-instrucao{font-size:12px;color:var(--tinta2);margin-top:12px;opacity:.7}
+  .flashcard-traducao{font:500 24px Literata,Georgia,serif;color:var(--bom)}
   .flashcard-exemplo{font-size:13px;color:var(--tinta2);margin-top:10px;font-style:italic}
-  .flashcard-acoes{display:flex;gap:12px;margin-top:6px}
-  .flashcard-acoes button{padding:10px 24px;border-radius:8px;border:1px solid var(--linha);font:inherit;font-size:14px;cursor:pointer;transition:background .1s}
+  .flashcard-acoes{display:flex;gap:14px;margin-top:8px}
+  .flashcard-acoes button{padding:12px 30px;border-radius:10px;border:2px solid var(--linha);font:inherit;font-size:15px;font-weight:500;cursor:pointer;transition:background .15s,transform .1s}
+  .flashcard-acoes button:active{transform:scale(.96)}
   .flashcard-acoes .nao-sei{background:color-mix(in srgb,var(--acento) 10%,var(--papel));color:var(--acento);border-color:color-mix(in srgb,var(--acento) 30%,var(--linha))}
   .flashcard-acoes .nao-sei:hover{background:color-mix(in srgb,var(--acento) 18%,var(--papel))}
   .flashcard-acoes .sei{background:color-mix(in srgb,var(--bom) 10%,var(--papel));color:var(--bom);border-color:color-mix(in srgb,var(--bom) 30%,var(--linha))}
   .flashcard-acoes .sei:hover{background:color-mix(in srgb,var(--bom) 18%,var(--papel))}
   .flashcard-resumo{text-align:center;padding:30px 20px}
-  .flashcard-resumo .nota{font:500 48px Literata,Georgia,serif;color:var(--acento);margin-bottom:8px}
+  .flashcard-resumo .nota{font:500 52px Literata,Georgia,serif;color:var(--acento);margin-bottom:6px}
+  .flashcard-resumo .resumo-txt{font-size:16px;color:var(--tinta);margin-bottom:6px}
+  .flashcard-resumo .resumo-msg{font-size:13.5px;color:var(--tinta2);line-height:1.5}
   .flashcard-embaralhar{background:none;border:1px solid var(--linha);border-radius:8px;padding:6px 14px;font:inherit;font-size:12.5px;color:var(--tinta2);cursor:pointer}
   .flashcard-embaralhar:hover{border-color:var(--acento);color:var(--acento)}
 
-  /* ── youtube thumbnail ── */
+  /* ── youtube thumbnail e player ── */
   .yt-thumb{display:block;position:relative;width:100%;max-width:560px;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:#000;text-decoration:none}
   .yt-thumb img{width:100%;height:100%;object-fit:cover}
   .yt-thumb .yt-play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:48px;color:#fff;background:rgba(0,0,0,.25);transition:background .2s}
   .yt-thumb:hover .yt-play{background:rgba(0,0,0,.45)}
+  .yt-player-wrap{width:100%;max-width:560px;aspect-ratio:16/9;margin:12px auto 0;border-radius:12px;overflow:hidden;background:#000}
+  .yt-player{width:100%;height:100%;border:none}
+  .yt-thumb-busca{text-decoration:none}
 
   /* ── cancao e trecho ── */
   .cancao-letra{white-space:pre-line;font:italic 15px/1.7 Literata,Georgia,serif;color:var(--tinta)}
@@ -177,73 +190,76 @@
   .artista-musica{font-size:12.5px;color:var(--tinta2);margin-top:2px}
   .unidade-musica{font-size:11px;color:var(--tinta2);margin-top:6px;padding:2px 8px;background:color-mix(in srgb,var(--acento) 8%,transparent);border-radius:4px;display:inline-block}
 
-  /* ── estudo de musica (frase por frase) ── */
+  /* ── estudo de musica (estrofe por estrofe) ── */
   .voltar-estudio{background:none;border:none;font:inherit;font-size:13px;color:var(--tinta2);cursor:pointer;padding:0;margin-bottom:10px}
   .voltar-estudio:hover{color:var(--acento)}
   .estudo-musica-header{text-align:center}
-  .estudo-musica-header .yt-thumb{margin:12px auto 0}
   .estudo-musica-nav{display:flex;justify-content:space-between;align-items:center;padding:10px 0}
 
-  .lista-frases{display:flex;flex-direction:column;gap:0}
-  .frase-item{padding:12px 14px;border-bottom:1px solid var(--linha);cursor:pointer;transition:background .15s;border-radius:0}
-  .frase-item:last-child{border-bottom:none}
-  .frase-item:hover{background:color-mix(in srgb,var(--acento) 4%,transparent)}
-  .frase-item.aberta{background:color-mix(in srgb,var(--acento) 8%,transparent)}
-  .frase-original{display:flex;align-items:center;gap:10px;font:500 15px/1.5 Literata,Georgia,serif}
-  .frase-detalhe{padding:10px 0 2px 38px}
-  .frase-trad{font-size:14px;color:var(--tinta2);font-style:italic;margin-bottom:8px}
-  .frase-vocab{display:flex;flex-direction:column;gap:6px}
-  .frase-palavra{font-size:13px;line-height:1.5}
-  .frase-palavra strong{color:var(--acento)}
-  .frase-detalhe-extra{font-size:12px;color:var(--tinta2);margin-top:1px}
-  .frase-pron{font-size:13px;color:var(--tinta2);padding:4px 8px;background:color-mix(in srgb,var(--ouro) 10%,transparent);border-radius:6px;display:inline-block;margin-top:4px}
+  .estudo-estrofes h2{font:600 18px Literata,Georgia,serif;color:var(--tinta)}
+  .lista-estrofes{display:flex;flex-direction:column;gap:0}
+  .estrofe-item{padding:0;border-bottom:1px solid var(--linha);transition:background .15s}
+  .estrofe-item:last-child{border-bottom:none}
+  .estrofe-item.aberta{background:color-mix(in srgb,var(--acento) 6%,transparent);border-radius:10px;margin:4px 0}
+  .estrofe-cabecalho{display:flex;flex-direction:column;gap:6px;padding:14px 16px;cursor:pointer}
+  .estrofe-cabecalho:hover{background:color-mix(in srgb,var(--acento) 4%,transparent)}
+  .estrofe-num{font:600 12px/1 sans-serif;text-transform:uppercase;letter-spacing:.8px;color:var(--acento)}
+  .estrofe-original{display:flex;align-items:flex-start;gap:10px;font:500 15px/1.6 Literata,Georgia,serif;color:var(--tinta)}
+  .estrofe-original span{white-space:pre-line}
+  .estrofe-detalhe{padding:4px 16px 16px 16px}
+  .estrofe-trad{font-size:14px;color:var(--tinta2);font-style:italic;margin-bottom:12px;padding:10px 14px;background:color-mix(in srgb,var(--acento) 5%,transparent);border-radius:8px;line-height:1.6}
+  .estrofe-vocab{margin-bottom:10px}
+  .estrofe-vocab h4{margin:0 0 10px;font:600 13px sans-serif;text-transform:uppercase;letter-spacing:.5px;color:var(--tinta2)}
+  .vocab-item{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-top:1px solid color-mix(in srgb,var(--linha) 60%,transparent)}
+  .vocab-item:first-child{border-top:none}
+  .vocab-info{flex:1;min-width:0}
+  .vocab-palavra{font:500 15px Literata,Georgia,serif;color:var(--acento)}
+  .vocab-sig{font-size:13.5px;color:var(--tinta);margin-top:2px}
+  .vocab-detalhe{font-size:12.5px;color:var(--tinta2);margin-top:2px;line-height:1.5}
+  .vocab-sin{font-size:12px;color:var(--tinta2);font-style:italic;margin-top:2px}
+  .estrofe-pron{font-size:13px;color:var(--tinta2);padding:10px 14px;background:color-mix(in srgb,var(--ouro) 8%,transparent);border-radius:8px;line-height:1.6;margin-top:4px}
 
-  .lista-pronuncia{display:flex;flex-direction:column;gap:10px}
-  .pronuncia-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--linha)}
-  .pronuncia-item:first-child{border-top:none}
-  .pronuncia-orig{font:14px Literata,Georgia,serif}
-  .pronuncia-guia{font-size:12px;color:var(--ouro);font-style:italic;margin-top:2px}
-
-  /* ── dicionario ── */
-  .busca-dicionario{width:100%;padding:12px 16px;border:2px solid var(--linha);border-radius:10px;font:inherit;font-size:15px;background:var(--papel);color:var(--tinta);transition:border-color .15s}
+  /* ── tradutor ── */
+  .busca-dicionario{width:100%;padding:14px 18px;border:2px solid var(--linha);border-radius:12px;font:inherit;font-size:16px;background:var(--papel);color:var(--tinta);transition:border-color .15s}
   .busca-dicionario:focus{border-color:var(--acento);outline:none}
-  .gt-link{display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:13px;color:var(--acento);text-decoration:none}
-  .gt-link:hover{text-decoration:underline}
-  .resultados-busca{display:flex;flex-direction:column;gap:0}
+  .tradutor-acoes{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+  .tradutor-local{margin-top:0}
+  .tradutor-local h4{font:600 13px sans-serif;text-transform:uppercase;letter-spacing:.3px;color:var(--tinta2)}
+  .resultados-busca{display:flex;flex-direction:column;gap:12px}
   .resultado-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--papel2);border:1px solid var(--linha);border-radius:10px}
-  .resultado-item+.resultado-item{margin-top:8px}
+  .resultado-item+.resultado-item{margin-top:0}
   .unid-tag{display:inline-block;font-size:10px;color:var(--tinta2);padding:1px 6px;background:color-mix(in srgb,var(--acento) 8%,transparent);border-radius:3px;margin-top:4px}
 
-  /* ── biblioteca de livros ── */
-  .grade-livros{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
-  .cartao-livro{background:var(--papel2);border:1px solid var(--linha);border-radius:14px;padding:18px 20px;display:flex;flex-direction:column;gap:4px}
-  .cartao-livro h3{margin:0;font:500 16px Literata,Georgia,serif;color:var(--tinta)}
-  .livro-nivel{font-size:11px;font-weight:600;color:var(--acento);text-transform:uppercase;letter-spacing:.5px}
-  .livro-autor{margin:0;font-size:13px;color:var(--tinta2)}
-  .livro-porque{margin:0;font-size:12.5px;color:var(--tinta2);line-height:1.5;margin-top:4px}
-
   /* ── quiz ── */
-  .quiz-pergunta{font:500 17px Literata,Georgia,serif;margin-bottom:14px}
+  .quiz-bloco .sub{max-width:none}
+  .quiz-pergunta{font:500 17px/1.5 Literata,Georgia,serif;margin-bottom:14px}
   .opcoes{display:flex;flex-direction:column;gap:8px}
-  .opcao{text-align:left;padding:11px 14px;border:1px solid var(--linha);border-radius:9px;background:var(--papel);font:inherit;font-size:14.5px;cursor:pointer;color:var(--tinta);transition:border-color .15s}
-  .opcao:hover{border-color:var(--acento)}
+  .opcao{text-align:left;padding:13px 16px;border:2px solid var(--linha);border-radius:10px;background:var(--papel);font:inherit;font-size:14.5px;cursor:pointer;color:var(--tinta);transition:border-color .15s,background .15s}
+  .opcao:hover{border-color:var(--acento);background:color-mix(in srgb,var(--acento) 4%,transparent)}
   .opcao.certa{border-color:var(--bom);background:color-mix(in srgb,var(--bom) 12%,var(--papel))}
   .opcao.errada{border-color:var(--acento);background:color-mix(in srgb,var(--acento) 12%,var(--papel))}
   .opcao:disabled{cursor:default}
-  .quiz-resultado{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
-  .quiz-placar{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--papel2);border-radius:10px;margin-bottom:14px;font-size:13.5px}
+  .quiz-resultado{display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;padding:20px 0}
+  .quiz-resultado-nota{font:600 48px Literata,Georgia,serif;color:var(--acento)}
+  .quiz-resultado-txt{font-size:16px;color:var(--tinta)}
+  .quiz-resultado-msg{font-size:14px;color:var(--tinta2)}
+  .quiz-placar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:10px 14px;background:var(--papel2);border-radius:10px;margin-bottom:14px;font-size:13.5px}
+  .quiz-progresso-bar{flex:1;min-width:100px;height:6px;border-radius:3px;background:var(--linha);overflow:hidden}
+  .quiz-progresso-fill{height:100%;background:var(--acento);border-radius:3px;transition:width .3s}
+  .quiz-status{color:var(--tinta2)}
+  .quiz-acertos-wrap{white-space:nowrap}
   .quiz-placar .acertos{font:600 18px Literata,Georgia,serif;color:var(--bom)}
+  .quiz-corpo{min-height:120px}
   .campo-resposta{display:flex;gap:8px;flex-wrap:wrap}
   .campo-resposta input{flex:1;min-width:180px}
+  .quiz-input{padding:11px 14px;border:2px solid var(--linha);border-radius:10px;font:inherit;font-size:15px;background:var(--papel);color:var(--tinta)}
+  .quiz-input:focus{border-color:var(--acento);outline:none}
 
   /* ── bloqueio ── */
   .bloqueio{text-align:center;padding:50px 20px}
   .bloqueio .bandeiras{font-size:40px;letter-spacing:8px;margin-bottom:6px}
 
   @media(max-width:760px){
-    .estudo{grid-template-columns:1fr}
-    .lista-unidades{position:static;flex-direction:row;overflow-x:auto;max-height:none}
-    .item-unidade{white-space:nowrap}
     .fala-bolha{max-width:88%}
     .flashcard{max-width:100%}
     .abas{gap:0}
@@ -255,7 +271,11 @@
     .idioma-hero h1{font-size:22px}
     .secao-nav{gap:0}
     .secao-btn{padding:10px 12px;font-size:13px}
-    .grade-musicas,.grade-livros{grid-template-columns:1fr}
+    .grade-musicas{grid-template-columns:1fr}
+    .unidades-tabs{gap:4px}
+    .unidade-tab{padding:8px 12px;font-size:12px}
+    .tab-titulo{max-width:100px}
+    .yt-player-wrap{border-radius:8px}
   }
 </style>
 </head>

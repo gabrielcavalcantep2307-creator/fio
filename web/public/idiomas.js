@@ -3,12 +3,17 @@ let CURSO_ATUAL = null
 
 const SAUDACOES = {
   espanhol:  { s: '¡Bienvenido!', f: 'Aprender español es abrir una puerta al mundo.' },
-  frances:   { s: 'Bienvenue !', f: 'Apprendre le français, c’est découvrir une nouvelle façon de penser.' },
+  frances:   { s: 'Bienvenue !', f: "Apprendre le français, c'est découvrir une nouvelle façon de penser." },
   ingles:    { s: 'Welcome!', f: 'Learning English opens doors everywhere.' },
   japones:   { s: 'ようこそ！', f: '日本語を学ぶことは冒険です。' },
   alemao:    { s: 'Willkommen!', f: 'Deutsch zu lernen ist eine Reise wert.' },
   russo:     { s: 'Добро пожаловать!', f: 'Русский язык — ключ к великой культуре.' },
-  italiano:  { s: 'Benvenuto!', f: "Imparare l’italiano è scoprire la bellezza." },
+  italiano:  { s: 'Benvenuto!', f: "Imparare l'italiano è scoprire la bellezza." },
+}
+
+const CODIGO_VOZ = {
+  espanhol: 'es-MX', frances: 'fr-FR', ingles: 'en-US',
+  japones: 'ja-JP', alemao: 'de-DE', russo: 'ru-RU', italiano: 'it-IT',
 }
 
 async function iniciar() {
@@ -89,8 +94,7 @@ const SECOES = [
   { id: '',           label: '🏠 Painel' },
   { id: 'curso',      label: '📚 Curso' },
   { id: 'musica',     label: '🎵 Estúdio Musical' },
-  { id: 'dicionario', label: '💬 Dicionário' },
-  { id: 'livros',     label: '📖 Livros' },
+  { id: 'dicionario', label: '💬 Tradutor' },
 ]
 
 function desenharSecoes(secao, detalhe) {
@@ -122,8 +126,7 @@ function desenharSecoes(secao, detalhe) {
 
   if (secao === 'curso') desenharCurso(conteudo, detalhe)
   else if (secao === 'musica') desenharEstudioMusical(conteudo, detalhe)
-  else if (secao === 'dicionario') desenharDicionario(conteudo)
-  else if (secao === 'livros') desenharBiblioteca(conteudo)
+  else if (secao === 'dicionario') desenharTradutor(conteudo)
   else desenharPainelPrincipal(conteudo)
 }
 
@@ -172,20 +175,15 @@ function desenharPainelPrincipal(alvo) {
         el('span', { class: 'painel-card-ico' }, '🎵'),
         el('div', {},
           el('h3', {}, 'Estúdio Musical'),
-          el('p', {}, `${musicas.length} músicas para estudar frase por frase`))),
+          el('p', {}, `${musicas.length} músicas para estudar estrofe por estrofe`))),
       el('button', { class: 'painel-card', type: 'button', onclick: () => { location.hash = `#/${CURSO_ATUAL.chave}/dicionario` } },
         el('span', { class: 'painel-card-ico' }, '💬'),
         el('div', {},
-          el('h3', {}, 'Dicionário'),
-          el('p', {}, `${totalV} palavras para consultar e traduzir`))),
-      el('button', { class: 'painel-card', type: 'button', onclick: () => { location.hash = `#/${CURSO_ATUAL.chave}/livros` } },
-        el('span', { class: 'painel-card-ico' }, '📖'),
-        el('div', {},
-          el('h3', {}, 'Livros recomendados'),
-          el('p', {}, 'Leituras para acelerar o aprendizado')))))
+          el('h3', {}, 'Tradutor'),
+          el('p', {}, 'Traduz e tira dúvidas no idioma')))))
 }
 
-// ── curso (unidades + abas) ──
+// ── curso (unidades em abas horizontais) ──
 
 function desenharCurso(alvo, unidadeChave) {
   const { curso, progresso } = CURSO_ATUAL
@@ -193,18 +191,17 @@ function desenharCurso(alvo, unidadeChave) {
     || curso.unidades.find((u) => !progresso[u.chave])
     || curso.unidades[0]
 
-  const listaUnidades = el('nav', { class: 'lista-unidades', 'aria-label': 'Unidades' },
+  const listaUnidades = el('div', { class: 'unidades-tabs', role: 'tablist' },
     curso.unidades.map((u, i) => el('button', {
-      class: 'item-unidade' + (progresso[u.chave] ? ' feita' : ''), type: 'button',
-      'aria-current': u.chave === unidade.chave ? 'true' : null,
+      class: 'unidade-tab' + (u.chave === unidade.chave ? ' ativa' : '') + (progresso[u.chave] ? ' feita' : ''),
+      type: 'button', role: 'tab',
       onclick: () => { location.hash = `#/${CURSO_ATUAL.chave}/curso/${u.chave}` },
     },
-      el('span', { class: 'marca', 'aria-hidden': 'true' }, progresso[u.chave] ? '✓' : String(i + 1)),
-      u.titulo)))
+      el('span', { class: 'tab-num' }, progresso[u.chave] ? '✓' : String(i + 1)),
+      el('span', { class: 'tab-titulo' }, u.titulo))))
 
   const painel = el('div', { class: 'licao' })
-  por(alvo,
-    el('div', { class: 'estudo' }, listaUnidades, painel))
+  por(alvo, listaUnidades, painel)
   desenharPainelUnidade(painel, unidade)
 }
 
@@ -262,14 +259,14 @@ function desenharAbaAprender(alvo, unidade) {
     el('div', { class: 'bloco' },
       el('h2', {}, unidade.titulo),
       unidade.tema ? el('p', { class: 'sub', style: 'margin:0' }, unidade.tema) : null,
-      unidade.nivel ? el('span', { style: 'display:inline-block;margin-top:8px;font-size:11px;padding:3px 8px;border-radius:4px;background:color-mix(in srgb,var(--acento) 12%,transparent);color:var(--acento);font-weight:600' }, unidade.nivel) : null),
+      unidade.nivel ? el('span', { class: 'nivel-tag' }, unidade.nivel) : null),
   ]
 
   if (unidade.vocabulario?.length) {
     blocos.push(el('div', { class: 'bloco' },
       el('div', { class: 'bloco-titulo' }, el('span', { class: 'ico' }, '📝'), el('h2', { style: 'margin:0' }, 'Vocabulário')),
       el('div', { class: 'vocab' }, unidade.vocabulario.map((v) => el('div', { class: 'palavra' },
-        el('button', { class: 'fala', type: 'button', title: 'Ouvir', onclick: () => falar(v.palavra, CURSO_ATUAL.curso.voz) }, '🔊'),
+        el('button', { class: 'fala', type: 'button', title: 'Ouvir', onclick: () => falar(limparParaVoz(v.palavra), CURSO_ATUAL.curso.voz) }, '🔊'),
         el('div', { class: 'txt' },
           el('div', { class: 'orig' }, v.palavra),
           el('div', { class: 'trad' }, v.traducao),
@@ -349,14 +346,15 @@ function desenharAbaPraticar(alvo, unidade) {
   }
 
   const progresso = el('div', { class: 'flashcard-progresso' })
-  const cardContainer = el('div')
+  const cardContainer = el('div', { class: 'flashcard-container' })
   const acoes = el('div')
-  const embaralharBtn = el('button', { class: 'flashcard-embaralhar', type: 'button', onclick: embaralhar }, '🔀 Embaralhar')
 
-  por(alvo, el('div', { class: 'bloco' },
-    el('div', { class: 'bloco-titulo' }, el('span', { class: 'ico' }, '🃏'), el('h2', { style: 'margin:0' }, 'Flashcards')),
-    el('p', { class: 'sub', style: 'margin:0 0 4px' }, 'Toque no cartão para revelar. Teste sua memória.'),
-    el('div', { class: 'flashcards-area' }, progresso, cardContainer, acoes, embaralharBtn)))
+  por(alvo, el('div', { class: 'flashcards-area' },
+    el('div', { class: 'flashcard-header' },
+      el('h3', {}, '🃏 Flashcards'),
+      el('button', { class: 'flashcard-embaralhar', type: 'button', onclick: embaralhar }, '🔀 Embaralhar')),
+    el('p', { class: 'sub', style: 'margin:0 0 8px;text-align:center' }, 'Toque no cartão para revelar a tradução.'),
+    progresso, cardContainer, acoes))
 
   function desenharCard() {
     if (indice >= total) {
@@ -364,9 +362,9 @@ function desenharAbaPraticar(alvo, unidade) {
       por(progresso)
       por(cardContainer, el('div', { class: 'flashcard-resumo' },
         el('div', { class: 'nota' }, `${pct}%`),
-        el('div', { style: 'font-size:15px;margin-bottom:4px' }, `${acertos} de ${total} acertos`),
-        el('div', { style: 'font-size:13px;color:var(--tinta2)' }, pct >= 80 ? 'Excelente! Você domina esse vocabulário.' : pct >= 50 ? 'Bom progresso. Revise as que errou.' : 'Continue praticando — a repetição faz o domínio.'),
-        el('button', { class: 'botao mini', style: 'margin-top:14px', type: 'button', onclick: () => { indice = 0; acertos = 0; desenharCard() } }, 'Recomeçar')))
+        el('div', { class: 'resumo-txt' }, `${acertos} de ${total} acertos`),
+        el('div', { class: 'resumo-msg' }, pct >= 80 ? 'Excelente! Você domina esse vocabulário.' : pct >= 50 ? 'Bom progresso. Revise as que errou.' : 'Continue praticando — a repetição faz o domínio.'),
+        el('button', { class: 'botao mini', style: 'margin-top:14px', type: 'button', onclick: () => { indice = 0; acertos = 0; desenharCard() } }, 'Recomecar')))
       por(acoes)
       return
     }
@@ -374,7 +372,7 @@ function desenharAbaPraticar(alvo, unidade) {
     const v = vocab[indice]
     const pct = Math.round((indice / total) * 100)
     por(progresso,
-      el('span', {}, `${indice + 1} de ${total}`),
+      el('span', { class: 'progresso-txt' }, `${indice + 1} de ${total}`),
       el('div', { class: 'flashcard-barra' }, el('i', { style: `width:${pct}%` })))
 
     const card = el('div', { class: 'flashcard', onclick: () => {
@@ -382,6 +380,7 @@ function desenharAbaPraticar(alvo, unidade) {
     } },
       el('div', { class: 'flashcard-inner' },
         el('div', { class: 'flashcard-face flashcard-frente' },
+          el('button', { class: 'fala card-fala', type: 'button', onclick: (ev) => { ev.stopPropagation(); falar(limparParaVoz(v.palavra), CURSO_ATUAL.curso.voz) } }, '🔊'),
           el('div', { class: 'flashcard-palavra' }, v.palavra),
           el('div', { class: 'flashcard-instrucao' }, 'toque para revelar')),
         el('div', { class: 'flashcard-face flashcard-verso' },
@@ -423,7 +422,7 @@ function desenharAbaMusica(alvo, unidade) {
       idx >= 0 ? el('button', {
         class: 'botao mini', style: 'margin-top:10px', type: 'button',
         onclick: () => { location.hash = `#/${CURSO_ATUAL.chave}/musica/${idx}` },
-      }, '🎵 Estudar esta música frase por frase') : null))
+      }, '🎵 Estudar esta música estrofe por estrofe') : null))
   }
 
   if (!blocos.length) {
@@ -436,7 +435,7 @@ function desenharAbaMusica(alvo, unidade) {
 
 function desenharAbaQuiz(alvo, unidade) {
   const quizContainer = el('div')
-  por(alvo, el('div', { class: 'bloco' },
+  por(alvo, el('div', { class: 'bloco quiz-bloco' },
     el('div', { class: 'bloco-titulo' }, el('span', { class: 'ico' }, '✍️'), el('h2', { style: 'margin:0' }, 'Quiz')),
     el('p', { class: 'sub', style: 'margin:0 0 10px' }, 'Responda para fixar e alimentar sua revisão espaçada.'),
     quizContainer))
@@ -465,7 +464,7 @@ function desenharEstudioMusical(alvo, detalhe) {
   por(alvo,
     el('div', { class: 'bloco', style: 'border:none;background:none;padding:0' },
       el('h2', { style: 'margin-bottom:4px' }, '🎵 Estúdio Musical'),
-      el('p', { class: 'sub', style: 'margin:0 0 20px' }, 'Estude cada música frase por frase. Aprenda palavras, significados e pronúncia.')),
+      el('p', { class: 'sub', style: 'margin:0 0 20px' }, 'Estude cada música estrofe por estrofe. Aprenda palavras, significados e pronúncia.')),
     el('div', { class: 'grade-musicas' },
       musicas.map((m, i) => el('button', {
         class: 'cartao-musica', type: 'button',
@@ -481,13 +480,7 @@ function desenharEstudioMusical(alvo, detalhe) {
 }
 
 function desenharEstudoMusica(alvo, musica, idx, total) {
-  const frases = musica.frases || []
-  const linhas = frases.length
-    ? frases
-    : (musica.trechoLetra || '').split('\n').filter((l) => l.trim()).map((l, i) => ({
-        original: l,
-        traducao: (musica.traducaoTrecho || '').split('\n')[i] || '',
-      }))
+  const estrofes = musica.frases || []
 
   const nav = el('div', { class: 'estudo-musica-nav' },
     idx > 0 ? el('button', { class: 'botao mini fraco', type: 'button', onclick: () => {
@@ -498,73 +491,85 @@ function desenharEstudoMusica(alvo, musica, idx, total) {
       location.hash = `#/${CURSO_ATUAL.chave}/musica/${idx + 1}`
     } }, 'Próxima →') : el('span'))
 
+  const playerEl = musica.youtubeId
+    ? el('div', { class: 'yt-player-wrap' },
+        el('iframe', {
+          class: 'yt-player',
+          src: `https://www.youtube-nocookie.com/embed/${musica.youtubeId}?rel=0`,
+          allow: 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture',
+          allowfullscreen: '', loading: 'lazy', frameborder: '0',
+          title: musica.titulo,
+        }))
+    : el('a', {
+        class: 'yt-thumb-busca botao mini fraco',
+        href: `https://www.youtube.com/results?search_query=${encodeURIComponent(musica.titulo + ' ' + musica.artista)}`,
+        target: '_blank', rel: 'noopener',
+      }, '🔎 Procurar no YouTube')
+
   const header = el('div', { class: 'bloco estudo-musica-header' },
-    el('div', { class: 'bloco-titulo' },
-      el('span', { class: 'ico' }, '🎧'),
-      el('h2', { style: 'margin:0' }, musica.titulo)),
-    el('p', { class: 'sub', style: 'margin:0 0 10px' }, musica.artista),
-    ytThumb(musica.youtubeId, musica.titulo))
+    el('h2', { style: 'margin:0 0 4px' }, musica.titulo),
+    el('p', { class: 'sub', style: 'margin:0 0 14px' }, musica.artista),
+    playerEl)
 
-  const frasesEl = el('div', { class: 'bloco estudo-frases' },
-    el('div', { class: 'bloco-titulo' },
-      el('span', { class: 'ico' }, '📝'),
-      el('h2', { style: 'margin:0' }, 'Frase por frase')),
-    el('p', { class: 'sub', style: 'margin:0 0 14px' }, 'Toque em cada frase para ver a tradução e o vocabulário. Use o alto-falante para ouvir.'),
-    linhas.length
-      ? el('div', { class: 'lista-frases' }, linhas.map((f) => criarFrase(f)))
+  const estrofesEl = el('div', { class: 'bloco estudo-estrofes' },
+    el('h2', { style: 'margin:0 0 4px' }, 'Estrofe por estrofe'),
+    el('p', { class: 'sub', style: 'margin:0 0 18px' }, 'Toque em cada estrofe para ver a tradução e o significado de cada palavra.'),
+    estrofes.length
+      ? el('div', { class: 'lista-estrofes' }, estrofes.map((e, i) => criarEstrofe(e, i + 1)))
       : el('p', { class: 'sub' }, 'Letra ainda não disponível para estudo.'))
-
-  const pronunciaEl = el('div', { class: 'bloco' },
-    el('div', { class: 'bloco-titulo' },
-      el('span', { class: 'ico' }, '🗣️'),
-      el('h2', { style: 'margin:0' }, 'Pronúncia')),
-    el('p', { class: 'sub', style: 'margin:0 0 10px' }, 'Ouça e repita cada frase. Tente imitar a entonação do cantor.'),
-    linhas.length
-      ? el('div', { class: 'lista-pronuncia' }, linhas.map((f) => el('div', { class: 'pronuncia-item' },
-          el('button', { class: 'fala', type: 'button', onclick: () => falar(f.original, CURSO_ATUAL.curso.voz) }, '🔊'),
-          el('div', {},
-            el('div', { class: 'pronuncia-orig' }, f.original),
-            f.pronuncia ? el('div', { class: 'pronuncia-guia' }, f.pronuncia) : null))))
-      : el('p', { class: 'sub' }, 'Sem dados de pronúncia.'))
 
   por(alvo,
     el('button', { class: 'voltar-estudio', type: 'button', onclick: () => {
       location.hash = `#/${CURSO_ATUAL.chave}/musica`
     } }, '← Voltar ao estúdio'),
-    header, frasesEl, pronunciaEl, nav)
+    header, estrofesEl, nav)
 }
 
-function criarFrase(f) {
-  const detalhe = el('div', { class: 'frase-detalhe', style: 'display:none' })
-  const item = el('div', { class: 'frase-item', onclick: () => {
+function criarEstrofe(estrofe, num) {
+  const detalhe = el('div', { class: 'estrofe-detalhe', style: 'display:none' })
+  const item = el('div', { class: 'estrofe-item' })
+
+  const cabecalho = el('div', { class: 'estrofe-cabecalho', onclick: () => {
     const aberto = detalhe.style.display !== 'none'
     detalhe.style.display = aberto ? 'none' : 'block'
     item.classList.toggle('aberta', !aberto)
   } },
-    el('div', { class: 'frase-original' },
-      el('button', { class: 'fala mini', type: 'button', title: 'Ouvir', onclick: (ev) => {
+    el('div', { class: 'estrofe-num' }, `Estrofe ${num}`),
+    el('div', { class: 'estrofe-original' },
+      el('button', { class: 'fala mini', type: 'button', title: 'Ouvir estrofe', onclick: (ev) => {
         ev.stopPropagation()
-        falar(f.original, CURSO_ATUAL.curso.voz)
+        falar(limparParaVoz(estrofe.original), CURSO_ATUAL.curso.voz)
       } }, '🔊'),
-      el('span', {}, f.original)),
-    detalhe)
+      el('span', {}, estrofe.original)))
 
   const detalhes = []
-  if (f.traducao) detalhes.push(el('div', { class: 'frase-trad' }, f.traducao))
-  if (f.vocabulario?.length) {
-    detalhes.push(el('div', { class: 'frase-vocab' },
-      f.vocabulario.map((v) => el('div', { class: 'frase-palavra' },
-        el('strong', {}, v.palavra),
-        el('span', {}, ` — ${v.significado}`),
-        v.detalhe ? el('div', { class: 'frase-detalhe-extra' }, v.detalhe) : null))))
+  if (estrofe.traducao) {
+    detalhes.push(el('div', { class: 'estrofe-trad' },
+      el('strong', {}, 'Tradução: '),
+      estrofe.traducao))
   }
-  if (f.pronuncia) {
-    detalhes.push(el('div', { class: 'frase-pron' }, `🗣️ ${f.pronuncia}`))
+  if (estrofe.vocabulario?.length) {
+    detalhes.push(el('div', { class: 'estrofe-vocab' },
+      el('h4', {}, 'Palavra por palavra'),
+      estrofe.vocabulario.map((v) => el('div', { class: 'vocab-item' },
+        el('button', { class: 'fala mini', type: 'button', onclick: () => falar(limparParaVoz(v.palavra), CURSO_ATUAL.curso.voz) }, '🔊'),
+        el('div', { class: 'vocab-info' },
+          el('div', { class: 'vocab-palavra' }, v.palavra),
+          el('div', { class: 'vocab-sig' }, v.significado),
+          v.detalhe ? el('div', { class: 'vocab-detalhe' }, v.detalhe) : null,
+          v.sinonimos ? el('div', { class: 'vocab-sin' }, `Sinônimos: ${v.sinonimos}`) : null)))))
+  }
+  if (estrofe.pronuncia) {
+    detalhes.push(el('div', { class: 'estrofe-pron' },
+      el('strong', {}, '🗣️ Pronúncia: '),
+      el('span', {}, estrofe.pronuncia),
+      el('button', { class: 'fala mini', style: 'margin-left:8px', type: 'button', onclick: () => falar(limparParaVoz(estrofe.original), CURSO_ATUAL.curso.voz) }, '🔊')))
   }
   if (!detalhes.length) {
-    detalhes.push(el('div', { class: 'frase-trad sub' }, '(toque no alto-falante para ouvir)'))
+    detalhes.push(el('div', { class: 'estrofe-trad sub' }, '(toque no alto-falante para ouvir a estrofe)'))
   }
   por(detalhe, detalhes)
+  item.append(cabecalho, detalhe)
   return item
 }
 
@@ -578,11 +583,11 @@ function ytThumb(ytId, titulo) {
     class: 'yt-thumb', href: `https://www.youtube.com/watch?v=${ytId}`,
     target: '_blank', rel: 'noopener', title: `Assistir "${titulo}" no YouTube`,
   },
-    el('img', { src: `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`, alt: titulo, loading: 'lazy' }),
+    el('img', { src: `https://img.youtube.com/vi/${ytId}/mqdefault.jpg`, alt: titulo, loading: 'lazy' }),
     el('div', { class: 'yt-play' }, '▶'))
 }
 
-// ── dicionario ──
+// ── tradutor ──
 
 function coletarVocabulario() {
   if (!CURSO_ATUAL) return []
@@ -595,82 +600,67 @@ function coletarVocabulario() {
   return todo
 }
 
-function desenharDicionario(alvo) {
+function desenharTradutor(alvo) {
   const vocab = coletarVocabulario()
+  const idioma = CURSO_ATUAL.curso.nome
+  const chave = CURSO_ATUAL.chave
+  const codigoGt = { espanhol: 'es', frances: 'fr', ingles: 'en', japones: 'ja', alemao: 'de', russo: 'ru', italiano: 'it' }
+  const tl = codigoGt[chave] || 'en'
+
   const campo = el('input', {
-    type: 'search', class: 'busca-dicionario', placeholder: 'Buscar palavra ou tradução…',
+    type: 'search', class: 'busca-dicionario',
+    placeholder: `Digite em português ou ${idioma.toLowerCase()}…`,
     autocomplete: 'off', spellcheck: 'false',
   })
   const resultados = el('div', { class: 'resultados-busca' })
-  const idioma = CURSO_ATUAL.curso.nome
-  const gtLink = (termo) => `https://translate.google.com/?sl=auto&tl=pt&text=${encodeURIComponent(termo)}`
 
   function buscar() {
     const q = campo.value.trim().toLowerCase()
     if (!q) {
-      por(resultados, el('p', { class: 'sub' }, `${vocab.length} palavras disponíveis. Digite para buscar.`))
+      por(resultados,
+        el('p', { class: 'sub' }, `Digite uma palavra ou frase para traduzir.`),
+        el('p', { class: 'sub', style: 'margin-top:8px' }, `${vocab.length} palavras do curso disponíveis para consulta rápida.`))
       return
     }
     const norm = (s) => s.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase()
     const achados = vocab.filter((v) =>
       norm(v.palavra).includes(norm(q)) || norm(v.traducao).includes(norm(q)) ||
       (v.exemplo && norm(v.exemplo).includes(norm(q))))
-    if (!achados.length) {
-      por(resultados,
-        el('p', { class: 'sub' }, `Nenhum resultado para "${q}".`),
-        el('a', { class: 'botao mini fraco', href: gtLink(q), target: '_blank', rel: 'noopener' },
-          `🌐 Traduzir "${q}" no Google Translate`))
-      return
+
+    const gtUrl = `https://translate.google.com/?sl=auto&tl=${tl}&text=${encodeURIComponent(q)}`
+    const gtUrlPt = `https://translate.google.com/?sl=${tl}&tl=pt&text=${encodeURIComponent(q)}`
+
+    const itens = []
+    itens.push(el('div', { class: 'tradutor-acoes' },
+      el('a', { class: 'botao mini', href: gtUrlPt, target: '_blank', rel: 'noopener' },
+        `🌐 Traduzir para português`),
+      el('a', { class: 'botao mini fraco', href: gtUrl, target: '_blank', rel: 'noopener' },
+        `🌐 Traduzir para ${idioma.toLowerCase()}`)))
+
+    if (achados.length) {
+      itens.push(el('div', { class: 'tradutor-local' },
+        el('h4', { style: 'margin:0 0 10px' }, `Do curso de ${idioma}:`),
+        achados.map((v) => el('div', { class: 'resultado-item' },
+          el('button', { class: 'fala mini', type: 'button', onclick: () => falar(limparParaVoz(v.palavra), CURSO_ATUAL.curso.voz) }, '🔊'),
+          el('div', {},
+            el('div', { class: 'orig' }, v.palavra),
+            el('div', { class: 'trad' }, v.traducao),
+            v.exemplo ? el('div', { class: 'exemplo' }, v.exemplo) : null,
+            el('div', { class: 'unid-tag' }, v._unidade))))))
     }
-    por(resultados, achados.map((v) => el('div', { class: 'resultado-item' },
-      el('button', { class: 'fala mini', type: 'button', onclick: () => falar(v.palavra, CURSO_ATUAL.curso.voz) }, '🔊'),
-      el('div', {},
-        el('div', { class: 'orig' }, v.palavra),
-        el('div', { class: 'trad' }, v.traducao),
-        v.exemplo ? el('div', { class: 'exemplo' }, v.exemplo) : null,
-        el('div', { class: 'unid-tag' }, v._unidade)))))
+    por(resultados, itens)
   }
 
   campo.addEventListener('input', buscar)
 
   por(alvo,
     el('div', { class: 'bloco', style: 'border:none;background:none;padding:0' },
-      el('h2', { style: 'margin-bottom:4px' }, `💬 Dicionário de ${idioma}`),
-      el('p', { class: 'sub', style: 'margin:0 0 16px' }, 'Busque palavras do curso ou use o Google Translate para tirar dúvidas.')),
-    el('div', { class: 'bloco' },
-      campo,
-      el('a', { class: 'gt-link', href: gtLink(''), target: '_blank', rel: 'noopener', id: 'gt-full' },
-        `🌐 Abrir Google Translate (${idioma})`)),
+      el('h2', { style: 'margin-bottom:4px' }, `💬 Tradutor de ${idioma}`),
+      el('p', { class: 'sub', style: 'margin:0 0 16px' }, `Busque qualquer palavra ou frase — traduz direto pelo Google Translate e mostra o que o curso já ensinou.`)),
+    el('div', { class: 'bloco' }, campo),
     resultados)
 
   buscar()
-}
-
-// ── biblioteca ──
-
-function desenharBiblioteca(alvo) {
-  const livros = CURSO_ATUAL.curso.livrosRecomendados || []
-  const idioma = CURSO_ATUAL.curso.nome
-
-  if (!livros.length) {
-    por(alvo,
-      el('div', { class: 'bloco', style: 'text-align:center;padding:40px 20px' },
-        el('div', { style: 'font-size:40px;margin-bottom:10px' }, '📖'),
-        el('h2', {}, `Livros para aprender ${idioma}`),
-        el('p', { class: 'sub' }, 'Em breve: recomendações de livros para cada nível do curso.')))
-    return
-  }
-
-  por(alvo,
-    el('div', { class: 'bloco', style: 'border:none;background:none;padding:0' },
-      el('h2', { style: 'margin-bottom:4px' }, `📖 Livros para aprender ${idioma}`),
-      el('p', { class: 'sub', style: 'margin:0 0 20px' }, 'Leituras recomendadas para cada fase do aprendizado.')),
-    el('div', { class: 'grade-livros' },
-      livros.map((l) => el('div', { class: 'cartao-livro' },
-        el('div', { class: 'livro-nivel' }, l.nivel || ''),
-        el('h3', {}, l.titulo),
-        el('p', { class: 'livro-autor' }, l.autor),
-        el('p', { class: 'livro-porque' }, l.porque)))))
 }
 
 // ── quiz ──
@@ -680,27 +670,39 @@ function iniciarQuiz(unidade, alvo) {
   const total = unidade.quiz.length
 
   const placar = el('div', { class: 'quiz-placar' },
-    el('span', {}, 'Pergunta '),
-    el('span', { id: 'quiz-num' }, '1'),
-    el('span', {}, ` de ${total}`),
-    el('span', { style: 'margin-left:auto' }, 'Acertos: '),
-    el('span', { class: 'acertos', id: 'quiz-acertos' }, '0'))
-  const corpo = el('div')
+    el('div', { class: 'quiz-progresso-bar' },
+      el('div', { class: 'quiz-progresso-fill', id: 'quiz-fill' })),
+    el('span', { class: 'quiz-status' },
+      el('span', {}, 'Pergunta '),
+      el('span', { id: 'quiz-num' }, '1'),
+      el('span', {}, ` de ${total}`)),
+    el('span', { class: 'quiz-acertos-wrap' },
+      el('span', { class: 'acertos', id: 'quiz-acertos' }, '0'),
+      el('span', {}, ` acerto${total !== 1 ? 's' : ''}`)))
+  const corpo = el('div', { class: 'quiz-corpo' })
   por(alvo, placar, corpo)
 
   function atualizarPlacar() {
     const numEl = document.getElementById('quiz-num')
     const acertosEl = document.getElementById('quiz-acertos')
+    const fillEl = document.getElementById('quiz-fill')
     if (numEl) numEl.textContent = Math.min(indice + 1, total)
     if (acertosEl) acertosEl.textContent = acertos
+    if (fillEl) fillEl.style.width = `${Math.round((indice / total) * 100)}%`
   }
 
   function proxima() {
     if (indice >= total) {
+      const pct = Math.round((acertos / total) * 100)
       por(corpo,
         el('div', { class: 'quiz-resultado' },
-          el('span', { style: 'font:500 18px Literata,Georgia,serif' }, `${acertos} de ${total} certas`),
-          el('button', { class: 'botao mini', type: 'button', onclick: () => { indice = 0; acertos = 0; atualizarPlacar(); proxima() } }, 'Refazer')))
+          el('div', { class: 'quiz-resultado-nota' }, `${pct}%`),
+          el('div', { class: 'quiz-resultado-txt' }, `${acertos} de ${total} certas`),
+          el('div', { class: 'quiz-resultado-msg' },
+            pct >= 80 ? '🌟 Excelente! Você domina esta unidade.' :
+            pct >= 50 ? '💪 Bom progresso! Revise o que errou.' :
+            '💡 Continue praticando — você vai chegar lá!'),
+          el('button', { class: 'botao', type: 'button', onclick: () => { indice = 0; acertos = 0; atualizarPlacar(); proxima() } }, 'Refazer quiz')))
       pedir(`/idiomas/${CURSO_ATUAL.chave}/concluir`, { unidade: unidade.chave, acertos, total }).catch(() => {})
       return
     }
@@ -735,12 +737,12 @@ function desenharPergunta(q, alvo, aoResponder) {
     por(alvo, el('div', { class: 'quiz-pergunta' }, q.pergunta), el('div', { class: 'opcoes' }, botoes))
     return
   }
-  const chave = (s) => String(s).normalize('NFD').replace(/\p{M}/gu, '').replace(new RegExp(String.fromCharCode(223), 'g'), 'ss').toLowerCase().trim()
-  const campo = el('input', { type: 'text', autocomplete: 'off', autocapitalize: 'off', spellcheck: 'false' })
+  const chaveNorm = (s) => String(s).normalize('NFD').replace(/\p{M}/gu, '').replace(new RegExp(String.fromCharCode(223), 'g'), 'ss').toLowerCase().trim()
+  const campo = el('input', { type: 'text', class: 'quiz-input', autocomplete: 'off', autocapitalize: 'off', spellcheck: 'false', placeholder: 'Digite sua resposta…' })
   const saida = el('div')
   const conferir = () => {
     campo.disabled = true
-    const acertou = chave(campo.value) === chave(q.resposta)
+    const acertou = chaveNorm(campo.value) === chaveNorm(q.resposta)
     por(saida, recado(acertou ? 'bom' : 'ruim', acertou ? 'Certo!' : `A resposta era: ${q.resposta}`))
     aoResponder(acertou)
   }
@@ -751,7 +753,7 @@ function desenharPergunta(q, alvo, aoResponder) {
   campo.focus()
 }
 
-// ── revisao espaçada ──
+// ── revisao espacada ──
 
 function iniciarRevisao() {
   if (!CURSO_ATUAL) return
@@ -788,12 +790,17 @@ function iniciarRevisao() {
 
 // ── helpers ──
 
+function limparParaVoz(texto) {
+  return texto.replace(/\s*[\/|]\s*/g, ' ').replace(/\([^)]*\)/g, '').replace(/\s+/g, ' ').trim()
+}
+
 function falar(texto, lang) {
   if (!('speechSynthesis' in window)) return
   speechSynthesis.cancel()
-  const u = new SpeechSynthesisUtterance(texto)
+  const limpo = limparParaVoz(texto)
+  const u = new SpeechSynthesisUtterance(limpo)
   u.lang = lang || 'pt-BR'
-  u.rate = 0.92
+  u.rate = 0.85
   speechSynthesis.speak(u)
 }
 

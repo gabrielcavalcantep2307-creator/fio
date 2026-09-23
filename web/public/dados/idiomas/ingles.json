@@ -1914,31 +1914,5 @@
         }
       ]
     }
-  ],
-  "livrosRecomendados": [
-    {
-      "titulo": "Charlotte’s Web",
-      "autor": "E.B. White",
-      "nivel": "A1–A2",
-      "porque": "Inglês claro e narrativa simples, ótimo para iniciantes."
-    },
-    {
-      "titulo": "The Old Man and the Sea",
-      "autor": "Ernest Hemingway",
-      "nivel": "A2–B1",
-      "porque": "Frases curtas e diretas, vocabulário de ação e natureza."
-    },
-    {
-      "titulo": "1984",
-      "autor": "George Orwell",
-      "nivel": "B1–B2",
-      "porque": "Prosa clara, vocabulário político e social."
-    },
-    {
-      "titulo": "Harry Potter and the Philosopher’s Stone",
-      "autor": "J.K. Rowling",
-      "nivel": "B1",
-      "porque": "Leitura envolvente com inglês britânico acessível."
-    }
   ]
 }

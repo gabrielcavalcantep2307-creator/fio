@@ -415,7 +415,97 @@
           "artista": "Zaz",
           "youtubeId": "0TFNGRYMz1U",
           "trechoLetra": "Je veux de l'amour, de la joie, de la bonne humeur",
-          "traducaoTrecho": "Eu quero amor, alegria, bom humor"
+          "traducaoTrecho": "Eu quero amor, alegria, bom humor",
+          "frases": [
+            {
+              "original": "Donnez-moi une suite au Ritz, je n'en veux pas\nDes bijoux de chez Chanel, je n'en veux pas",
+              "traducao": "Me dêem uma suíte no Ritz, eu não quero\nJoias da Chanel, eu não quero",
+              "vocabulario": [
+                {
+                  "palavra": "donnez-moi",
+                  "significado": "me dêem / me dem",
+                  "detalhe": "Imperativo de \"donner\" (dar). \"Moi\" é o pronome tônico para \"eu/me\".",
+                  "sinonimos": "offrez-moi"
+                },
+                {
+                  "palavra": "suite",
+                  "significado": "suíte (de hotel)",
+                  "detalhe": "Mesmo significado que em português. Pronuncia-se \"süít\".",
+                  "sinonimos": "chambre de luxe"
+                },
+                {
+                  "palavra": "je n'en veux pas",
+                  "significado": "eu não quero (disso)",
+                  "detalhe": "\"En\" substitui o objeto mencionado antes. \"Veux\" vem de \"vouloir\" (querer). A negação é ne...pas."
+                },
+                {
+                  "palavra": "bijoux",
+                  "significado": "joias",
+                  "detalhe": "Plural irregular: bijou → bijoux. Pronuncia-se \"bijú\"."
+                }
+              ],
+              "pronuncia": "donê-muá ün süít o rits, jə nã vø pá / dê bijú də chê chanél, jə nã vø pá"
+            },
+            {
+              "original": "Donnez-moi une limousine, j'en ferais quoi?\nOffrez-moi du personnel, j'en ferais quoi?",
+              "traducao": "Me dêem uma limusine, eu faria o quê?\nMe ofereçam funcionários, eu faria o quê?",
+              "vocabulario": [
+                {
+                  "palavra": "limousine",
+                  "significado": "limusine",
+                  "detalhe": "Mesma palavra em português. Pronuncia-se \"limuzin\"."
+                },
+                {
+                  "palavra": "j'en ferais quoi",
+                  "significado": "eu faria o quê com isso",
+                  "detalhe": "\"Ferais\" é o condicional de \"faire\" (fazer). \"En\" = disso. \"Quoi\" = o quê."
+                },
+                {
+                  "palavra": "offrez-moi",
+                  "significado": "me ofereçam",
+                  "detalhe": "Imperativo de \"offrir\" (oferecer). Mesmo padrão de \"donnez-moi\"."
+                },
+                {
+                  "palavra": "personnel",
+                  "significado": "funcionários / pessoal",
+                  "detalhe": "Pronuncia-se \"personél\". Sem o acento que o português usa."
+                }
+              ],
+              "pronuncia": "donê-muá ün limuzin, jã fərê kuá / ofrê-muá dü personél, jã fərê kuá"
+            },
+            {
+              "original": "Je veux de l'amour, de la joie, de la bonne humeur\nCe n'est pas votre argent qui f'ra mon bonheur",
+              "traducao": "Eu quero amor, alegria, bom humor\nNão é o dinheiro de vocês que vai fazer minha felicidade",
+              "vocabulario": [
+                {
+                  "palavra": "je veux",
+                  "significado": "eu quero",
+                  "detalhe": "Presente de \"vouloir\". Pronuncia-se \"jə vø\". O ø é um som entre \"ê\" e \"ô\"."
+                },
+                {
+                  "palavra": "amour",
+                  "significado": "amor",
+                  "detalhe": "Pronuncia-se \"amúr\". O R francês é gutural."
+                },
+                {
+                  "palavra": "joie",
+                  "significado": "alegria",
+                  "detalhe": "Pronuncia-se \"juá\". Um som muito francês."
+                },
+                {
+                  "palavra": "argent",
+                  "significado": "dinheiro / prata",
+                  "detalhe": "Pronuncia-se \"arjã\". O T final é mudo."
+                },
+                {
+                  "palavra": "bonheur",
+                  "significado": "felicidade",
+                  "detalhe": "Pronuncia-se \"bonør\". Literalmente \"boa hora\", mas significa felicidade."
+                }
+              ],
+              "pronuncia": "jə vø də lamúr, də la juá, də la bon ümør / sə nê pá votr arjã ki fra mõ bonør"
+            }
+          ]
         }
       ],
       "quiz": [
@@ -649,43 +739,63 @@
           "traducaoTrecho": "Então a gente dança, então a gente dança",
           "frases": [
             {
-              "original": "Alors on danse",
-              "traducao": "Então a gente dança",
+              "original": "Qui dit étude dit travail\nQui dit taf te dit les thunes\nQui dit argent dit dépenses",
+              "traducao": "Quem fala estudo fala trabalho\nQuem fala trampo fala grana\nQuem fala dinheiro fala gastos",
+              "vocabulario": [
+                {
+                  "palavra": "qui dit",
+                  "significado": "quem diz / quem fala",
+                  "detalhe": "\"Qui\" = quem. \"Dit\" = diz, presente de \"dire\"."
+                },
+                {
+                  "palavra": "étude",
+                  "significado": "estudo",
+                  "detalhe": "Pronuncia-se \"étüd\". O E final é mudo."
+                },
+                {
+                  "palavra": "taf",
+                  "significado": "trampo / trabalho (gíria)",
+                  "detalhe": "Gíria francesa muito usada para \"emprego\" ou \"trabalho\"."
+                },
+                {
+                  "palavra": "thunes",
+                  "significado": "grana / dinheiro (gíria)",
+                  "detalhe": "Pronuncia-se \"tün\". Gíria para dinheiro, como \"bufunfa\" em português."
+                },
+                {
+                  "palavra": "dépenses",
+                  "significado": "gastos / despesas",
+                  "detalhe": "Do verbo \"dépenser\" (gastar). Pronuncia-se \"depãs\"."
+                }
+              ],
+              "pronuncia": "ki di etüd di traválh / ki di taf tə di lê tün / ki di arjã di depãs"
+            },
+            {
+              "original": "Alors on sort pour oublier tous les problèmes\nAlors on danse",
+              "traducao": "Então a gente sai para esquecer todos os problemas\nEntão a gente dança",
               "vocabulario": [
                 {
                   "palavra": "alors",
                   "significado": "então",
-                  "detalhe": "Palavra-chave do francês falado. Alors = então / pois é / bem."
+                  "detalhe": "Pronuncia-se \"alór\". Uma das palavras mais usadas em francês."
                 },
                 {
                   "palavra": "on",
                   "significado": "a gente / nós",
-                  "detalhe": "Pronome informal para \"nós\". On danse = a gente dança."
-                }
-              ],
-              "pronuncia": "a-LOR on DANS"
-            },
-            {
-              "original": "Qui dit études dit travail",
-              "traducao": "Quem diz estudo diz trabalho",
-              "vocabulario": [
-                {
-                  "palavra": "qui dit",
-                  "significado": "quem diz",
-                  "detalhe": "Estrutura \"qui dit X dit Y\" = quem fala de X fala de Y."
+                  "detalhe": "Pronome indefinido. Na fala do dia a dia, substitui \"nous\" (nós)."
                 },
                 {
-                  "palavra": "études",
-                  "significado": "estudos",
-                  "detalhe": "Étude = estudo. Fazer études = estudar na faculdade."
+                  "palavra": "oublier",
+                  "significado": "esquecer",
+                  "detalhe": "Pronuncia-se \"ubliê\". O OU francês soa como \"u\" português."
                 },
                 {
-                  "palavra": "travail",
-                  "significado": "trabalho",
-                  "detalhe": "Travail = trabalho. Travailler = trabalhar."
+                  "palavra": "danse",
+                  "significado": "dança",
+                  "detalhe": "Do verbo \"danser\". O E final é mudo."
                 }
               ],
-              "pronuncia": "ki di e-TUD di tra-VAI"
+              "pronuncia": "alór õ sór pur ubliê tu lê problém / alór õ dãs"
             }
           ]
         }
@@ -911,7 +1021,31 @@
           "artista": "Stromae",
           "youtubeId": "S_xH7noaqTA",
           "trechoLetra": "Tu étais formidable, j'étais fort minable",
-          "traducaoTrecho": "Você era formidável, eu era bem deplorável"
+          "traducaoTrecho": "Você era formidável, eu era bem deplorável",
+          "frases": [
+            {
+              "original": "Tu sais, tu sais, tu sais\nJe ne suis pas formidable",
+              "traducao": "Você sabe, você sabe, você sabe\nEu não sou formidável",
+              "vocabulario": [
+                {
+                  "palavra": "tu sais",
+                  "significado": "você sabe",
+                  "detalhe": "Presente de \"savoir\" (saber). Pronuncia-se \"tü sê\". O S final é mudo."
+                },
+                {
+                  "palavra": "formidable",
+                  "significado": "formidável / incrível",
+                  "detalhe": "Pronuncia-se \"formidábl\". Mesma raiz latina que em português."
+                },
+                {
+                  "palavra": "je ne suis pas",
+                  "significado": "eu não sou",
+                  "detalhe": "Negação: ne + verbo + pas. \"Suis\" = sou, do verbo \"être\" (ser/estar)."
+                }
+              ],
+              "pronuncia": "tü sê, tü sê, tü sê / jə nə süí pá formidábl"
+            }
+          ]
         }
       ],
       "quiz": [
@@ -1820,7 +1954,36 @@
           "artista": "Angèle",
           "youtubeId": "a79iLjV-HKw",
           "trechoLetra": "Bruxelles, je t'aime, Bruxelles, je t'aime",
-          "traducaoTrecho": "Bruxelas, eu te amo, Bruxelas, eu te amo"
+          "traducaoTrecho": "Bruxelas, eu te amo, Bruxelas, eu te amo",
+          "frases": [
+            {
+              "original": "Bruxelles je t'aime\nJe t'aime à jamais\nMais qu'est-ce que j'aurais pu faire?",
+              "traducao": "Bruxelas, eu te amo\nEu te amo para sempre\nMas o que eu poderia ter feito?",
+              "vocabulario": [
+                {
+                  "palavra": "je t'aime",
+                  "significado": "eu te amo",
+                  "detalhe": "A expressão de amor mais clássica do francês. Pronuncia-se \"jə tém\"."
+                },
+                {
+                  "palavra": "à jamais",
+                  "significado": "para sempre",
+                  "detalhe": "\"Jamais\" = nunca/sempre. Com \"à\", significa \"para sempre\". Pronuncia-se \"a jamê\"."
+                },
+                {
+                  "palavra": "qu'est-ce que",
+                  "significado": "o que",
+                  "detalhe": "Forma interrogativa. Pronuncia-se \"késkə\". Parece complicado, mas é uma só palavra na fala."
+                },
+                {
+                  "palavra": "j'aurais pu",
+                  "significado": "eu poderia ter / eu teria podido",
+                  "detalhe": "Condicional passado. \"Aurais\" do verbo \"avoir\" + \"pu\" do verbo \"pouvoir\"."
+                }
+              ],
+              "pronuncia": "brüsél jə tém / jə tém a jamê / mê késkə jorê pü fêr"
+            }
+          ]
         }
       ],
       "quiz": [
@@ -1870,32 +2033,6 @@
           "resposta": "pas de problème"
         }
       ]
-    }
-  ],
-  "livrosRecomendados": [
-    {
-      "titulo": "Le Petit Prince",
-      "autor": "Antoine de Saint-Exupéry",
-      "nivel": "A1–A2",
-      "porque": "Texto simples e universal, vocabulário básico com frases curtas."
-    },
-    {
-      "titulo": "L’Étranger",
-      "autor": "Albert Camus",
-      "nivel": "B1–B2",
-      "porque": "Frases objetivas, passé composé predominante, leitura fluente."
-    },
-    {
-      "titulo": "Les Misérables (adaptação)",
-      "autor": "Victor Hugo",
-      "nivel": "B1",
-      "porque": "Versão adaptada para estudantes, vocabulário histórico."
-    },
-    {
-      "titulo": "Astérix le Gaulois",
-      "autor": "Gosciny & Uderzo",
-      "nivel": "A2–B1",
-      "porque": "Quadrinho com gírias, trocadilhos e francês coloquial."
     }
   ]
 }

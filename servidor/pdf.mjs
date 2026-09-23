@@ -228,7 +228,7 @@ function novoDocumento(topoExtra = 0) {
     },
     tituloCapitulo(texto) {
       this.espaco(18)
-      this.linhaCentralizada(texto || 'Sem título', { fonte: 'F2', tamanho: 13.5, leading: 20 })
+      this.linhaCentralizada(texto || '', { fonte: 'F2', tamanho: 13.5, leading: 20 })
       this.espaco(14)
     },
     // Escreve numa posição EXATA, sem mexer no cursor nem checar quebra de
@@ -298,7 +298,8 @@ export function montarPdf(livro) {
   capa.novaPagina()
   const { fundo, claro: textoClaro, acento, formas } = capaDe(livro.id, livro.temas)
   const autorCapa = (livro.autor || 'AUTORIA NÃO IDENTIFICADA').toUpperCase()
-  const linhasTitulo = quebrarLinhas(livro.titulo || 'Sem título', 'F2', 21, COLUNA + 30)
+  const tituloReal = (livro.titulo && livro.titulo !== 'Sem título') ? livro.titulo : (livro.tituloOriginal || 'Obra sem título identificado')
+  const linhasTitulo = quebrarLinhas(tituloReal, 'F2', 21, COLUNA + 30)
 
   capa.retangulo(0, 0, LARGURA_PAGINA, ALTURA_PAGINA, fundo)
   // filete duplo por dentro da borda, como uma encadernação
@@ -327,7 +328,7 @@ export function montarPdf(livro) {
   capa.textoLivre('FIOLIB', 0, 58, { fonte: 'F2', tamanho: 11, tc: 1.6, cor: acento, centralizado: true })
   capa.textoLivre(String(new Date().getFullYear()), 0, 42, { fonte: 'F1', tamanho: 10, cor: textoClaro, centralizado: true })
 
-  // ── ficha técnica + sobre esta edição + licença ──
+  // ── ficha técnica (página própria) ──
   const info = novoDocumento()
   info.novaPagina()
   info.espaco(20)
@@ -342,25 +343,32 @@ export function montarPdf(livro) {
     info.paragrafo(String(valor), { fonte: 'F1', tamanho: 11, indent: 0, justificar: false })
     info.espaco(13)
   }
-  campo('Título', livro.titulo)
-  if (livro.tituloOriginal && livro.tituloOriginal !== livro.titulo) campo('Título original', livro.tituloOriginal)
+  campo('Título', tituloReal)
+  if (livro.tituloOriginal && livro.tituloOriginal !== tituloReal) campo('Título original', livro.tituloOriginal)
   campo('Autor', livro.autor)
   campo('Tradução', livro.revisao ? (livro.tradutor || 'Esteira de tradução do Fio (automática)') : null)
   campo('Fonte do texto original', livro.fonteUrl)
   campo('Direitos', livro.direito || 'Domínio público no Brasil.')
   campo('Edição', `Fiolib, ${new Date().getFullYear()}`)
-  info.espaco(6)
+
+  // ── sobre esta edição + licença (página própria) ──
+  info.novaPagina()
+  info.espaco(20)
   info.linhaCentralizada('SOBRE ESTA EDIÇÃO', { fonte: 'F2', tamanho: 13, tc: 2.0 })
-  info.espaco(18)
+  const yReguaSobre = info.y() - 4
+  info.linhaReta(MARGEM + COLUNA / 2 - 46, yReguaSobre, MARGEM + COLUNA / 2 + 46, yReguaSobre, CINZA_LINHA, 0.75)
+  info.espaco(24)
   info.paragrafo(
     livro.revisao
       ? 'O texto em português desta edição foi traduzido pela esteira automática do Fio a partir do original em domínio público, e passa por um serviço de revisão que só troca o que dá para provar. Pode haver trechos ainda não revisados.'
       : 'O texto desta edição é o que está disponível em domínio público, preparado para leitura pelo Fio.',
     { fonte: 'F1', tamanho: 10.5, justificar: true },
   )
-  info.espaco(16)
-  info.linhaCentralizada('LICENÇA DE USO', { fonte: 'F2', tamanho: 12, tc: 1.5 })
-  info.espaco(18)
+  info.espaco(28)
+  info.linhaCentralizada('LICENÇA DE USO', { fonte: 'F2', tamanho: 13, tc: 2.0 })
+  const yReguaLic = info.y() - 4
+  info.linhaReta(MARGEM + COLUNA / 2 - 46, yReguaLic, MARGEM + COLUNA / 2 + 46, yReguaLic, CINZA_LINHA, 0.75)
+  info.espaco(24)
   info.paragrafo(
     'Disponibilização gratuita por meio da Fiolib (fiolib.com.br), uma biblioteca digital em português. Esta obra está em domínio público ou sob licença livre no Brasil; a tradução, quando houver, é do próprio Fio. Baixe outros livros gratuitamente em fiolib.com.br.',
     { fonte: 'F1', tamanho: 10.5, justificar: true },
@@ -428,7 +436,7 @@ export function montarPdf(livro) {
 
   // ── cabeçalho corrido (à direita, como uma edição impressa) e número de
   // página, só nas páginas do corpo ──
-  const tituloCurto = (livro.titulo || '').slice(0, 50).toUpperCase()
+  const tituloCurto = tituloReal.slice(0, 50).toUpperCase()
   const larguraCabecalho = largura('F3', tituloCurto, 8.5)
   corpo.paginas.forEach((p, i) => {
     p.ops.unshift(opTexto('F3', 8.5, MARGEM + COLUNA - larguraCabecalho, ALTURA_PAGINA - MARGEM + 14, 0, tituloCurto, { cor: '#555555', tc: 0.6 }))
@@ -437,7 +445,7 @@ export function montarPdf(livro) {
     p.ops.push(opTexto('F1', 9, MARGEM + (COLUNA - lnum) / 2, MARGEM - 24, 0, num, {}))
   })
 
-  return montarBytes(todas, { titulo: livro.titulo, autor: livro.autor })
+  return montarBytes(todas, { titulo: tituloReal, autor: livro.autor })
 }
 
 // ─────────────────────────────────────────────────────────────

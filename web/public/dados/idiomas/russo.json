@@ -448,7 +448,15 @@
           "artista": "Хабиб (Khabib)",
           "youtubeId": "Rt2zZSaOFtw",
           "trechoLetra": "Ягода малинка, ягода малинка, а-а-а",
-          "traducaoTrecho": "Framboesinha, framboesinha, a-a-a"
+          "traducaoTrecho": "Framboesinha, framboesinha, a-a-a",
+          "frases": [
+            {
+              "original": "Ягода малинка, ягода малинка, а-а-а",
+              "traducao": "Framboesinha, framboesinha, a-a-a",
+              "vocabulario": [],
+              "pronuncia": ""
+            }
+          ]
         }
       ],
       "quiz": [
@@ -1726,7 +1734,15 @@
           "artista": "Little Big",
           "youtubeId": "L_dWvTCdDQ4",
           "trechoLetra": "Uno, dos, quatro — dancing on the stage",
-          "traducaoTrecho": "Um, dois, quatro (mistura proposital de espanhol) — dançando no palco"
+          "traducaoTrecho": "Um, dois, quatro (mistura proposital de espanhol) — dançando no palco",
+          "frases": [
+            {
+              "original": "Uno, dos, quatro — dancing on the stage",
+              "traducao": "Um, dois, quatro (mistura proposital de espanhol) — dançando no palco",
+              "vocabulario": [],
+              "pronuncia": ""
+            }
+          ]
         }
       ],
       "quiz": [
@@ -1771,26 +1787,6 @@
           "resposta": "ne znayu"
         }
       ]
-    }
-  ],
-  "livrosRecomendados": [
-    {
-      "titulo": "Маленький принц",
-      "autor": "Antoine de Saint-Exupéry",
-      "nivel": "A1–A2",
-      "porque": "Texto simples para praticar cirílico com frases curtas."
-    },
-    {
-      "titulo": "Собачье сердце",
-      "autor": "Mikhail Bulgákov",
-      "nivel": "B1–B2",
-      "porque": "Novela curta com humor e russo coloquial dos anos 1920."
-    },
-    {
-      "titulo": "Евгений Онегин",
-      "autor": "Aleksandr Púškin",
-      "nivel": "B2–C1",
-      "porque": "Poesia clássica, vocabulário literário e ritmo da língua."
     }
   ]
 }

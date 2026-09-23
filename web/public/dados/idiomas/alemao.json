@@ -1667,7 +1667,15 @@
           "artista": "Helene Fischer",
           "youtubeId": "haECT-SerHk",
           "trechoLetra": "Atemlos durch die Nacht, bis ein neuer Tag erwacht",
-          "traducaoTrecho": "Sem fôlego pela noite, até um novo dia despertar"
+          "traducaoTrecho": "Sem fôlego pela noite, até um novo dia despertar",
+          "frases": [
+            {
+              "original": "Atemlos durch die Nacht, bis ein neuer Tag erwacht",
+              "traducao": "Sem fôlego pela noite, até um novo dia despertar",
+              "vocabulario": [],
+              "pronuncia": ""
+            }
+          ]
         }
       ],
       "quiz": [
@@ -1722,26 +1730,6 @@
           "certa": 1
         }
       ]
-    }
-  ],
-  "livrosRecomendados": [
-    {
-      "titulo": "Der kleine Prinz",
-      "autor": "Antoine de Saint-Exupéry",
-      "nivel": "A1–A2",
-      "porque": "Tradução clássica com vocabulário básico e frases acessíveis."
-    },
-    {
-      "titulo": "Emil und die Detektive",
-      "autor": "Erich Kästner",
-      "nivel": "A2–B1",
-      "porque": "Aventura juvenil com alemão claro e diálogos cotidianos."
-    },
-    {
-      "titulo": "Die Verwandlung",
-      "autor": "Franz Kafka",
-      "nivel": "B1–B2",
-      "porque": "Prosa precisa e curta, vocabulário literário acessível."
     }
   ]
 }

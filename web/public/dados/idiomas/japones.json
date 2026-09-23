@@ -1479,7 +1479,15 @@
           "artista": "Miki Matsubara",
           "youtubeId": "lags8E4hvow",
           "trechoLetra": "真夜中のドアをたたいて\n「帰らないで」と泣いた",
-          "traducaoTrecho": "Batendo na porta da meia-noite\nChorei pedindo 'não vá embora'"
+          "traducaoTrecho": "Batendo na porta da meia-noite\nChorei pedindo 'não vá embora'",
+          "frases": [
+            {
+              "original": "真夜中のドアをたたいて\n「帰らないで」と泣いた",
+              "traducao": "Batendo na porta da meia-noite\nChorei pedindo 'não vá embora'",
+              "vocabulario": [],
+              "pronuncia": ""
+            }
+          ]
         }
       ]
     },
@@ -1689,32 +1697,6 @@
           "youtubeId": "SX_ViT4Ra7k"
         }
       ]
-    }
-  ],
-  "livrosRecomendados": [
-    {
-      "titulo": "コンビニの外国人",
-      "autor": "新井素子",
-      "nivel": "N5–N4",
-      "porque": "História curta com vocabulário do dia a dia e hiragana simples."
-    },
-    {
-      "titulo": "よつばと",
-      "autor": "はら ばんぺい",
-      "nivel": "N4–N3",
-      "porque": "Quadrinho com japonês coloquial, gírias de Osaka e humor."
-    },
-    {
-      "titulo": "キッチン",
-      "autor": "吉本ばなな",
-      "nivel": "N3",
-      "porque": "Mangá sobre culinária com vocabulário de comida e diálogos naturais."
-    },
-    {
-      "titulo": "窓ぎわのトットちゃん",
-      "autor": "黒柳徹子",
-      "nivel": "N4–N3",
-      "porque": "Romance infanto-juvenil com japonês elegante e simples."
     }
   ]
 }
