@@ -266,11 +266,34 @@ const CINZA_LINHA = '#c9c5ba'
  * `livro` é `{ id, titulo, autor, temas, tituloOriginal, tradutor, fonte,
  * fonteUrl, revisao, direito, capitulos: [{ordem, titulo, corpo}] }`.
  */
+function dimensoesJpeg(buf) {
+  let i = 2
+  while (i < buf.length - 1) {
+    if (buf[i] !== 0xff) return null
+    const marcador = buf[i + 1]
+    if (marcador >= 0xc0 && marcador <= 0xc3) {
+      return { largura: buf.readUInt16BE(i + 7), altura: buf.readUInt16BE(i + 5) }
+    }
+    const tam = buf.readUInt16BE(i + 2)
+    i += 2 + tam
+  }
+  return null
+}
+
 export function montarPdf(livro) {
-  // ── capa ──
-  //
-  // Nossa, sempre — nunca a foto da capa de outra editora. O porquê, e a
-  // escolha de cor e ornamento por família de tema, estão em `capa-pdf.mjs`.
+  // ── capa original do livro (se houver imagem JPEG) ──
+  let capaOriginal = null
+  if (livro.capaImagem) {
+    try {
+      const jpegBuf = typeof livro.capaImagem === 'string'
+        ? readFileSync(livro.capaImagem)
+        : livro.capaImagem
+      const dim = dimensoesJpeg(jpegBuf)
+      if (dim) capaOriginal = { jpeg: jpegBuf, ...dim }
+    } catch {}
+  }
+
+  // ── nossa capa (sempre presente) ──
   const capa = novoDocumento()
   capa.novaPagina()
   const { fundo, claro: textoClaro, acento, formas } = capaDe(livro.id, livro.temas)
@@ -308,13 +331,13 @@ export function montarPdf(livro) {
   const info = novoDocumento()
   info.novaPagina()
   info.espaco(20)
-  info.linhaCentralizada('FICHA TÉCNICA', { fonte: 'F2', tamanho: 12, tc: 1.5 })
+  info.linhaCentralizada('FICHA TÉCNICA', { fonte: 'F2', tamanho: 13, tc: 2.0 })
   const yReguaInfo = info.y() - 4
   info.linhaReta(MARGEM + COLUNA / 2 - 46, yReguaInfo, MARGEM + COLUNA / 2 + 46, yReguaInfo, CINZA_LINHA, 0.75)
   info.espaco(24)
   const campo = (rotulo, valor) => {
     if (!valor) return
-    info.linha(rotulo.toUpperCase(), { fonte: 'F2', tamanho: 8.5, tc: 1.3, cor: CINZA_ROTULO })
+    info.linha(rotulo.toUpperCase(), { fonte: 'F2', tamanho: 9, tc: 1.5, cor: CINZA_ROTULO })
     info.espaco(2)
     info.paragrafo(String(valor), { fonte: 'F1', tamanho: 11, indent: 0, justificar: false })
     info.espaco(13)
@@ -327,7 +350,7 @@ export function montarPdf(livro) {
   campo('Direitos', livro.direito || 'Domínio público no Brasil.')
   campo('Edição', `Fiolib, ${new Date().getFullYear()}`)
   info.espaco(6)
-  info.linhaCentralizada('SOBRE ESTA EDIÇÃO', { fonte: 'F2', tamanho: 12, tc: 1.5 })
+  info.linhaCentralizada('SOBRE ESTA EDIÇÃO', { fonte: 'F2', tamanho: 13, tc: 2.0 })
   info.espaco(18)
   info.paragrafo(
     livro.revisao
@@ -386,10 +409,12 @@ export function montarPdf(livro) {
     })
   })
 
-  // ── junta tudo, resolve os links e os números do sumário para a página
-  // final de cada capítulo ──
-  const todas = [...capa.paginas, ...info.paginas, ...sumario.paginas, ...corpo.paginas]
-  const offsetCorpo = capa.paginas.length + info.paginas.length + sumario.paginas.length
+  // ── junta tudo: [capa original] → nossa capa → info → sumário → corpo ──
+  const paginasAntes = []
+  if (capaOriginal) paginasAntes.push({ ops: [], vetor: [], linhas: [], annots: [], _imagem: capaOriginal })
+  const todas = [...paginasAntes, ...capa.paginas, ...info.paginas, ...sumario.paginas, ...corpo.paginas]
+  const offsetSumario = paginasAntes.length + capa.paginas.length + info.paginas.length
+  const offsetCorpo = offsetSumario + sumario.paginas.length
   for (const l of linksPendentes) {
     const paginaAlvo = offsetCorpo + inicioCapitulo[l.capituloIndex]
     sumario.paginas[l.pagina].annots.push({ rect: l.rect, destPagina: paginaAlvo })
@@ -456,10 +481,28 @@ function montarBytes(paginas, meta) {
   const idFonteBold = embutir(FONTES.F2, false)
   const idFonteItalic = embutir(FONTES.F3, true)
 
-  const recursos = `<< /Font << /F1 ${idFonteRoman} 0 R /F2 ${idFonteBold} 0 R /F3 ${idFonteItalic} 0 R >> >>`
+  const recursosFonte = `<< /Font << /F1 ${idFonteRoman} 0 R /F2 ${idFonteBold} 0 R /F3 ${idFonteItalic} 0 R >> >>`
 
   const idPaginas = paginas.map(() => novoObj(null))
   const idConteudos = paginas.map((p, i) => {
+    if (p._imagem) {
+      const img = p._imagem
+      const idImg = novoObj({
+        streamCru: img.jpeg,
+        cabecalho: `<< /Type /XObject /Subtype /Image /Width ${img.largura} /Height ${img.altura} /BitsPerComponent 8 /ColorSpace /DeviceRGB /Filter /DCTDecode /Length ${img.jpeg.length} >>`,
+      })
+      const escalaX = LARGURA_PAGINA / img.largura
+      const escalaY = ALTURA_PAGINA / img.altura
+      const escala = Math.min(escalaX, escalaY)
+      const w = img.largura * escala
+      const h = img.altura * escala
+      const x = (LARGURA_PAGINA - w) / 2
+      const y = (ALTURA_PAGINA - h) / 2
+      const stream = `q\n${w.toFixed(2)} 0 0 ${h.toFixed(2)} ${x.toFixed(2)} ${y.toFixed(2)} cm\n/Img0 Do\nQ\n`
+      const comprimido = deflateSync(Buffer.from(stream, 'latin1'))
+      p._recursoExtra = `<< /XObject << /Img0 ${idImg} 0 R >> >>`
+      return novoObj({ streamZip: comprimido })
+    }
     const stream = p.vetor.join('') + 'BT\n' + p.ops.join('') + 'ET\n'
     const comprimido = deflateSync(Buffer.from(stream, 'latin1'))
     return novoObj({ streamZip: comprimido })
@@ -472,9 +515,10 @@ function montarBytes(paginas, meta) {
       )
       return idAnnot
     })
+    const rec = p._recursoExtra || recursosFonte
     objetos[idPaginas[i] - 1].corpo =
       `<< /Type /Page /Parent ${idPages} 0 R /MediaBox [0 0 ${LARGURA_PAGINA} ${ALTURA_PAGINA}] ` +
-      `/Resources ${recursos} /Contents ${idConteudos[i]} 0 R` +
+      `/Resources ${rec} /Contents ${idConteudos[i]} 0 R` +
       (annots.length ? ` /Annots [${annots.map((a) => a + ' 0 R').join(' ')}]` : '') + ' >>'
   })
 

@@ -29,7 +29,10 @@ const O_TEXTO_QUE_VALE = `t.id = (
     SELECT id FROM texto WHERE obra_id = o.id AND dono_id IS NULL
      ORDER BY (idioma = 'pt') DESC, normalizado DESC, id LIMIT 1)`
 
-export default function rotasDeLeitura({ rota, banco }) {
+import { readFileSync, existsSync } from 'node:fs'
+import { join } from 'node:path'
+
+export default function rotasDeLeitura({ rota, banco, estatico }) {
   const buscarNoTexto = criarBuscaParalela(banco)
   const quisDizer = criarQuisDizer(banco, { jurisdicao: CASA })
 
@@ -226,6 +229,10 @@ export default function rotasDeLeitura({ rota, banco }) {
       direito: o.revisao === 'automatica' ? `Tradução automática do Fio, sem revisão humana. ${o.motivo ?? ''}` : o.motivo,
       fonteUrl: o.fonte_url,
       capitulos: diagramar(capitulosDo.all(o.texto_id), { fonte: o.fonte, titulo: false }),
+    }
+    if (o.capa && estatico) {
+      const capaPath = join(estatico, 'capas', o.capa)
+      if (existsSync(capaPath) && /\.jpe?g$/i.test(o.capa)) livro.capaImagem = capaPath
     }
     if (!livro.capitulos.length) throw new Recusa('Não temos o texto desta obra.', 404)
     const pdf = montarPdf(livro)

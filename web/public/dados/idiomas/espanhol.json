@@ -10,18 +10,78 @@
       "tema": "O espanhol soa perto do português — e é aí que mora a armadilha: várias letras enganam.",
       "nivel": "A1",
       "vocabulario": [
-        { "palavra": "j", "traducao": "soa como o \"rr\" forte do português (não como \"j\" de \"janela\")", "exemplo": "jamón, jugar, joven", "exemploTraducao": "presunto, jogar, jovem" },
-        { "palavra": "ll / y", "traducao": "na Espanha soa como \"lh\"; em boa parte da América Latina soa como \"j\" ou \"xh\" (yeísmo)", "exemplo": "llamar, yo", "exemploTraducao": "chamar, eu" },
-        { "palavra": "z / c (antes de e, i)", "traducao": "na Espanha soa como \"th\" de \"think\" (ceceo); na América Latina soa como \"s\"", "exemplo": "cerveza, gracias", "exemploTraducao": "cerveja, obrigado" },
-        { "palavra": "h", "traducao": "é sempre muda, como em português \"hoje\"", "exemplo": "hola, hermano", "exemploTraducao": "olá, irmão" },
-        { "palavra": "ñ", "traducao": "é o nosso \"nh\"", "exemplo": "niño, mañana, España", "exemploTraducao": "criança, amanhã, Espanha" },
-        { "palavra": "rr", "traducao": "\"r\" vibrante forte, a língua bate várias vezes", "exemplo": "perro, carro", "exemploTraducao": "cachorro, carro" },
-        { "palavra": "b / v", "traducao": "soam igual em espanhol — um \"b\" suave, sem distinção como no português", "exemplo": "vaca, burro", "exemploTraducao": "vaca, burro" },
-        { "palavra": "d (entre vogais)", "traducao": "amolece, quase some — vira um \"th\" fraco", "exemplo": "cansado, todo", "exemploTraducao": "cansado, tudo" },
-        { "palavra": "g (antes de e, i)", "traducao": "soa como o \"j\" espanhol — o mesmo som gutural forte", "exemplo": "gente, girar", "exemploTraducao": "gente, girar" },
-        { "palavra": "qu", "traducao": "som de \"k\", o \"u\" nunca se pronuncia", "exemplo": "queso, química", "exemploTraducao": "queijo, química" },
-        { "palavra": "x", "traducao": "geralmente \"ks\", mas em nomes mexicanos de origem indígena soa \"j\"", "exemplo": "examen, México", "exemploTraducao": "exame, México" },
-        { "palavra": "ü", "traducao": "diérese: obriga a pronunciar o \"u\" que normalmente seria mudo depois de \"g\"", "exemplo": "pingüino, bilingüe", "exemploTraducao": "pinguim, bilíngue" }
+        {
+          "palavra": "j",
+          "traducao": "soa como o \"rr\" forte do português (não como \"j\" de \"janela\")",
+          "exemplo": "jamón, jugar, joven",
+          "exemploTraducao": "presunto, jogar, jovem"
+        },
+        {
+          "palavra": "ll / y",
+          "traducao": "na Espanha soa como \"lh\"; em boa parte da América Latina soa como \"j\" ou \"xh\" (yeísmo)",
+          "exemplo": "llamar, yo",
+          "exemploTraducao": "chamar, eu"
+        },
+        {
+          "palavra": "z / c (antes de e, i)",
+          "traducao": "na Espanha soa como \"th\" de \"think\" (ceceo); na América Latina soa como \"s\"",
+          "exemplo": "cerveza, gracias",
+          "exemploTraducao": "cerveja, obrigado"
+        },
+        {
+          "palavra": "h",
+          "traducao": "é sempre muda, como em português \"hoje\"",
+          "exemplo": "hola, hermano",
+          "exemploTraducao": "olá, irmão"
+        },
+        {
+          "palavra": "ñ",
+          "traducao": "é o nosso \"nh\"",
+          "exemplo": "niño, mañana, España",
+          "exemploTraducao": "criança, amanhã, Espanha"
+        },
+        {
+          "palavra": "rr",
+          "traducao": "\"r\" vibrante forte, a língua bate várias vezes",
+          "exemplo": "perro, carro",
+          "exemploTraducao": "cachorro, carro"
+        },
+        {
+          "palavra": "b / v",
+          "traducao": "soam igual em espanhol — um \"b\" suave, sem distinção como no português",
+          "exemplo": "vaca, burro",
+          "exemploTraducao": "vaca, burro"
+        },
+        {
+          "palavra": "d (entre vogais)",
+          "traducao": "amolece, quase some — vira um \"th\" fraco",
+          "exemplo": "cansado, todo",
+          "exemploTraducao": "cansado, tudo"
+        },
+        {
+          "palavra": "g (antes de e, i)",
+          "traducao": "soa como o \"j\" espanhol — o mesmo som gutural forte",
+          "exemplo": "gente, girar",
+          "exemploTraducao": "gente, girar"
+        },
+        {
+          "palavra": "qu",
+          "traducao": "som de \"k\", o \"u\" nunca se pronuncia",
+          "exemplo": "queso, química",
+          "exemploTraducao": "queijo, química"
+        },
+        {
+          "palavra": "x",
+          "traducao": "geralmente \"ks\", mas em nomes mexicanos de origem indígena soa \"j\"",
+          "exemplo": "examen, México",
+          "exemploTraducao": "exame, México"
+        },
+        {
+          "palavra": "ü",
+          "traducao": "diérese: obriga a pronunciar o \"u\" que normalmente seria mudo depois de \"g\"",
+          "exemplo": "pingüino, bilingüe",
+          "exemploTraducao": "pinguim, bilíngue"
+        }
       ],
       "associacao": "\"J\" espanhol é o nosso \"R\" forte disfarçado: \"jamón\" soa quase \"rramón\". E \"año\" (ano) NUNCA é \"ano\" em português — o til do ñ é obrigatório, senão vira outra palavra completamente diferente (e vulgar). \"B\" e \"v\" soarem igual também é pegadinha na escrita: quem aprende de ouvido erra a grafia, porque o ouvido não distingue as duas letras como distingue em português.",
       "dica": "Espanhol tem DOIS grandes sotaques a aprender a reconhecer: o da Espanha (com o \"th\" no z/c) e o da América Latina (tudo com \"s\"). Nenhum dos dois é \"errado\" — são variações regionais, como o \"tu\" e o \"você\" no português. Repare que \"México\" se escreve com \"x\" mas soa com \"j\" — resquício de uma grafia antiga que o espanhol mexicano preservou por tradição histórica.",
@@ -29,41 +89,200 @@
         "titulo": "O alfabeto espanhol e seus sons especiais",
         "explicacao": "O alfabeto espanhol tem 27 letras, uma a mais que o português: a \"ñ\". Algumas letras mudam completamente de som dependendo da vogal que vem depois, como o \"c\" e o \"g\". Saber essas regras de pronúncia é a base para ler qualquer palavra em espanhol corretamente.",
         "exemplos": [
-          { "frase": "La jirafa juega en el jardín.", "traducao": "A girafa brinca no jardim." },
-          { "frase": "El niño come una manzana.", "traducao": "O menino come uma maçã." },
-          { "frase": "El perro corre en el parque.", "traducao": "O cachorro corre no parque." },
-          { "frase": "Hace calor en la ciudad.", "traducao": "Faz calor na cidade." }
+          {
+            "frase": "La jirafa juega en el jardín.",
+            "traducao": "A girafa brinca no jardim."
+          },
+          {
+            "frase": "El niño come una manzana.",
+            "traducao": "O menino come uma maçã."
+          },
+          {
+            "frase": "El perro corre en el parque.",
+            "traducao": "O cachorro corre no parque."
+          },
+          {
+            "frase": "Hace calor en la ciudad.",
+            "traducao": "Faz calor na cidade."
+          }
         ]
       },
       "dialogo": {
         "situacao": "Dois estudantes praticam a pronúncia de palavras difíceis em espanhol.",
         "falas": [
-          { "quem": "A", "fala": "¿Cómo se pronuncia esta palabra: \"llegada\"?", "traducao": "Como se pronuncia esta palavra: \"chegada\"?" },
-          { "quem": "B", "fala": "Con elle, suena como \"yegada\" o \"llegada\" según el país.", "traducao": "Com elle, soa como \"iegada\" ou \"lhegada\" dependendo do país." },
-          { "quem": "A", "fala": "¿Y \"jamón\"? La jota me confunde.", "traducao": "E \"presunto\"? O jota me confunde." },
-          { "quem": "B", "fala": "Suena como una \"r\" fuerte del portugués, desde la garganta.", "traducao": "Soa como um \"r\" forte do português, lá da garganta." },
-          { "quem": "A", "fala": "Ah, entiendo. ¿Y la hache? ¿Se pronuncia en \"hola\"?", "traducao": "Ah, entendi. E o agá? Se pronuncia em \"olá\"?" },
-          { "quem": "B", "fala": "No, la hache siempre es muda. Se dice \"ola\", sin aspirar.", "traducao": "Não, o agá sempre é mudo. Se diz \"ola\", sem aspirar." },
-          { "quem": "A", "fala": "Perfecto. Voy a practicar con \"perro\" y \"pero\".", "traducao": "Perfeito. Vou praticar com \"cachorro\" e \"mas\"." },
-          { "quem": "B", "fala": "¡Muy bien! La diferencia entre erre simple y erre doble es clave.", "traducao": "Muito bem! A diferença entre erre simples e erre duplo é fundamental." }
+          {
+            "quem": "A",
+            "fala": "¿Cómo se pronuncia esta palabra: \"llegada\"?",
+            "traducao": "Como se pronuncia esta palavra: \"chegada\"?"
+          },
+          {
+            "quem": "B",
+            "fala": "Con elle, suena como \"yegada\" o \"llegada\" según el país.",
+            "traducao": "Com elle, soa como \"iegada\" ou \"lhegada\" dependendo do país."
+          },
+          {
+            "quem": "A",
+            "fala": "¿Y \"jamón\"? La jota me confunde.",
+            "traducao": "E \"presunto\"? O jota me confunde."
+          },
+          {
+            "quem": "B",
+            "fala": "Suena como una \"r\" fuerte del portugués, desde la garganta.",
+            "traducao": "Soa como um \"r\" forte do português, lá da garganta."
+          },
+          {
+            "quem": "A",
+            "fala": "Ah, entiendo. ¿Y la hache? ¿Se pronuncia en \"hola\"?",
+            "traducao": "Ah, entendi. E o agá? Se pronuncia em \"olá\"?"
+          },
+          {
+            "quem": "B",
+            "fala": "No, la hache siempre es muda. Se dice \"ola\", sin aspirar.",
+            "traducao": "Não, o agá sempre é mudo. Se diz \"ola\", sem aspirar."
+          },
+          {
+            "quem": "A",
+            "fala": "Perfecto. Voy a practicar con \"perro\" y \"pero\".",
+            "traducao": "Perfeito. Vou praticar com \"cachorro\" e \"mas\"."
+          },
+          {
+            "quem": "B",
+            "fala": "¡Muy bien! La diferencia entre erre simple y erre doble es clave.",
+            "traducao": "Muito bem! A diferença entre erre simples e erre duplo é fundamental."
+          }
         ]
       },
       "expressoes": [
-        { "expressao": "Más o menos", "significado": "Mais ou menos", "uso": "Resposta vaga quando alguém pergunta como você está ou como foi algo." },
-        { "expressao": "Ni modo", "significado": "Fazer o quê / paciência", "uso": "Usada no México e América Central quando não há nada a fazer sobre uma situação." },
-        { "expressao": "¡Ojo!", "significado": "Cuidado! / Atenção!", "uso": "Aviso rápido, como quando alguém vai pisar em algo ou cometer um erro." }
+        {
+          "expressao": "Más o menos",
+          "significado": "Mais ou menos",
+          "uso": "Resposta vaga quando alguém pergunta como você está ou como foi algo."
+        },
+        {
+          "expressao": "Ni modo",
+          "significado": "Fazer o quê / paciência",
+          "uso": "Usada no México e América Central quando não há nada a fazer sobre uma situação."
+        },
+        {
+          "expressao": "¡Ojo!",
+          "significado": "Cuidado! / Atenção!",
+          "uso": "Aviso rápido, como quando alguém vai pisar em algo ou cometer um erro."
+        }
       ],
       "cultura": "O espanhol é a segunda língua com mais falantes nativos do mundo, atrás apenas do mandarim. É idioma oficial em 20 países, e cada um tem sotaque e gírias próprias. Na Espanha existe o \"ceceo\" (o som de \"th\"), enquanto na América Latina predomina o \"seseo\" (tudo com som de \"s\") -- nenhum é mais correto que o outro, são apenas variações regionais.",
       "musicas": [
-        { "titulo": "Ella Baila Sola", "artista": "Eslabon Armado & Peso Pluma", "youtubeId": "7WNwGkgjKV8", "trechoLetra": "Ella baila sola, sola, solita sola", "traducaoTrecho": "Ela dança sozinha, sozinha, sozinha" }
+        {
+          "titulo": "Ella Baila Sola",
+          "artista": "Eslabon Armado & Peso Pluma",
+          "youtubeId": "7WNwGkgjKV8",
+          "trechoLetra": "Ella baila sola, sola, solita sola",
+          "traducaoTrecho": "Ela dança sozinha, sozinha, sozinha",
+          "frases": [
+            {
+              "original": "Ella baila sola, sola",
+              "traducao": "Ela dança sozinha, sozinha",
+              "vocabulario": [
+                {
+                  "palavra": "baila",
+                  "significado": "dança",
+                  "detalhe": "Do verbo bailar (dançar). Presente do indicativo, 3ª pessoa."
+                },
+                {
+                  "palavra": "sola",
+                  "significado": "sozinha",
+                  "detalhe": "Feminino de solo. Em espanhol, solo/sola = sozinho/a."
+                }
+              ],
+              "pronuncia": "E-ya BAI-la SO-la, SO-la"
+            },
+            {
+              "original": "Solita sola, se ve mejor",
+              "traducao": "Sozinha, sozinha, fica melhor",
+              "vocabulario": [
+                {
+                  "palavra": "solita",
+                  "significado": "sozinha (diminutivo carinhoso)",
+                  "detalhe": "Solita = solinha. O sufixo -ita é diminutivo muito usado no espanhol mexicano."
+                },
+                {
+                  "palavra": "se ve",
+                  "significado": "se vê / fica",
+                  "detalhe": "Verso (parecer): se ve mejor = parece melhor / fica melhor assim."
+                }
+              ],
+              "pronuncia": "so-LI-ta SO-la, se ve me-JOR"
+            },
+            {
+              "original": "Y yo que pensaba que ya no creía en el amor",
+              "traducao": "E eu que pensava que já não acreditava no amor",
+              "vocabulario": [
+                {
+                  "palavra": "pensaba",
+                  "significado": "pensava",
+                  "detalhe": "Pretérito imperfeito de pensar — ação contínua no passado."
+                },
+                {
+                  "palavra": "creía",
+                  "significado": "acreditava",
+                  "detalhe": "Imperfeito de creer. Creía = acreditava/cria."
+                }
+              ],
+              "pronuncia": "ee yo ke pen-SA-ba ke ya no kre-EE-a en el a-MOR"
+            }
+          ]
+        }
       ],
       "quiz": [
-        { "tipo": "multipla", "pergunta": "Como soa o \"j\" espanhol em \"jamón\"?", "opcoes": ["Como \"j\" de \"janela\"", "Como o \"rr\" forte do português", "Como \"y\""], "certa": 1 },
-        { "tipo": "multipla", "pergunta": "\"Año\" (com til no n) significa ano. Sem o til, \"ano\" vira:", "opcoes": ["A mesma palavra, sem diferença", "Uma palavra bem diferente — o til é obrigatório", "Um erro de digitação sem problema"], "certa": 1 },
-        { "tipo": "traduzir", "pergunta": "Complete: na Espanha, \"gracias\" soa com um \"th\" — esse traço se chama ___.", "resposta": "ceceo" },
-        { "tipo": "multipla", "pergunta": "Em espanhol, \"b\" e \"v\" soam:", "opcoes": ["Diferentes, como em português", "Igual, os dois soam como um \"b\" suave", "\"V\" soa como \"f\""], "certa": 1 },
-        { "tipo": "multipla", "pergunta": "Como soa o \"g\" antes de \"e\" ou \"i\" (gente, girar)?", "opcoes": ["Como \"g\" de \"gato\"", "Como o \"j\" espanhol, gutural", "Fica mudo"], "certa": 1 },
-        { "tipo": "traduzir", "pergunta": "Como se chama o sinal sobre o \"u\" em \"pingüino\" que obriga a pronunciá-lo?", "resposta": "diéresis" }
+        {
+          "tipo": "multipla",
+          "pergunta": "Como soa o \"j\" espanhol em \"jamón\"?",
+          "opcoes": [
+            "Como \"j\" de \"janela\"",
+            "Como o \"rr\" forte do português",
+            "Como \"y\""
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "\"Año\" (com til no n) significa ano. Sem o til, \"ano\" vira:",
+          "opcoes": [
+            "A mesma palavra, sem diferença",
+            "Uma palavra bem diferente — o til é obrigatório",
+            "Um erro de digitação sem problema"
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "Complete: na Espanha, \"gracias\" soa com um \"th\" — esse traço se chama ___.",
+          "resposta": "ceceo"
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "Em espanhol, \"b\" e \"v\" soam:",
+          "opcoes": [
+            "Diferentes, como em português",
+            "Igual, os dois soam como um \"b\" suave",
+            "\"V\" soa como \"f\""
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "Como soa o \"g\" antes de \"e\" ou \"i\" (gente, girar)?",
+          "opcoes": [
+            "Como \"g\" de \"gato\"",
+            "Como o \"j\" espanhol, gutural",
+            "Fica mudo"
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "Como se chama o sinal sobre o \"u\" em \"pingüino\" que obriga a pronunciá-lo?",
+          "resposta": "diéresis"
+        }
       ]
     },
     {
@@ -72,20 +291,90 @@
       "tema": "Cumprimentar e se apresentar.",
       "nivel": "A1",
       "vocabulario": [
-        { "palavra": "Hola", "traducao": "olá", "exemplo": "¡Hola! ¿Cómo estás?", "exemploTraducao": "Olá! Como você está?" },
-        { "palavra": "Buenos días", "traducao": "bom dia", "exemplo": "Buenos días, señora.", "exemploTraducao": "Bom dia, senhora." },
-        { "palavra": "Buenas tardes / Buenas noches", "traducao": "boa tarde / boa noite", "exemplo": "Buenas noches, hasta mañana.", "exemploTraducao": "Boa noite, até amanhã." },
-        { "palavra": "¿Cómo te llamas?", "traducao": "como você se chama?", "exemplo": "Me llamo Ana.", "exemploTraducao": "Eu me chamo Ana." },
-        { "palavra": "Mucho gusto", "traducao": "muito prazer", "exemplo": "Mucho gusto en conocerte.", "exemploTraducao": "Muito prazer em te conhecer." },
-        { "palavra": "¿De dónde eres?", "traducao": "de onde você é?", "exemplo": "Soy de Brasil.", "exemploTraducao": "Sou do Brasil." },
-        { "palavra": "Por favor / Gracias / De nada", "traducao": "por favor / obrigado / de nada", "exemplo": "Un café, por favor. — Gracias. — De nada.", "exemploTraducao": "Um café, por favor. — Obrigado. — De nada." },
-        { "palavra": "Adiós / Hasta luego", "traducao": "adeus / até logo", "exemplo": "¡Hasta luego!", "exemploTraducao": "Até logo!" },
-        { "palavra": "¿Qué tal?", "traducao": "e aí? / como vai? (bem informal)", "exemplo": "¡Hola! ¿Qué tal todo?", "exemploTraducao": "Oi! Como vai tudo?" },
-        { "palavra": "Estoy bien / Estoy mal", "traducao": "estou bem / estou mal", "exemplo": "— ¿Cómo estás? — Estoy muy bien.", "exemploTraducao": "— Como você está? — Estou muito bem." },
-        { "palavra": "Encantado / Encantada", "traducao": "prazer (a forma muda com o gênero de quem fala)", "exemplo": "Encantada de conocerte.", "exemploTraducao": "Prazer em te conhecer." },
-        { "palavra": "Bienvenido / Bienvenida", "traducao": "bem-vindo / bem-vinda", "exemplo": "¡Bienvenido a casa!", "exemploTraducao": "Bem-vindo à casa!" },
-        { "palavra": "Chao / Nos vemos", "traducao": "tchau / a gente se vê", "exemplo": "¡Chao, nos vemos mañana!", "exemploTraducao": "Tchau, a gente se vê amanhã!" },
-        { "palavra": "Buenas", "traducao": "saudação informal encurtada — serve pra qualquer hora do dia", "exemplo": "¡Buenas! ¿Todo bien?", "exemploTraducao": "Oi! Tudo bem?" }
+        {
+          "palavra": "Hola",
+          "traducao": "olá",
+          "exemplo": "¡Hola! ¿Cómo estás?",
+          "exemploTraducao": "Olá! Como você está?"
+        },
+        {
+          "palavra": "Buenos días",
+          "traducao": "bom dia",
+          "exemplo": "Buenos días, señora.",
+          "exemploTraducao": "Bom dia, senhora."
+        },
+        {
+          "palavra": "Buenas tardes / Buenas noches",
+          "traducao": "boa tarde / boa noite",
+          "exemplo": "Buenas noches, hasta mañana.",
+          "exemploTraducao": "Boa noite, até amanhã."
+        },
+        {
+          "palavra": "¿Cómo te llamas?",
+          "traducao": "como você se chama?",
+          "exemplo": "Me llamo Ana.",
+          "exemploTraducao": "Eu me chamo Ana."
+        },
+        {
+          "palavra": "Mucho gusto",
+          "traducao": "muito prazer",
+          "exemplo": "Mucho gusto en conocerte.",
+          "exemploTraducao": "Muito prazer em te conhecer."
+        },
+        {
+          "palavra": "¿De dónde eres?",
+          "traducao": "de onde você é?",
+          "exemplo": "Soy de Brasil.",
+          "exemploTraducao": "Sou do Brasil."
+        },
+        {
+          "palavra": "Por favor / Gracias / De nada",
+          "traducao": "por favor / obrigado / de nada",
+          "exemplo": "Un café, por favor. — Gracias. — De nada.",
+          "exemploTraducao": "Um café, por favor. — Obrigado. — De nada."
+        },
+        {
+          "palavra": "Adiós / Hasta luego",
+          "traducao": "adeus / até logo",
+          "exemplo": "¡Hasta luego!",
+          "exemploTraducao": "Até logo!"
+        },
+        {
+          "palavra": "¿Qué tal?",
+          "traducao": "e aí? / como vai? (bem informal)",
+          "exemplo": "¡Hola! ¿Qué tal todo?",
+          "exemploTraducao": "Oi! Como vai tudo?"
+        },
+        {
+          "palavra": "Estoy bien / Estoy mal",
+          "traducao": "estou bem / estou mal",
+          "exemplo": "— ¿Cómo estás? — Estoy muy bien.",
+          "exemploTraducao": "— Como você está? — Estou muito bem."
+        },
+        {
+          "palavra": "Encantado / Encantada",
+          "traducao": "prazer (a forma muda com o gênero de quem fala)",
+          "exemplo": "Encantada de conocerte.",
+          "exemploTraducao": "Prazer em te conhecer."
+        },
+        {
+          "palavra": "Bienvenido / Bienvenida",
+          "traducao": "bem-vindo / bem-vinda",
+          "exemplo": "¡Bienvenido a casa!",
+          "exemploTraducao": "Bem-vindo à casa!"
+        },
+        {
+          "palavra": "Chao / Nos vemos",
+          "traducao": "tchau / a gente se vê",
+          "exemplo": "¡Chao, nos vemos mañana!",
+          "exemploTraducao": "Tchau, a gente se vê amanhã!"
+        },
+        {
+          "palavra": "Buenas",
+          "traducao": "saudação informal encurtada — serve pra qualquer hora do dia",
+          "exemplo": "¡Buenas! ¿Todo bien?",
+          "exemploTraducao": "Oi! Tudo bem?"
+        }
       ],
       "associacao": "\"Buenos días\" no plural (buenoS díaS) é diferente do português \"bom dia\", que é no singular — é assim em toda a saudação: buenaS tardeS, buenaS nocheS. \"Encantado/Encantada\" muda de terminação conforme quem FALA é homem ou mulher — diferente do francês \"enchanté(e)\", que é mais flexível na fala.",
       "dica": "Pergunta e resposta em espanhol usam sinais de pontuação ANTES e depois: \"¿Cómo estás?\" e \"¡Hola!\" — esse \"¿\" e \"¡\" de abertura não existem em português, mas são obrigatórios na escrita formal do espanhol. \"Buenas\" sozinho (sem días/tardes/noches) é o jeito mais informal e mais comum de cumprimentar no dia a dia latino-americano.",
@@ -93,29 +382,85 @@
         "titulo": "Pronomes pessoais e o verbo llamarse",
         "explicacao": "Em espanhol, os pronomes pessoais são yo, tú, él/ella/usted, nosotros, vosotros, ellos/ustedes. O verbo \"llamarse\" (chamar-se) é reflexivo e essencial para apresentações. Diferente do português, o espanhol tem duas formas de \"você\": \"tú\" (informal) e \"usted\" (formal).",
         "exemplos": [
-          { "frase": "Yo me llamo Carlos. ¿Y tú?", "traducao": "Eu me chamo Carlos. E você?" },
-          { "frase": "Ella se llama María.", "traducao": "Ela se chama María." },
-          { "frase": "¿Cómo se llama usted?", "traducao": "Como o senhor/a senhora se chama?" },
-          { "frase": "Nosotros nos llamamos Los Tigres.", "traducao": "Nós nos chamamos Os Tigres." }
+          {
+            "frase": "Yo me llamo Carlos. ¿Y tú?",
+            "traducao": "Eu me chamo Carlos. E você?"
+          },
+          {
+            "frase": "Ella se llama María.",
+            "traducao": "Ela se chama María."
+          },
+          {
+            "frase": "¿Cómo se llama usted?",
+            "traducao": "Como o senhor/a senhora se chama?"
+          },
+          {
+            "frase": "Nosotros nos llamamos Los Tigres.",
+            "traducao": "Nós nos chamamos Os Tigres."
+          }
         ]
       },
       "dialogo": {
         "situacao": "Duas pessoas se conhecem numa festa e se apresentam.",
         "falas": [
-          { "quem": "A", "fala": "¡Hola! ¿Cómo te llamas?", "traducao": "Oi! Como você se chama?" },
-          { "quem": "B", "fala": "Me llamo Sofía. Mucho gusto. ¿Y tú?", "traducao": "Me chamo Sofía. Muito prazer. E você?" },
-          { "quem": "A", "fala": "Soy Pedro. Encantado. ¿De dónde eres?", "traducao": "Sou Pedro. Prazer. De onde você é?" },
-          { "quem": "B", "fala": "Soy de Colombia, de Bogotá. ¿Y tú?", "traducao": "Sou da Colômbia, de Bogotá. E você?" },
-          { "quem": "A", "fala": "Soy de Brasil, de São Paulo.", "traducao": "Sou do Brasil, de São Paulo." },
-          { "quem": "B", "fala": "¡Qué bien! ¿Hablas español?", "traducao": "Que legal! Você fala espanhol?" },
-          { "quem": "A", "fala": "Un poco. Estoy aprendiendo.", "traducao": "Um pouco. Estou aprendendo." },
-          { "quem": "B", "fala": "¡Bueno, mucho gusto! Nos vemos.", "traducao": "Bom, muito prazer! A gente se vê." }
+          {
+            "quem": "A",
+            "fala": "¡Hola! ¿Cómo te llamas?",
+            "traducao": "Oi! Como você se chama?"
+          },
+          {
+            "quem": "B",
+            "fala": "Me llamo Sofía. Mucho gusto. ¿Y tú?",
+            "traducao": "Me chamo Sofía. Muito prazer. E você?"
+          },
+          {
+            "quem": "A",
+            "fala": "Soy Pedro. Encantado. ¿De dónde eres?",
+            "traducao": "Sou Pedro. Prazer. De onde você é?"
+          },
+          {
+            "quem": "B",
+            "fala": "Soy de Colombia, de Bogotá. ¿Y tú?",
+            "traducao": "Sou da Colômbia, de Bogotá. E você?"
+          },
+          {
+            "quem": "A",
+            "fala": "Soy de Brasil, de São Paulo.",
+            "traducao": "Sou do Brasil, de São Paulo."
+          },
+          {
+            "quem": "B",
+            "fala": "¡Qué bien! ¿Hablas español?",
+            "traducao": "Que legal! Você fala espanhol?"
+          },
+          {
+            "quem": "A",
+            "fala": "Un poco. Estoy aprendiendo.",
+            "traducao": "Um pouco. Estou aprendendo."
+          },
+          {
+            "quem": "B",
+            "fala": "¡Bueno, mucho gusto! Nos vemos.",
+            "traducao": "Bom, muito prazer! A gente se vê."
+          }
         ]
       },
       "expressoes": [
-        { "expressao": "¿Qué onda?", "significado": "E aí? / Qual é?", "uso": "Saudação muito informal, popular no México e América Central." },
-        { "expressao": "¡Qué gusto verte!", "significado": "Que bom te ver!", "uso": "Usada ao reencontrar alguém que não se via há tempo." },
-        { "expressao": "Nos vemos", "significado": "A gente se vê", "uso": "Despedida casual, sem hora marcada para o próximo encontro." }
+        {
+          "expressao": "¿Qué onda?",
+          "significado": "E aí? / Qual é?",
+          "uso": "Saudação muito informal, popular no México e América Central."
+        },
+        {
+          "expressao": "¡Qué gusto verte!",
+          "significado": "Que bom te ver!",
+          "uso": "Usada ao reencontrar alguém que não se via há tempo."
+        },
+        {
+          "expressao": "Nos vemos",
+          "significado": "A gente se vê",
+          "uso": "Despedida casual, sem hora marcada para o próximo encontro."
+        }
       ],
       "cultura": "Nos países hispânicos, é comum cumprimentar com um beijo na bochecha (um na América Latina, dois na Espanha). Homens costumam se cumprimentar com aperto de mão ou abraço. A formalidade na saudação varia muito: na Colômbia se usa bastante \"usted\" mesmo entre amigos, enquanto na Argentina o \"vos\" substitui o \"tú\" no dia a dia.",
       "cancao": {
@@ -124,15 +469,96 @@
         "letra": "La cucaracha, la cucaracha,\nya no puede caminar,\nporque no tiene, porque le falta,\nlas dos patitas de atrás.\n\nUna cucaracha pinta\nle dijo a una colorada:\nvámonos para mi tierra\na pasar la temporada."
       },
       "musicas": [
-        { "titulo": "La Diabla", "artista": "Xavi", "youtubeId": "NCiG8uSHWxM", "trechoLetra": "Es la diabla disfrazada de mujer", "traducaoTrecho": "É a diabla disfarçada de mulher" }
+        {
+          "titulo": "La Diabla",
+          "artista": "Xavi",
+          "youtubeId": "NCiG8uSHWxM",
+          "trechoLetra": "Es la diabla disfrazada de mujer",
+          "traducaoTrecho": "É a diabla disfarçada de mulher",
+          "frases": [
+            {
+              "original": "Es la diabla disfrazada de mujer",
+              "traducao": "É a diabla disfarçada de mulher",
+              "vocabulario": [
+                {
+                  "palavra": "diabla",
+                  "significado": "diaba / mulher perigosa",
+                  "detalhe": "Feminino de diablo. Na gíria, mulher que seduz e engana."
+                },
+                {
+                  "palavra": "disfrazada",
+                  "significado": "disfarçada",
+                  "detalhe": "De disfrazar = disfarçar. Part. passado com -ada (feminino)."
+                }
+              ],
+              "pronuncia": "es la di-A-bla dis-fra-SA-da de mu-JER"
+            },
+            {
+              "original": "Tiene cara de ángel pero es cruel",
+              "traducao": "Tem cara de anjo mas é cruel",
+              "vocabulario": [
+                {
+                  "palavra": "cara de ángel",
+                  "significado": "cara de anjo",
+                  "detalhe": "Expressão: aparentar inocência."
+                },
+                {
+                  "palavra": "cruel",
+                  "significado": "cruel",
+                  "detalhe": "Igual em português! Cognato perfeito."
+                }
+              ],
+              "pronuncia": "TIE-ne CA-ra de AN-jel PE-ro es kru-EL"
+            }
+          ]
+        }
       ],
       "quiz": [
-        { "tipo": "multipla", "pergunta": "\"¿Cómo te llamas?\" pergunta:", "opcoes": ["De onde você é", "Como você se chama", "Quantos anos você tem"], "certa": 1 },
-        { "tipo": "multipla", "pergunta": "O sinal \"¿\" no começo de uma pergunta é:", "opcoes": ["Um erro comum", "Opcional", "Obrigatório na escrita formal"], "certa": 2 },
-        { "tipo": "traduzir", "pergunta": "Traduza: muito prazer", "resposta": "mucho gusto" },
-        { "tipo": "multipla", "pergunta": "Uma mulher dizendo \"prazer\" em espanhol formal escreve:", "opcoes": ["Encantado", "Encantada", "Encantades"], "certa": 1 },
-        { "tipo": "traduzir", "pergunta": "Traduza de forma bem informal: e aí, como vai?", "resposta": "qué tal" },
-        { "tipo": "traduzir", "pergunta": "Traduza: bem-vindo", "resposta": "bienvenido" }
+        {
+          "tipo": "multipla",
+          "pergunta": "\"¿Cómo te llamas?\" pergunta:",
+          "opcoes": [
+            "De onde você é",
+            "Como você se chama",
+            "Quantos anos você tem"
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "O sinal \"¿\" no começo de uma pergunta é:",
+          "opcoes": [
+            "Um erro comum",
+            "Opcional",
+            "Obrigatório na escrita formal"
+          ],
+          "certa": 2
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "Traduza: muito prazer",
+          "resposta": "mucho gusto"
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "Uma mulher dizendo \"prazer\" em espanhol formal escreve:",
+          "opcoes": [
+            "Encantado",
+            "Encantada",
+            "Encantades"
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "Traduza de forma bem informal: e aí, como vai?",
+          "resposta": "qué tal"
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "Traduza: bem-vindo",
+          "resposta": "bienvenido"
+        }
       ]
     },
     {
@@ -141,18 +567,78 @@
       "tema": "Contar e perguntar idade.",
       "nivel": "A1",
       "vocabulario": [
-        { "palavra": "cero", "traducao": "zero", "exemplo": "Empezamos desde cero.", "exemploTraducao": "Começamos do zero." },
-        { "palavra": "uno, dos, tres, cuatro, cinco", "traducao": "um, dois, três, quatro, cinco", "exemplo": "Tengo cinco libros.", "exemploTraducao": "Tenho cinco livros." },
-        { "palavra": "seis, siete, ocho, nueve, diez", "traducao": "seis, sete, oito, nove, dez", "exemplo": "Son las diez.", "exemploTraducao": "São dez horas." },
-        { "palavra": "once, doce, trece", "traducao": "onze, doze, treze", "exemplo": "Son las once.", "exemploTraducao": "São onze horas." },
-        { "palavra": "dieciséis", "traducao": "dezesseis (de 16 a 19, o espanhol gruda tudo numa palavra só)", "exemplo": "Tiene dieciséis años.", "exemploTraducao": "Tem dezesseis anos." },
-        { "palavra": "veinte, treinta, cuarenta", "traducao": "vinte, trinta, quarenta", "exemplo": "Treinta días.", "exemploTraducao": "Trinta dias." },
-        { "palavra": "treinta y uno", "traducao": "trinta e um (a partir de 31, o \"y\" separa as duas palavras)", "exemplo": "Treinta y dos años.", "exemploTraducao": "Trinta e dois anos." },
-        { "palavra": "cincuenta, sesenta, setenta, ochenta, noventa", "traducao": "cinquenta, sessenta, setenta, oitenta, noventa", "exemplo": "Ochenta euros.", "exemploTraducao": "Oitenta euros." },
-        { "palavra": "cien, mil", "traducao": "cem, mil", "exemplo": "Cien por ciento.", "exemploTraducao": "Cem por cento." },
-        { "palavra": "primero, segundo, tercero", "traducao": "primeiro, segundo, terceiro", "exemplo": "Es mi primer día.", "exemploTraducao": "É meu primeiro dia." },
-        { "palavra": "¿Cuántos años tienes?", "traducao": "quantos anos você tem?", "exemplo": "Tengo veintiocho años.", "exemploTraducao": "Tenho vinte e oito anos." },
-        { "palavra": "¿Cuántos hay?", "traducao": "quantos tem/há?", "exemplo": "¿Cuántos hay en la mesa?", "exemploTraducao": "Quantos tem na mesa?" }
+        {
+          "palavra": "cero",
+          "traducao": "zero",
+          "exemplo": "Empezamos desde cero.",
+          "exemploTraducao": "Começamos do zero."
+        },
+        {
+          "palavra": "uno, dos, tres, cuatro, cinco",
+          "traducao": "um, dois, três, quatro, cinco",
+          "exemplo": "Tengo cinco libros.",
+          "exemploTraducao": "Tenho cinco livros."
+        },
+        {
+          "palavra": "seis, siete, ocho, nueve, diez",
+          "traducao": "seis, sete, oito, nove, dez",
+          "exemplo": "Son las diez.",
+          "exemploTraducao": "São dez horas."
+        },
+        {
+          "palavra": "once, doce, trece",
+          "traducao": "onze, doze, treze",
+          "exemplo": "Son las once.",
+          "exemploTraducao": "São onze horas."
+        },
+        {
+          "palavra": "dieciséis",
+          "traducao": "dezesseis (de 16 a 19, o espanhol gruda tudo numa palavra só)",
+          "exemplo": "Tiene dieciséis años.",
+          "exemploTraducao": "Tem dezesseis anos."
+        },
+        {
+          "palavra": "veinte, treinta, cuarenta",
+          "traducao": "vinte, trinta, quarenta",
+          "exemplo": "Treinta días.",
+          "exemploTraducao": "Trinta dias."
+        },
+        {
+          "palavra": "treinta y uno",
+          "traducao": "trinta e um (a partir de 31, o \"y\" separa as duas palavras)",
+          "exemplo": "Treinta y dos años.",
+          "exemploTraducao": "Trinta e dois anos."
+        },
+        {
+          "palavra": "cincuenta, sesenta, setenta, ochenta, noventa",
+          "traducao": "cinquenta, sessenta, setenta, oitenta, noventa",
+          "exemplo": "Ochenta euros.",
+          "exemploTraducao": "Oitenta euros."
+        },
+        {
+          "palavra": "cien, mil",
+          "traducao": "cem, mil",
+          "exemplo": "Cien por ciento.",
+          "exemploTraducao": "Cem por cento."
+        },
+        {
+          "palavra": "primero, segundo, tercero",
+          "traducao": "primeiro, segundo, terceiro",
+          "exemplo": "Es mi primer día.",
+          "exemploTraducao": "É meu primeiro dia."
+        },
+        {
+          "palavra": "¿Cuántos años tienes?",
+          "traducao": "quantos anos você tem?",
+          "exemplo": "Tengo veintiocho años.",
+          "exemploTraducao": "Tenho vinte e oito anos."
+        },
+        {
+          "palavra": "¿Cuántos hay?",
+          "traducao": "quantos tem/há?",
+          "exemplo": "¿Cuántos hay en la mesa?",
+          "exemploTraducao": "Quantos tem na mesa?"
+        }
       ],
       "associacao": "Do 16 ao 19 e do 21 ao 29, o espanhol GRUDA os números numa palavra só: dieciséis (16), veintiuno (21), veintidós (22)... É \"dez-e-seis\" e \"vinte-e-um\" viraram uma palavra. Mas a partir de 31 a regra muda: solta de novo, com um \"y\" no meio — treinta y uno, cuarenta y dos — como se o espanhol cansasse de grudar depois dos vinte.",
       "dica": "Igual ao francês (e diferente do português), idade em espanhol usa o verbo TER: \"tengo veinte años\" (tenho vinte anos), nunca \"eu sou\". \"Primero\" perde o \"o\" final antes de palavra masculina no singular: \"mi primer día\", não \"mi primero día\" — só \"tercero\" faz o mesmo (\"tercer día\").",
@@ -160,41 +646,161 @@
         "titulo": "Números cardinais e a expressão de idade",
         "explicacao": "Em espanhol, a idade se expressa com o verbo \"tener\" (ter), nunca com \"ser\". Os números de 16 a 29 se escrevem como uma palavra só, mas de 31 em diante voltam a ser separados por \"y\". \"Cien\" é usado sozinho, mas vira \"ciento\" quando acompanhado: \"ciento dos\" (102).",
         "exemplos": [
-          { "frase": "¿Cuántos años tienes? — Tengo veinticinco.", "traducao": "Quantos anos você tem? — Tenho vinte e cinco." },
-          { "frase": "Mi abuela tiene noventa y dos años.", "traducao": "Minha avó tem noventa e dois anos." },
-          { "frase": "Hay ciento cincuenta personas aquí.", "traducao": "Há cento e cinquenta pessoas aqui." },
-          { "frase": "Es el tercer día de clase.", "traducao": "É o terceiro dia de aula." }
+          {
+            "frase": "¿Cuántos años tienes? — Tengo veinticinco.",
+            "traducao": "Quantos anos você tem? — Tenho vinte e cinco."
+          },
+          {
+            "frase": "Mi abuela tiene noventa y dos años.",
+            "traducao": "Minha avó tem noventa e dois anos."
+          },
+          {
+            "frase": "Hay ciento cincuenta personas aquí.",
+            "traducao": "Há cento e cinquenta pessoas aqui."
+          },
+          {
+            "frase": "Es el tercer día de clase.",
+            "traducao": "É o terceiro dia de aula."
+          }
         ]
       },
       "dialogo": {
         "situacao": "Um funcionário de hotel faz o check-in de um hóspede e precisa dos dados.",
         "falas": [
-          { "quem": "A", "fala": "Buenas tardes. ¿Su nombre, por favor?", "traducao": "Boa tarde. Seu nome, por favor?" },
-          { "quem": "B", "fala": "Me llamo Roberto Silva.", "traducao": "Me chamo Roberto Silva." },
-          { "quem": "A", "fala": "¿Cuántos años tiene?", "traducao": "Quantos anos o senhor tem?" },
-          { "quem": "B", "fala": "Tengo treinta y cuatro años.", "traducao": "Tenho trinta e quatro anos." },
-          { "quem": "A", "fala": "Perfecto. Su habitación es la número doscientos cinco.", "traducao": "Perfeito. Seu quarto é o número duzentos e cinco." },
-          { "quem": "B", "fala": "¿En qué piso está?", "traducao": "Em que andar fica?" },
-          { "quem": "A", "fala": "En el segundo piso. Aquí tiene la llave.", "traducao": "No segundo andar. Aqui está a chave." },
-          { "quem": "B", "fala": "Gracias. ¿A qué hora es el desayuno?", "traducao": "Obrigado. A que horas é o café da manhã?" }
+          {
+            "quem": "A",
+            "fala": "Buenas tardes. ¿Su nombre, por favor?",
+            "traducao": "Boa tarde. Seu nome, por favor?"
+          },
+          {
+            "quem": "B",
+            "fala": "Me llamo Roberto Silva.",
+            "traducao": "Me chamo Roberto Silva."
+          },
+          {
+            "quem": "A",
+            "fala": "¿Cuántos años tiene?",
+            "traducao": "Quantos anos o senhor tem?"
+          },
+          {
+            "quem": "B",
+            "fala": "Tengo treinta y cuatro años.",
+            "traducao": "Tenho trinta e quatro anos."
+          },
+          {
+            "quem": "A",
+            "fala": "Perfecto. Su habitación es la número doscientos cinco.",
+            "traducao": "Perfeito. Seu quarto é o número duzentos e cinco."
+          },
+          {
+            "quem": "B",
+            "fala": "¿En qué piso está?",
+            "traducao": "Em que andar fica?"
+          },
+          {
+            "quem": "A",
+            "fala": "En el segundo piso. Aquí tiene la llave.",
+            "traducao": "No segundo andar. Aqui está a chave."
+          },
+          {
+            "quem": "B",
+            "fala": "Gracias. ¿A qué hora es el desayuno?",
+            "traducao": "Obrigado. A que horas é o café da manhã?"
+          }
         ]
       },
       "expressoes": [
-        { "expressao": "Echar cuentas", "significado": "Fazer as contas / calcular", "uso": "Quando se precisa calcular algo, como dividir uma conta no restaurante." },
-        { "expressao": "Costar un ojo de la cara", "significado": "Custar os olhos da cara / ser muito caro", "uso": "Para falar que algo é absurdamente caro." },
-        { "expressao": "No tener ni un duro", "significado": "Estar sem um tostão / estar duro", "uso": "Quando alguém está sem dinheiro nenhum." }
+        {
+          "expressao": "Echar cuentas",
+          "significado": "Fazer as contas / calcular",
+          "uso": "Quando se precisa calcular algo, como dividir uma conta no restaurante."
+        },
+        {
+          "expressao": "Costar un ojo de la cara",
+          "significado": "Custar os olhos da cara / ser muito caro",
+          "uso": "Para falar que algo é absurdamente caro."
+        },
+        {
+          "expressao": "No tener ni un duro",
+          "significado": "Estar sem um tostão / estar duro",
+          "uso": "Quando alguém está sem dinheiro nenhum."
+        }
       ],
       "cultura": "Nos países hispânicos, a \"quinceañera\" (festa de 15 anos) é uma tradição importantíssima para as meninas, equivalente à nossa festa de debutante. No México, é uma celebração enorme com vestido, valsa e missa. Já na Espanha, a maioridade legal é aos 18 anos, e não há uma festa tradicional equivalente -- o marco é mais a \"selectividad\" (vestibular).",
       "musicas": [
-        { "titulo": "PRC", "artista": "Peso Pluma & Natanael Cano", "youtubeId": "kJflWOiAc6I", "trechoLetra": "Andamos blindados, los cuernos de chivo", "traducaoTrecho": "Andamos blindados, os chifres de cabra" }
+        {
+          "titulo": "PRC",
+          "artista": "Peso Pluma & Natanael Cano",
+          "youtubeId": "kJflWOiAc6I",
+          "trechoLetra": "Andamos blindados, los cuernos de chivo",
+          "traducaoTrecho": "Andamos blindados, os chifres de cabra",
+          "frases": [
+            {
+              "original": "Andamos blindados, los cuernos de chivo",
+              "traducao": "Andamos blindados, os chifres de cabra",
+              "vocabulario": [
+                {
+                  "palavra": "blindados",
+                  "significado": "blindados / protegidos",
+                  "detalhe": "Gíria dos corridos: andar blindado = estar protegido."
+                },
+                {
+                  "palavra": "cuernos de chivo",
+                  "significado": "chifres de cabra",
+                  "detalhe": "Gíria mexicana para AK-47 (pelo formato do carregador curvo)."
+                }
+              ],
+              "pronuncia": "an-DA-mos blin-DA-dos, los KWER-nos de CHI-vo"
+            }
+          ]
+        }
       ],
       "quiz": [
-        { "tipo": "multipla", "pergunta": "Como se escreve 21 em espanhol (uma palavra só)?", "opcoes": ["veinte y uno", "veintiuno", "vigésimo uno"], "certa": 1 },
-        { "tipo": "traduzir", "pergunta": "Traduza: tenho trinta anos", "resposta": "tengo treinta años" },
-        { "tipo": "multipla", "pergunta": "A partir de qual número o espanhol volta a separar as dezenas com \"y\" em vez de grudar tudo?", "opcoes": ["A partir do 21", "A partir do 31", "Nunca separa"], "certa": 1 },
-        { "tipo": "traduzir", "pergunta": "Escreva em espanhol: cem", "resposta": "cien" },
-        { "tipo": "multipla", "pergunta": "\"Mi primer día\" (não \"primero día\") acontece porque:", "opcoes": ["\"Primero\" perde o \"o\" antes de palavra masculina singular", "É um erro comum tolerado", "\"Día\" é palavra feminina"], "certa": 0 },
-        { "tipo": "traduzir", "pergunta": "Escreva em espanhol: zero", "resposta": "cero" }
+        {
+          "tipo": "multipla",
+          "pergunta": "Como se escreve 21 em espanhol (uma palavra só)?",
+          "opcoes": [
+            "veinte y uno",
+            "veintiuno",
+            "vigésimo uno"
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "Traduza: tenho trinta anos",
+          "resposta": "tengo treinta años"
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "A partir de qual número o espanhol volta a separar as dezenas com \"y\" em vez de grudar tudo?",
+          "opcoes": [
+            "A partir do 21",
+            "A partir do 31",
+            "Nunca separa"
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "Escreva em espanhol: cem",
+          "resposta": "cien"
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "\"Mi primer día\" (não \"primero día\") acontece porque:",
+          "opcoes": [
+            "\"Primero\" perde o \"o\" antes de palavra masculina singular",
+            "É um erro comum tolerado",
+            "\"Día\" é palavra feminina"
+          ],
+          "certa": 0
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "Escreva em espanhol: zero",
+          "resposta": "cero"
+        }
       ]
     },
     {
@@ -203,19 +809,84 @@
       "tema": "Quem é quem em casa.",
       "nivel": "A1",
       "vocabulario": [
-        { "palavra": "la familia", "traducao": "a família", "exemplo": "Mi familia es grande.", "exemploTraducao": "Minha família é grande." },
-        { "palavra": "el padre / la madre", "traducao": "o pai / a mãe", "exemplo": "Mi madre cocina muy bien.", "exemploTraducao": "Minha mãe cozinha muito bem." },
-        { "palavra": "el hermano / la hermana", "traducao": "o irmão / a irmã", "exemplo": "Tengo dos hermanos.", "exemploTraducao": "Tenho dois irmãos." },
-        { "palavra": "el hijo / la hija", "traducao": "o filho / a filha", "exemplo": "Su hija tiene diez años.", "exemploTraducao": "A filha dele(a) tem dez anos." },
-        { "palavra": "los abuelos", "traducao": "os avós", "exemplo": "Mis abuelos viven en Sevilla.", "exemploTraducao": "Meus avós moram em Sevilha." },
-        { "palavra": "el esposo / la esposa", "traducao": "o esposo / a esposa", "exemplo": "Ella es mi esposa.", "exemploTraducao": "Ela é minha esposa." },
-        { "palavra": "mi, tu, su", "traducao": "meu/minha, teu/tua, seu/sua (dele/dela)", "exemplo": "mi padre, tu madre, su hijo", "exemploTraducao": "meu pai, tua mãe, o filho dele/dela" },
-        { "palavra": "el primo / la prima", "traducao": "o primo / a prima", "exemplo": "Mi prima vive en Lima.", "exemploTraducao": "Minha prima mora em Lima." },
-        { "palavra": "el tío / la tía", "traducao": "o tio / a tia", "exemplo": "Mi tío cuenta buenas historias.", "exemploTraducao": "Meu tio conta boas histórias." },
-        { "palavra": "el sobrino / la sobrina", "traducao": "o sobrinho / a sobrinha", "exemplo": "Mi sobrina tiene cuatro años.", "exemploTraducao": "Minha sobrinha tem quatro anos." },
-        { "palavra": "el suegro / la suegra", "traducao": "o sogro / a sogra", "exemplo": "Mi suegra cocina delicioso.", "exemploTraducao": "Minha sogra cozinha delicioso." },
-        { "palavra": "soltero / casado", "traducao": "solteiro / casado", "exemplo": "Todavía estoy soltero.", "exemploTraducao": "Ainda estou solteiro." },
-        { "palavra": "el bebé", "traducao": "o bebê", "exemplo": "El bebé está durmiendo.", "exemploTraducao": "O bebê está dormindo." }
+        {
+          "palavra": "la familia",
+          "traducao": "a família",
+          "exemplo": "Mi familia es grande.",
+          "exemploTraducao": "Minha família é grande."
+        },
+        {
+          "palavra": "el padre / la madre",
+          "traducao": "o pai / a mãe",
+          "exemplo": "Mi madre cocina muy bien.",
+          "exemploTraducao": "Minha mãe cozinha muito bem."
+        },
+        {
+          "palavra": "el hermano / la hermana",
+          "traducao": "o irmão / a irmã",
+          "exemplo": "Tengo dos hermanos.",
+          "exemploTraducao": "Tenho dois irmãos."
+        },
+        {
+          "palavra": "el hijo / la hija",
+          "traducao": "o filho / a filha",
+          "exemplo": "Su hija tiene diez años.",
+          "exemploTraducao": "A filha dele(a) tem dez anos."
+        },
+        {
+          "palavra": "los abuelos",
+          "traducao": "os avós",
+          "exemplo": "Mis abuelos viven en Sevilla.",
+          "exemploTraducao": "Meus avós moram em Sevilha."
+        },
+        {
+          "palavra": "el esposo / la esposa",
+          "traducao": "o esposo / a esposa",
+          "exemplo": "Ella es mi esposa.",
+          "exemploTraducao": "Ela é minha esposa."
+        },
+        {
+          "palavra": "mi, tu, su",
+          "traducao": "meu/minha, teu/tua, seu/sua (dele/dela)",
+          "exemplo": "mi padre, tu madre, su hijo",
+          "exemploTraducao": "meu pai, tua mãe, o filho dele/dela"
+        },
+        {
+          "palavra": "el primo / la prima",
+          "traducao": "o primo / a prima",
+          "exemplo": "Mi prima vive en Lima.",
+          "exemploTraducao": "Minha prima mora em Lima."
+        },
+        {
+          "palavra": "el tío / la tía",
+          "traducao": "o tio / a tia",
+          "exemplo": "Mi tío cuenta buenas historias.",
+          "exemploTraducao": "Meu tio conta boas histórias."
+        },
+        {
+          "palavra": "el sobrino / la sobrina",
+          "traducao": "o sobrinho / a sobrinha",
+          "exemplo": "Mi sobrina tiene cuatro años.",
+          "exemploTraducao": "Minha sobrinha tem quatro anos."
+        },
+        {
+          "palavra": "el suegro / la suegra",
+          "traducao": "o sogro / a sogra",
+          "exemplo": "Mi suegra cocina delicioso.",
+          "exemploTraducao": "Minha sogra cozinha delicioso."
+        },
+        {
+          "palavra": "soltero / casado",
+          "traducao": "solteiro / casado",
+          "exemplo": "Todavía estoy soltero.",
+          "exemploTraducao": "Ainda estou solteiro."
+        },
+        {
+          "palavra": "el bebé",
+          "traducao": "o bebê",
+          "exemplo": "El bebé está durmiendo.",
+          "exemploTraducao": "O bebê está dormindo."
+        }
       ],
       "associacao": "\"Embarazada\" NÃO é embaraçada — é GRÁVIDA. Um dos falsos amigos mais famosos entre espanhol e português; confundir os dois já rendeu situações constrangedoras de verdade. Outro parecido: \"suegra\" nada tem a ver com \"sogro\" masculino — o \"suegro\" é que é o sogro; repare no gênero antes de trocar.",
       "dica": "\"Su\" serve tanto para \"seu/sua dele\" quanto \"seu/sua dela\" quanto \"de vocês\" — o contexto é que desfaz a ambiguidade, ou se acrescenta \"de él\"/\"de ella\" quando precisa deixar claro. \"Soltero/casado\" concordam em gênero como qualquer adjetivo: uma mulher diz \"estoy soltera\", com \"a\" no final.",
@@ -223,40 +894,156 @@
         "titulo": "Possessivos: mi, tu, su, nuestro",
         "explicacao": "Os possessivos em espanhol concordam em número com o que é possuído: \"mi libro\" (meu livro), \"mis libros\" (meus livros). Diferente do português, \"mi\" e \"tu\" não mudam de gênero -- só \"nuestro/nuestra\" e \"vuestro/vuestra\" fazem essa distinção. \"Su\" é o mais ambíguo: pode significar dele, dela, deles, delas ou de vocês.",
         "exemplos": [
-          { "frase": "Mi casa es tu casa.", "traducao": "Minha casa é sua casa." },
-          { "frase": "Nuestros hijos van a la escuela.", "traducao": "Nossos filhos vão à escola." },
-          { "frase": "Su madre de él vive en Madrid.", "traducao": "A mãe dele mora em Madri." },
-          { "frase": "Mis hermanas son mayores que yo.", "traducao": "Minhas irmãs são mais velhas que eu." }
+          {
+            "frase": "Mi casa es tu casa.",
+            "traducao": "Minha casa é sua casa."
+          },
+          {
+            "frase": "Nuestros hijos van a la escuela.",
+            "traducao": "Nossos filhos vão à escola."
+          },
+          {
+            "frase": "Su madre de él vive en Madrid.",
+            "traducao": "A mãe dele mora em Madri."
+          },
+          {
+            "frase": "Mis hermanas son mayores que yo.",
+            "traducao": "Minhas irmãs são mais velhas que eu."
+          }
         ]
       },
       "dialogo": {
         "situacao": "Dois colegas de trabalho conversam sobre suas famílias no intervalo do almoço.",
         "falas": [
-          { "quem": "A", "fala": "¿Tienes hermanos?", "traducao": "Você tem irmãos?" },
-          { "quem": "B", "fala": "Sí, tengo un hermano mayor y una hermana menor.", "traducao": "Sim, tenho um irmão mais velho e uma irmã mais nova." },
-          { "quem": "A", "fala": "¿Y estás casado?", "traducao": "E você é casado?" },
-          { "quem": "B", "fala": "Sí, mi esposa se llama Carmen. Tenemos dos hijos.", "traducao": "Sim, minha esposa se chama Carmen. Temos dois filhos." },
-          { "quem": "A", "fala": "¡Qué bien! ¿Cuántos años tienen?", "traducao": "Que bom! Quantos anos eles têm?" },
-          { "quem": "B", "fala": "El mayor tiene ocho y la pequeña tiene tres.", "traducao": "O mais velho tem oito e a pequena tem três." },
-          { "quem": "A", "fala": "Yo todavía estoy soltero. Vivo con mis padres.", "traducao": "Eu ainda estou solteiro. Moro com meus pais." },
-          { "quem": "B", "fala": "Bueno, cada quien a su ritmo.", "traducao": "Bom, cada um no seu ritmo." }
+          {
+            "quem": "A",
+            "fala": "¿Tienes hermanos?",
+            "traducao": "Você tem irmãos?"
+          },
+          {
+            "quem": "B",
+            "fala": "Sí, tengo un hermano mayor y una hermana menor.",
+            "traducao": "Sim, tenho um irmão mais velho e uma irmã mais nova."
+          },
+          {
+            "quem": "A",
+            "fala": "¿Y estás casado?",
+            "traducao": "E você é casado?"
+          },
+          {
+            "quem": "B",
+            "fala": "Sí, mi esposa se llama Carmen. Tenemos dos hijos.",
+            "traducao": "Sim, minha esposa se chama Carmen. Temos dois filhos."
+          },
+          {
+            "quem": "A",
+            "fala": "¡Qué bien! ¿Cuántos años tienen?",
+            "traducao": "Que bom! Quantos anos eles têm?"
+          },
+          {
+            "quem": "B",
+            "fala": "El mayor tiene ocho y la pequeña tiene tres.",
+            "traducao": "O mais velho tem oito e a pequena tem três."
+          },
+          {
+            "quem": "A",
+            "fala": "Yo todavía estoy soltero. Vivo con mis padres.",
+            "traducao": "Eu ainda estou solteiro. Moro com meus pais."
+          },
+          {
+            "quem": "B",
+            "fala": "Bueno, cada quien a su ritmo.",
+            "traducao": "Bom, cada um no seu ritmo."
+          }
         ]
       },
       "expressoes": [
-        { "expressao": "De tal palo, tal astilla", "significado": "Tal pai, tal filho", "uso": "Quando um filho se parece muito com o pai ou a mãe em comportamento." },
-        { "expressao": "Ser uña y carne", "significado": "Ser unha e carne / inseparáveis", "uso": "Para descrever duas pessoas que são muito próximas, como irmãos ou melhores amigos." },
-        { "expressao": "La oveja negra", "significado": "A ovelha negra da família", "uso": "A pessoa que é diferente ou se desvia do padrão da família." }
+        {
+          "expressao": "De tal palo, tal astilla",
+          "significado": "Tal pai, tal filho",
+          "uso": "Quando um filho se parece muito com o pai ou a mãe em comportamento."
+        },
+        {
+          "expressao": "Ser uña y carne",
+          "significado": "Ser unha e carne / inseparáveis",
+          "uso": "Para descrever duas pessoas que são muito próximas, como irmãos ou melhores amigos."
+        },
+        {
+          "expressao": "La oveja negra",
+          "significado": "A ovelha negra da família",
+          "uso": "A pessoa que é diferente ou se desvia do padrão da família."
+        }
       ],
       "cultura": "A família nos países hispânicos costuma ser muito unida e presente no dia a dia. É comum que filhos adultos morem com os pais até casar, sem que isso seja visto como negativo. Os domingos em família, com almoço grande na casa dos avós, são tradição em muitos países como México, Colômbia e Argentina. O conceito de \"familia\" inclui primos, tios e padrinhos como parte do núcleo próximo.",
       "musicas": [
-        { "titulo": "Pacas de Billetes", "artista": "Natanael Cano", "youtubeId": "TjXEzzOkVn0", "trechoLetra": "Pacas de billetes que yo me he ganado", "traducaoTrecho": "Maços de notas que eu ganhei" }
+        {
+          "titulo": "Pacas de Billetes",
+          "artista": "Natanael Cano",
+          "youtubeId": "TjXEzzOkVn0",
+          "trechoLetra": "Pacas de billetes que yo me he ganado",
+          "traducaoTrecho": "Maços de notas que eu ganhei",
+          "frases": [
+            {
+              "original": "Pacas de billetes que yo me he ganado",
+              "traducao": "Maços de notas que eu ganhei",
+              "vocabulario": [
+                {
+                  "palavra": "pacas",
+                  "significado": "maços / fardos",
+                  "detalhe": "Gíria mexicana: paca de billetes = maço grosso de dinheiro."
+                },
+                {
+                  "palavra": "billetes",
+                  "significado": "notas (de dinheiro)",
+                  "detalhe": "Billete = nota/cédula. Em Espanha também é passagem de trem."
+                },
+                {
+                  "palavra": "me he ganado",
+                  "significado": "ganhei (para mim)",
+                  "detalhe": "Pretérito perfecto compuesto: he + participio. O \"me\" é reflexivo enfatizando que foi mérito próprio."
+                }
+              ],
+              "pronuncia": "PA-kas de bi-YE-tes ke yo me e ga-NA-do"
+            }
+          ]
+        }
       ],
       "quiz": [
-        { "tipo": "multipla", "pergunta": "\"Embarazada\" em espanhol quer dizer:", "opcoes": ["Envergonhada", "Grávida", "Embaraçada com o cabelo"], "certa": 1 },
-        { "tipo": "traduzir", "pergunta": "Traduza: o tio", "resposta": "el tío" },
-        { "tipo": "multipla", "pergunta": "\"El sobrino\" e \"la sobrina\" significam:", "opcoes": ["Sobrinho e sobrinha", "Primo e prima", "Neto e neta"], "certa": 0 },
-        { "tipo": "traduzir", "pergunta": "Como uma mulher diz \"estou solteira\"?", "resposta": "estoy soltera" },
-        { "tipo": "traduzir", "pergunta": "Traduza: meus avós", "resposta": "mis abuelos" }
+        {
+          "tipo": "multipla",
+          "pergunta": "\"Embarazada\" em espanhol quer dizer:",
+          "opcoes": [
+            "Envergonhada",
+            "Grávida",
+            "Embaraçada com o cabelo"
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "Traduza: o tio",
+          "resposta": "el tío"
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "\"El sobrino\" e \"la sobrina\" significam:",
+          "opcoes": [
+            "Sobrinho e sobrinha",
+            "Primo e prima",
+            "Neto e neta"
+          ],
+          "certa": 0
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "Como uma mulher diz \"estou solteira\"?",
+          "resposta": "estoy soltera"
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "Traduza: meus avós",
+          "resposta": "mis abuelos"
+        }
       ]
     },
     {
@@ -265,19 +1052,84 @@
       "tema": "Pedir e comentar sobre comida.",
       "nivel": "A1",
       "vocabulario": [
-        { "palavra": "el desayuno", "traducao": "o café da manhã", "exemplo": "Desayuno a las siete.", "exemploTraducao": "Tomo café às sete." },
-        { "palavra": "el almuerzo / la comida", "traducao": "o almoço", "exemplo": "¿Qué hay para el almuerzo?", "exemploTraducao": "O que tem para o almoço?" },
-        { "palavra": "la cena", "traducao": "o jantar", "exemplo": "La cena está lista.", "exemploTraducao": "O jantar está pronto." },
-        { "palavra": "el agua / el vino / la cerveza", "traducao": "a água / o vinho / a cerveja", "exemplo": "Una cerveza, por favor.", "exemploTraducao": "Uma cerveja, por favor." },
-        { "palavra": "Tengo hambre / Tengo sed", "traducao": "estou com fome / estou com sede", "exemplo": "Tengo mucha hambre.", "exemploTraducao": "Estou com muita fome." },
-        { "palavra": "Está rico / Está delicioso", "traducao": "está gostoso / está delicioso", "exemplo": "¡Qué rico está esto!", "exemploTraducao": "Que gostoso está isso!" },
-        { "palavra": "La cuenta, por favor", "traducao": "a conta, por favor", "exemplo": "La cuenta, por favor. ¿Aceptan tarjeta?", "exemploTraducao": "A conta, por favor. Vocês aceitam cartão?" },
-        { "palavra": "el postre", "traducao": "a sobremesa", "exemplo": "¿Qué hay de postre?", "exemploTraducao": "O que tem de sobremesa?" },
-        { "palavra": "la carne / el pescado", "traducao": "a carne / o peixe", "exemplo": "No como carne.", "exemploTraducao": "Eu não como carne." },
-        { "palavra": "las verduras / la fruta", "traducao": "os legumes/verduras / a fruta", "exemplo": "Me encantan las verduras.", "exemploTraducao": "Eu adoro legumes." },
-        { "palavra": "dulce / salado", "traducao": "doce / salgado", "exemplo": "¿Prefieres dulce o salado?", "exemploTraducao": "Você prefere doce ou salgado?" },
-        { "palavra": "Soy vegetariano/a", "traducao": "eu sou vegetariano(a)", "exemplo": "Soy vegetariana, sin carne por favor.", "exemploTraducao": "Sou vegetariana, sem carne por favor." },
-        { "palavra": "¡Salud!", "traducao": "saúde! (brinde)", "exemplo": "¡Salud, por el nuevo trabajo!", "exemploTraducao": "Saúde, pelo novo emprego!" }
+        {
+          "palavra": "el desayuno",
+          "traducao": "o café da manhã",
+          "exemplo": "Desayuno a las siete.",
+          "exemploTraducao": "Tomo café às sete."
+        },
+        {
+          "palavra": "el almuerzo / la comida",
+          "traducao": "o almoço",
+          "exemplo": "¿Qué hay para el almuerzo?",
+          "exemploTraducao": "O que tem para o almoço?"
+        },
+        {
+          "palavra": "la cena",
+          "traducao": "o jantar",
+          "exemplo": "La cena está lista.",
+          "exemploTraducao": "O jantar está pronto."
+        },
+        {
+          "palavra": "el agua / el vino / la cerveza",
+          "traducao": "a água / o vinho / a cerveja",
+          "exemplo": "Una cerveza, por favor.",
+          "exemploTraducao": "Uma cerveja, por favor."
+        },
+        {
+          "palavra": "Tengo hambre / Tengo sed",
+          "traducao": "estou com fome / estou com sede",
+          "exemplo": "Tengo mucha hambre.",
+          "exemploTraducao": "Estou com muita fome."
+        },
+        {
+          "palavra": "Está rico / Está delicioso",
+          "traducao": "está gostoso / está delicioso",
+          "exemplo": "¡Qué rico está esto!",
+          "exemploTraducao": "Que gostoso está isso!"
+        },
+        {
+          "palavra": "La cuenta, por favor",
+          "traducao": "a conta, por favor",
+          "exemplo": "La cuenta, por favor. ¿Aceptan tarjeta?",
+          "exemploTraducao": "A conta, por favor. Vocês aceitam cartão?"
+        },
+        {
+          "palavra": "el postre",
+          "traducao": "a sobremesa",
+          "exemplo": "¿Qué hay de postre?",
+          "exemploTraducao": "O que tem de sobremesa?"
+        },
+        {
+          "palavra": "la carne / el pescado",
+          "traducao": "a carne / o peixe",
+          "exemplo": "No como carne.",
+          "exemploTraducao": "Eu não como carne."
+        },
+        {
+          "palavra": "las verduras / la fruta",
+          "traducao": "os legumes/verduras / a fruta",
+          "exemplo": "Me encantan las verduras.",
+          "exemploTraducao": "Eu adoro legumes."
+        },
+        {
+          "palavra": "dulce / salado",
+          "traducao": "doce / salgado",
+          "exemplo": "¿Prefieres dulce o salado?",
+          "exemploTraducao": "Você prefere doce ou salgado?"
+        },
+        {
+          "palavra": "Soy vegetariano/a",
+          "traducao": "eu sou vegetariano(a)",
+          "exemplo": "Soy vegetariana, sin carne por favor.",
+          "exemploTraducao": "Sou vegetariana, sem carne por favor."
+        },
+        {
+          "palavra": "¡Salud!",
+          "traducao": "saúde! (brinde)",
+          "exemplo": "¡Salud, por el nuevo trabajo!",
+          "exemploTraducao": "Saúde, pelo novo emprego!"
+        }
       ],
       "associacao": "\"El agua\" usa o artigo MASCULINO (el), mesmo \"agua\" sendo palavra feminina — regra do espanhol para palavras femininas que começam com \"a\" tônico. No plural volta ao normal: \"las aguas\".",
       "dica": "\"Comida\" em espanhol quer dizer tanto \"comida\" em geral quanto, especificamente na Espanha, \"o almoço\" — é o mesmo tipo de ambiguidade regional que existe no francês com \"déjeuner\". \"¡Salud!\" é o brinde universal em espanhol — mesma palavra que \"saúde\", fácil de lembrar.",
@@ -285,29 +1137,85 @@
         "titulo": "O verbo gustar e verbos similares",
         "explicacao": "Em espanhol, \"gostar\" funciona ao contrário do português: o sujeito é a coisa que agrada, não a pessoa. Diz-se \"me gusta el café\" (o café me agrada), não \"yo gusto el café\". Para plural, usa-se \"gustan\": \"me gustan las frutas\". Outros verbos seguem o mesmo padrão: encantar, fascinar, molestar.",
         "exemplos": [
-          { "frase": "Me gusta la paella.", "traducao": "Eu gosto de paella." },
-          { "frase": "¿Te gustan las verduras?", "traducao": "Você gosta de verduras?" },
-          { "frase": "Nos encanta el chocolate.", "traducao": "Nós adoramos chocolate." },
-          { "frase": "A ella le gusta cocinar.", "traducao": "Ela gosta de cozinhar." }
+          {
+            "frase": "Me gusta la paella.",
+            "traducao": "Eu gosto de paella."
+          },
+          {
+            "frase": "¿Te gustan las verduras?",
+            "traducao": "Você gosta de verduras?"
+          },
+          {
+            "frase": "Nos encanta el chocolate.",
+            "traducao": "Nós adoramos chocolate."
+          },
+          {
+            "frase": "A ella le gusta cocinar.",
+            "traducao": "Ela gosta de cozinhar."
+          }
         ]
       },
       "dialogo": {
         "situacao": "Um casal brasileiro pede comida num restaurante em Madri.",
         "falas": [
-          { "quem": "A", "fala": "Buenas tardes. Quisiera ver el menú, por favor.", "traducao": "Boa tarde. Eu gostaria de ver o cardápio, por favor." },
-          { "quem": "B", "fala": "Aquí tiene. ¿Quieren algo para beber?", "traducao": "Aqui está. Querem algo para beber?" },
-          { "quem": "A", "fala": "Dos aguas, por favor. ¿Qué me recomienda de plato principal?", "traducao": "Duas águas, por favor. O que me recomenda de prato principal?" },
-          { "quem": "B", "fala": "La paella está muy buena hoy.", "traducao": "A paella está muito boa hoje." },
-          { "quem": "A", "fala": "Perfecto, una paella para compartir. Y una ensalada.", "traducao": "Perfeito, uma paella para dividir. E uma salada." },
-          { "quem": "B", "fala": "¿Quieren postre después?", "traducao": "Querem sobremesa depois?" },
-          { "quem": "A", "fala": "Sí, ¿qué tienen?", "traducao": "Sim, o que vocês têm?" },
-          { "quem": "B", "fala": "Flan, helado o fruta de temporada.", "traducao": "Pudim, sorvete ou fruta da estação." }
+          {
+            "quem": "A",
+            "fala": "Buenas tardes. Quisiera ver el menú, por favor.",
+            "traducao": "Boa tarde. Eu gostaria de ver o cardápio, por favor."
+          },
+          {
+            "quem": "B",
+            "fala": "Aquí tiene. ¿Quieren algo para beber?",
+            "traducao": "Aqui está. Querem algo para beber?"
+          },
+          {
+            "quem": "A",
+            "fala": "Dos aguas, por favor. ¿Qué me recomienda de plato principal?",
+            "traducao": "Duas águas, por favor. O que me recomenda de prato principal?"
+          },
+          {
+            "quem": "B",
+            "fala": "La paella está muy buena hoy.",
+            "traducao": "A paella está muito boa hoje."
+          },
+          {
+            "quem": "A",
+            "fala": "Perfecto, una paella para compartir. Y una ensalada.",
+            "traducao": "Perfeito, uma paella para dividir. E uma salada."
+          },
+          {
+            "quem": "B",
+            "fala": "¿Quieren postre después?",
+            "traducao": "Querem sobremesa depois?"
+          },
+          {
+            "quem": "A",
+            "fala": "Sí, ¿qué tienen?",
+            "traducao": "Sim, o que vocês têm?"
+          },
+          {
+            "quem": "B",
+            "fala": "Flan, helado o fruta de temporada.",
+            "traducao": "Pudim, sorvete ou fruta da estação."
+          }
         ]
       },
       "expressoes": [
-        { "expressao": "Estar para chuparse los dedos", "significado": "Estar de lamber os dedos / delicioso", "uso": "Para elogiar comida que está incrivelmente boa." },
-        { "expressao": "Pan comido", "significado": "Moleza / mamão com açúcar", "uso": "Quando algo é muito fácil de fazer, não necessariamente sobre comida." },
-        { "expressao": "Dar la lata", "significado": "Encher o saco / incomodar", "uso": "Quando alguém está sendo chato ou insistente, nada a ver com lata de comida." }
+        {
+          "expressao": "Estar para chuparse los dedos",
+          "significado": "Estar de lamber os dedos / delicioso",
+          "uso": "Para elogiar comida que está incrivelmente boa."
+        },
+        {
+          "expressao": "Pan comido",
+          "significado": "Moleza / mamão com açúcar",
+          "uso": "Quando algo é muito fácil de fazer, não necessariamente sobre comida."
+        },
+        {
+          "expressao": "Dar la lata",
+          "significado": "Encher o saco / incomodar",
+          "uso": "Quando alguém está sendo chato ou insistente, nada a ver com lata de comida."
+        }
       ],
       "cultura": "Os horários de refeição em países hispânicos são bem diferentes do Brasil. Na Espanha, o almoço (\"la comida\") é por volta das 14h-15h e é a refeição principal do dia, e o jantar (\"la cena\") costuma ser às 21h-22h. No México, os \"tacos\" de rua são cultura de qualquer hora do dia. As \"tapas\" espanholas -- pequenas porções de comida servidas em bares -- são uma das tradições gastronômicas mais famosas do mundo.",
       "cancao": {
@@ -316,14 +1224,86 @@
         "letra": "Arroz con leche,\nme quiero casar\ncon una señorita\nde San Nicolás.\n\nQue sepa coser,\nque sepa bordar,\nque sepa abrir la puerta\npara ir a jugar.\n\nCon ésta sí,\ncon ésta no,\ncon esta señorita\nme caso yo."
       },
       "musicas": [
-        { "titulo": "Bailando", "artista": "Enrique Iglesias ft. Descemer Bueno", "youtubeId": "xYYz5RTqbEs", "trechoLetra": "Yo te miro y se me corta la respiración", "traducaoTrecho": "Eu te olho e me falta a respiração" }
+        {
+          "titulo": "Bailando",
+          "artista": "Enrique Iglesias ft. Descemer Bueno",
+          "youtubeId": "xYYz5RTqbEs",
+          "trechoLetra": "Yo te miro y se me corta la respiración",
+          "traducaoTrecho": "Eu te olho e me falta a respiração",
+          "frases": [
+            {
+              "original": "Yo te miro y se me corta la respiración",
+              "traducao": "Eu te olho e me falta a respiração",
+              "vocabulario": [
+                {
+                  "palavra": "te miro",
+                  "significado": "te olho",
+                  "detalhe": "Mirar = olhar. Em espanhol da América, mirar é mais usado que ver para \"olhar com atenção\"."
+                },
+                {
+                  "palavra": "se me corta",
+                  "significado": "me corta / me falta",
+                  "detalhe": "Expressão: cortarse la respiración = ficar sem ar de emoção."
+                }
+              ],
+              "pronuncia": "yo te MI-ro ee se me KOR-ta la res-pi-ra-SION"
+            },
+            {
+              "original": "Con tu física y tu química",
+              "traducao": "Com teu físico e tua química",
+              "vocabulario": [
+                {
+                  "palavra": "física",
+                  "significado": "físico / corpo",
+                  "detalhe": "Jogo de palavras: física = aparência física + a ciência."
+                },
+                {
+                  "palavra": "química",
+                  "significado": "química / conexão",
+                  "detalhe": "Duplo sentido: a ciência + \"ter química\" = ter conexão com alguém."
+                }
+              ],
+              "pronuncia": "kon tu FI-si-ka ee tu KI-mi-ka"
+            }
+          ]
+        }
       ],
       "quiz": [
-        { "tipo": "multipla", "pergunta": "Por que se diz \"el agua\" (artigo masculino) se \"agua\" é palavra feminina?", "opcoes": ["Água é masculina em espanhol", "Regra para palavra feminina começando com \"a\" tônico", "Erro comum que virou norma"], "certa": 1 },
-        { "tipo": "traduzir", "pergunta": "Traduza: estou com fome", "resposta": "tengo hambre" },
-        { "tipo": "traduzir", "pergunta": "O que se diz ao brindar em espanhol?", "resposta": "salud" },
-        { "tipo": "multipla", "pergunta": "\"Dulce\" é o oposto de:", "opcoes": ["salado", "rico", "delicioso"], "certa": 0 },
-        { "tipo": "traduzir", "pergunta": "Traduza: a sobremesa", "resposta": "el postre" }
+        {
+          "tipo": "multipla",
+          "pergunta": "Por que se diz \"el agua\" (artigo masculino) se \"agua\" é palavra feminina?",
+          "opcoes": [
+            "Água é masculina em espanhol",
+            "Regra para palavra feminina começando com \"a\" tônico",
+            "Erro comum que virou norma"
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "Traduza: estou com fome",
+          "resposta": "tengo hambre"
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "O que se diz ao brindar em espanhol?",
+          "resposta": "salud"
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "\"Dulce\" é o oposto de:",
+          "opcoes": [
+            "salado",
+            "rico",
+            "delicioso"
+          ],
+          "certa": 0
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "Traduza: a sobremesa",
+          "resposta": "el postre"
+        }
       ]
     },
     {
@@ -332,18 +1312,78 @@
       "tema": "Marcar hora, dia e mês.",
       "nivel": "A1",
       "vocabulario": [
-        { "palavra": "lunes, martes, miércoles", "traducao": "segunda, terça, quarta", "exemplo": "El lunes trabajo.", "exemploTraducao": "Segunda eu trabalho." },
-        { "palavra": "jueves, viernes", "traducao": "quinta, sexta", "exemplo": "El viernes salimos.", "exemploTraducao": "Sexta a gente sai." },
-        { "palavra": "sábado, domingo", "traducao": "sábado, domingo", "exemplo": "El fin de semana es sábado y domingo.", "exemploTraducao": "O fim de semana é sábado e domingo." },
-        { "palavra": "hoy / mañana / ayer", "traducao": "hoje / amanhã / ontem", "exemplo": "Hoy hace sol.", "exemploTraducao": "Hoje está fazendo sol." },
-        { "palavra": "¿Qué hora es?", "traducao": "que horas são?", "exemplo": "Son las tres.", "exemploTraducao": "São três horas." },
-        { "palavra": "la mañana / la tarde / la noche", "traducao": "a manhã / a tarde / a noite", "exemplo": "Por la mañana estudio.", "exemploTraducao": "De manhã eu estudo." },
-        { "palavra": "el día / la semana / el mes / el año", "traducao": "o dia / a semana / o mês / o ano", "exemplo": "Toda la semana.", "exemploTraducao": "A semana toda." },
-        { "palavra": "temprano / tarde", "traducao": "cedo / tarde", "exemplo": "Me levanto temprano.", "exemploTraducao": "Eu acordo cedo." },
-        { "palavra": "ahora / más tarde", "traducao": "agora / mais tarde", "exemplo": "¿Vamos ahora?", "exemploTraducao": "Vamos agora?" },
-        { "palavra": "la primavera / el verano", "traducao": "a primavera / o verão", "exemplo": "Me encanta el verano.", "exemploTraducao": "Eu adoro o verão." },
-        { "palavra": "el otoño / el invierno", "traducao": "o outono / o inverno", "exemplo": "Nieva en invierno.", "exemploTraducao": "Neva no inverno." },
-        { "palavra": "¿Qué fecha es hoy?", "traducao": "que data é hoje?", "exemplo": "Hoy es doce de marzo.", "exemploTraducao": "Hoje é doze de março." }
+        {
+          "palavra": "lunes, martes, miércoles",
+          "traducao": "segunda, terça, quarta",
+          "exemplo": "El lunes trabajo.",
+          "exemploTraducao": "Segunda eu trabalho."
+        },
+        {
+          "palavra": "jueves, viernes",
+          "traducao": "quinta, sexta",
+          "exemplo": "El viernes salimos.",
+          "exemploTraducao": "Sexta a gente sai."
+        },
+        {
+          "palavra": "sábado, domingo",
+          "traducao": "sábado, domingo",
+          "exemplo": "El fin de semana es sábado y domingo.",
+          "exemploTraducao": "O fim de semana é sábado e domingo."
+        },
+        {
+          "palavra": "hoy / mañana / ayer",
+          "traducao": "hoje / amanhã / ontem",
+          "exemplo": "Hoy hace sol.",
+          "exemploTraducao": "Hoje está fazendo sol."
+        },
+        {
+          "palavra": "¿Qué hora es?",
+          "traducao": "que horas são?",
+          "exemplo": "Son las tres.",
+          "exemploTraducao": "São três horas."
+        },
+        {
+          "palavra": "la mañana / la tarde / la noche",
+          "traducao": "a manhã / a tarde / a noite",
+          "exemplo": "Por la mañana estudio.",
+          "exemploTraducao": "De manhã eu estudo."
+        },
+        {
+          "palavra": "el día / la semana / el mes / el año",
+          "traducao": "o dia / a semana / o mês / o ano",
+          "exemplo": "Toda la semana.",
+          "exemploTraducao": "A semana toda."
+        },
+        {
+          "palavra": "temprano / tarde",
+          "traducao": "cedo / tarde",
+          "exemplo": "Me levanto temprano.",
+          "exemploTraducao": "Eu acordo cedo."
+        },
+        {
+          "palavra": "ahora / más tarde",
+          "traducao": "agora / mais tarde",
+          "exemplo": "¿Vamos ahora?",
+          "exemploTraducao": "Vamos agora?"
+        },
+        {
+          "palavra": "la primavera / el verano",
+          "traducao": "a primavera / o verão",
+          "exemplo": "Me encanta el verano.",
+          "exemploTraducao": "Eu adoro o verão."
+        },
+        {
+          "palavra": "el otoño / el invierno",
+          "traducao": "o outono / o inverno",
+          "exemplo": "Nieva en invierno.",
+          "exemploTraducao": "Neva no inverno."
+        },
+        {
+          "palavra": "¿Qué fecha es hoy?",
+          "traducao": "que data é hoje?",
+          "exemplo": "Hoy es doce de marzo.",
+          "exemploTraducao": "Hoje é doze de março."
+        }
       ],
       "associacao": "\"Mañana\" é uma palavra com dois sentidos: MANHÃ e AMANHÃ — o contexto decide. \"Por la mañana\" é \"de manhã\"; \"hasta mañana\" é \"até amanhã\". As estações do ano soam parecidas com o português por virem do mesmo latim: primavera, verano/verão, otoño/outono, invierno/inverno.",
       "dica": "Para dizer as horas, o espanhol usa \"son las...\" no plural (son las tres, son las diez), mas \"es la una\" no singular para 1 hora — é a única exceção. \"Tarde\" é usado tanto como substantivo (\"la tarde\" = a tarde) quanto como advérbio (\"tarde\" = atrasado) — \"llegué tarde\" é \"cheguei tarde/atrasado\", não tem relação com o período do dia.",
@@ -351,40 +1391,151 @@
         "titulo": "Como dizer as horas e usar preposições de tempo",
         "explicacao": "Para perguntar as horas, diz-se \"¿Qué hora es?\". A resposta usa \"es la\" para 1h e \"son las\" para todas as outras. Para indicar quando algo acontece, usa-se \"a las\" (às): \"a las tres\" (às três). Os dias da semana levam o artigo \"el\" e não têm letra maiúscula.",
         "exemplos": [
-          { "frase": "Son las cinco y media de la tarde.", "traducao": "São cinco e meia da tarde." },
-          { "frase": "La clase empieza a las nueve.", "traducao": "A aula começa às nove." },
-          { "frase": "El martes tengo una reunión.", "traducao": "Na terça eu tenho uma reunião." },
-          { "frase": "Es la una en punto.", "traducao": "É uma hora em ponto." }
+          {
+            "frase": "Son las cinco y media de la tarde.",
+            "traducao": "São cinco e meia da tarde."
+          },
+          {
+            "frase": "La clase empieza a las nueve.",
+            "traducao": "A aula começa às nove."
+          },
+          {
+            "frase": "El martes tengo una reunión.",
+            "traducao": "Na terça eu tenho uma reunião."
+          },
+          {
+            "frase": "Es la una en punto.",
+            "traducao": "É uma hora em ponto."
+          }
         ]
       },
       "dialogo": {
         "situacao": "Dois amigos tentam combinar um dia para se encontrar na semana.",
         "falas": [
-          { "quem": "A", "fala": "¿Qué día nos vemos esta semana?", "traducao": "Que dia a gente se vê nesta semana?" },
-          { "quem": "B", "fala": "El lunes no puedo. ¿El miércoles te va bien?", "traducao": "Na segunda não posso. Quarta serve para você?" },
-          { "quem": "A", "fala": "El miércoles trabajo hasta las seis. ¿A qué hora?", "traducao": "Na quarta trabalho até as seis. A que horas?" },
-          { "quem": "B", "fala": "¿A las siete y media? Podemos cenar juntos.", "traducao": "Às sete e meia? Podemos jantar juntos." },
-          { "quem": "A", "fala": "Perfecto. ¿Dónde quedamos?", "traducao": "Perfeito. Onde a gente se encontra?" },
-          { "quem": "B", "fala": "En el restaurante de siempre. ¿Te parece?", "traducao": "No restaurante de sempre. Topa?" },
-          { "quem": "A", "fala": "Vale. Entonces el miércoles a las siete y media.", "traducao": "Combinado. Então quarta às sete e meia." },
-          { "quem": "B", "fala": "¡Hecho! Nos vemos el miércoles.", "traducao": "Feito! A gente se vê na quarta." }
+          {
+            "quem": "A",
+            "fala": "¿Qué día nos vemos esta semana?",
+            "traducao": "Que dia a gente se vê nesta semana?"
+          },
+          {
+            "quem": "B",
+            "fala": "El lunes no puedo. ¿El miércoles te va bien?",
+            "traducao": "Na segunda não posso. Quarta serve para você?"
+          },
+          {
+            "quem": "A",
+            "fala": "El miércoles trabajo hasta las seis. ¿A qué hora?",
+            "traducao": "Na quarta trabalho até as seis. A que horas?"
+          },
+          {
+            "quem": "B",
+            "fala": "¿A las siete y media? Podemos cenar juntos.",
+            "traducao": "Às sete e meia? Podemos jantar juntos."
+          },
+          {
+            "quem": "A",
+            "fala": "Perfecto. ¿Dónde quedamos?",
+            "traducao": "Perfeito. Onde a gente se encontra?"
+          },
+          {
+            "quem": "B",
+            "fala": "En el restaurante de siempre. ¿Te parece?",
+            "traducao": "No restaurante de sempre. Topa?"
+          },
+          {
+            "quem": "A",
+            "fala": "Vale. Entonces el miércoles a las siete y media.",
+            "traducao": "Combinado. Então quarta às sete e meia."
+          },
+          {
+            "quem": "B",
+            "fala": "¡Hecho! Nos vemos el miércoles.",
+            "traducao": "Feito! A gente se vê na quarta."
+          }
         ]
       },
       "expressoes": [
-        { "expressao": "De vez en cuando", "significado": "De vez em quando", "uso": "Para falar de algo que acontece às vezes, sem frequência definida." },
-        { "expressao": "A última hora", "significado": "Na última hora / de última hora", "uso": "Quando algo acontece ou muda no último momento possível." },
-        { "expressao": "Matar el tiempo", "significado": "Matar o tempo", "uso": "Fazer algo para passar o tempo enquanto espera." }
+        {
+          "expressao": "De vez en cuando",
+          "significado": "De vez em quando",
+          "uso": "Para falar de algo que acontece às vezes, sem frequência definida."
+        },
+        {
+          "expressao": "A última hora",
+          "significado": "Na última hora / de última hora",
+          "uso": "Quando algo acontece ou muda no último momento possível."
+        },
+        {
+          "expressao": "Matar el tiempo",
+          "significado": "Matar o tempo",
+          "uso": "Fazer algo para passar o tempo enquanto espera."
+        }
       ],
       "cultura": "Os horários nos países hispânicos costumam ser bem mais tardios que no Brasil. Na Espanha, é normal jantar às 22h e sair de casa para festas à meia-noite. A famosa \"siesta\" espanhola -- um cochilo depois do almoço -- está em declínio nas cidades grandes, mas ainda é tradição em cidades menores. Na América Latina, a pontualidade varia muito: no Chile costuma-se ser pontual, enquanto em outros países existe o \"horário latino\", onde 15-30 minutos de atraso são normais.",
       "musicas": [
-        { "titulo": "Amor Tumbado", "artista": "Natanael Cano", "youtubeId": "xh9ymx2bPjA", "trechoLetra": "Te quiero, mi amor, pero tumbado", "traducaoTrecho": "Te amo, meu amor, mas do meu jeito" }
+        {
+          "titulo": "Amor Tumbado",
+          "artista": "Natanael Cano",
+          "youtubeId": "xh9ymx2bPjA",
+          "trechoLetra": "Te quiero, mi amor, pero tumbado",
+          "traducaoTrecho": "Te amo, meu amor, mas do meu jeito",
+          "frases": [
+            {
+              "original": "Te quiero, mi amor, pero tumbado",
+              "traducao": "Te amo, meu amor, mas do meu jeito",
+              "vocabulario": [
+                {
+                  "palavra": "te quiero",
+                  "significado": "te amo / te quero",
+                  "detalhe": "Querer = amar/querer. \"Te quiero\" é a forma mais comum de dizer \"eu te amo\" na América Latina."
+                },
+                {
+                  "palavra": "tumbado",
+                  "significado": "do meu jeito / relaxado",
+                  "detalhe": "Gíria dos corridos tumbados: tumbado = no estilo próprio, tranquilo, sem frescura."
+                }
+              ],
+              "pronuncia": "te KIE-ro, mi a-MOR, PE-ro tum-BA-do"
+            }
+          ]
+        }
       ],
       "quiz": [
-        { "tipo": "multipla", "pergunta": "\"Mañana\" pode significar:", "opcoes": ["Só \"manhã\"", "Só \"amanhã\"", "Manhã OU amanhã, depende do contexto"], "certa": 2 },
-        { "tipo": "traduzir", "pergunta": "Como se diz \"é uma hora\" (1h)?", "resposta": "es la una" },
-        { "tipo": "traduzir", "pergunta": "Traduza: cedo", "resposta": "temprano" },
-        { "tipo": "multipla", "pergunta": "\"Llegué tarde\" quer dizer:", "opcoes": ["Cheguei de tarde", "Cheguei atrasado", "Chego amanhã à tarde"], "certa": 1 },
-        { "tipo": "traduzir", "pergunta": "Traduza: o inverno", "resposta": "el invierno" }
+        {
+          "tipo": "multipla",
+          "pergunta": "\"Mañana\" pode significar:",
+          "opcoes": [
+            "Só \"manhã\"",
+            "Só \"amanhã\"",
+            "Manhã OU amanhã, depende do contexto"
+          ],
+          "certa": 2
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "Como se diz \"é uma hora\" (1h)?",
+          "resposta": "es la una"
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "Traduza: cedo",
+          "resposta": "temprano"
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "\"Llegué tarde\" quer dizer:",
+          "opcoes": [
+            "Cheguei de tarde",
+            "Cheguei atrasado",
+            "Chego amanhã à tarde"
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "Traduza: o inverno",
+          "resposta": "el invierno"
+        }
       ]
     },
     {
@@ -393,18 +1544,78 @@
       "tema": "A diferença mais importante do espanhol: SER x ESTAR.",
       "nivel": "A1",
       "vocabulario": [
-        { "palavra": "soy, eres, es", "traducao": "eu sou, você é, ele/ela é (verbo SER — o que é permanente)", "exemplo": "Soy brasileño.", "exemploTraducao": "Sou brasileiro." },
-        { "palavra": "estoy, estás, está", "traducao": "eu estou, você está, ele/ela está (verbo ESTAR — o que é temporário/estado)", "exemplo": "Estoy cansado hoy.", "exemploTraducao": "Estou cansado hoje." },
-        { "palavra": "tengo, tienes, tiene", "traducao": "eu tenho, você tem, ele/ela tem (verbo TENER)", "exemplo": "Tengo un perro.", "exemploTraducao": "Tenho um cachorro." },
-        { "palavra": "somos, sois/son, son", "traducao": "nós somos, vocês são, eles são", "exemplo": "Somos amigos.", "exemploTraducao": "Somos amigos." },
-        { "palavra": "estamos, estáis/están, están", "traducao": "nós estamos, vocês estão, eles estão", "exemplo": "Estamos en casa.", "exemploTraducao": "Estamos em casa." },
-        { "palavra": "hay", "traducao": "há / tem (existência) — não muda nunca de forma", "exemplo": "Hay un problema.", "exemploTraducao": "Tem um problema." },
-        { "palavra": "tener que", "traducao": "ter que / precisar", "exemplo": "Tengo que estudiar.", "exemploTraducao": "Eu tenho que estudar." },
-        { "palavra": "tener ganas de", "traducao": "estar com vontade de", "exemplo": "Tengo ganas de dormir.", "exemploTraducao": "Estou com vontade de dormir." },
-        { "palavra": "tener razón / no tener razón", "traducao": "estar certo / estar errado", "exemplo": "Tienes razón.", "exemploTraducao": "Você está certo." },
-        { "palavra": "tener miedo de", "traducao": "ter medo de", "exemplo": "Tiene miedo de las arañas.", "exemploTraducao": "Ela tem medo de aranhas." },
-        { "palavra": "tener prisa", "traducao": "estar com pressa", "exemplo": "No tengo prisa.", "exemploTraducao": "Eu não estou com pressa." },
-        { "palavra": "tenemos, tenéis/tienen, tienen", "traducao": "nós temos, vocês têm, eles têm", "exemplo": "Tenemos tiempo.", "exemploTraducao": "Nós temos tempo." }
+        {
+          "palavra": "soy, eres, es",
+          "traducao": "eu sou, você é, ele/ela é (verbo SER — o que é permanente)",
+          "exemplo": "Soy brasileño.",
+          "exemploTraducao": "Sou brasileiro."
+        },
+        {
+          "palavra": "estoy, estás, está",
+          "traducao": "eu estou, você está, ele/ela está (verbo ESTAR — o que é temporário/estado)",
+          "exemplo": "Estoy cansado hoy.",
+          "exemploTraducao": "Estou cansado hoje."
+        },
+        {
+          "palavra": "tengo, tienes, tiene",
+          "traducao": "eu tenho, você tem, ele/ela tem (verbo TENER)",
+          "exemplo": "Tengo un perro.",
+          "exemploTraducao": "Tenho um cachorro."
+        },
+        {
+          "palavra": "somos, sois/son, son",
+          "traducao": "nós somos, vocês são, eles são",
+          "exemplo": "Somos amigos.",
+          "exemploTraducao": "Somos amigos."
+        },
+        {
+          "palavra": "estamos, estáis/están, están",
+          "traducao": "nós estamos, vocês estão, eles estão",
+          "exemplo": "Estamos en casa.",
+          "exemploTraducao": "Estamos em casa."
+        },
+        {
+          "palavra": "hay",
+          "traducao": "há / tem (existência) — não muda nunca de forma",
+          "exemplo": "Hay un problema.",
+          "exemploTraducao": "Tem um problema."
+        },
+        {
+          "palavra": "tener que",
+          "traducao": "ter que / precisar",
+          "exemplo": "Tengo que estudiar.",
+          "exemploTraducao": "Eu tenho que estudar."
+        },
+        {
+          "palavra": "tener ganas de",
+          "traducao": "estar com vontade de",
+          "exemplo": "Tengo ganas de dormir.",
+          "exemploTraducao": "Estou com vontade de dormir."
+        },
+        {
+          "palavra": "tener razón / no tener razón",
+          "traducao": "estar certo / estar errado",
+          "exemplo": "Tienes razón.",
+          "exemploTraducao": "Você está certo."
+        },
+        {
+          "palavra": "tener miedo de",
+          "traducao": "ter medo de",
+          "exemplo": "Tiene miedo de las arañas.",
+          "exemploTraducao": "Ela tem medo de aranhas."
+        },
+        {
+          "palavra": "tener prisa",
+          "traducao": "estar com pressa",
+          "exemplo": "No tengo prisa.",
+          "exemploTraducao": "Eu não estou com pressa."
+        },
+        {
+          "palavra": "tenemos, tenéis/tienen, tienen",
+          "traducao": "nós temos, vocês têm, eles têm",
+          "exemplo": "Tenemos tiempo.",
+          "exemploTraducao": "Nós temos tempo."
+        }
       ],
       "associacao": "A mesma frase muda de sentido conforme o verbo: \"Él es aburrido\" (ele É chato, é da personalidade dele) contra \"Él está aburrido\" (ele ESTÁ entediado agora, é passageiro). SER é o que a coisa É; ESTAR é como ela está NESTE momento. Repare que \"tener\" empresta seu corpo pra várias expressões inteiras — razão, medo, pressa, vontade — exatamente como \"j'ai\" em francês ou \"ter fome/sorte\" em português.",
       "dica": "Um truque prático: se dá pra trocar por \"fica sendo\" sem soar estranho, é SER. Se dá pra trocar por \"está passando por isso agora\", é ESTAR. \"Hay\" é sempre invariável — nunca vira \"hayn\" no plural: \"hay un libro\" e \"hay tres libros\" usam a mesma palavra.",
@@ -412,41 +1623,143 @@
         "titulo": "Ser vs. Estar: quando usar cada um",
         "explicacao": "SER descreve características permanentes: identidade, profissão, nacionalidade, material e hora. ESTAR descreve estados temporários: emoções, localização, condições passageiras e resultado de ações. A mesma palavra muda de significado dependendo do verbo: \"ser listo\" (ser esperto) contra \"estar listo\" (estar pronto).",
         "exemplos": [
-          { "frase": "Ella es médica. (profissão = SER)", "traducao": "Ela é médica." },
-          { "frase": "Ella está enferma hoy. (estado = ESTAR)", "traducao": "Ela está doente hoje." },
-          { "frase": "La fiesta es en mi casa. (evento = SER)", "traducao": "A festa é na minha casa." },
-          { "frase": "Mi casa está en el centro. (localização = ESTAR)", "traducao": "Minha casa fica no centro." }
+          {
+            "frase": "Ella es médica. (profissão = SER)",
+            "traducao": "Ela é médica."
+          },
+          {
+            "frase": "Ella está enferma hoy. (estado = ESTAR)",
+            "traducao": "Ela está doente hoje."
+          },
+          {
+            "frase": "La fiesta es en mi casa. (evento = SER)",
+            "traducao": "A festa é na minha casa."
+          },
+          {
+            "frase": "Mi casa está en el centro. (localização = ESTAR)",
+            "traducao": "Minha casa fica no centro."
+          }
         ]
       },
       "dialogo": {
         "situacao": "Uma amiga liga para outra para saber como ela está depois de uma semana difícil.",
         "falas": [
-          { "quem": "A", "fala": "¡Hola! ¿Cómo estás?", "traducao": "Oi! Como você está?" },
-          { "quem": "B", "fala": "Estoy un poco cansada. La semana fue muy larga.", "traducao": "Estou um pouco cansada. A semana foi muito longa." },
-          { "quem": "A", "fala": "¿Estás en casa? Puedo ir a verte.", "traducao": "Você está em casa? Posso ir te ver." },
-          { "quem": "B", "fala": "Sí, estoy en casa. Pero tengo que trabajar un rato más.", "traducao": "Sim, estou em casa. Mas tenho que trabalhar mais um pouco." },
-          { "quem": "A", "fala": "Tienes razón, el trabajo es importante. ¿Tienes hambre?", "traducao": "Você tem razão, o trabalho é importante. Está com fome?" },
-          { "quem": "B", "fala": "Sí, tengo mucha hambre. No hay nada en la nevera.", "traducao": "Sim, estou com muita fome. Não tem nada na geladeira." },
-          { "quem": "A", "fala": "Voy a llevar algo de comer. ¡No tengas prisa!", "traducao": "Vou levar algo para comer. Não tenha pressa!" },
-          { "quem": "B", "fala": "¡Eres la mejor amiga! Muchas gracias.", "traducao": "Você é a melhor amiga! Muito obrigada." }
+          {
+            "quem": "A",
+            "fala": "¡Hola! ¿Cómo estás?",
+            "traducao": "Oi! Como você está?"
+          },
+          {
+            "quem": "B",
+            "fala": "Estoy un poco cansada. La semana fue muy larga.",
+            "traducao": "Estou um pouco cansada. A semana foi muito longa."
+          },
+          {
+            "quem": "A",
+            "fala": "¿Estás en casa? Puedo ir a verte.",
+            "traducao": "Você está em casa? Posso ir te ver."
+          },
+          {
+            "quem": "B",
+            "fala": "Sí, estoy en casa. Pero tengo que trabajar un rato más.",
+            "traducao": "Sim, estou em casa. Mas tenho que trabalhar mais um pouco."
+          },
+          {
+            "quem": "A",
+            "fala": "Tienes razón, el trabajo es importante. ¿Tienes hambre?",
+            "traducao": "Você tem razão, o trabalho é importante. Está com fome?"
+          },
+          {
+            "quem": "B",
+            "fala": "Sí, tengo mucha hambre. No hay nada en la nevera.",
+            "traducao": "Sim, estou com muita fome. Não tem nada na geladeira."
+          },
+          {
+            "quem": "A",
+            "fala": "Voy a llevar algo de comer. ¡No tengas prisa!",
+            "traducao": "Vou levar algo para comer. Não tenha pressa!"
+          },
+          {
+            "quem": "B",
+            "fala": "¡Eres la mejor amiga! Muchas gracias.",
+            "traducao": "Você é a melhor amiga! Muito obrigada."
+          }
         ]
       },
       "expressoes": [
-        { "expressao": "Estar hecho polvo", "significado": "Estar acabado / destruído de cansaço", "uso": "Quando alguém está exausto depois de um dia muito pesado." },
-        { "expressao": "Ser pan comido", "significado": "Ser moleza / muito fácil", "uso": "Quando uma tarefa é tão fácil que não exige nenhum esforço." },
-        { "expressao": "Tener mala pata", "significado": "Ter azar / ser azarado", "uso": "Quando alguém tem uma sequência de má sorte." }
+        {
+          "expressao": "Estar hecho polvo",
+          "significado": "Estar acabado / destruído de cansaço",
+          "uso": "Quando alguém está exausto depois de um dia muito pesado."
+        },
+        {
+          "expressao": "Ser pan comido",
+          "significado": "Ser moleza / muito fácil",
+          "uso": "Quando uma tarefa é tão fácil que não exige nenhum esforço."
+        },
+        {
+          "expressao": "Tener mala pata",
+          "significado": "Ter azar / ser azarado",
+          "uso": "Quando alguém tem uma sequência de má sorte."
+        }
       ],
       "cultura": "A distinção entre \"ser\" e \"estar\" é uma das maiores dificuldades para quem aprende espanhol, mas é também uma das belezas do idioma. Ela permite nuances que o português não faz de forma tão clara. Por exemplo, \"es guapo\" (ele é bonito, sempre) contra \"está guapo\" (ele está bonito hoje). Essa distinção existe em português também, mas no dia a dia brasileiro a linha entre \"ser\" e \"estar\" fica mais borrada do que no espanhol, onde a escolha errada soa realmente estranha.",
       "musicas": [
-        { "titulo": "Excesos", "artista": "Natanael Cano, Peso Pluma & Junior H", "trechoLetra": "Los excesos nos hacen fuerte", "traducaoTrecho": "Os excessos nos fazem fortes" }
+        {
+          "titulo": "Excesos",
+          "artista": "Natanael Cano, Peso Pluma & Junior H",
+          "trechoLetra": "Los excesos nos hacen fuerte",
+          "traducaoTrecho": "Os excessos nos fazem fortes"
+        }
       ],
       "quiz": [
-        { "tipo": "multipla", "pergunta": "\"Él es aburrido\" e \"Él está aburrido\" têm o mesmo significado?", "opcoes": ["Sim, são idênticas", "Não — a primeira é traço de personalidade, a segunda é estado temporário"], "certa": 1 },
-        { "tipo": "multipla", "pergunta": "\"Estoy cansado\" usa qual verbo, e por quê?", "opcoes": ["Ser, porque cansaço é permanente", "Estar, porque cansaço é temporário"], "certa": 1 },
-        { "tipo": "traduzir", "pergunta": "Traduza: nós somos amigos", "resposta": "somos amigos" },
-        { "tipo": "multipla", "pergunta": "\"Tengo que estudiar\" quer dizer:", "opcoes": ["Eu gosto de estudar", "Eu tenho que estudar", "Eu estudei"], "certa": 1 },
-        { "tipo": "traduzir", "pergunta": "Traduza: você está certo", "resposta": "tienes razón" },
-        { "tipo": "multipla", "pergunta": "\"Hay\" muda de forma no plural (\"hay tres libros\")?", "opcoes": ["Sim, vira \"hayn\"", "Não, é sempre invariável"], "certa": 1 }
+        {
+          "tipo": "multipla",
+          "pergunta": "\"Él es aburrido\" e \"Él está aburrido\" têm o mesmo significado?",
+          "opcoes": [
+            "Sim, são idênticas",
+            "Não — a primeira é traço de personalidade, a segunda é estado temporário"
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "\"Estoy cansado\" usa qual verbo, e por quê?",
+          "opcoes": [
+            "Ser, porque cansaço é permanente",
+            "Estar, porque cansaço é temporário"
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "Traduza: nós somos amigos",
+          "resposta": "somos amigos"
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "\"Tengo que estudiar\" quer dizer:",
+          "opcoes": [
+            "Eu gosto de estudar",
+            "Eu tenho que estudar",
+            "Eu estudei"
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "Traduza: você está certo",
+          "resposta": "tienes razón"
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "\"Hay\" muda de forma no plural (\"hay tres libros\")?",
+          "opcoes": [
+            "Sim, vira \"hayn\"",
+            "Não, é sempre invariável"
+          ],
+          "certa": 1
+        }
       ]
     },
     {
@@ -455,19 +1768,84 @@
       "tema": "O que resolve na rua e numa conversa curta.",
       "nivel": "A1",
       "vocabulario": [
-        { "palavra": "Perdón / Disculpe", "traducao": "desculpe / com licença", "exemplo": "Perdón, ¿dónde está la estación?", "exemploTraducao": "Desculpe, onde fica a estação?" },
-        { "palavra": "No entiendo", "traducao": "eu não entendo", "exemplo": "Lo siento, no entiendo.", "exemploTraducao": "Desculpe, eu não entendo." },
-        { "palavra": "¿Puede repetir, por favor?", "traducao": "pode repetir, por favor?", "exemplo": "Más despacio, por favor.", "exemploTraducao": "Mais devagar, por favor." },
-        { "palavra": "¿Cuánto cuesta?", "traducao": "quanto custa?", "exemplo": "¿Cuánto cuesta esto?", "exemploTraducao": "Quanto custa isto?" },
-        { "palavra": "¿Dónde está...?", "traducao": "onde fica...?", "exemplo": "¿Dónde está el baño?", "exemploTraducao": "Onde fica o banheiro?" },
-        { "palavra": "Quisiera...", "traducao": "eu gostaria de...", "exemplo": "Quisiera un café, por favor.", "exemploTraducao": "Eu gostaria de um café, por favor." },
-        { "palavra": "¡Qué padre! / ¡Qué guay! / ¡Qué chévere!", "traducao": "que legal! (México / Espanha / vários países da América Latina)", "exemplo": "¡Qué padre está esta canción!", "exemploTraducao": "Que legal está essa música!" },
-        { "palavra": "No hay problema", "traducao": "sem problema", "exemplo": "No hay problema, tranquilo.", "exemploTraducao": "Sem problema, fique tranquilo." },
-        { "palavra": "Vale / De acuerdo", "traducao": "tá bom / combinado (\"vale\" é mais usado na Espanha)", "exemplo": "Vale, nos vemos mañana.", "exemploTraducao": "Tá bom, a gente se vê amanhã." },
-        { "palavra": "Tal vez / Quizás", "traducao": "talvez", "exemplo": "Tal vez venga mañana.", "exemploTraducao": "Talvez eu venha amanhã." },
-        { "palavra": "Lo siento", "traducao": "eu sinto muito / desculpe", "exemplo": "Lo siento mucho por el retraso.", "exemploTraducao": "Sinto muito pelo atraso." },
-        { "palavra": "¡Buen provecho!", "traducao": "bom apetite!", "exemplo": "¡Buen provecho a todos!", "exemploTraducao": "Bom apetite a todos!" },
-        { "palavra": "¡Buena suerte! / ¡Felicidades!", "traducao": "boa sorte! / parabéns!", "exemplo": "¡Buena suerte en el examen!", "exemploTraducao": "Boa sorte na prova!" }
+        {
+          "palavra": "Perdón / Disculpe",
+          "traducao": "desculpe / com licença",
+          "exemplo": "Perdón, ¿dónde está la estación?",
+          "exemploTraducao": "Desculpe, onde fica a estação?"
+        },
+        {
+          "palavra": "No entiendo",
+          "traducao": "eu não entendo",
+          "exemplo": "Lo siento, no entiendo.",
+          "exemploTraducao": "Desculpe, eu não entendo."
+        },
+        {
+          "palavra": "¿Puede repetir, por favor?",
+          "traducao": "pode repetir, por favor?",
+          "exemplo": "Más despacio, por favor.",
+          "exemploTraducao": "Mais devagar, por favor."
+        },
+        {
+          "palavra": "¿Cuánto cuesta?",
+          "traducao": "quanto custa?",
+          "exemplo": "¿Cuánto cuesta esto?",
+          "exemploTraducao": "Quanto custa isto?"
+        },
+        {
+          "palavra": "¿Dónde está...?",
+          "traducao": "onde fica...?",
+          "exemplo": "¿Dónde está el baño?",
+          "exemploTraducao": "Onde fica o banheiro?"
+        },
+        {
+          "palavra": "Quisiera...",
+          "traducao": "eu gostaria de...",
+          "exemplo": "Quisiera un café, por favor.",
+          "exemploTraducao": "Eu gostaria de um café, por favor."
+        },
+        {
+          "palavra": "¡Qué padre! / ¡Qué guay! / ¡Qué chévere!",
+          "traducao": "que legal! (México / Espanha / vários países da América Latina)",
+          "exemplo": "¡Qué padre está esta canción!",
+          "exemploTraducao": "Que legal está essa música!"
+        },
+        {
+          "palavra": "No hay problema",
+          "traducao": "sem problema",
+          "exemplo": "No hay problema, tranquilo.",
+          "exemploTraducao": "Sem problema, fique tranquilo."
+        },
+        {
+          "palavra": "Vale / De acuerdo",
+          "traducao": "tá bom / combinado (\"vale\" é mais usado na Espanha)",
+          "exemplo": "Vale, nos vemos mañana.",
+          "exemploTraducao": "Tá bom, a gente se vê amanhã."
+        },
+        {
+          "palavra": "Tal vez / Quizás",
+          "traducao": "talvez",
+          "exemplo": "Tal vez venga mañana.",
+          "exemploTraducao": "Talvez eu venha amanhã."
+        },
+        {
+          "palavra": "Lo siento",
+          "traducao": "eu sinto muito / desculpe",
+          "exemplo": "Lo siento mucho por el retraso.",
+          "exemploTraducao": "Sinto muito pelo atraso."
+        },
+        {
+          "palavra": "¡Buen provecho!",
+          "traducao": "bom apetite!",
+          "exemplo": "¡Buen provecho a todos!",
+          "exemploTraducao": "Bom apetite a todos!"
+        },
+        {
+          "palavra": "¡Buena suerte! / ¡Felicidades!",
+          "traducao": "boa sorte! / parabéns!",
+          "exemplo": "¡Buena suerte en el examen!",
+          "exemploTraducao": "Boa sorte na prova!"
+        }
       ],
       "associacao": "\"Que legal\" tem um nome DIFERENTE em quase cada país de língua espanhola: \"qué padre\" no México, \"qué guay\" na Espanha, \"qué chévere\" na Colômbia e Venezuela, \"qué bacán\" no Chile e Peru. Vale a pena aprender a do lugar que te interessa. \"Vale\" é praticamente uma marca registrada do espanhol da Espanha — na América Latina se ouve muito mais \"de acuerdo\" ou \"okay\".",
       "dica": "\"Quisiera\" (eu gostaria) é sempre mais educado que \"quiero\" (eu quero) — o jeito certo de pedir algo numa loja ou restaurante. \"Lo siento\" é para pesar/desculpa mais forte (tipo um erro sério ou pêsames); para esbarrar sem querer, o mais comum é só \"perdón\".",
@@ -475,29 +1853,85 @@
         "titulo": "Verbos regulares no presente: -ar, -er, -ir",
         "explicacao": "O espanhol tem três conjugações regulares: verbos em -ar (hablar), -er (comer) e -ir (vivir). No presente, a raiz fica e a terminação muda conforme o sujeito. As terminações de -er e -ir são quase iguais, diferindo apenas em \"nosotros\" e \"vosotros\". Saber conjugar esses três modelos abre a porta para centenas de verbos.",
         "exemplos": [
-          { "frase": "Yo hablo español un poco. (hablar)", "traducao": "Eu falo espanhol um pouco." },
-          { "frase": "Ella come mucha fruta. (comer)", "traducao": "Ela come muita fruta." },
-          { "frase": "Nosotros vivimos en esta ciudad. (vivir)", "traducao": "Nós moramos nesta cidade." },
-          { "frase": "¿Tú estudias o trabajas? (estudiar)", "traducao": "Você estuda ou trabalha?" }
+          {
+            "frase": "Yo hablo español un poco. (hablar)",
+            "traducao": "Eu falo espanhol um pouco."
+          },
+          {
+            "frase": "Ella come mucha fruta. (comer)",
+            "traducao": "Ela come muita fruta."
+          },
+          {
+            "frase": "Nosotros vivimos en esta ciudad. (vivir)",
+            "traducao": "Nós moramos nesta cidade."
+          },
+          {
+            "frase": "¿Tú estudias o trabajas? (estudiar)",
+            "traducao": "Você estuda ou trabalha?"
+          }
         ]
       },
       "dialogo": {
         "situacao": "Um turista brasileiro pede informações na rua em Buenos Aires.",
         "falas": [
-          { "quem": "A", "fala": "Perdón, ¿dónde está la estación de subte más cercana?", "traducao": "Desculpe, onde fica a estação de metrô mais perto?" },
-          { "quem": "B", "fala": "Está a dos cuadras, todo derecho.", "traducao": "Fica a duas quadras, tudo reto." },
-          { "quem": "A", "fala": "¿Puede repetir más despacio, por favor? No entiendo bien.", "traducao": "Pode repetir mais devagar, por favor? Não entendo bem." },
-          { "quem": "B", "fala": "Claro. Dos cuadras recto. Después girás a la izquierda.", "traducao": "Claro. Duas quadras reto. Depois vira à esquerda." },
-          { "quem": "A", "fala": "Muchas gracias. ¿Cuánto cuesta el boleto?", "traducao": "Muito obrigado. Quanto custa a passagem?" },
-          { "quem": "B", "fala": "No sé exactamente. Creo que son unos cien pesos.", "traducao": "Não sei exatamente. Acho que é uns cem pesos." },
-          { "quem": "A", "fala": "De acuerdo. ¡Buena suerte con tu día!", "traducao": "Combinado. Boa sorte com o seu dia!" },
-          { "quem": "B", "fala": "¡Igualmente! ¡Buen viaje!", "traducao": "Igualmente! Boa viagem!" }
+          {
+            "quem": "A",
+            "fala": "Perdón, ¿dónde está la estación de subte más cercana?",
+            "traducao": "Desculpe, onde fica a estação de metrô mais perto?"
+          },
+          {
+            "quem": "B",
+            "fala": "Está a dos cuadras, todo derecho.",
+            "traducao": "Fica a duas quadras, tudo reto."
+          },
+          {
+            "quem": "A",
+            "fala": "¿Puede repetir más despacio, por favor? No entiendo bien.",
+            "traducao": "Pode repetir mais devagar, por favor? Não entendo bem."
+          },
+          {
+            "quem": "B",
+            "fala": "Claro. Dos cuadras recto. Después girás a la izquierda.",
+            "traducao": "Claro. Duas quadras reto. Depois vira à esquerda."
+          },
+          {
+            "quem": "A",
+            "fala": "Muchas gracias. ¿Cuánto cuesta el boleto?",
+            "traducao": "Muito obrigado. Quanto custa a passagem?"
+          },
+          {
+            "quem": "B",
+            "fala": "No sé exactamente. Creo que son unos cien pesos.",
+            "traducao": "Não sei exatamente. Acho que é uns cem pesos."
+          },
+          {
+            "quem": "A",
+            "fala": "De acuerdo. ¡Buena suerte con tu día!",
+            "traducao": "Combinado. Boa sorte com o seu dia!"
+          },
+          {
+            "quem": "B",
+            "fala": "¡Igualmente! ¡Buen viaje!",
+            "traducao": "Igualmente! Boa viagem!"
+          }
         ]
       },
       "expressoes": [
-        { "expressao": "Ir al grano", "significado": "Ir direto ao ponto", "uso": "Pedir que alguém pare de enrolar e fale logo o que interessa." },
-        { "expressao": "No tener ni idea", "significado": "Não ter a menor ideia", "uso": "Quando alguém não sabe absolutamente nada sobre o assunto." },
-        { "expressao": "Llevarse bien / mal", "significado": "Se dar bem / mal com alguém", "uso": "Para descrever a relação entre duas pessoas." }
+        {
+          "expressao": "Ir al grano",
+          "significado": "Ir direto ao ponto",
+          "uso": "Pedir que alguém pare de enrolar e fale logo o que interessa."
+        },
+        {
+          "expressao": "No tener ni idea",
+          "significado": "Não ter a menor ideia",
+          "uso": "Quando alguém não sabe absolutamente nada sobre o assunto."
+        },
+        {
+          "expressao": "Llevarse bien / mal",
+          "significado": "Se dar bem / mal com alguém",
+          "uso": "Para descrever a relação entre duas pessoas."
+        }
       ],
       "cultura": "Cada país hispânico tem suas próprias gírias e expressões do dia a dia, o que torna o espanhol um idioma riquíssimo em variação regional. Na Argentina se usa \"che\" como vocativo entre amigos, no México \"mano\" ou \"güey\", e na Espanha \"tío/tía\". Aprender as frases do cotidiano de um país específico ajuda muito mais do que decorar espanhol \"genérico\", porque na prática as pessoas falam com a cor local.",
       "cancao": {
@@ -506,16 +1940,106 @@
         "letra": "Para bailar la bamba,\nPara bailar la bamba,\nSe necesita una poca de gracia,\nUna poca de gracia pa' mí, pa' ti,\nY arriba y arriba,\nY arriba y arriba, por ti seré,\nPor ti seré, por ti seré.\n\nYo no soy marinero,\nYo no soy marinero, por ti seré,\nPor ti seré, por ti seré."
       },
       "musicas": [
-        { "titulo": "Tu Boda", "artista": "Oscar Maydon x Fuerza Regida", "youtubeId": "_ymicn0_GYc", "trechoLetra": "Hoy es tu boda y sé que no debería estar aquí", "traducaoTrecho": "Hoje é o teu casamento e sei que não deveria estar aqui" }
+        {
+          "titulo": "Tu Boda",
+          "artista": "Oscar Maydon x Fuerza Regida",
+          "youtubeId": "_ymicn0_GYc",
+          "trechoLetra": "Hoy es tu boda y sé que no debería estar aquí",
+          "traducaoTrecho": "Hoje é o teu casamento e sei que não deveria estar aqui",
+          "frases": [
+            {
+              "original": "Hoy es tu boda y sé que no debería estar aquí",
+              "traducao": "Hoje é o teu casamento e sei que não deveria estar aqui",
+              "vocabulario": [
+                {
+                  "palavra": "boda",
+                  "significado": "casamento / cerimônia",
+                  "detalhe": "Boda = casamento. Plural \"bodas\" = aniversário de casamento (bodas de plata = 25 anos)."
+                },
+                {
+                  "palavra": "debería",
+                  "significado": "deveria",
+                  "detalhe": "Condicional de deber. Debería = deveria. Expressa obrigação moral."
+                }
+              ],
+              "pronuncia": "oy es tu BO-da ee se ke no de-be-REE-a es-TAR a-KEE"
+            }
+          ]
+        }
       ],
       "quiz": [
-        { "tipo": "multipla", "pergunta": "Qual é o jeito mais educado de pedir algo?", "opcoes": ["Quiero un café", "Quisiera un café", "Dame un café"], "certa": 1 },
-        { "tipo": "traduzir", "pergunta": "Traduza: quanto custa?", "resposta": "cuánto cuesta" },
-        { "tipo": "traduzir", "pergunta": "O que se diz antes de começar a comer?", "resposta": "buen provecho" },
-        { "tipo": "multipla", "pergunta": "Qual expressão de \"tá bom/combinado\" é mais típica da Espanha?", "opcoes": ["Vale", "Chévere", "Padre"], "certa": 0 },
-        { "tipo": "traduzir", "pergunta": "Traduza: sem problema", "resposta": "no hay problema" },
-        { "tipo": "multipla", "pergunta": "\"Tal vez\" quer dizer:", "opcoes": ["Com certeza", "Talvez", "Nunca"], "certa": 1 }
+        {
+          "tipo": "multipla",
+          "pergunta": "Qual é o jeito mais educado de pedir algo?",
+          "opcoes": [
+            "Quiero un café",
+            "Quisiera un café",
+            "Dame un café"
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "Traduza: quanto custa?",
+          "resposta": "cuánto cuesta"
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "O que se diz antes de começar a comer?",
+          "resposta": "buen provecho"
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "Qual expressão de \"tá bom/combinado\" é mais típica da Espanha?",
+          "opcoes": [
+            "Vale",
+            "Chévere",
+            "Padre"
+          ],
+          "certa": 0
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "Traduza: sem problema",
+          "resposta": "no hay problema"
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "\"Tal vez\" quer dizer:",
+          "opcoes": [
+            "Com certeza",
+            "Talvez",
+            "Nunca"
+          ],
+          "certa": 1
+        }
       ]
+    }
+  ],
+  "livrosRecomendados": [
+    {
+      "titulo": "El Principito",
+      "autor": "Antoine de Saint-Exupéry",
+      "nivel": "A1–A2",
+      "porque": "Vocabulário simples, frases curtas e universais — ótimo para começar."
+    },
+    {
+      "titulo": "Cuentos de la selva",
+      "autor": "Horacio Quiroga",
+      "nivel": "A2–B1",
+      "porque": "Narrativa direta com vocabulário de natureza e aventura."
+    },
+    {
+      "titulo": "Como agua para chocolate",
+      "autor": "Laura Esquivel",
+      "nivel": "B1–B2",
+      "porque": "Espanhol mexicano, cultura culinária e expressões regionais."
+    },
+    {
+      "titulo": "Cien años de soledad",
+      "autor": "Gabriel García Márquez",
+      "nivel": "B2–C1",
+      "porque": "Prosa rica, expressões colombianas, referência do realismo mágico."
     }
   ]
 }

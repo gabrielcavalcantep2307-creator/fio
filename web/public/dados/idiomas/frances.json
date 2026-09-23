@@ -10,20 +10,90 @@
       "tema": "O francês tem sons que o português não tem. Antes de decorar palavras, vale treinar o ouvido.",
       "nivel": "A1",
       "vocabulario": [
-        { "palavra": "u", "traducao": "o som mais difícil: boca de \"u\", tente dizer \"i\"", "exemplo": "tu, rue, une", "exemploTraducao": "você, rua, uma" },
-        { "palavra": "r", "traducao": "vem do fundo da garganta, quase um \"rr\" gutural", "exemplo": "Paris, rouge, merci", "exemploTraducao": "Paris, vermelho, obrigado" },
-        { "palavra": "on / an / en", "traducao": "vogal nasal — sai pelo nariz, sem pronunciar o \"n\"", "exemplo": "bon, an, enfant", "exemploTraducao": "bom, ano, criança" },
-        { "palavra": "eu", "traducao": "entre o \"é\" e o \"ó\", lábios arredondados", "exemplo": "deux, peu, bleu", "exemploTraducao": "dois, pouco, azul" },
-        { "palavra": "h", "traducao": "nunca se pronuncia — é sempre mudo", "exemplo": "hôtel, homme, heure", "exemploTraducao": "hotel, homem, hora" },
-        { "palavra": "consoante final", "traducao": "quase sempre muda, a não ser que a próxima palavra comece com vogal (a liaison)", "exemplo": "les amis (\"lezami\")", "exemploTraducao": "os amigos" },
-        { "palavra": "ill / il", "traducao": "som \"lh\" molhado no meio da palavra; \"il\" seco no final depende da palavra", "exemplo": "fille, travail", "exemploTraducao": "menina/filha, trabalho" },
-        { "palavra": "gn", "traducao": "é o nosso \"nh\"", "exemplo": "montagne, champagne", "exemploTraducao": "montanha, champanhe" },
-        { "palavra": "ch", "traducao": "som chiado de \"x\", como em \"chá\"", "exemplo": "chat, chocolat", "exemploTraducao": "gato, chocolate" },
-        { "palavra": "j / g (antes de e, i)", "traducao": "som suave, como o \"j\" de \"já\" em português", "exemplo": "jour, manger", "exemploTraducao": "dia, comer" },
-        { "palavra": "é / è", "traducao": "\"é\" fechado e \"è\" aberto são sons diferentes — trocar um pelo outro muda o sentido", "exemplo": "été (verão) / père (pai)", "exemploTraducao": "verão / pai" },
-        { "palavra": "in / im / ain / ein", "traducao": "outra vogal nasal, diferente de \"on\" e \"an\"", "exemplo": "vin, pain, main", "exemploTraducao": "vinho, pão, mão" },
-        { "palavra": "oi", "traducao": "soa \"uá\"", "exemplo": "moi, trois, voir", "exemploTraducao": "eu, três, ver" },
-        { "palavra": "qu", "traducao": "sempre som de \"k\", nunca \"ku\"", "exemplo": "qui, quatre, quoi", "exemploTraducao": "quem, quatro, o quê" }
+        {
+          "palavra": "u",
+          "traducao": "o som mais difícil: boca de \"u\", tente dizer \"i\"",
+          "exemplo": "tu, rue, une",
+          "exemploTraducao": "você, rua, uma"
+        },
+        {
+          "palavra": "r",
+          "traducao": "vem do fundo da garganta, quase um \"rr\" gutural",
+          "exemplo": "Paris, rouge, merci",
+          "exemploTraducao": "Paris, vermelho, obrigado"
+        },
+        {
+          "palavra": "on / an / en",
+          "traducao": "vogal nasal — sai pelo nariz, sem pronunciar o \"n\"",
+          "exemplo": "bon, an, enfant",
+          "exemploTraducao": "bom, ano, criança"
+        },
+        {
+          "palavra": "eu",
+          "traducao": "entre o \"é\" e o \"ó\", lábios arredondados",
+          "exemplo": "deux, peu, bleu",
+          "exemploTraducao": "dois, pouco, azul"
+        },
+        {
+          "palavra": "h",
+          "traducao": "nunca se pronuncia — é sempre mudo",
+          "exemplo": "hôtel, homme, heure",
+          "exemploTraducao": "hotel, homem, hora"
+        },
+        {
+          "palavra": "consoante final",
+          "traducao": "quase sempre muda, a não ser que a próxima palavra comece com vogal (a liaison)",
+          "exemplo": "les amis (\"lezami\")",
+          "exemploTraducao": "os amigos"
+        },
+        {
+          "palavra": "ill / il",
+          "traducao": "som \"lh\" molhado no meio da palavra; \"il\" seco no final depende da palavra",
+          "exemplo": "fille, travail",
+          "exemploTraducao": "menina/filha, trabalho"
+        },
+        {
+          "palavra": "gn",
+          "traducao": "é o nosso \"nh\"",
+          "exemplo": "montagne, champagne",
+          "exemploTraducao": "montanha, champanhe"
+        },
+        {
+          "palavra": "ch",
+          "traducao": "som chiado de \"x\", como em \"chá\"",
+          "exemplo": "chat, chocolat",
+          "exemploTraducao": "gato, chocolate"
+        },
+        {
+          "palavra": "j / g (antes de e, i)",
+          "traducao": "som suave, como o \"j\" de \"já\" em português",
+          "exemplo": "jour, manger",
+          "exemploTraducao": "dia, comer"
+        },
+        {
+          "palavra": "é / è",
+          "traducao": "\"é\" fechado e \"è\" aberto são sons diferentes — trocar um pelo outro muda o sentido",
+          "exemplo": "été (verão) / père (pai)",
+          "exemploTraducao": "verão / pai"
+        },
+        {
+          "palavra": "in / im / ain / ein",
+          "traducao": "outra vogal nasal, diferente de \"on\" e \"an\"",
+          "exemplo": "vin, pain, main",
+          "exemploTraducao": "vinho, pão, mão"
+        },
+        {
+          "palavra": "oi",
+          "traducao": "soa \"uá\"",
+          "exemplo": "moi, trois, voir",
+          "exemploTraducao": "eu, três, ver"
+        },
+        {
+          "palavra": "qu",
+          "traducao": "sempre som de \"k\", nunca \"ku\"",
+          "exemplo": "qui, quatre, quoi",
+          "exemploTraducao": "quem, quatro, o quê"
+        }
       ],
       "associacao": "O \"u\" francês é o \"i\" com bico de pato: arredonde os lábios como se fosse assobiar e diga \"i\". \"Tu\" nunca rima com \"tu\" em português. E o \"qu\" francês nunca vira \"ku\" — é sempre um \"k\" seco, mesma lógica de \"que\" e \"qui\" em português.",
       "dica": "Ouça a diferença entre \"on\" (bon) e \"an\" (an) — são nasais DIFERENTES, mesmo soando parecidas no começo. O ouvido acostuma antes da boca. As quatro nasais do francês (on, an, in, un) são quatro sons distintos, não variações de um só — vale treinar cada uma isolada antes de juntar em frase.",
@@ -31,36 +101,132 @@
         "titulo": "A liaison e as letras mudas",
         "explicacao": "Em francês, as consoantes finais geralmente não são pronunciadas: 'petit' soa 'peti', 'grands' soa 'grã'. Porém, quando a próxima palavra começa com vogal ou 'h' mudo, a consoante final se liga a ela — isso é a liaison. Por exemplo, 'les amis' se pronuncia 'lezami', e 'un homme' se pronuncia 'ennom'.",
         "exemplos": [
-          { "frase": "les enfants", "traducao": "as crianças (pronuncia-se 'lezãfã')" },
-          { "frase": "petit ami", "traducao": "namorado (pronuncia-se 'petitami', o 't' aparece)" },
-          { "frase": "C'est un bon hôtel.", "traducao": "É um bom hotel. (o 'n' de 'bon' se liga a 'hôtel')" }
+          {
+            "frase": "les enfants",
+            "traducao": "as crianças (pronuncia-se 'lezãfã')"
+          },
+          {
+            "frase": "petit ami",
+            "traducao": "namorado (pronuncia-se 'petitami', o 't' aparece)"
+          },
+          {
+            "frase": "C'est un bon hôtel.",
+            "traducao": "É um bom hotel. (o 'n' de 'bon' se liga a 'hôtel')"
+          }
         ]
       },
       "dialogo": {
         "situacao": "Um brasileiro pede ajuda a uma francesa para pronunciar palavras difíceis.",
         "falas": [
-          { "quem": "A", "fala": "Bonjour ! Comment on prononce ça ?", "traducao": "Bom dia! Como se pronuncia isso?" },
-          { "quem": "B", "fala": "Ça se dit 'rue'. Fais un 'i' avec les lèvres rondes.", "traducao": "Se fala 'rue'. Faz um 'i' com os lábios arredondados." },
-          { "quem": "A", "fala": "Ruuue... C'est difficile !", "traducao": "Ruuue... É difícil!" },
-          { "quem": "B", "fala": "C'est mieux ! Et maintenant, essaie 'deux'.", "traducao": "Melhorou! Agora tenta 'deux'." },
-          { "quem": "A", "fala": "Deux... comme 'deu' mais avec les lèvres en avant ?", "traducao": "Deux... como 'deu' mas com os lábios pra frente?" },
-          { "quem": "B", "fala": "Exactement ! Tu apprends vite !", "traducao": "Exatamente! Você aprende rápido!" },
-          { "quem": "A", "fala": "Merci pour la patience !", "traducao": "Obrigado pela paciência!" }
+          {
+            "quem": "A",
+            "fala": "Bonjour ! Comment on prononce ça ?",
+            "traducao": "Bom dia! Como se pronuncia isso?"
+          },
+          {
+            "quem": "B",
+            "fala": "Ça se dit 'rue'. Fais un 'i' avec les lèvres rondes.",
+            "traducao": "Se fala 'rue'. Faz um 'i' com os lábios arredondados."
+          },
+          {
+            "quem": "A",
+            "fala": "Ruuue... C'est difficile !",
+            "traducao": "Ruuue... É difícil!"
+          },
+          {
+            "quem": "B",
+            "fala": "C'est mieux ! Et maintenant, essaie 'deux'.",
+            "traducao": "Melhorou! Agora tenta 'deux'."
+          },
+          {
+            "quem": "A",
+            "fala": "Deux... comme 'deu' mais avec les lèvres en avant ?",
+            "traducao": "Deux... como 'deu' mas com os lábios pra frente?"
+          },
+          {
+            "quem": "B",
+            "fala": "Exactement ! Tu apprends vite !",
+            "traducao": "Exatamente! Você aprende rápido!"
+          },
+          {
+            "quem": "A",
+            "fala": "Merci pour la patience !",
+            "traducao": "Obrigado pela paciência!"
+          }
         ]
       },
       "expressoes": [
-        { "expressao": "C'est du chinois", "significado": "É grego (incompreensível)", "uso": "Quando algo é impossível de entender — os franceses dizem 'é chinês' onde nós dizemos 'é grego'" },
-        { "expressao": "Parler à tort et à travers", "significado": "Falar sem pensar, falar bobagem", "uso": "Quando alguém fala demais sem saber do que está falando" }
+        {
+          "expressao": "C'est du chinois",
+          "significado": "É grego (incompreensível)",
+          "uso": "Quando algo é impossível de entender — os franceses dizem 'é chinês' onde nós dizemos 'é grego'"
+        },
+        {
+          "expressao": "Parler à tort et à travers",
+          "significado": "Falar sem pensar, falar bobagem",
+          "uso": "Quando alguém fala demais sem saber do que está falando"
+        }
       ],
       "cultura": "O francês é uma das línguas oficiais de 29 países e é falado por mais de 300 milhões de pessoas no mundo. A pronúncia francesa é muito padronizada graças à Académie française, instituição fundada em 1635 que regula o idioma. Existem variações regionais ricas, como o francês do sul da França (com o sotaque chantant), o francês quebequense e o francês da África Ocidental.",
       "quiz": [
-        { "tipo": "multipla", "pergunta": "Como soa o \"h\" em francês (hôtel, homme)?", "opcoes": ["Como um \"r\" fraco", "Nunca se pronuncia", "Como em inglês (\"h\" de house)"], "certa": 1 },
-        { "tipo": "multipla", "pergunta": "\"Tu\" (você) tem o mesmo som de \"tu\" em português?", "opcoes": ["Sim, idêntico", "Não — o \"u\" francês é mais fechado, lábios arredondados"], "certa": 1 },
-        { "tipo": "traduzir", "pergunta": "Complete: a consoante final de uma palavra francesa é quase sempre ___.", "resposta": "muda" },
-        { "tipo": "multipla", "pergunta": "Como soa \"gn\" em \"montagne\"?", "opcoes": ["Como \"g\" e \"n\" separados", "Como o \"nh\" do português", "Como \"ni\" do inglês"], "certa": 1 },
-        { "tipo": "multipla", "pergunta": "\"oi\" em \"trois\" soa como:", "opcoes": ["\"ói\"", "\"uá\"", "\"oi\" normal, como em português"], "certa": 1 },
-        { "tipo": "multipla", "pergunta": "\"in\" (vin) é a mesma vogal nasal que \"on\" (bon)?", "opcoes": ["Sim, o mesmo som", "Não, é uma nasal diferente"], "certa": 1 },
-        { "tipo": "traduzir", "pergunta": "Qual letra representa o som de \"qu\" em francês?", "resposta": "k" }
+        {
+          "tipo": "multipla",
+          "pergunta": "Como soa o \"h\" em francês (hôtel, homme)?",
+          "opcoes": [
+            "Como um \"r\" fraco",
+            "Nunca se pronuncia",
+            "Como em inglês (\"h\" de house)"
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "\"Tu\" (você) tem o mesmo som de \"tu\" em português?",
+          "opcoes": [
+            "Sim, idêntico",
+            "Não — o \"u\" francês é mais fechado, lábios arredondados"
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "Complete: a consoante final de uma palavra francesa é quase sempre ___.",
+          "resposta": "muda"
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "Como soa \"gn\" em \"montagne\"?",
+          "opcoes": [
+            "Como \"g\" e \"n\" separados",
+            "Como o \"nh\" do português",
+            "Como \"ni\" do inglês"
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "\"oi\" em \"trois\" soa como:",
+          "opcoes": [
+            "\"ói\"",
+            "\"uá\"",
+            "\"oi\" normal, como em português"
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "\"in\" (vin) é a mesma vogal nasal que \"on\" (bon)?",
+          "opcoes": [
+            "Sim, o mesmo som",
+            "Não, é uma nasal diferente"
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "Qual letra representa o som de \"qu\" em francês?",
+          "resposta": "k"
+        }
       ]
     },
     {
@@ -69,21 +235,96 @@
       "tema": "O básico para começar qualquer conversa.",
       "nivel": "A1",
       "vocabulario": [
-        { "palavra": "Bonjour", "traducao": "bom dia / boa tarde (até escurecer)", "exemplo": "Bonjour, madame !", "exemploTraducao": "Bom dia, senhora!" },
-        { "palavra": "Bonsoir", "traducao": "boa noite (ao chegar)", "exemplo": "Bonsoir tout le monde !", "exemploTraducao": "Boa noite, pessoal!" },
-        { "palavra": "Salut", "traducao": "oi / tchau (informal, entre amigos)", "exemplo": "Salut, ça va ?", "exemploTraducao": "Oi, tudo bem?" },
-        { "palavra": "Au revoir", "traducao": "até logo", "exemplo": "Au revoir, à bientôt !", "exemploTraducao": "Até logo, até breve!" },
-        { "palavra": "Comment ça va ?", "traducao": "como vai?", "exemplo": "Ça va bien, merci.", "exemploTraducao": "Vai bem, obrigado." },
-        { "palavra": "Je m'appelle...", "traducao": "eu me chamo...", "exemplo": "Je m'appelle Marie.", "exemploTraducao": "Eu me chamo Marie." },
-        { "palavra": "Enchanté(e)", "traducao": "prazer (em conhecer)", "exemplo": "Enchanté de vous rencontrer.", "exemploTraducao": "Prazer em te conhecer." },
-        { "palavra": "S'il vous plaît", "traducao": "por favor (formal)", "exemplo": "Un café, s'il vous plaît.", "exemploTraducao": "Um café, por favor." },
-        { "palavra": "Merci", "traducao": "obrigado(a)", "exemplo": "Merci beaucoup !", "exemploTraducao": "Muito obrigado!" },
-        { "palavra": "De rien", "traducao": "de nada", "exemplo": "— Merci ! — De rien.", "exemploTraducao": "— Obrigado! — De nada." },
-        { "palavra": "Et toi ? / Et vous ?", "traducao": "e você? (informal / formal)", "exemplo": "Ça va bien, et toi ?", "exemploTraducao": "Vou bem, e você?" },
-        { "palavra": "Comment tu t'appelles ?", "traducao": "como você se chama? (informal)", "exemplo": "Comment tu t'appelles, toi ?", "exemploTraducao": "Como você se chama?" },
-        { "palavra": "Bonne nuit", "traducao": "boa noite (só na hora de dormir, nunca ao chegar)", "exemplo": "Bonne nuit, dors bien.", "exemploTraducao": "Boa noite, durma bem." },
-        { "palavra": "À plus tard / À demain", "traducao": "até mais tarde / até amanhã", "exemplo": "Bon, j'y vais, à demain !", "exemploTraducao": "Bom, eu vou indo, até amanhã!" },
-        { "palavra": "Bienvenue", "traducao": "bem-vindo(a)", "exemplo": "Bienvenue chez nous !", "exemploTraducao": "Bem-vindo à nossa casa!" }
+        {
+          "palavra": "Bonjour",
+          "traducao": "bom dia / boa tarde (até escurecer)",
+          "exemplo": "Bonjour, madame !",
+          "exemploTraducao": "Bom dia, senhora!"
+        },
+        {
+          "palavra": "Bonsoir",
+          "traducao": "boa noite (ao chegar)",
+          "exemplo": "Bonsoir tout le monde !",
+          "exemploTraducao": "Boa noite, pessoal!"
+        },
+        {
+          "palavra": "Salut",
+          "traducao": "oi / tchau (informal, entre amigos)",
+          "exemplo": "Salut, ça va ?",
+          "exemploTraducao": "Oi, tudo bem?"
+        },
+        {
+          "palavra": "Au revoir",
+          "traducao": "até logo",
+          "exemplo": "Au revoir, à bientôt !",
+          "exemploTraducao": "Até logo, até breve!"
+        },
+        {
+          "palavra": "Comment ça va ?",
+          "traducao": "como vai?",
+          "exemplo": "Ça va bien, merci.",
+          "exemploTraducao": "Vai bem, obrigado."
+        },
+        {
+          "palavra": "Je m'appelle...",
+          "traducao": "eu me chamo...",
+          "exemplo": "Je m'appelle Marie.",
+          "exemploTraducao": "Eu me chamo Marie."
+        },
+        {
+          "palavra": "Enchanté(e)",
+          "traducao": "prazer (em conhecer)",
+          "exemplo": "Enchanté de vous rencontrer.",
+          "exemploTraducao": "Prazer em te conhecer."
+        },
+        {
+          "palavra": "S'il vous plaît",
+          "traducao": "por favor (formal)",
+          "exemplo": "Un café, s'il vous plaît.",
+          "exemploTraducao": "Um café, por favor."
+        },
+        {
+          "palavra": "Merci",
+          "traducao": "obrigado(a)",
+          "exemplo": "Merci beaucoup !",
+          "exemploTraducao": "Muito obrigado!"
+        },
+        {
+          "palavra": "De rien",
+          "traducao": "de nada",
+          "exemplo": "— Merci ! — De rien.",
+          "exemploTraducao": "— Obrigado! — De nada."
+        },
+        {
+          "palavra": "Et toi ? / Et vous ?",
+          "traducao": "e você? (informal / formal)",
+          "exemplo": "Ça va bien, et toi ?",
+          "exemploTraducao": "Vou bem, e você?"
+        },
+        {
+          "palavra": "Comment tu t'appelles ?",
+          "traducao": "como você se chama? (informal)",
+          "exemplo": "Comment tu t'appelles, toi ?",
+          "exemploTraducao": "Como você se chama?"
+        },
+        {
+          "palavra": "Bonne nuit",
+          "traducao": "boa noite (só na hora de dormir, nunca ao chegar)",
+          "exemplo": "Bonne nuit, dors bien.",
+          "exemploTraducao": "Boa noite, durma bem."
+        },
+        {
+          "palavra": "À plus tard / À demain",
+          "traducao": "até mais tarde / até amanhã",
+          "exemplo": "Bon, j'y vais, à demain !",
+          "exemploTraducao": "Bom, eu vou indo, até amanhã!"
+        },
+        {
+          "palavra": "Bienvenue",
+          "traducao": "bem-vindo(a)",
+          "exemplo": "Bienvenue chez nous !",
+          "exemploTraducao": "Bem-vindo à nossa casa!"
+        }
       ],
       "associacao": "\"Enchanté\" soa como \"encantado\" — é literalmente isso: você fica \"encantado\" de conhecer alguém. E \"bienvenue\" tem o \"bien\" (bem) igualzinho ao português — bem-vindo.",
       "dica": "\"Bonjour\" vale até o entardecer; depois disso, \"Bonsoir\". \"Salut\" serve tanto pra chegar quanto pra sair — só entre gente próxima. Cuidado: \"Bonne nuit\" NÃO é uma saudação de chegada como \"Bonsoir\" — só se usa na hora de se despedir para dormir.",
@@ -91,27 +332,76 @@
         "titulo": "Tu e vous: quando usar cada um",
         "explicacao": "O francês tem duas formas de dizer 'você': 'tu' (informal, para amigos, família e crianças) e 'vous' (formal, para desconhecidos, superiores e situações profissionais). 'Vous' também funciona como o plural 'vocês'. Usar 'tu' com um desconhecido pode soar desrespeitoso na França.",
         "exemplos": [
-          { "frase": "Tu vas bien ?", "traducao": "Você está bem? (informal, entre amigos)" },
-          { "frase": "Comment allez-vous ?", "traducao": "Como o senhor/a senhora está? (formal)" },
-          { "frase": "Vous êtes d'où ?", "traducao": "De onde vocês são? (ou: De onde o senhor é?)" }
+          {
+            "frase": "Tu vas bien ?",
+            "traducao": "Você está bem? (informal, entre amigos)"
+          },
+          {
+            "frase": "Comment allez-vous ?",
+            "traducao": "Como o senhor/a senhora está? (formal)"
+          },
+          {
+            "frase": "Vous êtes d'où ?",
+            "traducao": "De onde vocês são? (ou: De onde o senhor é?)"
+          }
         ]
       },
       "dialogo": {
         "situacao": "Dois colegas se encontram pela primeira vez no trabalho.",
         "falas": [
-          { "quem": "A", "fala": "Bonjour, je m'appelle Pierre.", "traducao": "Bom dia, eu me chamo Pierre." },
-          { "quem": "B", "fala": "Enchantée ! Moi, c'est Sophie.", "traducao": "Prazer! Eu sou Sophie." },
-          { "quem": "A", "fala": "Comment allez-vous ?", "traducao": "Como a senhora está?" },
-          { "quem": "B", "fala": "Très bien, merci. Et vous ?", "traducao": "Muito bem, obrigada. E o senhor?" },
-          { "quem": "A", "fala": "Ça va bien, merci.", "traducao": "Estou bem, obrigado." },
-          { "quem": "B", "fala": "Bienvenue dans l'équipe !", "traducao": "Bem-vindo à equipe!" },
-          { "quem": "A", "fala": "Merci beaucoup ! À bientôt.", "traducao": "Muito obrigado! Até breve." },
-          { "quem": "B", "fala": "À bientôt, bonne journée !", "traducao": "Até breve, bom dia!" }
+          {
+            "quem": "A",
+            "fala": "Bonjour, je m'appelle Pierre.",
+            "traducao": "Bom dia, eu me chamo Pierre."
+          },
+          {
+            "quem": "B",
+            "fala": "Enchantée ! Moi, c'est Sophie.",
+            "traducao": "Prazer! Eu sou Sophie."
+          },
+          {
+            "quem": "A",
+            "fala": "Comment allez-vous ?",
+            "traducao": "Como a senhora está?"
+          },
+          {
+            "quem": "B",
+            "fala": "Très bien, merci. Et vous ?",
+            "traducao": "Muito bem, obrigada. E o senhor?"
+          },
+          {
+            "quem": "A",
+            "fala": "Ça va bien, merci.",
+            "traducao": "Estou bem, obrigado."
+          },
+          {
+            "quem": "B",
+            "fala": "Bienvenue dans l'équipe !",
+            "traducao": "Bem-vindo à equipe!"
+          },
+          {
+            "quem": "A",
+            "fala": "Merci beaucoup ! À bientôt.",
+            "traducao": "Muito obrigado! Até breve."
+          },
+          {
+            "quem": "B",
+            "fala": "À bientôt, bonne journée !",
+            "traducao": "Até breve, bom dia!"
+          }
         ]
       },
       "expressoes": [
-        { "expressao": "Enchanté de faire votre connaissance", "significado": "Prazer em conhecê-lo(a)", "uso": "Forma mais completa e formal de dizer 'prazer' numa apresentação" },
-        { "expressao": "Ça roule ?", "significado": "Tudo certo? Tudo nos trinques?", "uso": "Saudação informal entre amigos, alternativa descontraída a 'ça va ?'" }
+        {
+          "expressao": "Enchanté de faire votre connaissance",
+          "significado": "Prazer em conhecê-lo(a)",
+          "uso": "Forma mais completa e formal de dizer 'prazer' numa apresentação"
+        },
+        {
+          "expressao": "Ça roule ?",
+          "significado": "Tudo certo? Tudo nos trinques?",
+          "uso": "Saudação informal entre amigos, alternativa descontraída a 'ça va ?'"
+        }
       ],
       "cultura": "Na França, cumprimentar com 'la bise' (beijo no rosto) é um costume social muito importante. O número de beijos varia por região: dois em Paris, três no sul, até quatro em certas áreas. No ambiente profissional, o aperto de mão é o padrão. Esquecer de dizer 'Bonjour' ao entrar num comércio é considerado falta de educação grave.",
       "cancao": {
@@ -120,16 +410,65 @@
         "letra": "Alouette, gentille alouette,\nAlouette, je te plumerai.\n\nJe te plumerai la tête,\nJe te plumerai la tête,\nEt la tête, et la tête,\nAlouette, Alouette,\nOh-oh-oh-oh\n\nAlouette, gentille alouette,\nAlouette, je te plumerai.\n\nJe te plumerai le bec,\nJe te plumerai le bec,\nEt le bec, et le bec,\nEt la tête, et la tête,\nAlouette, Alouette,\nOh-oh-oh-oh"
       },
       "musicas": [
-        { "titulo": "Je veux", "artista": "Zaz", "youtubeId": "0TFNGRYMz1U", "trechoLetra": "Je veux de l'amour, de la joie, de la bonne humeur", "traducaoTrecho": "Eu quero amor, alegria, bom humor" }
+        {
+          "titulo": "Je veux",
+          "artista": "Zaz",
+          "youtubeId": "0TFNGRYMz1U",
+          "trechoLetra": "Je veux de l'amour, de la joie, de la bonne humeur",
+          "traducaoTrecho": "Eu quero amor, alegria, bom humor"
+        }
       ],
       "quiz": [
-        { "tipo": "multipla", "pergunta": "Qual saudação NUNCA se usa depois do entardecer?", "opcoes": ["Bonsoir", "Bonjour", "Salut"], "certa": 1 },
-        { "tipo": "multipla", "pergunta": "\"Je m'appelle Marie\" quer dizer:", "opcoes": ["Eu conheço Marie", "Eu me chamo Marie", "Eu gosto de Marie"], "certa": 1 },
-        { "tipo": "traduzir", "pergunta": "Como se diz \"por favor\" de forma formal?", "resposta": "s'il vous plaît" },
-        { "tipo": "traduzir", "pergunta": "Como se responde a \"Merci\"?", "resposta": "de rien" },
-        { "tipo": "multipla", "pergunta": "\"Bonne nuit\" se usa quando:", "opcoes": ["Ao chegar em qualquer lugar", "Só na hora de ir dormir", "Só de manhã"], "certa": 1 },
-        { "tipo": "traduzir", "pergunta": "Traduza: e você? (informal)", "resposta": "et toi" },
-        { "tipo": "traduzir", "pergunta": "Traduza: bem-vindo", "resposta": "bienvenue" }
+        {
+          "tipo": "multipla",
+          "pergunta": "Qual saudação NUNCA se usa depois do entardecer?",
+          "opcoes": [
+            "Bonsoir",
+            "Bonjour",
+            "Salut"
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "\"Je m'appelle Marie\" quer dizer:",
+          "opcoes": [
+            "Eu conheço Marie",
+            "Eu me chamo Marie",
+            "Eu gosto de Marie"
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "Como se diz \"por favor\" de forma formal?",
+          "resposta": "s'il vous plaît"
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "Como se responde a \"Merci\"?",
+          "resposta": "de rien"
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "\"Bonne nuit\" se usa quando:",
+          "opcoes": [
+            "Ao chegar em qualquer lugar",
+            "Só na hora de ir dormir",
+            "Só de manhã"
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "Traduza: e você? (informal)",
+          "resposta": "et toi"
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "Traduza: bem-vindo",
+          "resposta": "bienvenue"
+        }
       ]
     },
     {
@@ -138,20 +477,90 @@
       "tema": "Contar e perguntar idade — a base para preço, hora e data.",
       "nivel": "A1",
       "vocabulario": [
-        { "palavra": "zéro", "traducao": "zero", "exemplo": "Il fait zéro degré.", "exemploTraducao": "Está fazendo zero grau." },
-        { "palavra": "un, deux, trois", "traducao": "um, dois, três", "exemplo": "un, deux, trois, quatre, cinq", "exemploTraducao": "um, dois, três, quatro, cinco" },
-        { "palavra": "six, sept, huit, neuf, dix", "traducao": "seis, sete, oito, nove, dez", "exemplo": "dix minutes", "exemploTraducao": "dez minutos" },
-        { "palavra": "onze, douze, treize", "traducao": "onze, doze, treze", "exemplo": "Il est onze heures.", "exemploTraducao": "São onze horas." },
-        { "palavra": "vingt", "traducao": "vinte", "exemplo": "vingt ans", "exemploTraducao": "vinte anos" },
-        { "palavra": "trente, quarante, cinquante", "traducao": "trinta, quarenta, cinquenta", "exemplo": "cinquante euros", "exemploTraducao": "cinquenta euros" },
-        { "palavra": "soixante", "traducao": "sessenta", "exemplo": "soixante euros", "exemploTraducao": "sessenta euros" },
-        { "palavra": "soixante-dix", "traducao": "setenta (literalmente \"sessenta-dez\")", "exemplo": "soixante-dix ans", "exemploTraducao": "setenta anos" },
-        { "palavra": "quatre-vingts", "traducao": "oitenta (literalmente \"quatro-vintes\")", "exemplo": "quatre-vingts pages", "exemploTraducao": "oitenta páginas" },
-        { "palavra": "quatre-vingt-dix", "traducao": "noventa (\"quatro-vinte-dez\")", "exemplo": "quatre-vingt-dix euros", "exemploTraducao": "noventa euros" },
-        { "palavra": "cent", "traducao": "cem", "exemplo": "cent pour cent", "exemploTraducao": "cem por cento" },
-        { "palavra": "mille", "traducao": "mil", "exemplo": "mille personnes", "exemploTraducao": "mil pessoas" },
-        { "palavra": "premier, deuxième, troisième", "traducao": "primeiro, segundo, terceiro", "exemplo": "C'est mon premier voyage.", "exemploTraducao": "Esta é minha primeira viagem." },
-        { "palavra": "Quel âge as-tu ?", "traducao": "quantos anos você tem?", "exemplo": "J'ai vingt-cinq ans.", "exemploTraducao": "Tenho vinte e cinco anos." }
+        {
+          "palavra": "zéro",
+          "traducao": "zero",
+          "exemplo": "Il fait zéro degré.",
+          "exemploTraducao": "Está fazendo zero grau."
+        },
+        {
+          "palavra": "un, deux, trois",
+          "traducao": "um, dois, três",
+          "exemplo": "un, deux, trois, quatre, cinq",
+          "exemploTraducao": "um, dois, três, quatro, cinco"
+        },
+        {
+          "palavra": "six, sept, huit, neuf, dix",
+          "traducao": "seis, sete, oito, nove, dez",
+          "exemplo": "dix minutes",
+          "exemploTraducao": "dez minutos"
+        },
+        {
+          "palavra": "onze, douze, treize",
+          "traducao": "onze, doze, treze",
+          "exemplo": "Il est onze heures.",
+          "exemploTraducao": "São onze horas."
+        },
+        {
+          "palavra": "vingt",
+          "traducao": "vinte",
+          "exemplo": "vingt ans",
+          "exemploTraducao": "vinte anos"
+        },
+        {
+          "palavra": "trente, quarante, cinquante",
+          "traducao": "trinta, quarenta, cinquenta",
+          "exemplo": "cinquante euros",
+          "exemploTraducao": "cinquenta euros"
+        },
+        {
+          "palavra": "soixante",
+          "traducao": "sessenta",
+          "exemplo": "soixante euros",
+          "exemploTraducao": "sessenta euros"
+        },
+        {
+          "palavra": "soixante-dix",
+          "traducao": "setenta (literalmente \"sessenta-dez\")",
+          "exemplo": "soixante-dix ans",
+          "exemploTraducao": "setenta anos"
+        },
+        {
+          "palavra": "quatre-vingts",
+          "traducao": "oitenta (literalmente \"quatro-vintes\")",
+          "exemplo": "quatre-vingts pages",
+          "exemploTraducao": "oitenta páginas"
+        },
+        {
+          "palavra": "quatre-vingt-dix",
+          "traducao": "noventa (\"quatro-vinte-dez\")",
+          "exemplo": "quatre-vingt-dix euros",
+          "exemploTraducao": "noventa euros"
+        },
+        {
+          "palavra": "cent",
+          "traducao": "cem",
+          "exemplo": "cent pour cent",
+          "exemploTraducao": "cem por cento"
+        },
+        {
+          "palavra": "mille",
+          "traducao": "mil",
+          "exemplo": "mille personnes",
+          "exemploTraducao": "mil pessoas"
+        },
+        {
+          "palavra": "premier, deuxième, troisième",
+          "traducao": "primeiro, segundo, terceiro",
+          "exemplo": "C'est mon premier voyage.",
+          "exemploTraducao": "Esta é minha primeira viagem."
+        },
+        {
+          "palavra": "Quel âge as-tu ?",
+          "traducao": "quantos anos você tem?",
+          "exemplo": "J'ai vingt-cinq ans.",
+          "exemploTraducao": "Tenho vinte e cinco anos."
+        }
       ],
       "associacao": "Depois de 60, o francês faz CONTA: 70 é \"sessenta-e-dez\" (soixante-dix), 80 é \"quatro-vintes\" (quatre-vingts), 90 é \"quatro-vinte-dez\". Pense em somar em vez de decorar um nome novo pra cada dezena. O francês da Bélgica e da Suíça usa \"septante\" (70) e \"nonante\" (90) — mais parecido com o português — mas na França o padrão é sempre o da conta.",
       "dica": "A idade em francês usa o verbo TER, não SER: \"J'ai vingt ans\" (tenho vinte anos), nunca \"eu sou vinte anos\". Os ordinais (premier, deuxième...) concordam em gênero só no \"premier/première\" — os demais (deuxième, troisième...) são iguais para masculino e feminino.",
@@ -159,39 +568,173 @@
         "titulo": "Os artigos definidos: le, la, les",
         "explicacao": "Todo substantivo em francês tem gênero (masculino ou feminino) e pede um artigo: 'le' para masculino, 'la' para feminino e 'les' para plural. Antes de vogal ou 'h' mudo, tanto 'le' quanto 'la' viram 'l'' (com apóstrofo). Não existe artigo neutro em francês.",
         "exemplos": [
-          { "frase": "le garçon, la fille, les enfants", "traducao": "o menino, a menina, as crianças" },
-          { "frase": "l'homme, l'eau", "traducao": "o homem, a água (apóstrofo antes de vogal)" },
-          { "frase": "le livre, la table, les chaises", "traducao": "o livro, a mesa, as cadeiras" }
+          {
+            "frase": "le garçon, la fille, les enfants",
+            "traducao": "o menino, a menina, as crianças"
+          },
+          {
+            "frase": "l'homme, l'eau",
+            "traducao": "o homem, a água (apóstrofo antes de vogal)"
+          },
+          {
+            "frase": "le livre, la table, les chaises",
+            "traducao": "o livro, a mesa, as cadeiras"
+          }
         ]
       },
       "dialogo": {
         "situacao": "Um turista compra frutas numa feira ao ar livre em Paris.",
         "falas": [
-          { "quem": "A", "fala": "Bonjour ! Combien coûtent les pommes ?", "traducao": "Bom dia! Quanto custam as maçãs?" },
-          { "quem": "B", "fala": "Deux euros le kilo, monsieur.", "traducao": "Dois euros o quilo, senhor." },
-          { "quem": "A", "fala": "Je voudrais trois kilos, s'il vous plaît.", "traducao": "Eu queria três quilos, por favor." },
-          { "quem": "B", "fala": "Ça fait six euros.", "traducao": "Dá seis euros." },
-          { "quem": "A", "fala": "Voilà dix euros.", "traducao": "Aqui estão dez euros." },
-          { "quem": "B", "fala": "Et quatre euros de monnaie. Merci !", "traducao": "E quatro euros de troco. Obrigado!" },
-          { "quem": "A", "fala": "Merci, bonne journée !", "traducao": "Obrigado, bom dia!" }
+          {
+            "quem": "A",
+            "fala": "Bonjour ! Combien coûtent les pommes ?",
+            "traducao": "Bom dia! Quanto custam as maçãs?"
+          },
+          {
+            "quem": "B",
+            "fala": "Deux euros le kilo, monsieur.",
+            "traducao": "Dois euros o quilo, senhor."
+          },
+          {
+            "quem": "A",
+            "fala": "Je voudrais trois kilos, s'il vous plaît.",
+            "traducao": "Eu queria três quilos, por favor."
+          },
+          {
+            "quem": "B",
+            "fala": "Ça fait six euros.",
+            "traducao": "Dá seis euros."
+          },
+          {
+            "quem": "A",
+            "fala": "Voilà dix euros.",
+            "traducao": "Aqui estão dez euros."
+          },
+          {
+            "quem": "B",
+            "fala": "Et quatre euros de monnaie. Merci !",
+            "traducao": "E quatro euros de troco. Obrigado!"
+          },
+          {
+            "quem": "A",
+            "fala": "Merci, bonne journée !",
+            "traducao": "Obrigado, bom dia!"
+          }
         ]
       },
       "expressoes": [
-        { "expressao": "En deux temps trois mouvements", "significado": "Num piscar de olhos, rapidinho", "uso": "Para dizer que algo será feito muito rápido" },
-        { "expressao": "Voir trente-six chandelles", "significado": "Ver estrelas (de dor ou susto)", "uso": "Quando alguém leva uma pancada forte ou fica tonto" },
-        { "expressao": "Avoir deux mains gauches", "significado": "Ser desajeitado (literalmente 'ter duas mãos esquerdas')", "uso": "Quando alguém é ruim com trabalhos manuais" }
+        {
+          "expressao": "En deux temps trois mouvements",
+          "significado": "Num piscar de olhos, rapidinho",
+          "uso": "Para dizer que algo será feito muito rápido"
+        },
+        {
+          "expressao": "Voir trente-six chandelles",
+          "significado": "Ver estrelas (de dor ou susto)",
+          "uso": "Quando alguém leva uma pancada forte ou fica tonto"
+        },
+        {
+          "expressao": "Avoir deux mains gauches",
+          "significado": "Ser desajeitado (literalmente 'ter duas mãos esquerdas')",
+          "uso": "Quando alguém é ruim com trabalhos manuais"
+        }
       ],
       "cultura": "O sistema de numeração francês acima de 60 (soixante-dix, quatre-vingts, quatre-vingt-dix) vem do sistema vigesimal celta, que contava de vinte em vinte. Na Bélgica e na Suíça francófona, usam-se formas mais simples: 'septante' (70), 'huitante' ou 'octante' (80) e 'nonante' (90). A moeda oficial da França é o euro desde 2002, substituindo o franco francês.",
       "musicas": [
-        { "titulo": "Alors on Danse", "artista": "Stromae", "youtubeId": "VHoT4N43jK8", "trechoLetra": "Alors on danse, alors on danse, alors on danse", "traducaoTrecho": "Então a gente dança, então a gente dança" }
+        {
+          "titulo": "Alors on Danse",
+          "artista": "Stromae",
+          "youtubeId": "VHoT4N43jK8",
+          "trechoLetra": "Alors on danse, alors on danse, alors on danse",
+          "traducaoTrecho": "Então a gente dança, então a gente dança",
+          "frases": [
+            {
+              "original": "Alors on danse",
+              "traducao": "Então a gente dança",
+              "vocabulario": [
+                {
+                  "palavra": "alors",
+                  "significado": "então",
+                  "detalhe": "Palavra-chave do francês falado. Alors = então / pois é / bem."
+                },
+                {
+                  "palavra": "on",
+                  "significado": "a gente / nós",
+                  "detalhe": "Pronome informal para \"nós\". On danse = a gente dança."
+                }
+              ],
+              "pronuncia": "a-LOR on DANS"
+            },
+            {
+              "original": "Qui dit études dit travail",
+              "traducao": "Quem diz estudo diz trabalho",
+              "vocabulario": [
+                {
+                  "palavra": "qui dit",
+                  "significado": "quem diz",
+                  "detalhe": "Estrutura \"qui dit X dit Y\" = quem fala de X fala de Y."
+                },
+                {
+                  "palavra": "études",
+                  "significado": "estudos",
+                  "detalhe": "Étude = estudo. Fazer études = estudar na faculdade."
+                },
+                {
+                  "palavra": "travail",
+                  "significado": "trabalho",
+                  "detalhe": "Travail = trabalho. Travailler = trabalhar."
+                }
+              ],
+              "pronuncia": "ki di e-TUD di tra-VAI"
+            }
+          ]
+        }
       ],
       "quiz": [
-        { "tipo": "multipla", "pergunta": "Como se diz 80 em francês?", "opcoes": ["huitante", "quatre-vingts", "octante"], "certa": 1 },
-        { "tipo": "multipla", "pergunta": "\"Quel âge as-tu ?\" pergunta:", "opcoes": ["Onde você mora", "Quantos anos você tem", "Como você se chama"], "certa": 1 },
-        { "tipo": "traduzir", "pergunta": "Escreva em francês: setenta", "resposta": "soixante-dix" },
-        { "tipo": "traduzir", "pergunta": "Escreva em francês: mil", "resposta": "mille" },
-        { "tipo": "multipla", "pergunta": "\"Premier\" (primeiro) muda de forma no feminino. E \"deuxième\" (segundo)?", "opcoes": ["Também muda: deuxièmE só no feminino", "Não muda — é igual para os dois gêneros"], "certa": 1 },
-        { "tipo": "traduzir", "pergunta": "Escreva em francês: zero", "resposta": "zéro" }
+        {
+          "tipo": "multipla",
+          "pergunta": "Como se diz 80 em francês?",
+          "opcoes": [
+            "huitante",
+            "quatre-vingts",
+            "octante"
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "\"Quel âge as-tu ?\" pergunta:",
+          "opcoes": [
+            "Onde você mora",
+            "Quantos anos você tem",
+            "Como você se chama"
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "Escreva em francês: setenta",
+          "resposta": "soixante-dix"
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "Escreva em francês: mil",
+          "resposta": "mille"
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "\"Premier\" (primeiro) muda de forma no feminino. E \"deuxième\" (segundo)?",
+          "opcoes": [
+            "Também muda: deuxièmE só no feminino",
+            "Não muda — é igual para os dois gêneros"
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "Escreva em francês: zero",
+          "resposta": "zéro"
+        }
       ]
     },
     {
@@ -200,19 +743,84 @@
       "tema": "Quem é quem em casa.",
       "nivel": "A1",
       "vocabulario": [
-        { "palavra": "la famille", "traducao": "a família", "exemplo": "Ma famille est grande.", "exemploTraducao": "Minha família é grande." },
-        { "palavra": "le père / la mère", "traducao": "o pai / a mãe", "exemplo": "Mon père travaille beaucoup.", "exemploTraducao": "Meu pai trabalha muito." },
-        { "palavra": "le frère / la sœur", "traducao": "o irmão / a irmã", "exemplo": "J'ai une sœur.", "exemploTraducao": "Eu tenho uma irmã." },
-        { "palavra": "le fils / la fille", "traducao": "o filho / a filha (\"fille\" também é \"menina\")", "exemplo": "Sa fille a dix ans.", "exemploTraducao": "A filha dele(a) tem dez anos." },
-        { "palavra": "les grands-parents", "traducao": "os avós", "exemplo": "Mes grands-parents habitent à Lyon.", "exemploTraducao": "Meus avós moram em Lyon." },
-        { "palavra": "le mari / la femme", "traducao": "o marido / a esposa (\"femme\" também é \"mulher\")", "exemplo": "C'est mon mari.", "exemploTraducao": "Este é meu marido." },
-        { "palavra": "mon, ma, mes", "traducao": "meu, minha, meus/minhas — muda com o gênero da coisa, não da pessoa", "exemplo": "mon père, ma mère, mes parents", "exemploTraducao": "meu pai, minha mãe, meus pais" },
-        { "palavra": "le cousin / la cousine", "traducao": "o primo / a prima", "exemplo": "Mon cousin habite à Paris.", "exemploTraducao": "Meu primo mora em Paris." },
-        { "palavra": "l'oncle / la tante", "traducao": "o tio / a tia", "exemplo": "Ma tante adore cuisiner.", "exemploTraducao": "Minha tia adora cozinhar." },
-        { "palavra": "le neveu / la nièce", "traducao": "o sobrinho / a sobrinha", "exemplo": "Ma nièce a trois ans.", "exemploTraducao": "Minha sobrinha tem três anos." },
-        { "palavra": "le beau-père / la belle-mère", "traducao": "o sogro / a sogra (ou padrasto/madrasta, conforme o contexto)", "exemplo": "Mon beau-père est gentil.", "exemploTraducao": "Meu sogro é gentil." },
-        { "palavra": "célibataire / marié(e)", "traducao": "solteiro(a) / casado(a)", "exemplo": "Elle est mariée depuis dix ans.", "exemploTraducao": "Ela é casada há dez anos." },
-        { "palavra": "le bébé", "traducao": "o bebê", "exemplo": "Le bébé dort.", "exemploTraducao": "O bebê está dormindo." }
+        {
+          "palavra": "la famille",
+          "traducao": "a família",
+          "exemplo": "Ma famille est grande.",
+          "exemploTraducao": "Minha família é grande."
+        },
+        {
+          "palavra": "le père / la mère",
+          "traducao": "o pai / a mãe",
+          "exemplo": "Mon père travaille beaucoup.",
+          "exemploTraducao": "Meu pai trabalha muito."
+        },
+        {
+          "palavra": "le frère / la sœur",
+          "traducao": "o irmão / a irmã",
+          "exemplo": "J'ai une sœur.",
+          "exemploTraducao": "Eu tenho uma irmã."
+        },
+        {
+          "palavra": "le fils / la fille",
+          "traducao": "o filho / a filha (\"fille\" também é \"menina\")",
+          "exemplo": "Sa fille a dix ans.",
+          "exemploTraducao": "A filha dele(a) tem dez anos."
+        },
+        {
+          "palavra": "les grands-parents",
+          "traducao": "os avós",
+          "exemplo": "Mes grands-parents habitent à Lyon.",
+          "exemploTraducao": "Meus avós moram em Lyon."
+        },
+        {
+          "palavra": "le mari / la femme",
+          "traducao": "o marido / a esposa (\"femme\" também é \"mulher\")",
+          "exemplo": "C'est mon mari.",
+          "exemploTraducao": "Este é meu marido."
+        },
+        {
+          "palavra": "mon, ma, mes",
+          "traducao": "meu, minha, meus/minhas — muda com o gênero da coisa, não da pessoa",
+          "exemplo": "mon père, ma mère, mes parents",
+          "exemploTraducao": "meu pai, minha mãe, meus pais"
+        },
+        {
+          "palavra": "le cousin / la cousine",
+          "traducao": "o primo / a prima",
+          "exemplo": "Mon cousin habite à Paris.",
+          "exemploTraducao": "Meu primo mora em Paris."
+        },
+        {
+          "palavra": "l'oncle / la tante",
+          "traducao": "o tio / a tia",
+          "exemplo": "Ma tante adore cuisiner.",
+          "exemploTraducao": "Minha tia adora cozinhar."
+        },
+        {
+          "palavra": "le neveu / la nièce",
+          "traducao": "o sobrinho / a sobrinha",
+          "exemplo": "Ma nièce a trois ans.",
+          "exemploTraducao": "Minha sobrinha tem três anos."
+        },
+        {
+          "palavra": "le beau-père / la belle-mère",
+          "traducao": "o sogro / a sogra (ou padrasto/madrasta, conforme o contexto)",
+          "exemplo": "Mon beau-père est gentil.",
+          "exemploTraducao": "Meu sogro é gentil."
+        },
+        {
+          "palavra": "célibataire / marié(e)",
+          "traducao": "solteiro(a) / casado(a)",
+          "exemplo": "Elle est mariée depuis dix ans.",
+          "exemploTraducao": "Ela é casada há dez anos."
+        },
+        {
+          "palavra": "le bébé",
+          "traducao": "o bebê",
+          "exemplo": "Le bébé dort.",
+          "exemploTraducao": "O bebê está dormindo."
+        }
       ],
       "associacao": "\"Fille\" quer dizer FILHA e também MENINA — o contexto decide. \"Femme\" é ESPOSA e também MULHER, pela mesma lógica. E \"beau-père/belle-mère\" também são ambíguos: podem ser sogro(a) OU padrasto/madrasta — a família francesa usa o mesmo par de palavras pros dois casos.",
       "dica": "\"Mon, ma, mes\" concordam com a palavra que vem depois, não com quem fala: um HOMEM diz \"ma mère\" (mãe é palavra feminina), e uma MULHER diz \"mon père\" (pai é palavra masculina). Vale o mesmo raciocínio para \"mon oncle\" (masculino) e \"ma tante\" (feminino), não importa quem está falando.",
@@ -220,27 +828,76 @@
         "titulo": "Os possessivos: mon, ton, son",
         "explicacao": "Os possessivos em francês concordam com o gênero da coisa possuída, não com o de quem possui. 'Mon' (meu), 'ton' (teu), 'son' (dele/dela) para masculino; 'ma', 'ta', 'sa' para feminino; 'mes', 'tes', 'ses' para plural. Antes de vogal, usa-se 'mon/ton/son' mesmo com palavra feminina: 'mon amie' (minha amiga).",
         "exemplos": [
-          { "frase": "mon frère, ma sœur, mes parents", "traducao": "meu irmão, minha irmã, meus pais" },
-          { "frase": "son père, sa mère, ses enfants", "traducao": "o pai dele/dela, a mãe dele/dela, os filhos dele/dela" },
-          { "frase": "mon amie (feminino antes de vogal)", "traducao": "minha amiga (usa 'mon' porque começa com vogal)" }
+          {
+            "frase": "mon frère, ma sœur, mes parents",
+            "traducao": "meu irmão, minha irmã, meus pais"
+          },
+          {
+            "frase": "son père, sa mère, ses enfants",
+            "traducao": "o pai dele/dela, a mãe dele/dela, os filhos dele/dela"
+          },
+          {
+            "frase": "mon amie (feminino antes de vogal)",
+            "traducao": "minha amiga (usa 'mon' porque começa com vogal)"
+          }
         ]
       },
       "dialogo": {
         "situacao": "Duas amigas conversam sobre suas famílias num café.",
         "falas": [
-          { "quem": "A", "fala": "Tu as des frères et sœurs ?", "traducao": "Você tem irmãos e irmãs?" },
-          { "quem": "B", "fala": "Oui, j'ai un frère et deux sœurs.", "traducao": "Sim, tenho um irmão e duas irmãs." },
-          { "quem": "A", "fala": "Ils habitent où ?", "traducao": "Eles moram onde?" },
-          { "quem": "B", "fala": "Mon frère habite à Lyon, et mes sœurs à Paris.", "traducao": "Meu irmão mora em Lyon, e minhas irmãs em Paris." },
-          { "quem": "A", "fala": "Et tes parents ?", "traducao": "E seus pais?" },
-          { "quem": "B", "fala": "Ma mère est à la retraite, et mon père travaille encore.", "traducao": "Minha mãe é aposentada, e meu pai ainda trabalha." },
-          { "quem": "A", "fala": "Tu as des enfants ?", "traducao": "Você tem filhos?" },
-          { "quem": "B", "fala": "Oui, un fils de cinq ans. Il est adorable !", "traducao": "Sim, um filho de cinco anos. Ele é adorável!" }
+          {
+            "quem": "A",
+            "fala": "Tu as des frères et sœurs ?",
+            "traducao": "Você tem irmãos e irmãs?"
+          },
+          {
+            "quem": "B",
+            "fala": "Oui, j'ai un frère et deux sœurs.",
+            "traducao": "Sim, tenho um irmão e duas irmãs."
+          },
+          {
+            "quem": "A",
+            "fala": "Ils habitent où ?",
+            "traducao": "Eles moram onde?"
+          },
+          {
+            "quem": "B",
+            "fala": "Mon frère habite à Lyon, et mes sœurs à Paris.",
+            "traducao": "Meu irmão mora em Lyon, e minhas irmãs em Paris."
+          },
+          {
+            "quem": "A",
+            "fala": "Et tes parents ?",
+            "traducao": "E seus pais?"
+          },
+          {
+            "quem": "B",
+            "fala": "Ma mère est à la retraite, et mon père travaille encore.",
+            "traducao": "Minha mãe é aposentada, e meu pai ainda trabalha."
+          },
+          {
+            "quem": "A",
+            "fala": "Tu as des enfants ?",
+            "traducao": "Você tem filhos?"
+          },
+          {
+            "quem": "B",
+            "fala": "Oui, un fils de cinq ans. Il est adorable !",
+            "traducao": "Sim, um filho de cinco anos. Ele é adorável!"
+          }
         ]
       },
       "expressoes": [
-        { "expressao": "Tel père, tel fils", "significado": "Tal pai, tal filho", "uso": "Quando o filho se parece com o pai em comportamento ou aparência" },
-        { "expressao": "C'est de famille", "significado": "É de família, é hereditário", "uso": "Para explicar um traço ou costume que vem dos pais ou avós" }
+        {
+          "expressao": "Tel père, tel fils",
+          "significado": "Tal pai, tal filho",
+          "uso": "Quando o filho se parece com o pai em comportamento ou aparência"
+        },
+        {
+          "expressao": "C'est de famille",
+          "significado": "É de família, é hereditário",
+          "uso": "Para explicar um traço ou costume que vem dos pais ou avós"
+        }
       ],
       "cultura": "A família francesa moderna é bastante diversa. O PACS (Pacte civil de solidarité), criado em 1999, é uma forma de união civil muito popular além do casamento tradicional. Os franceses costumam almoçar em família aos domingos, e muitos avós participam ativamente da criação dos netos. Na França, o sobrenome da mulher não muda automaticamente após o casamento.",
       "cancao": {
@@ -249,15 +906,60 @@
         "letra": "Fais dodo, Colas mon p'tit frère,\nFais dodo, t'auras du lolo.\n\nMaman est en haut\nQui fait du gâteau,\nPapa est en bas\nQui fait du chocolat.\n\nFais dodo, Colas mon p'tit frère,\nFais dodo, t'auras du lolo."
       },
       "musicas": [
-        { "titulo": "Formidable", "artista": "Stromae", "youtubeId": "S_xH7noaqTA", "trechoLetra": "Tu étais formidable, j'étais fort minable", "traducaoTrecho": "Você era formidável, eu era bem deplorável" }
+        {
+          "titulo": "Formidable",
+          "artista": "Stromae",
+          "youtubeId": "S_xH7noaqTA",
+          "trechoLetra": "Tu étais formidable, j'étais fort minable",
+          "traducaoTrecho": "Você era formidável, eu era bem deplorável"
+        }
       ],
       "quiz": [
-        { "tipo": "multipla", "pergunta": "Um homem falando da própria mãe diz:", "opcoes": ["mon mère", "ma mère", "mes mère"], "certa": 1 },
-        { "tipo": "multipla", "pergunta": "\"La fille\" pode significar:", "opcoes": ["Só \"filha\"", "Só \"menina\"", "Filha OU menina, depende do contexto"], "certa": 2 },
-        { "tipo": "traduzir", "pergunta": "Traduza: meus avós", "resposta": "mes grands-parents" },
-        { "tipo": "traduzir", "pergunta": "Traduza: o primo", "resposta": "le cousin" },
-        { "tipo": "multipla", "pergunta": "\"Le neveu\" e \"la nièce\" são:", "opcoes": ["Sobrinho e sobrinha", "Neto e neta", "Cunhado e cunhada"], "certa": 0 },
-        { "tipo": "traduzir", "pergunta": "Traduza: solteiro", "resposta": "célibataire" }
+        {
+          "tipo": "multipla",
+          "pergunta": "Um homem falando da própria mãe diz:",
+          "opcoes": [
+            "mon mère",
+            "ma mère",
+            "mes mère"
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "\"La fille\" pode significar:",
+          "opcoes": [
+            "Só \"filha\"",
+            "Só \"menina\"",
+            "Filha OU menina, depende do contexto"
+          ],
+          "certa": 2
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "Traduza: meus avós",
+          "resposta": "mes grands-parents"
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "Traduza: o primo",
+          "resposta": "le cousin"
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "\"Le neveu\" e \"la nièce\" são:",
+          "opcoes": [
+            "Sobrinho e sobrinha",
+            "Neto e neta",
+            "Cunhado e cunhada"
+          ],
+          "certa": 0
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "Traduza: solteiro",
+          "resposta": "célibataire"
+        }
       ]
     },
     {
@@ -266,21 +968,96 @@
       "tema": "Pedir, comprar e comentar sobre o que se come.",
       "nivel": "A1",
       "vocabulario": [
-        { "palavra": "le pain", "traducao": "o pão", "exemplo": "Une baguette de pain.", "exemploTraducao": "Uma baguete de pão." },
-        { "palavra": "le fromage", "traducao": "o queijo", "exemplo": "J'aime le fromage.", "exemploTraducao": "Eu gosto de queijo." },
-        { "palavra": "l'eau", "traducao": "a água", "exemplo": "Un verre d'eau, s'il vous plaît.", "exemploTraducao": "Um copo de água, por favor." },
-        { "palavra": "le vin", "traducao": "o vinho", "exemplo": "Un verre de vin rouge.", "exemploTraducao": "Um copo de vinho tinto." },
-        { "palavra": "le petit-déjeuner", "traducao": "o café da manhã (\"o pequeno-almoço\")", "exemplo": "Je prends le petit-déjeuner à huit heures.", "exemploTraducao": "Eu tomo café da manhã às oito." },
-        { "palavra": "le déjeuner", "traducao": "o almoço", "exemplo": "On déjeune ensemble ?", "exemploTraducao": "Almoçamos juntos?" },
-        { "palavra": "le dîner", "traducao": "o jantar", "exemplo": "Le dîner est prêt.", "exemploTraducao": "O jantar está pronto." },
-        { "palavra": "J'ai faim / J'ai soif", "traducao": "estou com fome / estou com sede", "exemplo": "J'ai faim, on mange ?", "exemploTraducao": "Estou com fome, vamos comer?" },
-        { "palavra": "L'addition, s'il vous plaît", "traducao": "a conta, por favor", "exemplo": "— L'addition, s'il vous plaît. — Tout de suite.", "exemploTraducao": "— A conta, por favor. — Já vem." },
-        { "palavra": "le dessert", "traducao": "a sobremesa", "exemplo": "Qu'est-ce qu'il y a comme dessert ?", "exemploTraducao": "O que tem de sobremesa?" },
-        { "palavra": "la viande / le poisson", "traducao": "a carne / o peixe", "exemplo": "Je ne mange pas de viande.", "exemploTraducao": "Eu não como carne." },
-        { "palavra": "les légumes / les fruits", "traducao": "os legumes / as frutas", "exemplo": "J'aime les légumes frais.", "exemploTraducao": "Eu gosto de legumes frescos." },
-        { "palavra": "sucré / salé", "traducao": "doce / salgado", "exemplo": "Tu préfères sucré ou salé ?", "exemploTraducao": "Você prefere doce ou salgado?" },
-        { "palavra": "Je suis végétarien(ne)", "traducao": "eu sou vegetariano(a)", "exemplo": "Je suis végétarien, sans viande s'il vous plaît.", "exemploTraducao": "Sou vegetariano, sem carne por favor." },
-        { "palavra": "Santé !", "traducao": "saúde! (brinde)", "exemplo": "Santé, à ta réussite !", "exemploTraducao": "Saúde, ao seu sucesso!" }
+        {
+          "palavra": "le pain",
+          "traducao": "o pão",
+          "exemplo": "Une baguette de pain.",
+          "exemploTraducao": "Uma baguete de pão."
+        },
+        {
+          "palavra": "le fromage",
+          "traducao": "o queijo",
+          "exemplo": "J'aime le fromage.",
+          "exemploTraducao": "Eu gosto de queijo."
+        },
+        {
+          "palavra": "l'eau",
+          "traducao": "a água",
+          "exemplo": "Un verre d'eau, s'il vous plaît.",
+          "exemploTraducao": "Um copo de água, por favor."
+        },
+        {
+          "palavra": "le vin",
+          "traducao": "o vinho",
+          "exemplo": "Un verre de vin rouge.",
+          "exemploTraducao": "Um copo de vinho tinto."
+        },
+        {
+          "palavra": "le petit-déjeuner",
+          "traducao": "o café da manhã (\"o pequeno-almoço\")",
+          "exemplo": "Je prends le petit-déjeuner à huit heures.",
+          "exemploTraducao": "Eu tomo café da manhã às oito."
+        },
+        {
+          "palavra": "le déjeuner",
+          "traducao": "o almoço",
+          "exemplo": "On déjeune ensemble ?",
+          "exemploTraducao": "Almoçamos juntos?"
+        },
+        {
+          "palavra": "le dîner",
+          "traducao": "o jantar",
+          "exemplo": "Le dîner est prêt.",
+          "exemploTraducao": "O jantar está pronto."
+        },
+        {
+          "palavra": "J'ai faim / J'ai soif",
+          "traducao": "estou com fome / estou com sede",
+          "exemplo": "J'ai faim, on mange ?",
+          "exemploTraducao": "Estou com fome, vamos comer?"
+        },
+        {
+          "palavra": "L'addition, s'il vous plaît",
+          "traducao": "a conta, por favor",
+          "exemplo": "— L'addition, s'il vous plaît. — Tout de suite.",
+          "exemploTraducao": "— A conta, por favor. — Já vem."
+        },
+        {
+          "palavra": "le dessert",
+          "traducao": "a sobremesa",
+          "exemplo": "Qu'est-ce qu'il y a comme dessert ?",
+          "exemploTraducao": "O que tem de sobremesa?"
+        },
+        {
+          "palavra": "la viande / le poisson",
+          "traducao": "a carne / o peixe",
+          "exemplo": "Je ne mange pas de viande.",
+          "exemploTraducao": "Eu não como carne."
+        },
+        {
+          "palavra": "les légumes / les fruits",
+          "traducao": "os legumes / as frutas",
+          "exemplo": "J'aime les légumes frais.",
+          "exemploTraducao": "Eu gosto de legumes frescos."
+        },
+        {
+          "palavra": "sucré / salé",
+          "traducao": "doce / salgado",
+          "exemplo": "Tu préfères sucré ou salé ?",
+          "exemploTraducao": "Você prefere doce ou salgado?"
+        },
+        {
+          "palavra": "Je suis végétarien(ne)",
+          "traducao": "eu sou vegetariano(a)",
+          "exemplo": "Je suis végétarien, sans viande s'il vous plaît.",
+          "exemploTraducao": "Sou vegetariano, sem carne por favor."
+        },
+        {
+          "palavra": "Santé !",
+          "traducao": "saúde! (brinde)",
+          "exemplo": "Santé, à ta réussite !",
+          "exemploTraducao": "Saúde, ao seu sucesso!"
+        }
       ],
       "associacao": "Fome e sede usam o verbo TER de novo, como a idade: \"j'ai faim\" (literalmente \"eu tenho fome\"), nunca \"eu estou com fome\" ao pé da letra.",
       "dica": "\"Le déjeuner\" é o ALMOÇO na França — em francês do Canadá (Québec) é o café da manhã. Se for pedir comida lá, vale confirmar. \"Santé\" é o brinde universal em francês — mais simples e mais usado do que qualquer expressão longa, funciona em qualquer ocasião com bebida.",
@@ -288,40 +1065,138 @@
         "titulo": "Os artigos partitivos: du, de la, des",
         "explicacao": "Para falar de uma quantidade indefinida ('um pouco de', 'algo de'), o francês usa artigos partitivos: 'du' (masculino), 'de la' (feminino), 'des' (plural). Na negação, todos viram 'de' ou 'd''. Não existe equivalente direto em português, mas corresponde ao nosso uso sem artigo.",
         "exemplos": [
-          { "frase": "Je mange du pain et de la confiture.", "traducao": "Eu como pão e geleia." },
-          { "frase": "Je bois du café.", "traducao": "Eu bebo café." },
-          { "frase": "Je ne mange pas de viande.", "traducao": "Eu não como carne. (na negação, 'du' vira 'de')" }
+          {
+            "frase": "Je mange du pain et de la confiture.",
+            "traducao": "Eu como pão e geleia."
+          },
+          {
+            "frase": "Je bois du café.",
+            "traducao": "Eu bebo café."
+          },
+          {
+            "frase": "Je ne mange pas de viande.",
+            "traducao": "Eu não como carne. (na negação, 'du' vira 'de')"
+          }
         ]
       },
       "dialogo": {
         "situacao": "Um casal pede o jantar num restaurante parisiense.",
         "falas": [
-          { "quem": "A", "fala": "Bonsoir, vous avez choisi ?", "traducao": "Boa noite, já escolheram?" },
-          { "quem": "B", "fala": "Oui. Je voudrais le poulet rôti, s'il vous plaît.", "traducao": "Sim. Eu gostaria do frango assado, por favor." },
-          { "quem": "A", "fala": "Très bien. Et pour madame ?", "traducao": "Muito bem. E para a senhora?" },
-          { "quem": "B", "fala": "Pour moi, la salade niçoise.", "traducao": "Para mim, a salada niçoise." },
-          { "quem": "A", "fala": "Parfait. Et comme boisson ?", "traducao": "Perfeito. E para beber?" },
-          { "quem": "B", "fala": "Une carafe d'eau et un verre de vin rouge.", "traducao": "Uma jarra de água e um copo de vinho tinto." },
-          { "quem": "A", "fala": "Et en dessert ?", "traducao": "E de sobremesa?" },
-          { "quem": "B", "fala": "On verra plus tard, merci.", "traducao": "Vamos ver depois, obrigado." }
+          {
+            "quem": "A",
+            "fala": "Bonsoir, vous avez choisi ?",
+            "traducao": "Boa noite, já escolheram?"
+          },
+          {
+            "quem": "B",
+            "fala": "Oui. Je voudrais le poulet rôti, s'il vous plaît.",
+            "traducao": "Sim. Eu gostaria do frango assado, por favor."
+          },
+          {
+            "quem": "A",
+            "fala": "Très bien. Et pour madame ?",
+            "traducao": "Muito bem. E para a senhora?"
+          },
+          {
+            "quem": "B",
+            "fala": "Pour moi, la salade niçoise.",
+            "traducao": "Para mim, a salada niçoise."
+          },
+          {
+            "quem": "A",
+            "fala": "Parfait. Et comme boisson ?",
+            "traducao": "Perfeito. E para beber?"
+          },
+          {
+            "quem": "B",
+            "fala": "Une carafe d'eau et un verre de vin rouge.",
+            "traducao": "Uma jarra de água e um copo de vinho tinto."
+          },
+          {
+            "quem": "A",
+            "fala": "Et en dessert ?",
+            "traducao": "E de sobremesa?"
+          },
+          {
+            "quem": "B",
+            "fala": "On verra plus tard, merci.",
+            "traducao": "Vamos ver depois, obrigado."
+          }
         ]
       },
       "expressoes": [
-        { "expressao": "C'est la cerise sur le gâteau", "significado": "É a cereja do bolo, o toque final perfeito", "uso": "Quando algo bom completa uma situação que já estava boa" },
-        { "expressao": "Mettre de l'eau dans son vin", "significado": "Moderar, ceder um pouco", "uso": "Quando alguém precisa ser menos radical numa opinião ou exigência" },
-        { "expressao": "Avoir la banane", "significado": "Estar com um sorrisão de orelha a orelha", "uso": "Quando alguém está visivelmente feliz e sorridente" }
+        {
+          "expressao": "C'est la cerise sur le gâteau",
+          "significado": "É a cereja do bolo, o toque final perfeito",
+          "uso": "Quando algo bom completa uma situação que já estava boa"
+        },
+        {
+          "expressao": "Mettre de l'eau dans son vin",
+          "significado": "Moderar, ceder um pouco",
+          "uso": "Quando alguém precisa ser menos radical numa opinião ou exigência"
+        },
+        {
+          "expressao": "Avoir la banane",
+          "significado": "Estar com um sorrisão de orelha a orelha",
+          "uso": "Quando alguém está visivelmente feliz e sorridente"
+        }
       ],
       "cultura": "A gastronomia francesa foi declarada Patrimônio Cultural Imaterial da Humanidade pela UNESCO em 2010. A refeição francesa tradicional tem entrada (entrée), prato principal (plat), queijo (fromage) e sobremesa (dessert). O pão -- especialmente a baguete -- é parte indispensável de qualquer refeição, e a maioria dos franceses compra pão fresco todos os dias na boulangerie do bairro.",
       "musicas": [
-        { "titulo": "Bécane", "artista": "Yamê", "youtubeId": "XDPn2Ko6z2A", "trechoLetra": "Je suis sur ma bécane, oh-la-la", "traducaoTrecho": "Eu tô na minha moto, oh-la-la" }
+        {
+          "titulo": "Bécane",
+          "artista": "Yamê",
+          "youtubeId": "XDPn2Ko6z2A",
+          "trechoLetra": "Je suis sur ma bécane, oh-la-la",
+          "traducaoTrecho": "Eu tô na minha moto, oh-la-la"
+        }
       ],
       "quiz": [
-        { "tipo": "multipla", "pergunta": "\"J'ai soif\" quer dizer:", "opcoes": ["Estou com fome", "Estou com sede", "Estou com sono"], "certa": 1 },
-        { "tipo": "multipla", "pergunta": "\"Le petit-déjeuner\" é:", "opcoes": ["O almoço", "O jantar", "O café da manhã"], "certa": 2 },
-        { "tipo": "traduzir", "pergunta": "Como se pede a conta num restaurante?", "resposta": "l'addition, s'il vous plaît" },
-        { "tipo": "traduzir", "pergunta": "Como se diz \"saúde\" ao brindar?", "resposta": "santé" },
-        { "tipo": "multipla", "pergunta": "\"Sucré\" é o oposto de:", "opcoes": ["salé", "délicieux", "chaud"], "certa": 0 },
-        { "tipo": "traduzir", "pergunta": "Traduza: a sobremesa", "resposta": "le dessert" }
+        {
+          "tipo": "multipla",
+          "pergunta": "\"J'ai soif\" quer dizer:",
+          "opcoes": [
+            "Estou com fome",
+            "Estou com sede",
+            "Estou com sono"
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "\"Le petit-déjeuner\" é:",
+          "opcoes": [
+            "O almoço",
+            "O jantar",
+            "O café da manhã"
+          ],
+          "certa": 2
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "Como se pede a conta num restaurante?",
+          "resposta": "l'addition, s'il vous plaît"
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "Como se diz \"saúde\" ao brindar?",
+          "resposta": "santé"
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "\"Sucré\" é o oposto de:",
+          "opcoes": [
+            "salé",
+            "délicieux",
+            "chaud"
+          ],
+          "certa": 0
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "Traduza: a sobremesa",
+          "resposta": "le dessert"
+        }
       ]
     },
     {
@@ -330,20 +1205,90 @@
       "tema": "Marcar hora, dia da semana e mês.",
       "nivel": "A1",
       "vocabulario": [
-        { "palavra": "lundi, mardi, mercredi", "traducao": "segunda, terça, quarta", "exemplo": "Lundi, je travaille.", "exemploTraducao": "Segunda, eu trabalho." },
-        { "palavra": "jeudi, vendredi", "traducao": "quinta, sexta", "exemplo": "Vendredi soir, on sort.", "exemploTraducao": "Sexta à noite, a gente sai." },
-        { "palavra": "samedi, dimanche", "traducao": "sábado, domingo", "exemplo": "Le week-end, c'est samedi et dimanche.", "exemploTraducao": "O fim de semana é sábado e domingo." },
-        { "palavra": "aujourd'hui / demain / hier", "traducao": "hoje / amanhã / ontem", "exemplo": "Aujourd'hui il pleut.", "exemploTraducao": "Hoje está chovendo." },
-        { "palavra": "Quelle heure est-il ?", "traducao": "que horas são?", "exemplo": "Il est trois heures.", "exemploTraducao": "São três horas." },
-        { "palavra": "le matin / l'après-midi / le soir", "traducao": "de manhã / à tarde / à noite", "exemplo": "Je travaille le matin.", "exemploTraducao": "Eu trabalho de manhã." },
-        { "palavra": "janvier, février, mars", "traducao": "janeiro, fevereiro, março", "exemplo": "Mon anniversaire est en mars.", "exemploTraducao": "Meu aniversário é em março." },
-        { "palavra": "le jour / la semaine / le mois / l'année", "traducao": "o dia / a semana / o mês / o ano", "exemplo": "Toute la semaine.", "exemploTraducao": "A semana toda." },
-        { "palavra": "la nuit", "traducao": "a noite (o período de dormir, diferente de \"le soir\")", "exemplo": "Bonne nuit, je vais dormir.", "exemploTraducao": "Boa noite, vou dormir." },
-        { "palavra": "tôt / tard", "traducao": "cedo / tarde", "exemplo": "Je me lève tôt.", "exemploTraducao": "Eu acordo cedo." },
-        { "palavra": "maintenant / plus tard", "traducao": "agora / mais tarde", "exemplo": "On y va maintenant ?", "exemploTraducao": "Vamos agora?" },
-        { "palavra": "le printemps / l'été", "traducao": "a primavera / o verão", "exemplo": "J'adore l'été.", "exemploTraducao": "Eu adoro o verão." },
-        { "palavra": "l'automne / l'hiver", "traducao": "o outono / o inverno", "exemplo": "Il neige en hiver.", "exemploTraducao": "Neva no inverno." },
-        { "palavra": "Quelle est la date aujourd'hui ?", "traducao": "qual é a data hoje?", "exemplo": "C'est le douze mars.", "exemploTraducao": "É dia doze de março." }
+        {
+          "palavra": "lundi, mardi, mercredi",
+          "traducao": "segunda, terça, quarta",
+          "exemplo": "Lundi, je travaille.",
+          "exemploTraducao": "Segunda, eu trabalho."
+        },
+        {
+          "palavra": "jeudi, vendredi",
+          "traducao": "quinta, sexta",
+          "exemplo": "Vendredi soir, on sort.",
+          "exemploTraducao": "Sexta à noite, a gente sai."
+        },
+        {
+          "palavra": "samedi, dimanche",
+          "traducao": "sábado, domingo",
+          "exemplo": "Le week-end, c'est samedi et dimanche.",
+          "exemploTraducao": "O fim de semana é sábado e domingo."
+        },
+        {
+          "palavra": "aujourd'hui / demain / hier",
+          "traducao": "hoje / amanhã / ontem",
+          "exemplo": "Aujourd'hui il pleut.",
+          "exemploTraducao": "Hoje está chovendo."
+        },
+        {
+          "palavra": "Quelle heure est-il ?",
+          "traducao": "que horas são?",
+          "exemplo": "Il est trois heures.",
+          "exemploTraducao": "São três horas."
+        },
+        {
+          "palavra": "le matin / l'après-midi / le soir",
+          "traducao": "de manhã / à tarde / à noite",
+          "exemplo": "Je travaille le matin.",
+          "exemploTraducao": "Eu trabalho de manhã."
+        },
+        {
+          "palavra": "janvier, février, mars",
+          "traducao": "janeiro, fevereiro, março",
+          "exemplo": "Mon anniversaire est en mars.",
+          "exemploTraducao": "Meu aniversário é em março."
+        },
+        {
+          "palavra": "le jour / la semaine / le mois / l'année",
+          "traducao": "o dia / a semana / o mês / o ano",
+          "exemplo": "Toute la semaine.",
+          "exemploTraducao": "A semana toda."
+        },
+        {
+          "palavra": "la nuit",
+          "traducao": "a noite (o período de dormir, diferente de \"le soir\")",
+          "exemplo": "Bonne nuit, je vais dormir.",
+          "exemploTraducao": "Boa noite, vou dormir."
+        },
+        {
+          "palavra": "tôt / tard",
+          "traducao": "cedo / tarde",
+          "exemplo": "Je me lève tôt.",
+          "exemploTraducao": "Eu acordo cedo."
+        },
+        {
+          "palavra": "maintenant / plus tard",
+          "traducao": "agora / mais tarde",
+          "exemplo": "On y va maintenant ?",
+          "exemploTraducao": "Vamos agora?"
+        },
+        {
+          "palavra": "le printemps / l'été",
+          "traducao": "a primavera / o verão",
+          "exemplo": "J'adore l'été.",
+          "exemploTraducao": "Eu adoro o verão."
+        },
+        {
+          "palavra": "l'automne / l'hiver",
+          "traducao": "o outono / o inverno",
+          "exemplo": "Il neige en hiver.",
+          "exemploTraducao": "Neva no inverno."
+        },
+        {
+          "palavra": "Quelle est la date aujourd'hui ?",
+          "traducao": "qual é a data hoje?",
+          "exemplo": "C'est le douze mars.",
+          "exemploTraducao": "É dia doze de março."
+        }
       ],
       "associacao": "Os dias da semana em francês terminam quase todos em \"-di\" (do latim \"dies\", dia): lunDI, marDI, mercreDI, jeuDI, venDREDI, samedi. Só domingo (dimanche) foge do padrão — vem de \"dia do Senhor\". As estações seguem o mesmo padrão do português: printemps/primavera, été/estio (verão), automne/outono, hiver/inverno — todas vêm do latim, então soam parecidas.",
       "dica": "Para dizer as horas, o francês formal usa até 24h: \"il est quatorze heures\" são 14h. No dia a dia falado, \"il est deux heures\" (de la tarde já fica implícito pelo contexto). \"Le soir\" é o período da noite em que ainda se está acordado e ativo; \"la nuit\" é a noite de dormir — \"bonsoir\" usa \"soir\", \"bonne nuit\" usa \"nuit\", nunca o contrário.",
@@ -351,36 +1296,124 @@
         "titulo": "As preposições de tempo: en, au, à",
         "explicacao": "Para meses e anos, usa-se 'en': 'en mars', 'en 2024'. Para estações, usa-se 'en' (en été, en automne, en hiver), exceto a primavera, que usa 'au': 'au printemps'. Para horas, usa-se 'à': 'à huit heures'. Para dias da semana, não se usa preposição: 'lundi, je travaille'.",
         "exemplos": [
-          { "frase": "Je pars en juillet.", "traducao": "Eu viajo em julho." },
-          { "frase": "Il arrive à trois heures.", "traducao": "Ele chega às três horas." },
-          { "frase": "Au printemps, il fait beau.", "traducao": "Na primavera, faz bom tempo." }
+          {
+            "frase": "Je pars en juillet.",
+            "traducao": "Eu viajo em julho."
+          },
+          {
+            "frase": "Il arrive à trois heures.",
+            "traducao": "Ele chega às três horas."
+          },
+          {
+            "frase": "Au printemps, il fait beau.",
+            "traducao": "Na primavera, faz bom tempo."
+          }
         ]
       },
       "dialogo": {
         "situacao": "Dois amigos combinam de se encontrar no fim de semana.",
         "falas": [
-          { "quem": "A", "fala": "Tu es libre samedi ?", "traducao": "Você está livre no sábado?" },
-          { "quem": "B", "fala": "Le matin, oui. L'après-midi, non.", "traducao": "De manhã, sim. De tarde, não." },
-          { "quem": "A", "fala": "On se retrouve à dix heures ?", "traducao": "A gente se encontra às dez?" },
-          { "quem": "B", "fala": "C'est un peu tôt. À onze heures ?", "traducao": "É um pouco cedo. Às onze?" },
-          { "quem": "A", "fala": "D'accord. On se retrouve où ?", "traducao": "Combinado. A gente se encontra onde?" },
-          { "quem": "B", "fala": "Au café en face de la gare.", "traducao": "No café em frente à estação." },
-          { "quem": "A", "fala": "Parfait. À samedi, alors !", "traducao": "Perfeito. Até sábado, então!" },
-          { "quem": "B", "fala": "À samedi ! Bonne soirée !", "traducao": "Até sábado! Boa noite!" }
+          {
+            "quem": "A",
+            "fala": "Tu es libre samedi ?",
+            "traducao": "Você está livre no sábado?"
+          },
+          {
+            "quem": "B",
+            "fala": "Le matin, oui. L'après-midi, non.",
+            "traducao": "De manhã, sim. De tarde, não."
+          },
+          {
+            "quem": "A",
+            "fala": "On se retrouve à dix heures ?",
+            "traducao": "A gente se encontra às dez?"
+          },
+          {
+            "quem": "B",
+            "fala": "C'est un peu tôt. À onze heures ?",
+            "traducao": "É um pouco cedo. Às onze?"
+          },
+          {
+            "quem": "A",
+            "fala": "D'accord. On se retrouve où ?",
+            "traducao": "Combinado. A gente se encontra onde?"
+          },
+          {
+            "quem": "B",
+            "fala": "Au café en face de la gare.",
+            "traducao": "No café em frente à estação."
+          },
+          {
+            "quem": "A",
+            "fala": "Parfait. À samedi, alors !",
+            "traducao": "Perfeito. Até sábado, então!"
+          },
+          {
+            "quem": "B",
+            "fala": "À samedi ! Bonne soirée !",
+            "traducao": "Até sábado! Boa noite!"
+          }
         ]
       },
       "expressoes": [
-        { "expressao": "Il fait un temps de chien", "significado": "O tempo está horrível (literalmente 'tempo de cachorro')", "uso": "Quando chove muito ou o clima está péssimo" },
-        { "expressao": "Mieux vaut tard que jamais", "significado": "Antes tarde do que nunca", "uso": "Quando algo demorou mas finalmente aconteceu" }
+        {
+          "expressao": "Il fait un temps de chien",
+          "significado": "O tempo está horrível (literalmente 'tempo de cachorro')",
+          "uso": "Quando chove muito ou o clima está péssimo"
+        },
+        {
+          "expressao": "Mieux vaut tard que jamais",
+          "significado": "Antes tarde do que nunca",
+          "uso": "Quando algo demorou mas finalmente aconteceu"
+        }
       ],
       "cultura": "A França usa o horário de 24 horas no dia a dia, especialmente em contextos formais, horários de trem e compromissos. O país adota o horário de verão (heure d'été), adiantando os relógios uma hora na primavera. Os franceses costumam jantar mais tarde que os brasileiros, geralmente entre 19h30 e 21h, e o almoço (déjeuner) é uma refeição importante, com muitos trabalhadores fazendo uma pausa de uma hora ou mais.",
       "quiz": [
-        { "tipo": "multipla", "pergunta": "Qual dia da semana NÃO termina em \"-di\"?", "opcoes": ["lundi", "dimanche", "mardi"], "certa": 1 },
-        { "tipo": "multipla", "pergunta": "\"Hier\" quer dizer:", "opcoes": ["amanhã", "ontem", "hoje"], "certa": 1 },
-        { "tipo": "traduzir", "pergunta": "Traduza: que horas são?", "resposta": "quelle heure est-il" },
-        { "tipo": "multipla", "pergunta": "Qual a diferença entre \"le soir\" e \"la nuit\"?", "opcoes": ["Nenhuma, são sinônimos", "\"Soir\" é o início da noite acordado; \"nuit\" é a noite de dormir", "\"Nuit\" é de manhã"], "certa": 1 },
-        { "tipo": "traduzir", "pergunta": "Traduza: cedo", "resposta": "tôt" },
-        { "tipo": "traduzir", "pergunta": "Traduza: o inverno", "resposta": "l'hiver" }
+        {
+          "tipo": "multipla",
+          "pergunta": "Qual dia da semana NÃO termina em \"-di\"?",
+          "opcoes": [
+            "lundi",
+            "dimanche",
+            "mardi"
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "\"Hier\" quer dizer:",
+          "opcoes": [
+            "amanhã",
+            "ontem",
+            "hoje"
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "Traduza: que horas são?",
+          "resposta": "quelle heure est-il"
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "Qual a diferença entre \"le soir\" e \"la nuit\"?",
+          "opcoes": [
+            "Nenhuma, são sinônimos",
+            "\"Soir\" é o início da noite acordado; \"nuit\" é a noite de dormir",
+            "\"Nuit\" é de manhã"
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "Traduza: cedo",
+          "resposta": "tôt"
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "Traduza: o inverno",
+          "resposta": "l'hiver"
+        }
       ]
     },
     {
@@ -389,18 +1422,78 @@
       "tema": "Os três verbos que carregam a maior parte das frases do dia a dia.",
       "nivel": "A1",
       "vocabulario": [
-        { "palavra": "je suis, tu es, il/elle est", "traducao": "eu sou/estou, você é/está, ele/ela é/está (verbo ÊTRE)", "exemplo": "Je suis fatigué.", "exemploTraducao": "Eu estou cansado." },
-        { "palavra": "nous sommes, vous êtes, ils/elles sont", "traducao": "nós somos, vocês são, eles/elas são", "exemplo": "Nous sommes prêts.", "exemploTraducao": "Nós estamos prontos." },
-        { "palavra": "j'ai, tu as, il/elle a", "traducao": "eu tenho, você tem, ele/ela tem (verbo AVOIR)", "exemplo": "J'ai un chat.", "exemploTraducao": "Eu tenho um gato." },
-        { "palavra": "nous avons, vous avez, ils/elles ont", "traducao": "nós temos, vocês têm, eles/elas têm", "exemplo": "Ils ont de la chance.", "exemploTraducao": "Eles têm sorte." },
-        { "palavra": "je vais, tu vas, il/elle va", "traducao": "eu vou, você vai, ele/ela vai (verbo ALLER)", "exemplo": "Je vais au marché.", "exemploTraducao": "Eu vou ao mercado." },
-        { "palavra": "nous allons, vous allez, ils/elles vont", "traducao": "nós vamos, vocês vão, eles/elas vão", "exemplo": "On y va !", "exemploTraducao": "Vamos lá!" },
-        { "palavra": "il y a", "traducao": "há / tem (existência) — vem do verbo avoir", "exemplo": "Il y a un problème.", "exemploTraducao": "Tem um problema." },
-        { "palavra": "avoir besoin de", "traducao": "precisar de", "exemplo": "J'ai besoin d'aide.", "exemploTraducao": "Eu preciso de ajuda." },
-        { "palavra": "avoir envie de", "traducao": "estar com vontade de / sentir vontade de", "exemplo": "J'ai envie de dormir.", "exemploTraducao": "Estou com vontade de dormir." },
-        { "palavra": "avoir raison / avoir tort", "traducao": "estar certo / estar errado", "exemplo": "Tu as raison.", "exemploTraducao": "Você está certo." },
-        { "palavra": "avoir peur de", "traducao": "ter medo de", "exemplo": "Elle a peur des araignées.", "exemploTraducao": "Ela tem medo de aranhas." },
-        { "palavra": "je ne suis pas / je n'ai pas", "traducao": "eu não sou/estou / eu não tenho (negação)", "exemplo": "Je ne suis pas prêt.", "exemploTraducao": "Eu não estou pronto." }
+        {
+          "palavra": "je suis, tu es, il/elle est",
+          "traducao": "eu sou/estou, você é/está, ele/ela é/está (verbo ÊTRE)",
+          "exemplo": "Je suis fatigué.",
+          "exemploTraducao": "Eu estou cansado."
+        },
+        {
+          "palavra": "nous sommes, vous êtes, ils/elles sont",
+          "traducao": "nós somos, vocês são, eles/elas são",
+          "exemplo": "Nous sommes prêts.",
+          "exemploTraducao": "Nós estamos prontos."
+        },
+        {
+          "palavra": "j'ai, tu as, il/elle a",
+          "traducao": "eu tenho, você tem, ele/ela tem (verbo AVOIR)",
+          "exemplo": "J'ai un chat.",
+          "exemploTraducao": "Eu tenho um gato."
+        },
+        {
+          "palavra": "nous avons, vous avez, ils/elles ont",
+          "traducao": "nós temos, vocês têm, eles/elas têm",
+          "exemplo": "Ils ont de la chance.",
+          "exemploTraducao": "Eles têm sorte."
+        },
+        {
+          "palavra": "je vais, tu vas, il/elle va",
+          "traducao": "eu vou, você vai, ele/ela vai (verbo ALLER)",
+          "exemplo": "Je vais au marché.",
+          "exemploTraducao": "Eu vou ao mercado."
+        },
+        {
+          "palavra": "nous allons, vous allez, ils/elles vont",
+          "traducao": "nós vamos, vocês vão, eles/elas vão",
+          "exemplo": "On y va !",
+          "exemploTraducao": "Vamos lá!"
+        },
+        {
+          "palavra": "il y a",
+          "traducao": "há / tem (existência) — vem do verbo avoir",
+          "exemplo": "Il y a un problème.",
+          "exemploTraducao": "Tem um problema."
+        },
+        {
+          "palavra": "avoir besoin de",
+          "traducao": "precisar de",
+          "exemplo": "J'ai besoin d'aide.",
+          "exemploTraducao": "Eu preciso de ajuda."
+        },
+        {
+          "palavra": "avoir envie de",
+          "traducao": "estar com vontade de / sentir vontade de",
+          "exemplo": "J'ai envie de dormir.",
+          "exemploTraducao": "Estou com vontade de dormir."
+        },
+        {
+          "palavra": "avoir raison / avoir tort",
+          "traducao": "estar certo / estar errado",
+          "exemplo": "Tu as raison.",
+          "exemploTraducao": "Você está certo."
+        },
+        {
+          "palavra": "avoir peur de",
+          "traducao": "ter medo de",
+          "exemplo": "Elle a peur des araignées.",
+          "exemploTraducao": "Ela tem medo de aranhas."
+        },
+        {
+          "palavra": "je ne suis pas / je n'ai pas",
+          "traducao": "eu não sou/estou / eu não tenho (negação)",
+          "exemplo": "Je ne suis pas prêt.",
+          "exemploTraducao": "Eu não estou pronto."
+        }
       ],
       "associacao": "\"Être\" (ser/estar) e \"avoir\" (ter) são irregulares em TODAS as línguas latinas — não tem jeito, é decorar essas seis formas de cada um de uma vez, porque elas abrem praticamente toda frase. Repare que \"avoir\" não serve só para \"ter algo\": ele também empresta seu corpo para expressões inteiras — medo, vontade, razão, necessidade — igual acontece em português com \"ter fome\" ou \"ter sorte\".",
       "dica": "\"Aller\" (ir) também serve para o FUTURO próximo, como em português: \"je vais manger\" é \"eu vou comer\" — mesmíssima construção. Para negar, o francês formal usa duas partes ao redor do verbo: \"ne\" antes e \"pas\" depois (\"je ne suis pas\"); na fala corrida, o \"ne\" costuma sumir e sobra só \"pas\".",
@@ -408,39 +1501,138 @@
         "titulo": "A conjugação dos verbos em -er",
         "explicacao": "A maioria dos verbos franceses termina em '-er' (parler, manger, habiter). A conjugação no presente é regular: tira-se o '-er' e acrescentam-se as terminações -e, -es, -e, -ons, -ez, -ent. Na fala, as formas je, tu, il e ils soam iguais -- só 'nous' e 'vous' são diferentes.",
         "exemplos": [
-          { "frase": "Je parle, tu parles, il parle, nous parlons, vous parlez, ils parlent", "traducao": "Eu falo, você fala, ele fala, nós falamos, vocês falam, eles falam" },
-          { "frase": "Elle habite à Paris.", "traducao": "Ela mora em Paris." },
-          { "frase": "Nous mangeons ensemble.", "traducao": "Nós comemos juntos. ('manger' ganha um 'e' extra antes de '-ons')" }
+          {
+            "frase": "Je parle, tu parles, il parle, nous parlons, vous parlez, ils parlent",
+            "traducao": "Eu falo, você fala, ele fala, nós falamos, vocês falam, eles falam"
+          },
+          {
+            "frase": "Elle habite à Paris.",
+            "traducao": "Ela mora em Paris."
+          },
+          {
+            "frase": "Nous mangeons ensemble.",
+            "traducao": "Nós comemos juntos. ('manger' ganha um 'e' extra antes de '-ons')"
+          }
         ]
       },
       "dialogo": {
         "situacao": "Um colega pergunta sobre a rotina do outro no escritório.",
         "falas": [
-          { "quem": "A", "fala": "Tu travailles demain ?", "traducao": "Você trabalha amanhã?" },
-          { "quem": "B", "fala": "Oui, je travaille le matin.", "traducao": "Sim, eu trabalho de manhã." },
-          { "quem": "A", "fala": "Tu vas au bureau comment ?", "traducao": "Você vai ao escritório como?" },
-          { "quem": "B", "fala": "J'ai un vélo, je vais à vélo.", "traducao": "Eu tenho uma bicicleta, vou de bicicleta." },
-          { "quem": "A", "fala": "Tu as de la chance ! Moi, je suis en métro.", "traducao": "Que sorte! Eu vou de metrô." },
-          { "quem": "B", "fala": "On déjeune ensemble demain ?", "traducao": "Almoçamos juntos amanhã?" },
-          { "quem": "A", "fala": "Oui, bonne idée ! On y va à midi.", "traducao": "Sim, boa ideia! Vamos ao meio-dia." }
+          {
+            "quem": "A",
+            "fala": "Tu travailles demain ?",
+            "traducao": "Você trabalha amanhã?"
+          },
+          {
+            "quem": "B",
+            "fala": "Oui, je travaille le matin.",
+            "traducao": "Sim, eu trabalho de manhã."
+          },
+          {
+            "quem": "A",
+            "fala": "Tu vas au bureau comment ?",
+            "traducao": "Você vai ao escritório como?"
+          },
+          {
+            "quem": "B",
+            "fala": "J'ai un vélo, je vais à vélo.",
+            "traducao": "Eu tenho uma bicicleta, vou de bicicleta."
+          },
+          {
+            "quem": "A",
+            "fala": "Tu as de la chance ! Moi, je suis en métro.",
+            "traducao": "Que sorte! Eu vou de metrô."
+          },
+          {
+            "quem": "B",
+            "fala": "On déjeune ensemble demain ?",
+            "traducao": "Almoçamos juntos amanhã?"
+          },
+          {
+            "quem": "A",
+            "fala": "Oui, bonne idée ! On y va à midi.",
+            "traducao": "Sim, boa ideia! Vamos ao meio-dia."
+          }
         ]
       },
       "expressoes": [
-        { "expressao": "Aller droit au but", "significado": "Ir direto ao ponto", "uso": "Quando alguém fala sem rodeios, sem enrolação" },
-        { "expressao": "Avoir le cafard", "significado": "Estar na fossa, deprimido", "uso": "Para descrever tristeza ou desânimo passageiro" },
-        { "expressao": "Être dans la lune", "significado": "Estar no mundo da lua, distraído", "uso": "Quando alguém não presta atenção no que acontece ao redor" }
+        {
+          "expressao": "Aller droit au but",
+          "significado": "Ir direto ao ponto",
+          "uso": "Quando alguém fala sem rodeios, sem enrolação"
+        },
+        {
+          "expressao": "Avoir le cafard",
+          "significado": "Estar na fossa, deprimido",
+          "uso": "Para descrever tristeza ou desânimo passageiro"
+        },
+        {
+          "expressao": "Être dans la lune",
+          "significado": "Estar no mundo da lua, distraído",
+          "uso": "Quando alguém não presta atenção no que acontece ao redor"
+        }
       ],
       "cultura": "O francês é uma língua oficial da ONU, da União Europeia, da OTAN e de várias organizações internacionais. A conjugação verbal é uma das maiores dificuldades do idioma, com mais de vinte tempos verbais. No entanto, no dia a dia falado, os franceses usam principalmente o presente (présent), o passado composto (passé composé) e o futuro próximo com 'aller' (futur proche) -- exatamente como em português usamos 'eu vou fazer'.",
       "musicas": [
-        { "titulo": "Compliqué", "artista": "Dadju", "youtubeId": "bFEP26jCtsQ", "trechoLetra": "C'est compliqué entre nous mais j'aime ça", "traducaoTrecho": "É complicado entre nós mas eu gosto disso" }
+        {
+          "titulo": "Compliqué",
+          "artista": "Dadju",
+          "youtubeId": "bFEP26jCtsQ",
+          "trechoLetra": "C'est compliqué entre nous mais j'aime ça",
+          "traducaoTrecho": "É complicado entre nós mas eu gosto disso"
+        }
       ],
       "quiz": [
-        { "tipo": "multipla", "pergunta": "\"Nous avons\" quer dizer:", "opcoes": ["Nós somos", "Nós temos", "Nós vamos"], "certa": 1 },
-        { "tipo": "multipla", "pergunta": "\"Je vais manger\" significa:", "opcoes": ["Eu como", "Eu vou comer", "Eu comi"], "certa": 1 },
-        { "tipo": "traduzir", "pergunta": "Como se diz \"eles têm\" em francês?", "resposta": "ils ont" },
-        { "tipo": "multipla", "pergunta": "\"J'ai besoin d'aide\" quer dizer:", "opcoes": ["Eu tenho ajuda", "Eu preciso de ajuda", "Eu dou ajuda"], "certa": 1 },
-        { "tipo": "traduzir", "pergunta": "Traduza: você está certo", "resposta": "tu as raison" },
-        { "tipo": "multipla", "pergunta": "\"Il y a un problème\" usa qual verbo por trás?", "opcoes": ["être", "aller", "avoir"], "certa": 2 }
+        {
+          "tipo": "multipla",
+          "pergunta": "\"Nous avons\" quer dizer:",
+          "opcoes": [
+            "Nós somos",
+            "Nós temos",
+            "Nós vamos"
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "\"Je vais manger\" significa:",
+          "opcoes": [
+            "Eu como",
+            "Eu vou comer",
+            "Eu comi"
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "Como se diz \"eles têm\" em francês?",
+          "resposta": "ils ont"
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "\"J'ai besoin d'aide\" quer dizer:",
+          "opcoes": [
+            "Eu tenho ajuda",
+            "Eu preciso de ajuda",
+            "Eu dou ajuda"
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "Traduza: você está certo",
+          "resposta": "tu as raison"
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "\"Il y a un problème\" usa qual verbo por trás?",
+          "opcoes": [
+            "être",
+            "aller",
+            "avoir"
+          ],
+          "certa": 2
+        }
       ]
     },
     {
@@ -449,20 +1641,90 @@
       "tema": "O que resolve na rua, no café e numa conversa curta.",
       "nivel": "A1",
       "vocabulario": [
-        { "palavra": "Excusez-moi", "traducao": "com licença / desculpe", "exemplo": "Excusez-moi, où est la gare ?", "exemploTraducao": "Com licença, onde fica a estação?" },
-        { "palavra": "Je ne comprends pas", "traducao": "eu não entendo", "exemplo": "Désolé, je ne comprends pas.", "exemploTraducao": "Desculpe, eu não entendo." },
-        { "palavra": "Vous pouvez répéter ?", "traducao": "você pode repetir?", "exemplo": "Plus lentement, s'il vous plaît ?", "exemploTraducao": "Mais devagar, por favor?" },
-        { "palavra": "Combien ça coûte ?", "traducao": "quanto custa?", "exemplo": "Combien ça coûte, s'il vous plaît ?", "exemploTraducao": "Quanto custa, por favor?" },
-        { "palavra": "Où est... ?", "traducao": "onde fica...?", "exemplo": "Où sont les toilettes ?", "exemploTraducao": "Onde fica o banheiro?" },
-        { "palavra": "Je voudrais...", "traducao": "eu gostaria de...", "exemplo": "Je voudrais un café, s'il vous plaît.", "exemploTraducao": "Eu gostaria de um café, por favor." },
-        { "palavra": "C'est bon !", "traducao": "está gostoso! / está bom!", "exemplo": "Mmm, c'est très bon.", "exemploTraducao": "Mmm, está muito bom." },
-        { "palavra": "À bientôt", "traducao": "até breve", "exemplo": "Merci, à bientôt !", "exemploTraducao": "Obrigado, até breve!" },
-        { "palavra": "Pas de problème", "traducao": "sem problema", "exemplo": "Pas de problème, prends ton temps.", "exemploTraducao": "Sem problema, fique à vontade." },
-        { "palavra": "D'accord", "traducao": "de acordo / combinado", "exemplo": "D'accord, à demain !", "exemploTraducao": "Combinado, até amanhã!" },
-        { "palavra": "Peut-être", "traducao": "talvez", "exemplo": "Peut-être demain.", "exemploTraducao": "Talvez amanhã." },
-        { "palavra": "Je suis désolé(e)", "traducao": "eu sinto muito / desculpe", "exemplo": "Je suis désolé pour le retard.", "exemploTraducao": "Desculpe pelo atraso." },
-        { "palavra": "Bon appétit !", "traducao": "bom apetite!", "exemplo": "Bon appétit, tout le monde !", "exemploTraducao": "Bom apetite, pessoal!" },
-        { "palavra": "Bonne chance !", "traducao": "boa sorte!", "exemplo": "Bonne chance pour l'examen !", "exemploTraducao": "Boa sorte na prova!" }
+        {
+          "palavra": "Excusez-moi",
+          "traducao": "com licença / desculpe",
+          "exemplo": "Excusez-moi, où est la gare ?",
+          "exemploTraducao": "Com licença, onde fica a estação?"
+        },
+        {
+          "palavra": "Je ne comprends pas",
+          "traducao": "eu não entendo",
+          "exemplo": "Désolé, je ne comprends pas.",
+          "exemploTraducao": "Desculpe, eu não entendo."
+        },
+        {
+          "palavra": "Vous pouvez répéter ?",
+          "traducao": "você pode repetir?",
+          "exemplo": "Plus lentement, s'il vous plaît ?",
+          "exemploTraducao": "Mais devagar, por favor?"
+        },
+        {
+          "palavra": "Combien ça coûte ?",
+          "traducao": "quanto custa?",
+          "exemplo": "Combien ça coûte, s'il vous plaît ?",
+          "exemploTraducao": "Quanto custa, por favor?"
+        },
+        {
+          "palavra": "Où est... ?",
+          "traducao": "onde fica...?",
+          "exemplo": "Où sont les toilettes ?",
+          "exemploTraducao": "Onde fica o banheiro?"
+        },
+        {
+          "palavra": "Je voudrais...",
+          "traducao": "eu gostaria de...",
+          "exemplo": "Je voudrais un café, s'il vous plaît.",
+          "exemploTraducao": "Eu gostaria de um café, por favor."
+        },
+        {
+          "palavra": "C'est bon !",
+          "traducao": "está gostoso! / está bom!",
+          "exemplo": "Mmm, c'est très bon.",
+          "exemploTraducao": "Mmm, está muito bom."
+        },
+        {
+          "palavra": "À bientôt",
+          "traducao": "até breve",
+          "exemplo": "Merci, à bientôt !",
+          "exemploTraducao": "Obrigado, até breve!"
+        },
+        {
+          "palavra": "Pas de problème",
+          "traducao": "sem problema",
+          "exemplo": "Pas de problème, prends ton temps.",
+          "exemploTraducao": "Sem problema, fique à vontade."
+        },
+        {
+          "palavra": "D'accord",
+          "traducao": "de acordo / combinado",
+          "exemplo": "D'accord, à demain !",
+          "exemploTraducao": "Combinado, até amanhã!"
+        },
+        {
+          "palavra": "Peut-être",
+          "traducao": "talvez",
+          "exemplo": "Peut-être demain.",
+          "exemploTraducao": "Talvez amanhã."
+        },
+        {
+          "palavra": "Je suis désolé(e)",
+          "traducao": "eu sinto muito / desculpe",
+          "exemplo": "Je suis désolé pour le retard.",
+          "exemploTraducao": "Desculpe pelo atraso."
+        },
+        {
+          "palavra": "Bon appétit !",
+          "traducao": "bom apetite!",
+          "exemplo": "Bon appétit, tout le monde !",
+          "exemploTraducao": "Bom apetite, pessoal!"
+        },
+        {
+          "palavra": "Bonne chance !",
+          "traducao": "boa sorte!",
+          "exemplo": "Bonne chance pour l'examen !",
+          "exemploTraducao": "Boa sorte na prova!"
+        }
       ],
       "associacao": "\"Je voudrais\" é sempre mais educado que \"je veux\" (eu quero) — é o \"eu gostaria\" do francês, o jeito certo de pedir qualquer coisa numa loja ou café. \"Bon appétit\" e \"bonne chance\" seguem o mesmo padrão: \"bon\" na frente de palavra masculina, \"bonne\" na frente de palavra feminina — o \"e\" a mais é a pista do gênero.",
       "dica": "Comece toda frase com estranhos por \"Excusez-moi\" ou \"Bonjour\" — pular a saudação soa mal-educado em francês, mesmo perguntando algo rápido na rua. \"D'accord\" é a resposta mais curta e usada para \"combinado\"/\"tá bom\" — funciona sozinha como resposta a quase qualquer proposta.",
@@ -470,28 +1732,81 @@
         "titulo": "A negação: ne... pas",
         "explicacao": "Para negar em francês, coloca-se 'ne' antes do verbo e 'pas' depois: 'Je ne sais pas' (eu não sei). Na fala informal, o 'ne' quase sempre desaparece: 'Je sais pas'. Existem outras formas de negação: 'ne... jamais' (nunca), 'ne... rien' (nada), 'ne... plus' (não mais).",
         "exemplos": [
-          { "frase": "Je ne parle pas anglais.", "traducao": "Eu não falo inglês." },
-          { "frase": "Il n'y a rien ici.", "traducao": "Não tem nada aqui." },
-          { "frase": "Elle ne travaille plus.", "traducao": "Ela não trabalha mais." }
+          {
+            "frase": "Je ne parle pas anglais.",
+            "traducao": "Eu não falo inglês."
+          },
+          {
+            "frase": "Il n'y a rien ici.",
+            "traducao": "Não tem nada aqui."
+          },
+          {
+            "frase": "Elle ne travaille plus.",
+            "traducao": "Ela não trabalha mais."
+          }
         ]
       },
       "dialogo": {
         "situacao": "Um turista pede informações a um passante na rua.",
         "falas": [
-          { "quem": "A", "fala": "Excusez-moi, où est la station de métro ?", "traducao": "Com licença, onde fica a estação de metrô?" },
-          { "quem": "B", "fala": "C'est tout droit, à cinq minutes.", "traducao": "É em frente, a cinco minutos." },
-          { "quem": "A", "fala": "Merci ! Et il y a une pharmacie près d'ici ?", "traducao": "Obrigado! E tem uma farmácia perto daqui?" },
-          { "quem": "B", "fala": "Oui, à gauche après le feu rouge.", "traducao": "Sim, à esquerda depois do semáforo." },
-          { "quem": "A", "fala": "D'accord. Vous parlez anglais ?", "traducao": "Tá bom. O senhor fala inglês?" },
-          { "quem": "B", "fala": "Un peu, mais je préfère le français !", "traducao": "Um pouco, mas prefiro o francês!" },
-          { "quem": "A", "fala": "Pas de problème, je comprends. Merci beaucoup !", "traducao": "Sem problema, eu entendo. Muito obrigado!" },
-          { "quem": "B", "fala": "De rien. Bonne journée !", "traducao": "De nada. Bom dia!" }
+          {
+            "quem": "A",
+            "fala": "Excusez-moi, où est la station de métro ?",
+            "traducao": "Com licença, onde fica a estação de metrô?"
+          },
+          {
+            "quem": "B",
+            "fala": "C'est tout droit, à cinq minutes.",
+            "traducao": "É em frente, a cinco minutos."
+          },
+          {
+            "quem": "A",
+            "fala": "Merci ! Et il y a une pharmacie près d'ici ?",
+            "traducao": "Obrigado! E tem uma farmácia perto daqui?"
+          },
+          {
+            "quem": "B",
+            "fala": "Oui, à gauche après le feu rouge.",
+            "traducao": "Sim, à esquerda depois do semáforo."
+          },
+          {
+            "quem": "A",
+            "fala": "D'accord. Vous parlez anglais ?",
+            "traducao": "Tá bom. O senhor fala inglês?"
+          },
+          {
+            "quem": "B",
+            "fala": "Un peu, mais je préfère le français !",
+            "traducao": "Um pouco, mas prefiro o francês!"
+          },
+          {
+            "quem": "A",
+            "fala": "Pas de problème, je comprends. Merci beaucoup !",
+            "traducao": "Sem problema, eu entendo. Muito obrigado!"
+          },
+          {
+            "quem": "B",
+            "fala": "De rien. Bonne journée !",
+            "traducao": "De nada. Bom dia!"
+          }
         ]
       },
       "expressoes": [
-        { "expressao": "C'est la vie", "significado": "É a vida, fazer o quê", "uso": "Quando algo não sai como planejado e a gente aceita" },
-        { "expressao": "Coup de foudre", "significado": "Amor à primeira vista (literalmente 'golpe de raio')", "uso": "Quando alguém se apaixona instantaneamente por outra pessoa" },
-        { "expressao": "Oh là là", "significado": "Expressão de surpresa, positiva ou negativa", "uso": "Reação espontânea a qualquer coisa surpreendente no dia a dia" }
+        {
+          "expressao": "C'est la vie",
+          "significado": "É a vida, fazer o quê",
+          "uso": "Quando algo não sai como planejado e a gente aceita"
+        },
+        {
+          "expressao": "Coup de foudre",
+          "significado": "Amor à primeira vista (literalmente 'golpe de raio')",
+          "uso": "Quando alguém se apaixona instantaneamente por outra pessoa"
+        },
+        {
+          "expressao": "Oh là là",
+          "significado": "Expressão de surpresa, positiva ou negativa",
+          "uso": "Reação espontânea a qualquer coisa surpreendente no dia a dia"
+        }
       ],
       "cultura": "Os franceses valorizam muito a polidez no dia a dia. Sempre se começa uma interação com 'Bonjour' ou 'Bonsoir', mesmo em lojas e restaurantes -- pular a saudação é considerado grosseiro. O 'vouvoiement' (uso do 'vous') é obrigatório com desconhecidos, e a passagem para o 'tutoiement' (uso do 'tu') geralmente é proposta pela pessoa mais velha ou de posição superior. Expressões como 'je voudrais' em vez de 'je veux' mostram educação e são esperadas.",
       "cancao": {
@@ -500,16 +1815,87 @@
         "letra": "Sur le pont d'Avignon,\nOn y danse, on y danse,\nSur le pont d'Avignon\nOn y danse tous en rond.\n\nLes beaux messieurs font comme ça,\nEt puis encore comme ça.\n\nSur le pont d'Avignon,\nOn y danse, on y danse,\nSur le pont d'Avignon\nOn y danse tous en rond.\n\nLes belles dames font comme ça,\nEt puis encore comme ça."
       },
       "musicas": [
-        { "titulo": "Bruxelles je t'aime", "artista": "Angèle", "youtubeId": "a79iLjV-HKw", "trechoLetra": "Bruxelles, je t'aime, Bruxelles, je t'aime", "traducaoTrecho": "Bruxelas, eu te amo, Bruxelas, eu te amo" }
+        {
+          "titulo": "Bruxelles je t'aime",
+          "artista": "Angèle",
+          "youtubeId": "a79iLjV-HKw",
+          "trechoLetra": "Bruxelles, je t'aime, Bruxelles, je t'aime",
+          "traducaoTrecho": "Bruxelas, eu te amo, Bruxelas, eu te amo"
+        }
       ],
       "quiz": [
-        { "tipo": "multipla", "pergunta": "Qual é o jeito mais educado de pedir algo?", "opcoes": ["Je veux un café", "Je voudrais un café", "Donnez-moi un café"], "certa": 1 },
-        { "tipo": "multipla", "pergunta": "\"Combien ça coûte ?\" pergunta:", "opcoes": ["Onde fica", "Quanto custa", "Que horas são"], "certa": 1 },
-        { "tipo": "traduzir", "pergunta": "Traduza: eu não entendo", "resposta": "je ne comprends pas" },
-        { "tipo": "traduzir", "pergunta": "O que se diz antes de começar a comer?", "resposta": "bon appétit" },
-        { "tipo": "multipla", "pergunta": "\"Peut-être\" quer dizer:", "opcoes": ["Com certeza", "Talvez", "Nunca"], "certa": 1 },
-        { "tipo": "traduzir", "pergunta": "Traduza: sem problema", "resposta": "pas de problème" }
+        {
+          "tipo": "multipla",
+          "pergunta": "Qual é o jeito mais educado de pedir algo?",
+          "opcoes": [
+            "Je veux un café",
+            "Je voudrais un café",
+            "Donnez-moi un café"
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "\"Combien ça coûte ?\" pergunta:",
+          "opcoes": [
+            "Onde fica",
+            "Quanto custa",
+            "Que horas são"
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "Traduza: eu não entendo",
+          "resposta": "je ne comprends pas"
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "O que se diz antes de começar a comer?",
+          "resposta": "bon appétit"
+        },
+        {
+          "tipo": "multipla",
+          "pergunta": "\"Peut-être\" quer dizer:",
+          "opcoes": [
+            "Com certeza",
+            "Talvez",
+            "Nunca"
+          ],
+          "certa": 1
+        },
+        {
+          "tipo": "traduzir",
+          "pergunta": "Traduza: sem problema",
+          "resposta": "pas de problème"
+        }
       ]
+    }
+  ],
+  "livrosRecomendados": [
+    {
+      "titulo": "Le Petit Prince",
+      "autor": "Antoine de Saint-Exupéry",
+      "nivel": "A1–A2",
+      "porque": "Texto simples e universal, vocabulário básico com frases curtas."
+    },
+    {
+      "titulo": "L’Étranger",
+      "autor": "Albert Camus",
+      "nivel": "B1–B2",
+      "porque": "Frases objetivas, passé composé predominante, leitura fluente."
+    },
+    {
+      "titulo": "Les Misérables (adaptação)",
+      "autor": "Victor Hugo",
+      "nivel": "B1",
+      "porque": "Versão adaptada para estudantes, vocabulário histórico."
+    },
+    {
+      "titulo": "Astérix le Gaulois",
+      "autor": "Gosciny & Uderzo",
+      "nivel": "A2–B1",
+      "porque": "Quadrinho com gírias, trocadilhos e francês coloquial."
     }
   ]
 }

@@ -1636,5 +1636,25 @@
       ],
       "cultura": "Os gestos italianos são parte REAL da comunicação: juntar os dedos e balançar significa 'o que você quer?'. Contar nos dedos começa pelo polegar (1), não pelo indicador. Tocar o queixo com as costas da mão e jogar pra frente significa 'não estou nem aí'."
     }
+  ],
+  "livrosRecomendados": [
+    {
+      "titulo": "Il Piccolo Principe",
+      "autor": "Antoine de Saint-Exupéry",
+      "nivel": "A1–A2",
+      "porque": "Vocabulário simples e frases curtas — ótimo para começar."
+    },
+    {
+      "titulo": "Io non ho paura",
+      "autor": "Niccolò Ammaniti",
+      "nivel": "B1",
+      "porque": "Italiano moderno, diálogos naturais e suspense."
+    },
+    {
+      "titulo": "Se questo è un uomo",
+      "autor": "Primo Levi",
+      "nivel": "B2",
+      "porque": "Prosa clara e precisa, vocabulário reflexivo."
+    }
   ]
 }
