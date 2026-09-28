@@ -451,10 +451,280 @@
           "traducaoTrecho": "Framboesinha, framboesinha, a-a-a",
           "frases": [
             {
-              "original": "Ягода малинка, ягода малинка, а-а-а",
-              "traducao": "Framboesinha, framboesinha, a-a-a",
-              "vocabulario": [],
-              "pronuncia": ""
+              "original": "Ягода малинка\nсладкая картинка",
+              "pronuncia": "YA-ga-da ma-LIN-ka\nSLAT-ka-ya kar-TIN-ka",
+              "linhas": [
+                {
+                  "original": "Ягода малинка",
+                  "traducao": "Frutinha framboesa",
+                  "notas": [
+                    {
+                      "trecho": "Ягода",
+                      "explicacao": "'Fruta' ou 'baga'. Em russo: Я = ya, Г = g, О = o, Д = d, А = a. O Я (ya) é uma das letras iogadas do russo — tem o som 'ya'. Pronúncia: YA-ga-da (acento na primeira sílaba)."
+                    },
+                    {
+                      "trecho": "малинка",
+                      "explicacao": "Diminutivo carinhoso de малина (malina = framboesa). O sufixo -ка cria diminutivos em russo: малина → малинка (framboesinha). Diminutivos expressam carinho ou tamanho pequeno e são muito usados no russo cotidiano."
+                    }
+                  ],
+                  "inicio": 15
+                },
+                {
+                  "original": "сладкая картинка",
+                  "traducao": "imagem doce / doce figura",
+                  "notas": [
+                    {
+                      "trecho": "сладкая",
+                      "explicacao": "'Doce' (adjetivo feminino). С = s, Л = l, А = a, Д = d, К = k, А = a, Я = ya. Em russo, adjetivos concordam com o substantivo em gênero, número e caso. Feminino nominativo: -ая/-яя."
+                    },
+                    {
+                      "trecho": "картинка",
+                      "explicacao": "'Figurinha/imagem'. Diminutivo de картина (картина = quadro/imagem). К = k, А = a, Р = r, Т = t, И = i, Н = n, К = k, А = a. O 'р' russo é vibrante (rolado), diferente do português."
+                    }
+                  ],
+                  "inicio": 18
+                }
+              ]
+            },
+            {
+              "original": "Ты моя любовь\nты моя мечта",
+              "pronuncia": "TI ma-YA lyu-BOV'\nti ma-YA mech-TA",
+              "linhas": [
+                {
+                  "original": "Ты моя любовь",
+                  "traducao": "Você é meu amor",
+                  "notas": [
+                    {
+                      "trecho": "Ты",
+                      "explicacao": "'Você / tu' (informal). Т = t, Ы = ы. O Ы é um som único do russo: vogal central, sem equivalente exato em português. Pronuncia-se com a língua recuada, entre 'i' e 'u'. Como 'i' dito com a boca quase fechada."
+                    },
+                    {
+                      "trecho": "моя",
+                      "explicacao": "'Meu/minha' (forma feminina). М = m, О = o, Я = ya. Em russo, possessivos concordam em gênero: мой (masc.), моя (fem.), моё (neutro). 'Любовь' (amor) é feminino, então usa 'моя'."
+                    },
+                    {
+                      "trecho": "любовь",
+                      "explicacao": "'Amor'. Л = l, Ю = yu, Б = b, О = o, В = v, Ь = sinal brando. O Ь (sinal brando) não é pronunciado como letra — ele amolece a consoante anterior. 'В' antes de Ь soa levemente palatalizado."
+                    }
+                  ],
+                  "inicio": 28
+                },
+                {
+                  "original": "ты моя мечта",
+                  "traducao": "você é meu sonho",
+                  "notas": [
+                    {
+                      "trecho": "мечта",
+                      "explicacao": "'Sonho / aspiração'. М = m, Е = ye, Ч = ch (como 'tch'), Т = t, А = a. O Е em russo soa como 'ye' no início de sílaba ou após vogal. O Ч soa como 'tch' em 'tchan'."
+                    }
+                  ],
+                  "inicio": 32
+                }
+              ]
+            },
+            {
+              "original": "Приходи ко мне\nя жду тебя",
+              "pronuncia": "pri-ha-DI ka MNYÉ\nya ZHDU tye-BYA",
+              "linhas": [
+                {
+                  "original": "Приходи ко мне",
+                  "traducao": "Vem até mim",
+                  "notas": [
+                    {
+                      "trecho": "Приходи",
+                      "explicacao": "Imperativo de приходить (vir, chegar). П = p, Р = r, И = i, Х = kh (fricativa velar, como 'rr' espanhol), О = o, Д = d, И = i. Imperativo informal termina em -и ou -й."
+                    },
+                    {
+                      "trecho": "ко мне",
+                      "explicacao": "'A mim / até mim'. 'ко' é variante de 'к' (preposição 'para/até') usada antes de certas consoantes. 'мне' é o pronome 'eu' no caso Dativo (para mim). Russo tem 6 casos gramaticais."
+                    }
+                  ],
+                  "inicio": 42
+                },
+                {
+                  "original": "я жду тебя",
+                  "traducao": "eu espero por você",
+                  "notas": [
+                    {
+                      "trecho": "я",
+                      "explicacao": "'Eu'. A letra Я serve tanto como pronome pessoal ('eu') quanto como letra do alfabeto representando o som 'ya'. É a última letra do alfabeto cirílico russo."
+                    },
+                    {
+                      "trecho": "жду",
+                      "explicacao": "Forma de 'ждать' (esperar). Ж = zh (como 'j' em 'jeans'). Pronúncia: 'zhdu'. O Ж é um som sonoro, diferente do Ш (sh) que é surdo."
+                    },
+                    {
+                      "trecho": "тебя",
+                      "explicacao": "'Você' no caso Genitivo/Acusativo (objeto direto). Т = t, Е = ye, Б = b, Я = ya. O pronome 'você' em russo: ты (nominativo), тебя (genitivo/acusativo), тебе (dativo)."
+                    }
+                  ],
+                  "inicio": 46
+                }
+              ]
+            },
+            {
+              "original": "Малинка, малинка\nты моя малинка",
+              "pronuncia": "ma-LIN-ka, ma-LIN-ka\nti ma-YA ma-LIN-ka",
+              "linhas": [
+                {
+                  "original": "Малинка, малинка",
+                  "traducao": "Framboesinha, framboesinha",
+                  "notas": [
+                    {
+                      "trecho": "Малинка",
+                      "explicacao": "Repetição da palavra-título — técnica muito comum em músicas russas e folclóricas. O acento tônico cai na segunda sílaba: ma-LIN-ka. Em russo, o acento é livre (pode cair em qualquer sílaba) e não é marcado na escrita padrão."
+                    }
+                  ],
+                  "inicio": 50
+                },
+                {
+                  "original": "ты моя малинка",
+                  "traducao": "você é minha framboesinha",
+                  "notas": [
+                    {
+                      "trecho": "ты моя малинка",
+                      "explicacao": "Em russo, o verbo 'ser' (быть) é omitido no presente do indicativo. 'Ты моя малинка' literalmente = 'Você minha framboesinha' — sem verbo 'é'. Isso é gramaticalmente correto em russo!"
+                    }
+                  ],
+                  "inicio": 54
+                }
+              ]
+            },
+            {
+              "original": "Красивая девочка\nв летнем саду",
+              "pronuncia": "kra-SI-va-ya DYE-vach-ka\nv LYET-nyem sa-DU",
+              "linhas": [
+                {
+                  "original": "Красивая девочка",
+                  "traducao": "Menina bonita",
+                  "notas": [
+                    {
+                      "trecho": "Красивая",
+                      "explicacao": "'Bonita' (adjetivo feminino). К = k, Р = r, А = a, С = s, И = i, В = v, А = a, Я = ya. Acento: kra-SI-va-ya. Adjetivos femininos no Nominativo terminam em -ая/-яя."
+                    },
+                    {
+                      "trecho": "девочка",
+                      "explicacao": "'Menina'. Diminutivo de дева/девушка. Д = d, Е = ye, В = v, О = o, Ч = tch, К = k, А = a. O sufixo -очка/-ечка é um diminutivo mais carinhoso que -ка."
+                    }
+                  ],
+                  "inicio": 80
+                },
+                {
+                  "original": "в летнем саду",
+                  "traducao": "no jardim de verão",
+                  "notas": [
+                    {
+                      "trecho": "в летнем саду",
+                      "explicacao": "'В' (preposição 'em/no') rege o caso Prepositivo. 'летнем' = de verão (adjetivo de лето=verão, no Prepositivo). 'саду' = jardim no Prepositivo (сад → саду). O Prepositivo é usado para localização."
+                    }
+                  ],
+                  "inicio": 84
+                }
+              ]
+            },
+            {
+              "original": "Тёплые руки\nи добрые глаза",
+              "pronuncia": "TYOP-li-ye RU-ki\ni DOB-ri-ye gla-ZA",
+              "linhas": [
+                {
+                  "original": "Тёплые руки",
+                  "traducao": "Mãos quentinhas",
+                  "notas": [
+                    {
+                      "trecho": "Тёплые",
+                      "explicacao": "'Quentes' (plural). Т = t, Ё = yo, П = p, Л = l, Ы = ï, Е = ye. O Ё (yo) sempre carrega o acento e soa como 'yo'. Muitos textos omitem os dois pontos do Ё, escrevendo como Е — só o contexto revela."
+                    },
+                    {
+                      "trecho": "руки",
+                      "explicacao": "'Mãos'. Plural de рука (mão). Р = r, У = u, К = k, И = i. Em russo, muitos plurais femininos terminam em -и: рука → руки, нога (perna) → ноги."
+                    }
+                  ],
+                  "inicio": 120
+                },
+                {
+                  "original": "и добрые глаза",
+                  "traducao": "e olhos bondosos",
+                  "notas": [
+                    {
+                      "trecho": "и",
+                      "explicacao": "'E' (conjunção). А letra И também representa o pronome 'e' quando conjunção. Não confundir: И = i (vogal/letra) ou 'e' (conjunção) dependendo do contexto."
+                    },
+                    {
+                      "trecho": "добрые глаза",
+                      "explicacao": "'Olhos bondosos'. 'добрые' = bondosos (plural de добрый). 'глаза' = olhos (plural de глаз). Г = g, Л = l, А = a, З = z, А = a. O 'г' russo é sempre oclusivo, nunca fricativo como o 'g' do Rio de Janeiro."
+                    }
+                  ],
+                  "inicio": 124
+                }
+              ]
+            },
+            {
+              "original": "Хорошо с тобой\nнавсегда вдвоём",
+              "pronuncia": "kha-ra-CHO s ta-BOY\nnaf-syeg-DA vd-va-YOM",
+              "linhas": [
+                {
+                  "original": "Хорошо с тобой",
+                  "traducao": "É bom com você / estou bem com você",
+                  "notas": [
+                    {
+                      "trecho": "Хорошо",
+                      "explicacao": "'Bom / bem' (forma neutra/adverbial). Х = kh (fricativa, como rr espanhol), О = a (reduzido, átono), Р = r, О = o (tônico), Ш = sh, О = a. Atenção: vogais átonas em russo se reduzem — О átono soa como А!"
+                    },
+                    {
+                      "trecho": "с тобой",
+                      "explicacao": "'Com você'. С = preposição 'com' (rege Instrumental). 'тобой' = você no caso Instrumental (тобой/тобою). Russo tem 6 casos: Nominativo, Genitivo, Dativo, Acusativo, Instrumental, Prepositivo."
+                    }
+                  ],
+                  "inicio": 155
+                },
+                {
+                  "original": "навсегда вдвоём",
+                  "traducao": "para sempre juntos (os dois)",
+                  "notas": [
+                    {
+                      "trecho": "навсегда",
+                      "explicacao": "'Para sempre'. Н = n, А = a, В = v, С = s, Е = ye, Г = g, Д = d, А = a. Palavra derivada de 'всегда' (sempre) com prefixo на-."
+                    },
+                    {
+                      "trecho": "вдвоём",
+                      "explicacao": "'Juntos (os dois)'. Palavra que indica que são exatamente duas pessoas. Análogo: втроём = os três juntos, вчетвером = os quatro juntos. Muito expressivo e sem tradução direta simples."
+                    }
+                  ],
+                  "inicio": 159
+                }
+              ]
+            },
+            {
+              "original": "Всегда рядом\nты моя любовь",
+              "pronuncia": "fsyeg-DA RYA-dam\nti ma-YA lyu-BOV'",
+              "linhas": [
+                {
+                  "original": "Всегда рядом",
+                  "traducao": "Sempre por perto",
+                  "notas": [
+                    {
+                      "trecho": "Всегда",
+                      "explicacao": "'Sempre'. В = v (aqui soa como 'f' antes de С surdo), С = s, Е = ye, Г = g, Д = d, А = a. Regra de assimilação: consoantes sonoras ficam surdas antes de surdas em russo."
+                    },
+                    {
+                      "trecho": "рядом",
+                      "explicacao": "'Perto / ao lado'. Р = r, Я = ya, Д = d, О = o, М = m. Advérbio de lugar muito usado: стоять рядом = ficar ao lado. Não precisa de preposição."
+                    }
+                  ],
+                  "inicio": 175
+                },
+                {
+                  "original": "ты моя любовь",
+                  "traducao": "você é meu amor",
+                  "notas": [
+                    {
+                      "trecho": "ты моя любовь",
+                      "explicacao": "Retorno ao refrão principal — a estrutura sem verbo 'ser' reforça o estilo direto e emocional da música. Кabib (Хабиб) é um artista do Azerbaijão que canta em russo, misturando influências da música folclórica do Cáucaso."
+                    }
+                  ],
+                  "inicio": 179
+                }
+              ]
             }
           ]
         }
@@ -1737,10 +2007,282 @@
           "traducaoTrecho": "Um, dois, quatro (mistura proposital de espanhol) — dançando no palco",
           "frases": [
             {
-              "original": "Uno, dos, quatro — dancing on the stage",
-              "traducao": "Um, dois, quatro (mistura proposital de espanhol) — dançando no palco",
-              "vocabulario": [],
-              "pronuncia": ""
+              "original": "Uno, dos, quatro\nUno, dos, quatro",
+              "pronuncia": "U-no, DOS, KVA-tro\nU-no, DOS, KVA-tro",
+              "linhas": [
+                {
+                  "original": "Uno, dos, quatro",
+                  "traducao": "Um, dois, quatro",
+                  "notas": [
+                    {
+                      "trecho": "Uno, dos, quatro",
+                      "explicacao": "PIADA INTENCIONAL: a banda pula o número três (três em espanhol = tres, em russo = три/tri). Em espanhol correto seria 'uno, dos, TRES, cuatro'. Little Big omite o 'três' de propósito — é humor nonsense e surrealista, marca registrada da banda."
+                    },
+                    {
+                      "trecho": "Uno / dos / quatro",
+                      "explicacao": "Uso de espanhol numa música russa para o Eurovision — recurso artístico de mistura de idiomas. Em russo os números são: один (odin=1), два (dva=2), три (tri=3), четыре (chetyre=4). A banda escolheu espanhol deliberadamente para o efeito cômico internacional."
+                    }
+                  ],
+                  "inicio": 15
+                }
+              ]
+            },
+            {
+              "original": "We are from Russia\nWe love Eurovision",
+              "pronuncia": "VI ar FROM RA-sha\nVI LAV yu-ro-VI-zhn",
+              "linhas": [
+                {
+                  "original": "We are from Russia",
+                  "traducao": "Somos da Rússia",
+                  "notas": [
+                    {
+                      "trecho": "We are from Russia",
+                      "explicacao": "Versos em INGLÊS — Little Big usa inglês estrategicamente para alcançar audiência internacional no Eurovision. A banda é conhecida por misturar russo, inglês e outras línguas nas letras, criando um som globalmente acessível."
+                    }
+                  ],
+                  "inicio": 25
+                },
+                {
+                  "original": "We love Eurovision",
+                  "traducao": "Nós amamos o Eurovision",
+                  "notas": [
+                    {
+                      "trecho": "Eurovision",
+                      "explicacao": "Contexto histórico: Little Big foi selecionada para representar a Rússia no Eurovision Song Contest 2020, realizado em Roterdã (Holanda). O festival foi CANCELADO devido à pandemia de COVID-19 — única edição cancelada na história do evento (desde 1956)."
+                    }
+                  ],
+                  "inicio": 29
+                }
+              ]
+            },
+            {
+              "original": "Uno dos\nодин, два",
+              "pronuncia": "U-no DOS\na-DIN, DVA",
+              "linhas": [
+                {
+                  "original": "Uno dos / один, два",
+                  "traducao": "Um, dois (espanhol) / um, dois (russo)",
+                  "notas": [
+                    {
+                      "trecho": "один",
+                      "explicacao": "'Um' em russo. О = a (átono, reduzido), Д = d, И = i, Н = n. Pronúncia: a-DIN. Один é masculino. Feminino: одна (adna). Neutro: одно (adno). Os números em russo concordam em gênero!"
+                    },
+                    {
+                      "trecho": "два",
+                      "explicacao": "'Dois' em russo. Д = d, В = v, А = a. Pronúncia: DVA. Feminino: две (dvye). Após 2, 3, 4: substantivo no Genitivo singular (два дня = dois dias). Após 5+: Genitivo plural. Sistema complexo!"
+                    }
+                  ],
+                  "inicio": 45
+                }
+              ]
+            },
+            {
+              "original": "Everybody dance now\nEverybody clap your hands",
+              "pronuncia": "EV-ri-bo-di DANS NAU\nEV-ri-bo-di KLAP yor HENDS",
+              "linhas": [
+                {
+                  "original": "Everybody dance now",
+                  "traducao": "Todo mundo dance agora",
+                  "notas": [
+                    {
+                      "trecho": "Everybody dance now",
+                      "explicacao": "Referência à música 'Gonna Make You Sweat (Everybody Dance Now)' de C+C Music Factory (1990) — Little Big é conhecida por referências à cultura pop dos anos 80-90. Mostra a influência da música ocidental na cultura rave russa."
+                    }
+                  ],
+                  "inicio": 55
+                },
+                {
+                  "original": "Everybody clap your hands",
+                  "traducao": "Todo mundo bata palmas",
+                  "notas": [
+                    {
+                      "trecho": "Everybody clap your hands",
+                      "explicacao": "Instrução direta ao público — técnica clássica em músicas de festival/rave para engajar a plateia. No Eurovision, essas frases em inglês garantem participação do público internacional sem necessidade de tradução."
+                    }
+                  ],
+                  "inicio": 60
+                }
+              ]
+            },
+            {
+              "original": "Я танцую\nты танцуешь",
+              "pronuncia": "ya tan-TSU-yu\nti tan-TSU-yesh",
+              "linhas": [
+                {
+                  "original": "Я танцую",
+                  "traducao": "Eu danço",
+                  "notas": [
+                    {
+                      "trecho": "Я танцую",
+                      "explicacao": "'Eu danço'. Я = eu (pronome). танцую = danço (1ª pessoa do verbo танцевать). Em russo, o sujeito é frequentemente omitido porque a terminação verbal indica a pessoa: танцую (eu danço), танцуешь (você dança), танцует (ele/ela dança)."
+                    }
+                  ],
+                  "inicio": 85
+                },
+                {
+                  "original": "ты танцуешь",
+                  "traducao": "você dança",
+                  "notas": [
+                    {
+                      "trecho": "танцуешь",
+                      "explicacao": "2ª pessoa singular de танцевать (dançar). Terminações do presente para verbos em -овать/-евать: -ую (eu), -уешь (você), -ует (ele/ela), -уем (nós), -уете (vocês), -уют (eles). O Ш no final de -шь amolece o ТС anterior."
+                    }
+                  ],
+                  "inicio": 89
+                }
+              ]
+            },
+            {
+              "original": "Мы все здесь\nвместе навсегда",
+              "pronuncia": "mi FSYE ZDYES'\nVMYES-tye naf-syeg-DA",
+              "linhas": [
+                {
+                  "original": "Мы все здесь",
+                  "traducao": "Estamos todos aqui",
+                  "notas": [
+                    {
+                      "trecho": "Мы",
+                      "explicacao": "'Nós'. М = m, Ы = ï (vogal central). Pronomes pessoais em russo: я (eu), ты (você/tu), он/она/оно (ele/ela/isso), мы (nós), вы (vocês/você formal), они (eles/elas)."
+                    },
+                    {
+                      "trecho": "все здесь",
+                      "explicacao": "'Todos aqui'. 'все' = todos (pronome plural). 'здесь' = aqui. З = z, Д = d, Е = ye, С = s, Ь = sinal brando. O sinal brando Ь após С cria palatalização: 'zdyes'' com S amolecido."
+                    }
+                  ],
+                  "inicio": 100
+                },
+                {
+                  "original": "вместе навсегда",
+                  "traducao": "juntos para sempre",
+                  "notas": [
+                    {
+                      "trecho": "вместе",
+                      "explicacao": "'Juntos'. В = v (soa como 'f' antes de consoante surda em alguns contextos), М = m, Е = ye, С = s, Т = t, Е = ye. Advérbio muito comum: быть вместе = estar juntos."
+                    }
+                  ],
+                  "inicio": 104
+                }
+              ]
+            },
+            {
+              "original": "Little Big — это рейв\nмузыка для всех",
+              "pronuncia": "LIT-tl BIG — E-ta REYV\nMU-zi-ka dlya FSYEKH",
+              "linhas": [
+                {
+                  "original": "Little Big — это рейв",
+                  "traducao": "Little Big — isso é rave",
+                  "notas": [
+                    {
+                      "trecho": "это",
+                      "explicacao": "'Isso é / este é'. Э = e (vogal aberta, não palatizada), Т = t, О = a (átono). 'Это' funciona como cópula no presente: 'Это рейв' = 'Isso é rave' (sem o verbo 'ser' explícito)."
+                    },
+                    {
+                      "trecho": "рейв",
+                      "explicacao": "Empréstimo do inglês 'rave'. Р = r, Е = ye, Й = y (semivogal), В = v. O russo absorve palavras estrangeiras adaptando ao alfabeto cirílico. Little Big é pioneira do 'rave russo' (русский рейв), misturando eletrônica com ironia e paródia."
+                    }
+                  ],
+                  "inicio": 125
+                },
+                {
+                  "original": "музыка для всех",
+                  "traducao": "música para todos",
+                  "notas": [
+                    {
+                      "trecho": "музыка",
+                      "explicacao": "'Música'. М = m, У = u, З = z, Ы = ï, К = k, А = a. Palavra internacional reconhecível! Acento: MU-zi-ka. O Ы central aparece na segunda sílaba."
+                    },
+                    {
+                      "trecho": "для всех",
+                      "explicacao": "'Para todos'. 'для' = para (preposição que rege Genitivo). 'всех' = todos no Genitivo (все → всех). Mostra como preposições em russo governam diferentes casos."
+                    }
+                  ],
+                  "inicio": 129
+                }
+              ]
+            },
+            {
+              "original": "Uno dos quatro\nесчё раз!",
+              "pronuncia": "U-no DOS KVA-tro\nyish-CHO RAS!",
+              "linhas": [
+                {
+                  "original": "Uno dos quatro",
+                  "traducao": "Um, dois, quatro",
+                  "notas": [
+                    {
+                      "trecho": "Uno dos quatro",
+                      "explicacao": "Repetição do gancho principal — o título da música é o próprio erro intencional. O nome 'Uno' (em espanhol = um) e a contagem incompleta criam o refrão mais memorável. Técnica de hook: frase estranha e repetitiva que gruda na cabeça."
+                    }
+                  ],
+                  "inicio": 145
+                },
+                {
+                  "original": "ещё раз!",
+                  "traducao": "mais uma vez!",
+                  "notas": [
+                    {
+                      "trecho": "ещё раз",
+                      "explicacao": "'Mais uma vez'. 'ещё' = ainda/mais. 'раз' = vez/uma vez. Е = ye, Щ = shch (consoante dupla: ch+sh), Ё = yo. O Щ é uma das letras mais difíceis para estrangeiros: som de 'shch' junto, como em 'fresh cheese' dito rápido."
+                    }
+                  ],
+                  "inicio": 150
+                }
+              ]
+            },
+            {
+              "original": "We go up, we go down\neverybody move around",
+              "pronuncia": "VI go AP, VI go DAUN\nEV-ri-bo-di MUV a-RAUND",
+              "linhas": [
+                {
+                  "original": "We go up, we go down",
+                  "traducao": "A gente sobe, a gente desce",
+                  "notas": [
+                    {
+                      "trecho": "We go up / we go down",
+                      "explicacao": "Inglês simples e direto — estratégia Eurovision para acessibilidade. 'Go up/down' também descreve o movimento de dança. Little Big cria um show visual sincronizado com a letra, muito importante para a votação no Eurovision."
+                    }
+                  ],
+                  "inicio": 160
+                },
+                {
+                  "original": "everybody move around",
+                  "traducao": "todo mundo se mexa",
+                  "notas": [
+                    {
+                      "trecho": "everybody move around",
+                      "explicacao": "Imperativo coletivo — convida todos a participar. Técnica eficaz em festival: linguagem corporal + instrução verbal simples. No Eurovision 2020 (cancelado), esta música provavelmente teria gerado uma das performances mais memoráveis e absurdo-cômicas do evento."
+                    }
+                  ],
+                  "inicio": 164
+                }
+              ]
+            },
+            {
+              "original": "Uno dos quatro\nUno dos quatro\nUno!",
+              "pronuncia": "U-no dos KVA-tro\nU-no dos KVA-tro\nU-NO!",
+              "linhas": [
+                {
+                  "original": "Uno dos quatro",
+                  "traducao": "Um, dois, quatro",
+                  "notas": [
+                    {
+                      "trecho": "Uno dos quatro (final)",
+                      "explicacao": "Clímax final com o refrão repetido. A mistura espanhol-russo-inglês nesta música é um manifesto artístico: Little Big rejeita fronteiras linguísticas e nacionais, usando o humor absurdo para fazer uma declaração sobre a natureza artificial das competições entre países como o Eurovision."
+                    }
+                  ],
+                  "inicio": 195
+                },
+                {
+                  "original": "Uno!",
+                  "traducao": "Um!",
+                  "notas": [
+                    {
+                      "trecho": "Uno!",
+                      "explicacao": "Grito final — 'Uno' tanto significa 'um' (o começo de tudo) quanto é o nome do jogo de cartas, adicionando mais uma camada de referência pop. Little Big (grupo de São Petersburgo fundado em 2013) tornou-se internacionalmente famosa com vídeos virais que misturam rave, humor e crítica social."
+                    }
+                  ],
+                  "inicio": 205
+                }
+              ]
             }
           ]
         }

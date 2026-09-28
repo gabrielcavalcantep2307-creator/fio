@@ -1437,32 +1437,410 @@
           "traducaoTrecho": "Você era formidável, eu era bem deplorável",
           "frases": [
             {
-              "original": "Tu sais, tu sais, tu sais\nJe ne suis pas formidable",
-              "pronuncia": "tü sê, tü sê, tü sê / jə nə süí pá formidábl",
+              "original": "Excuse-moi\nT'as l'air de quoi ?",
+              "pronuncia": "ek-SKÜ-zə-mwa / ta-lɛr-də-KWA",
               "linhas": [
                 {
-                  "original": "Tu sais, tu sais, tu sais",
-                  "traducao": "Você sabe, você sabe, você sabe",
+                  "original": "Excuse-moi",
+                  "traducao": "Me desculpe / Com licença",
                   "notas": [
                     {
-                      "trecho": "tu sais",
-                      "explicacao": "você sabe — Presente de \"savoir\" (saber). Pronuncia-se \"tü sê\". O S final é mudo."
+                      "trecho": "Excuse-moi",
+                      "explicacao": "'Excuse-moi' usa o imperativo de 'excuser' + 'moi' (eu/me). Para pedir desculpa formal diz-se 'excusez-moi'. O 'x' soa como /ks/, não como 'z' como muitos brasileiros pronunciam."
+                    },
+                    {
+                      "trecho": "moi",
+                      "explicacao": "'Moi' = eu/me (forma tônica). Diferente do 'je' (sujeito). Ex: 'C'est moi' = Sou eu."
                     }
-                  ]
+                  ],
+                  "inicio": 8
                 },
                 {
-                  "original": "Je ne suis pas formidable",
-                  "traducao": "Eu não sou formidável",
+                  "original": "T'as l'air de quoi ?",
+                  "traducao": "Você parece o quê? / Que figura você está fazendo?",
                   "notas": [
                     {
-                      "trecho": "formidable",
-                      "explicacao": "formidável / incrível — Pronuncia-se \"formidábl\". Mesma raiz latina que em português."
+                      "trecho": "T'as",
+                      "explicacao": "Contração de 'tu as' (você tem). Na fala informal, o 'tu' some e fica 't'as'. É uma elision típica do francês falado."
+                    },
+                    {
+                      "trecho": "l'air",
+                      "explicacao": "'Avoir l'air' = parecer, ter cara de. Literalmente 'ter o ar de'. Ex: 'Tu as l'air fatigué' = Você parece cansado."
+                    },
+                    {
+                      "trecho": "quoi",
+                      "explicacao": "Pronome interrogativo 'quê/o quê'. Muito usado no fim de frases no francês informal para fazer perguntas simples."
+                    }
+                  ],
+                  "inicio": 10.5
+                }
+              ]
+            },
+            {
+              "original": "Tu sais, je ne suis pas formidable\nJe ne suis pas formidable",
+              "pronuncia": "tü-SÊ / zhə-nə-süi-PA / for-mi-DABL",
+              "linhas": [
+                {
+                  "original": "Tu sais, je ne suis pas formidable",
+                  "traducao": "Sabe, eu não sou incrível / eu não sou fantástico",
+                  "notas": [
+                    {
+                      "trecho": "Tu sais",
+                      "explicacao": "'Tu sais' = você sabe / sabe. Muito usado como marcador de discurso, igual ao 'sabe?' brasileiro. O 's' final de 'sais' é mudo."
                     },
                     {
                       "trecho": "je ne suis pas",
-                      "explicacao": "eu não sou — Negação: ne + verbo + pas. \"Suis\" = sou, do verbo \"être\" (ser/estar)."
+                      "explicacao": "Negação francesa: ne...pas envolve o verbo. 'Je suis' (eu sou) vira 'je ne suis pas' (eu não sou). Na fala rápida o 'ne' quase some: 'je suis pas'."
+                    },
+                    {
+                      "trecho": "formidable",
+                      "explicacao": "FALSO COGNATO IMPORTANTE! Em francês, 'formidable' significa 'incrível, maravilhoso, fantástico'. NÃO significa 'assustador/temível' como em português. É um elogio! A ironia da música é justamente essa."
                     }
-                  ]
+                  ],
+                  "inicio": 15
+                },
+                {
+                  "original": "Je ne suis pas formidable",
+                  "traducao": "Eu não sou fantástico",
+                  "notas": [
+                    {
+                      "trecho": "je suis",
+                      "explicacao": "'Je suis' = eu sou. É do verbo 'être' (ser/estar), o verbo mais irregular do francês. Conjugação: je suis, tu es, il/elle est, nous sommes, vous êtes, ils/elles sont."
+                    }
+                  ],
+                  "inicio": 18.5
+                }
+              ]
+            },
+            {
+              "original": "Formidable, formidable\nTu étais formidable, j'étais fort minable",
+              "pronuncia": "for-mi-DABL / tü-e-TÊ for-mi-DABL / zhe-TÊ for-mi-NABL",
+              "linhas": [
+                {
+                  "original": "Formidable, formidable",
+                  "traducao": "Incrível, incrível",
+                  "notas": [
+                    {
+                      "trecho": "Formidable",
+                      "explicacao": "Pronuncia-se 'for-mi-DABL'. O 'e' final é mudo — regra geral: 'e' no fim de palavra francesa não se pronuncia. Contraste com o português onde pronunciaríamos todas as vogais."
+                    }
+                  ],
+                  "inicio": 55
+                },
+                {
+                  "original": "Tu étais formidable, j'étais fort minable",
+                  "traducao": "Você era incrível, eu era completamente deplorável",
+                  "notas": [
+                    {
+                      "trecho": "Tu étais / j'étais",
+                      "explicacao": "Imperfeito do verbo 'être'. 'Étais' = era/estava. Usado para estados passados. O 'j'' é elision de 'je' antes de vogal — obrigatório em francês."
+                    },
+                    {
+                      "trecho": "fort minable",
+                      "explicacao": "JOGO DE PALAVRAS! 'Fort' = muito (advérbio), 'minable' = deplorável/miserável. Junto soa quase igual a 'formidable' — é o truque sonoro central da música."
+                    }
+                  ],
+                  "inicio": 58.5
+                }
+              ]
+            },
+            {
+              "original": "Tu pleurais, je pleurais\nNous pleurions ensemble",
+              "pronuncia": "tü-plö-RÊ / zhə-plö-RÊ / nü-plö-RI-ON ɑ̃-SⱭMBL",
+              "linhas": [
+                {
+                  "original": "Tu pleurais, je pleurais",
+                  "traducao": "Você chorava, eu chorava",
+                  "notas": [
+                    {
+                      "trecho": "pleurais",
+                      "explicacao": "'Pleurer' = chorar. Imperfeito: 'pleurais'. O 'eu' forma o ditongo /ø/ — som entre 'e' e 'o', não existe em português. Pratique: lábios em 'o', voz em 'e'."
+                    },
+                    {
+                      "trecho": "tu / je",
+                      "explicacao": "'Tu' = você (informal, singular). 'Je' = eu. Em francês, 'tu' é íntimo. Para desconhecidos usa-se 'vous'. Stromae usa 'tu' pois está falando de alguém próximo."
+                    }
+                  ],
+                  "inicio": 70
+                },
+                {
+                  "original": "Nous pleurions ensemble",
+                  "traducao": "Nós choravamos juntos",
+                  "notas": [
+                    {
+                      "trecho": "nous",
+                      "explicacao": "'Nous' = nós. Imperfeito: terminação '-ions'. Na fala coloquial moderna, usa-se 'on' no lugar de 'nous': 'on pleurait ensemble'."
+                    },
+                    {
+                      "trecho": "ensemble",
+                      "explicacao": "'Ensemble' = juntos/ao mesmo tempo. Fácil para brasileiros! Mas atenção: 'em-' no início soa nasal /ɑ̃/, não como 'em' português."
+                    }
+                  ],
+                  "inicio": 73
+                }
+              ]
+            },
+            {
+              "original": "Qu'est-ce que tu voulais ?\nQue j'sois différent ?",
+              "pronuncia": "kɛ-skə-tü-vu-LÊ / kə-zhwa-di-fe-RÃ",
+              "linhas": [
+                {
+                  "original": "Qu'est-ce que tu voulais ?",
+                  "traducao": "O que você queria?",
+                  "notas": [
+                    {
+                      "trecho": "Qu'est-ce que",
+                      "explicacao": "A forma mais comum de fazer perguntas em francês falado: 'qu'est-ce que' + sujeito + verbo. Literalmente 'o que é que'. Pronunciado rapidamente: 'kɛskə'. Não se diz letra por letra."
+                    },
+                    {
+                      "trecho": "voulais",
+                      "explicacao": "'Vouloir' = querer. Imperfeito: 'voulais'. Muito irregular: veux, veux, veut, voulons, voulez, veulent (presente). Aprender 'je veux' (eu quero) é essencial."
+                    }
+                  ],
+                  "inicio": 80
+                },
+                {
+                  "original": "Que j'sois différent ?",
+                  "traducao": "Que eu fosse diferente?",
+                  "notas": [
+                    {
+                      "trecho": "j'sois",
+                      "explicacao": "Contração de 'je sois' — subjuntivo de 'être'. Usado após expressões de desejo, dúvida, emoção. 'Que + subjuntivo' é muito comum: 'Je veux que tu sois heureux' = Quero que você seja feliz."
+                    },
+                    {
+                      "trecho": "différent",
+                      "explicacao": "Fácil! Cognato com 'diferente'. Mas pronuncie o 'é' tônico: di-fe-RÃ. O 't' final é mudo."
+                    }
+                  ],
+                  "inicio": 83.5
+                }
+              ]
+            },
+            {
+              "original": "C'est toi qui voulais\nQue je sois formidable",
+              "pronuncia": "sɛ-twa-ki-vu-LÊ / kə-zhə-swa for-mi-DABL",
+              "linhas": [
+                {
+                  "original": "C'est toi qui voulais",
+                  "traducao": "Foi você que queria",
+                  "notas": [
+                    {
+                      "trecho": "C'est toi qui",
+                      "explicacao": "Estrutura de ênfase: 'c'est + pronome tônico + qui/que'. Equivale ao 'foi você que' do português. 'C'est moi qui' = fui eu que. Muito usado para dar ênfase."
+                    },
+                    {
+                      "trecho": "toi",
+                      "explicacao": "'Toi' = você (forma tônica, depois de preposição ou para ênfase). Compare: 'tu' (sujeito) vs 'toi' (ênfase/depois de preposição). Ex: 'Pour toi' = Para você."
+                    }
+                  ],
+                  "inicio": 87
+                },
+                {
+                  "original": "Que je sois formidable",
+                  "traducao": "Que eu fosse incrível",
+                  "notas": [
+                    {
+                      "trecho": "que je sois",
+                      "explicacao": "Subjuntivo novamente após 'vouloir que'. Regra de ouro: quando há dois sujeitos diferentes e o verbo principal expressa vontade/emoção/dúvida, usa-se subjuntivo na segunda oração."
+                    }
+                  ],
+                  "inicio": 90
+                }
+              ]
+            },
+            {
+              "original": "Tu sais, c'est tout ce que je voulais\nÊtre formidable",
+              "pronuncia": "tü-sê / sɛ-tu-sə-kə-zhə-vu-LÊ / ɛ-trə for-mi-DABL",
+              "linhas": [
+                {
+                  "original": "Tu sais, c'est tout ce que je voulais",
+                  "traducao": "Sabe, é tudo o que eu queria",
+                  "notas": [
+                    {
+                      "trecho": "c'est tout ce que",
+                      "explicacao": "'C'est tout ce que' = é tudo (o) que. 'Tout' = tudo/todo. 'Ce que' = o que (pronome relativo objeto). Estrutura importante: 'c'est ce que je veux' = é o que eu quero."
+                    },
+                    {
+                      "trecho": "tout",
+                      "explicacao": "'Tout' = tudo/todo. Pronuncia-se 'tu' (o 't' final é mudo neste contexto). Cuidado: 'tous' (plural masculino) pronuncia o 's' quando usado como pronome: 'ils sont tous là' = eles estão todos lá."
+                    }
+                  ],
+                  "inicio": 120
+                },
+                {
+                  "original": "Être formidable",
+                  "traducao": "Ser incrível",
+                  "notas": [
+                    {
+                      "trecho": "Être",
+                      "explicacao": "Infinitivo de 'ser/estar'. Pronuncia-se 'ɛtrə'. O acento circunflexo (ê) indica que havia um 's' em latim — por isso 'être' e 'estare' são cognatos!"
+                    }
+                  ],
+                  "inicio": 124
+                }
+              ]
+            },
+            {
+              "original": "Une femme, un homme\nDe l'eau, du vin",
+              "pronuncia": "ün-FAM / ɛ̃-NOM / də-LO / dü-VÊ",
+              "linhas": [
+                {
+                  "original": "Une femme, un homme",
+                  "traducao": "Uma mulher, um homem",
+                  "notas": [
+                    {
+                      "trecho": "une femme",
+                      "explicacao": "'Femme' = mulher. Pronuncia-se 'FAM' — o 'e' muda de som por influência do 'mm'. Falso amigo visual: parece 'fame' (fome em italiano/inglês), mas não é."
+                    },
+                    {
+                      "trecho": "un homme",
+                      "explicacao": "'Homme' = homem. O 'h' é mudo em francês E há liaison obrigatória: 'un homme' soa 'ɛ̃-NOM'. O 'n' de 'un' se liga ao 'o' de 'homme'."
+                    }
+                  ],
+                  "inicio": 150
+                },
+                {
+                  "original": "De l'eau, du vin",
+                  "traducao": "Água, vinho",
+                  "notas": [
+                    {
+                      "trecho": "de l'eau",
+                      "explicacao": "Artigo partitivo 'de l'' antes de vogal. 'L'eau' = a água. Artigos partitivos expressam quantidade indefinida: 'Je bois de l'eau' = Eu bebo água (um pouco de água)."
+                    },
+                    {
+                      "trecho": "du vin",
+                      "explicacao": "'Du' = de + le (contração obrigatória). 'Du vin' = (do) vinho. Artigos partitivos: du (masc.), de la (fem.), de l' (antes de vogal)."
+                    }
+                  ],
+                  "inicio": 153
+                }
+              ]
+            },
+            {
+              "original": "Et moi dans tout ça ?\nJe ne suis pas formidable",
+              "pronuncia": "e-mwa-dɑ̃-tu-SA / zhə-nə-süi-PA for-mi-DABL",
+              "linhas": [
+                {
+                  "original": "Et moi dans tout ça ?",
+                  "traducao": "E eu nisso tudo? / E eu, no meio de tudo isso?",
+                  "notas": [
+                    {
+                      "trecho": "dans tout ça",
+                      "explicacao": "'Dans' = em/dentro de. 'Tout ça' = tudo isso (informal). 'Ça' é a forma coloquial de 'cela' (isso). Muito usado: 'Ça va ?' = Tudo bem?; 'C'est ça' = É isso."
+                    },
+                    {
+                      "trecho": "Et moi",
+                      "explicacao": "Uso de 'moi' para ênfase depois de 'et' (e). 'Et toi ?' = E você? Fórmula essencial para manter uma conversa."
+                    }
+                  ],
+                  "inicio": 160
+                },
+                {
+                  "original": "Je ne suis pas formidable",
+                  "traducao": "Eu não sou fantástico",
+                  "notas": [
+                    {
+                      "trecho": "ne...pas",
+                      "explicacao": "Revisão da negação: 'ne' antes do verbo, 'pas' depois. Na fala coloquial o 'ne' é frequentemente omitido: 'Je suis pas formidable'. Mas na escrita e fala formal, ambos são obrigatórios."
+                    }
+                  ],
+                  "inicio": 163.5
+                }
+              ]
+            },
+            {
+              "original": "Formidable, formidable\nTu étais formidable, j'étais fort minable",
+              "pronuncia": "for-mi-DABL / tü-e-TÊ for-mi-DABL / zhe-TÊ for-mi-NABL",
+              "linhas": [
+                {
+                  "original": "Formidable, formidable",
+                  "traducao": "Incrível, incrível",
+                  "notas": [
+                    {
+                      "trecho": "Formidable",
+                      "explicacao": "Refrão! Contexto belga: Stromae é belga e a música foi gravada nas ruas de Bruxelas. O francês belga tem sotaque diferente do parisiense — as vogais são um pouco mais abertas."
+                    }
+                  ],
+                  "inicio": 180
+                },
+                {
+                  "original": "Tu étais formidable, j'étais fort minable",
+                  "traducao": "Você era incrível, eu era completamente deplorável",
+                  "notas": [
+                    {
+                      "trecho": "minable",
+                      "explicacao": "'Minable' = miserável, deplorável, patético. Vem de 'mine' (aparência). Alguém 'minable' tem uma aparência/comportamento lastimável. Antônimo de 'formidable'."
+                    }
+                  ],
+                  "inicio": 184
+                }
+              ]
+            },
+            {
+              "original": "Oh, pardon, excusez-moi\nJe ne vous avais pas vus",
+              "pronuncia": "o-par-DON / ek-skü-ze-MWA / zhə-nə-vu-za-VÊ-pa-vü",
+              "linhas": [
+                {
+                  "original": "Oh, pardon, excusez-moi",
+                  "traducao": "Oh, perdão, me desculpem",
+                  "notas": [
+                    {
+                      "trecho": "pardon",
+                      "explicacao": "'Pardon' = perdão, desculpa. Usado isolado como pedido de desculpa rápido. Cognato com 'perdão'! Mas pronuncia-se 'par-DON' com nasal no fim."
+                    },
+                    {
+                      "trecho": "excusez-moi",
+                      "explicacao": "Forma de cortesia com 'vous' (plural/formal). Compare: 'excuse-moi' (informal/tu) vs 'excusez-moi' (formal/vous). O traço (-) indica o imperativo com pronome posposto."
+                    }
+                  ],
+                  "inicio": 200
+                },
+                {
+                  "original": "Je ne vous avais pas vus",
+                  "traducao": "Eu não tinha visto vocês / Eu não os tinha visto",
+                  "notas": [
+                    {
+                      "trecho": "vous avais pas vus",
+                      "explicacao": "Pretérito mais-que-perfeito: 'avais' (imperfeito de 'avoir') + particípio passado 'vus'. O particípio concorda com o objeto direto 'vous' (plural), daí 'vus' e não 'vu'."
+                    },
+                    {
+                      "trecho": "vous",
+                      "explicacao": "'Vous' = vocês OU você formal (singular). É o pronome de respeito — ao se dirigir a estranhos, pessoas mais velhas ou em contextos formais, usa-se 'vous' mesmo para uma só pessoa."
+                    }
+                  ],
+                  "inicio": 204
+                }
+              ]
+            },
+            {
+              "original": "Je cherche quelqu'un\nQuelqu'un de formidable",
+              "pronuncia": "zhə-SHƐRSH / kɛl-KÊ / kɛl-kÊ-də for-mi-DABL",
+              "linhas": [
+                {
+                  "original": "Je cherche quelqu'un",
+                  "traducao": "Eu procuro alguém",
+                  "notas": [
+                    {
+                      "trecho": "Je cherche",
+                      "explicacao": "'Chercher' = procurar/buscar. Presente: 'je cherche'. Atenção: 'chercher' NÃO significa 'cheirar' (que seria 'sentir' ou 'flairer'). Falso amigo visual para brasileiros."
+                    },
+                    {
+                      "trecho": "quelqu'un",
+                      "explicacao": "Pronome indefinido = alguém. Pronuncia-se 'kɛl-KÊ'. O apóstrofo é elision: 'quelque + un'. Feminino: 'quelqu'une'. Negativo: 'personne' (ninguém)."
+                    }
+                  ],
+                  "inicio": 215
+                },
+                {
+                  "original": "Quelqu'un de formidable",
+                  "traducao": "Alguém incrível / Alguém fantástico",
+                  "notas": [
+                    {
+                      "trecho": "quelqu'un de + adjetivo",
+                      "explicacao": "Estrutura: 'quelqu'un de + adjetivo' = alguém + adjetivo. O adjetivo fica invariável (masculino singular) nesta construção. Ex: 'quelqu'un de beau' = alguém bonito (mesmo para mulher)."
+                    }
+                  ],
+                  "inicio": 218.5
                 }
               ]
             }
@@ -3113,46 +3491,410 @@
           "traducaoTrecho": "Bruxelas, eu te amo, Bruxelas, eu te amo",
           "frases": [
             {
-              "original": "Bruxelles je t'aime\nJe t'aime à jamais\nMais qu'est-ce que j'aurais pu faire?",
-              "pronuncia": "brüsél jə tém / jə tém a jamê / mê késkə jorê pü fêr",
+              "original": "Bruxelles, je t'aime\nJe t'aime, je t'aime",
+              "pronuncia": "brü-SÈL / zhə-TÊM / zhə-TÊM zhə-TÊM",
               "linhas": [
                 {
-                  "original": "Bruxelles je t'aime",
+                  "original": "Bruxelles, je t'aime",
                   "traducao": "Bruxelas, eu te amo",
                   "notas": [
                     {
                       "trecho": "je t'aime",
-                      "explicacao": "eu te amo — A expressão de amor mais clássica do francês. Pronuncia-se \"jə tém\"."
+                      "explicacao": "A frase mais famosa do francês! 'Je t'aime' = eu te amo. O 't'' é elision de 'te' (te/você). Estrutura: je (eu) + t' (te) + aime (amo, de 'aimer'). Diferente de 'j'aime Paris' (eu gosto de Paris) — com 't' é pessoal e romântico."
+                    },
+                    {
+                      "trecho": "Bruxelles",
+                      "explicacao": "Nome francês de Bruxelas, capital da Bélgica. Pronuncia-se 'brü-SÈL' — os dois 'l' no final soam como um único 'l' suave, não como 'lh'. O 'x' soa como 'ks'."
                     }
-                  ]
+                  ],
+                  "inicio": 0.5
                 },
+                {
+                  "original": "Je t'aime, je t'aime",
+                  "traducao": "Eu te amo, eu te amo",
+                  "notas": [
+                    {
+                      "trecho": "aime",
+                      "explicacao": "'Aimer' tem dois usos: com pessoa = amar ('je t'aime'); com coisa = gostar ('j'aime le chocolat'). Em inglês é diferente: love vs like. Em francês é o mesmo verbo, mas o contexto (e o 't'') muda tudo."
+                    }
+                  ],
+                  "inicio": 4
+                }
+              ]
+            },
+            {
+              "original": "Tu sais que je reviens toujours\nDans tes rues, dans tes faubourgs",
+              "pronuncia": "tü-sê-kə-zhə-rə-VJƐ̃ tu-ZHUR / dɑ̃-tê-RÜ / dɑ̃-tê-fo-BUR",
+              "linhas": [
+                {
+                  "original": "Tu sais que je reviens toujours",
+                  "traducao": "Você sabe que eu sempre volto",
+                  "notas": [
+                    {
+                      "trecho": "reviens",
+                      "explicacao": "'Revenir' = voltar (para um lugar). Presente: 'je reviens'. Diferente de 'venir' (vir). Prefixo 're-' indica retorno, igual ao português: re-venir = re-vir. Pronuncia-se 'rə-VJƐ̃'."
+                    },
+                    {
+                      "trecho": "toujours",
+                      "explicacao": "'Toujours' = sempre OU ainda. Contexto define: 'Je t'aime toujours' = Ainda te amo; 'Je reviens toujours' = Sempre volto. Pronuncia-se 'tu-ZHUR', o 's' final é mudo."
+                    }
+                  ],
+                  "inicio": 15
+                },
+                {
+                  "original": "Dans tes rues, dans tes faubourgs",
+                  "traducao": "Nas suas ruas, nos seus bairros",
+                  "notas": [
+                    {
+                      "trecho": "dans tes",
+                      "explicacao": "'Dans' = em/dentro de. 'Tes' = seus/suas (plural de 'ton/ta'). Aqui a cidade é tratada como 'tu', de forma íntima — Angèle fala com Bruxelas como se fosse uma pessoa amada."
+                    },
+                    {
+                      "trecho": "faubourgs",
+                      "explicacao": "'Faubourg' = bairro periférico/subúrbio histórico. Palavra antiga e poética. 'Bourg' veio do germânico (como 'burgo'). O 'g' final é mudo: 'fo-BUR'."
+                    }
+                  ],
+                  "inicio": 19
+                }
+              ]
+            },
+            {
+              "original": "Sous la pluie ou sous le soleil\nTu es toujours mon seul conseil",
+              "pronuncia": "su-la-PLÜI u-su-lə-so-LÊJ / tü-ɛ-tu-ZHUR mõ-SœL kõ-SÊJ",
+              "linhas": [
+                {
+                  "original": "Sous la pluie ou sous le soleil",
+                  "traducao": "Sob a chuva ou sob o sol",
+                  "notas": [
+                    {
+                      "trecho": "sous",
+                      "explicacao": "'Sous' = sob/debaixo de/sob. Preposição de lugar. 'Sous la pluie' = sob a chuva/na chuva. Pronuncia-se 'su' — o 's' final é mudo."
+                    },
+                    {
+                      "trecho": "pluie",
+                      "explicacao": "'Pluie' = chuva. O ditongo 'ui' é característico do francês: pronuncia-se como duas vogais rápidas 'ü-i'. Ex: 'nuit' (noite), 'lui' (ele/para ele)."
+                    }
+                  ],
+                  "inicio": 24
+                },
+                {
+                  "original": "Tu es toujours mon seul conseil",
+                  "traducao": "Você é sempre meu único conselho",
+                  "notas": [
+                    {
+                      "trecho": "mon seul",
+                      "explicacao": "'Seul' = único/só/sozinho. 'Mon seul conseil' = meu único conselho. 'Seul' pode ser adjetivo ou advérbio: 'Je suis seul' = Estou sozinho; 'seul toi' = só você."
+                    },
+                    {
+                      "trecho": "conseil",
+                      "explicacao": "Cognato com 'conselho'. Pronuncia-se 'kõ-SÊJ' — o 'ei' vira um som fechado. 'Je' final soa como o 'lh' brasileiro? Não exatamente — é mais como /j/ suave."
+                    }
+                  ],
+                  "inicio": 28.5
+                }
+              ]
+            },
+            {
+              "original": "Je t'aime à jamais\nJe ne te quitterai jamais",
+              "pronuncia": "zhə-TÊM-a-zha-MÊ / zhə-nə-tə-ki-TƏ-rê zha-MÊ",
+              "linhas": [
                 {
                   "original": "Je t'aime à jamais",
                   "traducao": "Eu te amo para sempre",
                   "notas": [
                     {
-                      "trecho": "je t'aime",
-                      "explicacao": "eu te amo — A expressão de amor mais clássica do francês. Pronuncia-se \"jə tém\"."
+                      "trecho": "à jamais",
+                      "explicacao": "'À jamais' = para sempre/eternamente. Expressão formal/poética. 'Jamais' sozinho pode significar 'nunca' (negativo) ou 'alguma vez' (interrogativo/condicional). Com 'à' vira 'para sempre'."
                     },
                     {
-                      "trecho": "à jamais",
-                      "explicacao": "para sempre — \"Jamais\" = nunca/sempre. Com \"à\", significa \"para sempre\". Pronuncia-se \"a jamê\"."
+                      "trecho": "à",
+                      "explicacao": "Preposição 'à' tem muitos usos: direção (je vais à Paris), posse (un café à moi), tempo (à jamais). Não confundir com 'a' sem acento, que é o verbo 'avoir' na 3ª pessoa: 'il a' = ele tem."
                     }
-                  ]
+                  ],
+                  "inicio": 50
                 },
                 {
-                  "original": "Mais qu'est-ce que j'aurais pu faire?",
-                  "traducao": "Mas o que eu poderia ter feito?",
+                  "original": "Je ne te quitterai jamais",
+                  "traducao": "Eu nunca vou te deixar",
                   "notas": [
                     {
-                      "trecho": "qu'est-ce que",
-                      "explicacao": "o que — Forma interrogativa. Pronuncia-se \"késkə\". Parece complicado, mas é uma só palavra na fala."
+                      "trecho": "quitterai",
+                      "explicacao": "'Quitter' = deixar/abandonar (uma pessoa ou lugar). Futuro simples: 'quitterai'. Formação: infinitivo + terminações (-ai, -as, -a, -ons, -ez, -ont). 'Je quitterai' = eu deixarei."
                     },
                     {
-                      "trecho": "j'aurais pu",
-                      "explicacao": "eu poderia ter / eu teria podido — Condicional passado. \"Aurais\" do verbo \"avoir\" + \"pu\" do verbo \"pouvoir\"."
+                      "trecho": "ne...jamais",
+                      "explicacao": "Negação com 'jamais' = nunca. 'Ne...pas' = não; 'ne...jamais' = nunca; 'ne...rien' = nada; 'ne...plus' = não mais. O 'ne' sempre precede o verbo, o segundo elemento vem depois."
                     }
-                  ]
+                  ],
+                  "inicio": 54.5
+                }
+              ]
+            },
+            {
+              "original": "Qu'est-ce que tu m'as fait ?\nQu'est-ce que tu m'as donné ?",
+              "pronuncia": "kɛ-skə-tü-ma-FÊ / kɛ-skə-tü-ma-do-NE",
+              "linhas": [
+                {
+                  "original": "Qu'est-ce que tu m'as fait ?",
+                  "traducao": "O que você me fez?",
+                  "notas": [
+                    {
+                      "trecho": "m'as fait",
+                      "explicacao": "Passé composé: 'as' (2ª pessoa de 'avoir') + particípio 'fait' (de 'faire' = fazer). O 'm'' é elision de 'me': tu me as → tu m'as. Elisions são obrigatórias antes de vogal."
+                    },
+                    {
+                      "trecho": "fait",
+                      "explicacao": "Particípio de 'faire' (fazer/causar). Muito irregular: je fais, tu fais, il fait... Cognato com 'feito'. Expressão: 'Ça se fait' = Isso se faz/É costume."
+                    }
+                  ],
+                  "inicio": 80
+                },
+                {
+                  "original": "Qu'est-ce que tu m'as donné ?",
+                  "traducao": "O que você me deu?",
+                  "notas": [
+                    {
+                      "trecho": "donné",
+                      "explicacao": "Particípio de 'donner' (dar). Verbos regulares em -er: o particípio termina em -é. 'Donner → donné', 'parler → parlé', 'aimer → aimé'. O acento agudo (é) indica vogal fechada."
+                    }
+                  ],
+                  "inicio": 84.5
+                }
+              ]
+            },
+            {
+              "original": "Mes amis, ma famille\nMon accent, mes habitudes",
+              "pronuncia": "me-za-MI / ma-fa-MIJ / mõ-na-KSÃ / me-za-bi-TÜD",
+              "linhas": [
+                {
+                  "original": "Mes amis, ma famille",
+                  "traducao": "Meus amigos, minha família",
+                  "notas": [
+                    {
+                      "trecho": "mes amis",
+                      "explicacao": "Liaison obrigatória: 'mes' + 'amis' — o 's' de 'mes' se liga ao 'a' de 'amis': 'me-za-MI'. Liaison acontece antes de palavras que começam com vogal ou 'h' mudo. Muito importante para soar natural!"
+                    },
+                    {
+                      "trecho": "famille",
+                      "explicacao": "'Famille' = família. O 'ill' soa como 'lh' em português: 'fa-MIJ'. Outras palavras com esse som: 'fille' (filha), 'travailler' (trabalhar), 'vieille' (velha)."
+                    }
+                  ],
+                  "inicio": 90
+                },
+                {
+                  "original": "Mon accent, mes habitudes",
+                  "traducao": "Meu sotaque, meus hábitos",
+                  "notas": [
+                    {
+                      "trecho": "mon accent",
+                      "explicacao": "'Accent' = sotaque OU acento gráfico. A Bélgica tem um francês com sotaque específico — as vogais são mais longas e algumas palavras são diferentes. Stromae e Angèle têm sotaque belga reconhecível."
+                    },
+                    {
+                      "trecho": "habitudes",
+                      "explicacao": "'Habitude' = hábito/costume. 'Avoir l'habitude de' = ter o hábito de/estar acostumado a. 'D'habitude' = normalmente/habitualmente. O 'h' é mudo — diz-se 'a-bi-TÜD'."
+                    }
+                  ],
+                  "inicio": 95
+                }
+              ]
+            },
+            {
+              "original": "J'aurais pu partir loin\nMais je suis restée ici",
+              "pronuncia": "zho-RÊ-pü par-TIR LWƐ̃ / mɛ-zhə-süi-rɛs-TE i-SI",
+              "linhas": [
+                {
+                  "original": "J'aurais pu partir loin",
+                  "traducao": "Eu poderia ter ido longe / Eu teria podido partir para longe",
+                  "notas": [
+                    {
+                      "trecho": "j'aurais pu",
+                      "explicacao": "Condicional passado: 'aurais' (condicional de 'avoir') + 'pu' (particípio de 'pouvoir'). Expressa o que poderia ter acontecido mas não aconteceu. Equivale ao 'teria podido' do português."
+                    },
+                    {
+                      "trecho": "partir loin",
+                      "explicacao": "'Partir' = partir/ir embora. 'Loin' = longe. 'Partir loin' = ir para longe. Contraste com 'arriver' (chegar) e 'rester' (ficar). 'Partir' é intransitivo — não leva objeto direto."
+                    }
+                  ],
+                  "inicio": 120
+                },
+                {
+                  "original": "Mais je suis restée ici",
+                  "traducao": "Mas eu fiquei aqui",
+                  "notas": [
+                    {
+                      "trecho": "je suis restée",
+                      "explicacao": "Passé composé com 'être'! Verbos de movimento/estado usam 'être' como auxiliar: rester (ficar), aller (ir), venir (vir), partir (partir)... O particípio concorda com o sujeito: 'restée' (feminino, pois é uma mulher)."
+                    },
+                    {
+                      "trecho": "ici",
+                      "explicacao": "'Ici' = aqui. Par oposto a 'là' (lá/ali). 'Ici' = perto do falante; 'là' = perto do ouvinte ou mais longe. Na fala coloquial, 'là' é muito usado onde o inglês usa 'here': 'Je suis là' = Estou aqui."
+                    }
+                  ],
+                  "inicio": 125
+                }
+              ]
+            },
+            {
+              "original": "Parce que tu es ma ville\nMon cœur, mon pays",
+              "pronuncia": "par-sə-kə-tü-ɛ-ma-VIL / mõ-KœR / mõ-pe-I",
+              "linhas": [
+                {
+                  "original": "Parce que tu es ma ville",
+                  "traducao": "Porque você é a minha cidade",
+                  "notas": [
+                    {
+                      "trecho": "parce que",
+                      "explicacao": "'Parce que' = porque (causa). Diferente de 'pour que' (para que, finalidade). 'Je reste parce que je t'aime' = Fico porque te amo. Pronuncia-se rapidamente: 'par-skə'."
+                    },
+                    {
+                      "trecho": "ma ville",
+                      "explicacao": "'Ville' = cidade. 'Ma ville' = minha cidade. Adjetivos possessivos: mon (masc.), ma (fem.), mes (plural). Mas antes de vogal ou h mudo, 'ma' vira 'mon': 'mon amie' (mesmo sendo feminino!)."
+                    }
+                  ],
+                  "inicio": 155
+                },
+                {
+                  "original": "Mon cœur, mon pays",
+                  "traducao": "Meu coração, meu país",
+                  "notas": [
+                    {
+                      "trecho": "cœur",
+                      "explicacao": "'Cœur' = coração. A letra 'œ' é única do francês — som entre 'e' e 'o'. Pronuncia-se 'KœR'. Outras palavras: 'sœur' (irmã), 'œil' (olho). Este som não existe em português!"
+                    },
+                    {
+                      "trecho": "pays",
+                      "explicacao": "'Pays' = país. Pronuncia-se 'pe-I' — o 'y' funciona como semivogal. O 's' final é mudo. Cognato com 'país'! 'Paysage' = paisagem."
+                    }
+                  ],
+                  "inicio": 160
+                }
+              ]
+            },
+            {
+              "original": "Je t'aime, Bruxelles\nÀ jamais, pour toujours",
+              "pronuncia": "zhə-TÊM brü-SÈL / a-zha-MÊ / pur-tu-ZHUR",
+              "linhas": [
+                {
+                  "original": "Je t'aime, Bruxelles",
+                  "traducao": "Eu te amo, Bruxelas",
+                  "notas": [
+                    {
+                      "trecho": "Je t'aime, Bruxelles",
+                      "explicacao": "Revisão: 'je t'aime' com a cidade em vocativo. Em francês, pode-se dizer 'je t'aime' a uma pessoa, cidade, ou coisa querida. 'Je t'aime, maman' = Te amo, mãe. 'Je t'aime, Paris' = Te amo, Paris."
+                    }
+                  ],
+                  "inicio": 170
+                },
+                {
+                  "original": "À jamais, pour toujours",
+                  "traducao": "Para sempre, para todo o sempre",
+                  "notas": [
+                    {
+                      "trecho": "à jamais / pour toujours",
+                      "explicacao": "Duas expressões que significam 'para sempre': 'à jamais' é mais literária/poética; 'pour toujours' é mais cotidiana. Usadas juntas para ênfase emocional — recurso retórico clássico."
+                    }
+                  ],
+                  "inicio": 175
+                }
+              ]
+            },
+            {
+              "original": "Les frites et la bière\nLes gaufres et le ciel gris",
+              "pronuncia": "le-FRIT e-la-BJƐR / le-GOF-rə e-lə-SJƐL gri",
+              "linhas": [
+                {
+                  "original": "Les frites et la bière",
+                  "traducao": "As batatas fritas e a cerveja",
+                  "notas": [
+                    {
+                      "trecho": "les frites",
+                      "explicacao": "'Frites' = batatas fritas. Bélgica é famosa por inventar as 'frites'! (Os franceses discordam.) Plural definido: 'les'. Pronuncia-se 'FRIT' — o 's' final é mudo normalmente, mas em liaison soa: 'les_frites'."
+                    },
+                    {
+                      "trecho": "la bière",
+                      "explicacao": "'Bière' = cerveja. A Bélgica é mundialmente conhecida por suas cervejas (Leffe, Chimay, Duvel...). Pronuncia-se 'BJƐR' com 'è' aberto. Cognato com 'beer' inglês — ambos do germânico."
+                    }
+                  ],
+                  "inicio": 190
+                },
+                {
+                  "original": "Les gaufres et le ciel gris",
+                  "traducao": "Os waffles e o céu cinza",
+                  "notas": [
+                    {
+                      "trecho": "gaufres",
+                      "explicacao": "'Gaufre' = waffle (origem da palavra inglesa!). Outro símbolo culinário belga. Pronuncia-se 'GOF-rə'. O 'au' sempre soa 'o' em francês."
+                    },
+                    {
+                      "trecho": "ciel gris",
+                      "explicacao": "'Ciel' = céu. 'Gris' = cinza. Bruxelas é famosa pelo clima nublado — a música abraça isso como característica querida da cidade, não como defeito."
+                    }
+                  ],
+                  "inicio": 195
+                }
+              ]
+            },
+            {
+              "original": "C'est tout ce que j'aime\nC'est tout ce que je suis",
+              "pronuncia": "sɛ-tu-sə-kə-ZHÊ-mə / sɛ-tu-sə-kə-zhə-SÜI",
+              "linhas": [
+                {
+                  "original": "C'est tout ce que j'aime",
+                  "traducao": "É tudo o que eu amo",
+                  "notas": [
+                    {
+                      "trecho": "c'est tout ce que j'aime",
+                      "explicacao": "'C'est tout ce que' = é tudo o que. Revisão da estrutura de ênfase com 'ce que' (pronome relativo objeto). Contraste: 'c'est ce que j'aime' (é o que eu amo) vs 'c'est tout ce que j'aime' (é TUDO o que eu amo)."
+                    },
+                    {
+                      "trecho": "j'aime",
+                      "explicacao": "'J'aime' = eu amo/gosto. Sem o 't'' (te), não é direcionado a uma pessoa específica — é um amor geral. 'J'aime Bruxelles' = Eu amo Bruxelas (gostar de). 'Je t'aime, Bruxelles' = Eu te amo, Bruxelas (mais íntimo)."
+                    }
+                  ],
+                  "inicio": 200
+                },
+                {
+                  "original": "C'est tout ce que je suis",
+                  "traducao": "É tudo o que eu sou",
+                  "notas": [
+                    {
+                      "trecho": "tout ce que je suis",
+                      "explicacao": "Fechamento poético: a identidade da cantora é inseparável de sua cidade. 'Je suis' aqui é 'eu sou', não 'eu sigo' (que seria o mesmo verbo 'suivre' na 1ª pessoa). Ambiguidade intencional possível: 'suis' = sou (être) E sigo (suivre)."
+                    }
+                  ],
+                  "inicio": 205
+                }
+              ]
+            },
+            {
+              "original": "Bruxelles, je t'aime\nJe t'aimerai toujours",
+              "pronuncia": "brü-SÈL zhə-TÊM / zhə-TÊM-rê tu-ZHUR",
+              "linhas": [
+                {
+                  "original": "Bruxelles, je t'aime",
+                  "traducao": "Bruxelas, eu te amo",
+                  "notas": [
+                    {
+                      "trecho": "Bruxelles",
+                      "explicacao": "Contexto cultural final: Bruxelas é capital da Bélgica E da União Europeia. É uma cidade bilíngue (francês e holandês/flamengo). A cultura belga mescla influências francesas, holandesas e alemãs."
+                    }
+                  ],
+                  "inicio": 175
+                },
+                {
+                  "original": "Je t'aimerai toujours",
+                  "traducao": "Eu te amarei sempre",
+                  "notas": [
+                    {
+                      "trecho": "t'aimerai",
+                      "explicacao": "Futuro simples de 'aimer' com pronome: 'je t'aimerai'. Formação do futuro: radical + terminações (-ai, -as, -a, -ons, -ez, -ont). Para 'aimer': j'aimerai, tu aimeras, il aimera... O 't'' (te) permanece mesmo no futuro."
+                    },
+                    {
+                      "trecho": "toujours",
+                      "explicacao": "Revisão final: 'toujours' = sempre/ainda. Com futuro, claramente significa 'sempre'. Com presente pode ser ambíguo: 'je t'aime toujours' = ainda te amo OU sempre te amo."
+                    }
+                  ],
+                  "inicio": 179
                 }
               ]
             }

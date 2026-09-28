@@ -2174,41 +2174,193 @@
           "frases": [
             {
               "original": "Yo te miro y se me corta la respiración",
-              "pronuncia": "yo te MI-ro ee se me KOR-ta la res-pi-ra-SION",
+              "pronuncia": "IO te MI-ro i se me KOR-ta la res-pi-ra-SION",
               "linhas": [
                 {
                   "original": "Yo te miro y se me corta la respiración",
-                  "traducao": "Eu te olho e me falta a respiração",
+                  "traducao": "Eu te olho e a minha respiração para",
                   "notas": [
                     {
-                      "trecho": "te miro",
-                      "explicacao": "te olho — Mirar = olhar. Em espanhol da América, mirar é mais usado que ver para \"olhar com atenção\"."
+                      "trecho": "yo te miro",
+                      "explicacao": "'Miro' vem de 'mirar' (olhar/observar). Em português dizemos 'olhar', em espanhol 'mirar' é o verbo padrão para isso."
                     },
                     {
                       "trecho": "se me corta",
-                      "explicacao": "me corta / me falta — Expressão: cortarse la respiración = ficar sem ar de emoção."
+                      "explicacao": "Construção reflexiva com pronome de objeto indireto: 'se me corta' = literalmente 'corta-se a mim'. Em português diríamos 'trava' ou 'prende'."
+                    },
+                    {
+                      "trecho": "la respiración",
+                      "explicacao": "'Respiración' é cognata de 'respiração'. Note o artigo feminino 'la' — assim como 'a' em português."
                     }
-                  ]
+                  ],
+                  "inicio": 18
                 }
               ]
             },
             {
-              "original": "Con tu física y tu química",
-              "pronuncia": "kon tu FI-si-ka ee tu KI-mi-ka",
+              "original": "Cuando tú me miras, yo no sé qué hacer",
+              "pronuncia": "kwan-do TU me MI-ras, IO no SE ke a-SER",
               "linhas": [
                 {
-                  "original": "Con tu física y tu química",
-                  "traducao": "Com teu físico e tua química",
+                  "original": "Cuando tú me miras, yo no sé qué hacer",
+                  "traducao": "Quando você me olha, eu não sei o que fazer",
                   "notas": [
                     {
-                      "trecho": "física",
-                      "explicacao": "físico / corpo — Jogo de palavras: física = aparência física + a ciência."
+                      "trecho": "cuando",
+                      "explicacao": "'Cuando' = 'quando'. Falsos amigos com o inglês ('when'), mas igualzinho ao português na função."
                     },
                     {
-                      "trecho": "química",
-                      "explicacao": "química / conexão — Duplo sentido: a ciência + \"ter química\" = ter conexão com alguém."
+                      "trecho": "yo no sé",
+                      "explicacao": "'Sé' é a 1ª pessoa do singular de 'saber' no presente. Em português seria 'eu não sei' — idêntico em significado."
+                    },
+                    {
+                      "trecho": "qué hacer",
+                      "explicacao": "'Hacer' (fazer) é um dos verbos mais usados em espanhol. Cognato de 'fazer' mas com forma diferente."
                     }
-                  ]
+                  ],
+                  "inicio": 36
+                }
+              ]
+            },
+            {
+              "original": "Bailando, bailando, tu cuerpo está llamando",
+              "pronuncia": "bai-LAN-do, bai-LAN-do, tu KWER-po es-TA ya-MAN-do",
+              "linhas": [
+                {
+                  "original": "Bailando, bailando, tu cuerpo está llamando",
+                  "traducao": "Dançando, dançando, seu corpo está chamando",
+                  "notas": [
+                    {
+                      "trecho": "bailando",
+                      "explicacao": "Gerúndio de 'bailar' (dançar). Em espanhol, 'bailar' = dançar (baile = dança). Não confunda com 'baile' em português arcaico."
+                    },
+                    {
+                      "trecho": "tu cuerpo",
+                      "explicacao": "'Cuerpo' = 'corpo'. O 'ue' é uma ditongação do 'o' latino — fenômeno comum no espanhol (corpo → cuerpo, porta → puerta)."
+                    },
+                    {
+                      "trecho": "está llamando",
+                      "explicacao": "Presente progressivo: 'estar' + gerúndio. Idêntico ao português 'está chamando'. 'Llamar' = chamar/ligar."
+                    }
+                  ],
+                  "inicio": 55
+                }
+              ]
+            },
+            {
+              "original": "Con tu físico y tu boca, me provoca",
+              "pronuncia": "kon tu FI-si-ko i tu BO-ka, me pro-BO-ka",
+              "linhas": [
+                {
+                  "original": "Con tu físico y tu boca, me provoca",
+                  "traducao": "Com seu físico e sua boca, me provoca",
+                  "notas": [
+                    {
+                      "trecho": "con",
+                      "explicacao": "'Con' = 'com'. Preposição idêntica em significado ao português, mas sem o 'm' final."
+                    },
+                    {
+                      "trecho": "tu boca",
+                      "explicacao": "'Boca' é idêntico em português e espanhol — uma das palavras mais parecidas entre os dois idiomas."
+                    },
+                    {
+                      "trecho": "me provoca",
+                      "explicacao": "Forma reflexiva indireta: o sujeito fica implícito. 'Me provoca' = provoca-me. Mesma estrutura do português."
+                    }
+                  ],
+                  "inicio": 70
+                }
+              ]
+            },
+            {
+              "original": "Y en silencio te pido que no pares",
+              "pronuncia": "i en si-LEN-sio te PI-do ke no PA-res",
+              "linhas": [
+                {
+                  "original": "Y en silencio te pido que no pares",
+                  "traducao": "E em silêncio te peço que não pare",
+                  "notas": [
+                    {
+                      "trecho": "te pido",
+                      "explicacao": "'Pedir' = pedir/solicitar. 'Te pido' = te peço. Note 'pido' (1ª pessoa irregular) em vez de *pedo."
+                    },
+                    {
+                      "trecho": "que no pares",
+                      "explicacao": "Subjuntivo: 'pares' vem de 'parar'. 'Que no pares' = que não pare. Em português igualmente usa subjuntivo após 'peço que'."
+                    }
+                  ],
+                  "inicio": 90
+                }
+              ]
+            },
+            {
+              "original": "Con tu forma de bailar, me haces desear",
+              "pronuncia": "kon tu FOR-ma de bai-LAR, me A-ses de-se-AR",
+              "linhas": [
+                {
+                  "original": "Con tu forma de bailar, me haces desear",
+                  "traducao": "Com seu jeito de dançar, você me faz desejar",
+                  "notas": [
+                    {
+                      "trecho": "tu forma de bailar",
+                      "explicacao": "'Forma' = jeito/forma. Construção igual ao português 'a forma de dançar'."
+                    },
+                    {
+                      "trecho": "me haces desear",
+                      "explicacao": "'Hacer' como causativo: 'me haces desear' = você me faz desejar. Em espanhol 'hacer' + infinitivo substitui o 'fazer + infinitivo' do português."
+                    }
+                  ],
+                  "inicio": 110
+                }
+              ]
+            },
+            {
+              "original": "Que el tiempo se detenga para siempre aquí",
+              "pronuncia": "ke el TIEM-po se de-TEN-ga PA-ra SIEM-pre a-KI",
+              "linhas": [
+                {
+                  "original": "Que el tiempo se detenga para siempre aquí",
+                  "traducao": "Que o tempo pare para sempre aqui",
+                  "notas": [
+                    {
+                      "trecho": "el tiempo",
+                      "explicacao": "'Tiempo' = 'tempo' (e também 'tempo meteorológico'). O artigo 'el' masculino corresponde ao 'o' do português."
+                    },
+                    {
+                      "trecho": "se detenga",
+                      "explicacao": "Subjuntivo de 'detener' (deter/parar). Conjugação irregular: detenga em vez de *detena. Atenção à troca do 'e' por 'ie' no presente."
+                    },
+                    {
+                      "trecho": "para siempre",
+                      "explicacao": "'Siempre' = 'sempre'. A combinação 'para siempre' = 'para sempre' — idêntica ao português!"
+                    }
+                  ],
+                  "inicio": 135
+                }
+              ]
+            },
+            {
+              "original": "Oh-oh, estoy bailando contigo esta noche",
+              "pronuncia": "es-TOI bai-LAN-do kon-TI-go ES-ta NO-tche",
+              "linhas": [
+                {
+                  "original": "Oh-oh, estoy bailando contigo esta noche",
+                  "traducao": "Oh-oh, estou dançando com você esta noite",
+                  "notas": [
+                    {
+                      "trecho": "estoy bailando",
+                      "explicacao": "Presente progressivo: 'estoy' (1ª pessoa de 'estar') + gerúndio 'bailando'. Equivale a 'estou dançando' em português."
+                    },
+                    {
+                      "trecho": "contigo",
+                      "explicacao": "'Contigo' = 'com você/contigo'. Forma especial do pronome de 2ª pessoa combinado com 'con'. Em português existe 'contigo' mas é mais formal."
+                    },
+                    {
+                      "trecho": "esta noche",
+                      "explicacao": "'Noche' = 'noite'. False friend avançado: 'nocturno' em ambos os idiomas. 'Esta noche' = 'esta noite'."
+                    }
+                  ],
+                  "inicio": 165
                 }
               ]
             }
@@ -2428,22 +2580,169 @@
           "traducaoTrecho": "Te amo, meu amor, mas do meu jeito",
           "frases": [
             {
-              "original": "Te quiero, mi amor, pero tumbado",
-              "pronuncia": "te KIE-ro, mi a-MOR, PE-ro tum-BA-do",
+              "original": "Amor tumbado, así es como me tienes",
+              "pronuncia": "a-MOR tum-BA-do, a-SI es KO-mo me TIE-nes",
               "linhas": [
                 {
-                  "original": "Te quiero, mi amor, pero tumbado",
-                  "traducao": "Te amo, meu amor, mas do meu jeito",
+                  "original": "Amor tumbado, así es como me tienes",
+                  "traducao": "Amor caído/tranquilo, assim é como você me tem",
+                  "notas": [
+                    {
+                      "trecho": "tumbado",
+                      "explicacao": "Gíria mexicana do gênero 'corrido tumbado': 'tumbado' significa relaxado, deitado, sem pressa — um estado de espírito despreocupado. Deu nome ao subgênero musical."
+                    },
+                    {
+                      "trecho": "así es como",
+                      "explicacao": "'Assim é como' — construção enfática. 'Así' = assim. Muito comum na fala cotidiana mexicana."
+                    },
+                    {
+                      "trecho": "me tienes",
+                      "explicacao": "'Tener' (ter) + pronome: 'me tienes' = você me tem/deixa. Use com estado emocional: 'me tienes loco' = você me deixa louco."
+                    }
+                  ],
+                  "inicio": 12
+                }
+              ]
+            },
+            {
+              "original": "Te quiero, te necesito, no me dejes",
+              "pronuncia": "te KIE-ro, te ne-se-SI-to, no me DE-hes",
+              "linhas": [
+                {
+                  "original": "Te quiero, te necesito, no me dejes",
+                  "traducao": "Eu te quero, eu te preciso, não me deixe",
                   "notas": [
                     {
                       "trecho": "te quiero",
-                      "explicacao": "te amo / te quero — Querer = amar/querer. \"Te quiero\" é a forma mais comum de dizer \"eu te amo\" na América Latina."
+                      "explicacao": "'Querer' em espanhol significa tanto 'querer' quanto 'amar' (de forma romântica). 'Te quiero' é mais comum que 'te amo' para relacionamentos; 'te amo' é mais intenso/formal."
                     },
                     {
-                      "trecho": "tumbado",
-                      "explicacao": "do meu jeito / relaxado — Gíria dos corridos tumbados: tumbado = no estilo próprio, tranquilo, sem frescura."
+                      "trecho": "te necesito",
+                      "explicacao": "'Necesitar' = precisar/necessitar. 'Te necesito' = eu preciso de você. Cognata fácil com o português 'necessitar'."
+                    },
+                    {
+                      "trecho": "no me dejes",
+                      "explicacao": "Imperativo negativo de 'dejar' (deixar): 'no me dejes' = não me deixe. O imperativo negativo usa o subjuntivo em espanhol."
                     }
-                  ]
+                  ],
+                  "inicio": 28
+                }
+              ]
+            },
+            {
+              "original": "En el rancho con los plebes echando el chisme",
+              "pronuncia": "en el RAN-tcho kon los PLE-bes e-TSHAN-do el TCHIS-me",
+              "linhas": [
+                {
+                  "original": "En el rancho con los plebes echando el chisme",
+                  "traducao": "No sítio/fazenda com os parceiros fofocando",
+                  "notas": [
+                    {
+                      "trecho": "el rancho",
+                      "explicacao": "'Rancho' = fazenda/sítio no contexto rural mexicano. Na cultura do corrido, o rancho representa as raízes e a identidade regional."
+                    },
+                    {
+                      "trecho": "los plebes",
+                      "explicacao": "Gíria do noroeste mexicano (Sinaloa): 'plebes' = amigos, parceiros, galera. Muito frequente nas letras de Natanael Cano."
+                    },
+                    {
+                      "trecho": "echando el chisme",
+                      "explicacao": "'Echar' (lançar/jogar) + 'chisme' (fofoca). 'Echar el chisme' = fofocar. 'Chisme' é uma das gírias mais conhecidas do espanhol mexicano."
+                    }
+                  ],
+                  "inicio": 45
+                }
+              ]
+            },
+            {
+              "original": "Con el peso en la bolsa y el corazón libre",
+              "pronuncia": "kon el PE-so en la BOL-sa i el ko-ra-SON LI-bre",
+              "linhas": [
+                {
+                  "original": "Con el peso en la bolsa y el corazón libre",
+                  "traducao": "Com o dinheiro no bolso e o coração livre",
+                  "notas": [
+                    {
+                      "trecho": "el peso",
+                      "explicacao": "Duplo sentido: 'peso' = moeda mexicana E 'peso' (massa). No contexto de corridos, frequentemente se refere a dinheiro."
+                    },
+                    {
+                      "trecho": "la bolsa",
+                      "explicacao": "'Bolsa' = bolso (de calça) ou bolsa (de mão). Atenção: em português 'bolsa' é 'bolso' na calça. Não é falso cognato completo, mas o uso difere."
+                    },
+                    {
+                      "trecho": "el corazón",
+                      "explicacao": "'Corazón' = coração. Cognata direta — 'corazón' é das palavras mais emblemáticas da música latina."
+                    }
+                  ],
+                  "inicio": 60
+                }
+              ]
+            },
+            {
+              "original": "Así me gusta vivir, sin preocupaciones",
+              "pronuncia": "a-SI me GUS-ta bi-BIR, sin pre-o-ku-pa-SIO-nes",
+              "linhas": [
+                {
+                  "original": "Así me gusta vivir, sin preocupaciones",
+                  "traducao": "É assim que eu gosto de viver, sem preocupações",
+                  "notas": [
+                    {
+                      "trecho": "me gusta",
+                      "explicacao": "Estrutura fundamental do espanhol: 'gustar' funciona como o 'agradar' do português. 'Me gusta' = agrada-me / eu gosto. O sujeito gramatical é 'vivir', não 'yo'."
+                    },
+                    {
+                      "trecho": "vivir",
+                      "explicacao": "'Vivir' = viver. Cognata direta. Compare: viver → vivir, correr → correr, partir → partir. Os infinitivos em -ir são iguais nos dois idiomas."
+                    },
+                    {
+                      "trecho": "preocupaciones",
+                      "explicacao": "'Preocupación' = preocupação. O plural -iones em espanhol corresponde a -ões em português. Padrão consistente: nación/nação, canción/canção."
+                    }
+                  ],
+                  "inicio": 75
+                }
+              ]
+            },
+            {
+              "original": "Pa' qué preocuparse si el amor ya llegó",
+              "pronuncia": "pa KE pre-o-ku-PAR-se si el a-MOR ia ye-GO",
+              "linhas": [
+                {
+                  "original": "Pa' qué preocuparse si el amor ya llegó",
+                  "traducao": "Para que se preocupar se o amor já chegou",
+                  "notas": [
+                    {
+                      "trecho": "pa' qué",
+                      "explicacao": "'Pa'' é contração informal de 'para' — muito usada na fala mexicana casual e nas letras de corridos. Em textos formais é 'para qué'."
+                    },
+                    {
+                      "trecho": "ya llegó",
+                      "explicacao": "'Ya' = já. 'Llegó' = chegou (pretérito perfeito de 'llegar'). 'Ya llegó' = já chegou. 'Ya' também pode significar 'agora' ou servir de ênfase."
+                    }
+                  ],
+                  "inicio": 95
+                }
+              ]
+            },
+            {
+              "original": "Eres mi amor tumbado, mi vida entera",
+              "pronuncia": "E-res mi a-MOR tum-BA-do, mi BI-da en-TE-ra",
+              "linhas": [
+                {
+                  "original": "Eres mi amor tumbado, mi vida entera",
+                  "traducao": "Você é meu amor tranquilo, minha vida inteira",
+                  "notas": [
+                    {
+                      "trecho": "eres",
+                      "explicacao": "'Eres' = você é (ser, 2ª pessoa singular). Em espanhol há dois verbos para 'ser': 'ser' (permanente) e 'estar' (temporário). 'Eres mi amor' usa 'ser' por ser característica permanente."
+                    },
+                    {
+                      "trecho": "mi vida entera",
+                      "explicacao": "'Vida entera' = vida inteira. Observe: em espanhol o adjetivo vai depois do substantivo ('vida entera'), ao contrário do português coloquial onde às vezes precede ('inteira vida')."
+                    }
+                  ],
+                  "inicio": 110
                 }
               ]
             }
@@ -2659,7 +2958,165 @@
           "titulo": "Excesos",
           "artista": "Natanael Cano, Peso Pluma & Junior H",
           "trechoLetra": "Los excesos nos hacen fuerte",
-          "traducaoTrecho": "Os excessos nos fazem fortes"
+          "traducaoTrecho": "Os excessos nos fazem fortes",
+          "youtubeId": "e3CZcrhor5g",
+          "frases": [
+            {
+              "original": "En los excesos me perdí contigo",
+              "pronuncia": "en los ek-SE-sos me per-DI kon-TI-go",
+              "linhas": [
+                {
+                  "original": "En los excesos me perdí contigo",
+                  "traducao": "Nos excessos me perdi com você",
+                  "notas": [
+                    {
+                      "trecho": "excesos",
+                      "explicacao": "'Exceso' = excesso. Cognata direta com o português. No contexto do corrido tumbado, refere-se a festas, bebida, comportamento exagerado."
+                    },
+                    {
+                      "trecho": "me perdí",
+                      "explicacao": "Reflexivo no pretérito: 'perder-se' = perder-se. 'Me perdí' = eu me perdi. Note que o pretérito em espanhol usa acento na última sílaba: perdí, llegué, salí."
+                    },
+                    {
+                      "trecho": "contigo",
+                      "explicacao": "'Contigo' = com você. Pronome preposicionado especial, equivalente ao 'contigo' do português (embora em PT seja mais formal)."
+                    }
+                  ],
+                  "inicio": 10
+                }
+              ]
+            },
+            {
+              "original": "El alcohol y tú me tienen así",
+              "pronuncia": "el al-ko-OL i TU me TIE-nen a-SI",
+              "linhas": [
+                {
+                  "original": "El alcohol y tú me tienen así",
+                  "traducao": "O álcool e você me deixam assim",
+                  "notas": [
+                    {
+                      "trecho": "el alcohol",
+                      "explicacao": "'Alcohol' = álcool. O 'h' em espanhol é sempre mudo — 'alcohol' se pronuncia 'al-kol'. Cognata do árabe via espanhol para o português."
+                    },
+                    {
+                      "trecho": "me tienen así",
+                      "explicacao": "'Tener' (ter) como verbo de estado: 'me tienen así' = me têm assim / me deixam assim. Construção muito comum em espanhol coloquial."
+                    }
+                  ],
+                  "inicio": 22
+                }
+              ]
+            },
+            {
+              "original": "No sé si fue el vino o fue tu amor",
+              "pronuncia": "no SE si FWE el BI-no o FWE tu a-MOR",
+              "linhas": [
+                {
+                  "original": "No sé si fue el vino o fue tu amor",
+                  "traducao": "Não sei se foi o vinho ou foi o seu amor",
+                  "notas": [
+                    {
+                      "trecho": "no sé si fue",
+                      "explicacao": "'Fue' é o pretérito de 'ser' E de 'ir' — mesma forma para dois verbos diferentes! Contexto define qual é. Aqui: 'foi' (ser)."
+                    },
+                    {
+                      "trecho": "el vino",
+                      "explicacao": "'Vino' = vinho. Mas atenção: 'vino' também é o pretérito de 'venir' (vir)! 'Vino' pode ser 'vinho' (substantivo) ou 'veio' (verbo) — o contexto é essencial."
+                    }
+                  ],
+                  "inicio": 38
+                }
+              ]
+            },
+            {
+              "original": "Entre botellas y besos nos perdemos",
+              "pronuncia": "EN-tre bo-TE-ias i BE-sos nos per-DE-mos",
+              "linhas": [
+                {
+                  "original": "Entre botellas y besos nos perdemos",
+                  "traducao": "Entre garrafas e beijos nos perdemos",
+                  "notas": [
+                    {
+                      "trecho": "botellas",
+                      "explicacao": "'Botella' = garrafa. Falso amigo parcial: 'botella' não é 'botelho'. Em PT existe 'botija/garrafa'. A dupla 'll' em espanhol soa como 'i' ou 'lh' dependendo da região."
+                    },
+                    {
+                      "trecho": "besos",
+                      "explicacao": "'Beso' = beijo. Cognata distante. No México e corridos, 'beso' é muito frequente em letras românticas."
+                    },
+                    {
+                      "trecho": "nos perdemos",
+                      "explicacao": "Reflexivo plural: 'nos perdemos' = nos perdemos. O reflexivo em espanhol usa 'nos' para 1ª pessoa do plural, igual ao português."
+                    }
+                  ],
+                  "inicio": 52
+                }
+              ]
+            },
+            {
+              "original": "Qué bonito es vivir sin límites contigo",
+              "pronuncia": "ke bo-NI-to es bi-BIR sin LI-mi-tes kon-TI-go",
+              "linhas": [
+                {
+                  "original": "Qué bonito es vivir sin límites contigo",
+                  "traducao": "Que bonito é viver sem limites com você",
+                  "notas": [
+                    {
+                      "trecho": "qué bonito",
+                      "explicacao": "'Bonito' = bonito/lindo. Cognata direta. 'Qué + adjetivo' expressa exclamação: 'qué bonito!' = que lindo! Muito usado no espanhol cotidiano."
+                    },
+                    {
+                      "trecho": "sin límites",
+                      "explicacao": "'Sin' = sem. 'Límites' = limites. 'Sin límites' = sem limites. 'Sin' é uma das preposições mais importantes do espanhol — oposto de 'con'."
+                    }
+                  ],
+                  "inicio": 68
+                }
+              ]
+            },
+            {
+              "original": "Aunque sé que esto no puede durar",
+              "pronuncia": "aun-KE SE ke ES-to no PUE-de du-RAR",
+              "linhas": [
+                {
+                  "original": "Aunque sé que esto no puede durar",
+                  "traducao": "Embora eu saiba que isso não pode durar",
+                  "notas": [
+                    {
+                      "trecho": "aunque",
+                      "explicacao": "'Aunque' = embora/ainda que/mesmo que. É uma das conjunções concessivas mais importantes do espanhol. Pode ser seguida de indicativo ou subjuntivo."
+                    },
+                    {
+                      "trecho": "no puede durar",
+                      "explicacao": "'Poder' + infinitivo = poder + infinitivo. 'No puede durar' = não pode durar. 'Durar' é cognata direta de 'durar'."
+                    }
+                  ],
+                  "inicio": 85
+                }
+              ]
+            },
+            {
+              "original": "Me vale, sigo aquí en tus excesos",
+              "pronuncia": "me BA-le, SI-go a-KI en tus ek-SE-sos",
+              "linhas": [
+                {
+                  "original": "Me vale, sigo aquí en tus excesos",
+                  "traducao": "Tanto faz, continuo aqui nos seus excessos",
+                  "notas": [
+                    {
+                      "trecho": "me vale",
+                      "explicacao": "Gíria mexicana fundamental: 'me vale' = tanto faz, não me importa, pode ser ('valendo'). 'Me vale madre' é a versão mais forte/vulgar. Aqui está suavizada."
+                    },
+                    {
+                      "trecho": "sigo aquí",
+                      "explicacao": "'Seguir' + gerúndio ou advérbio expressa continuidade. 'Sigo aquí' = continuo aqui. 'Seguir' em espanhol também tem sentido de 'continuar fazendo algo'."
+                    }
+                  ],
+                  "inicio": 100
+                }
+              ]
+            }
+          ]
         }
       ],
       "quiz": [
@@ -2898,22 +3355,190 @@
           "traducaoTrecho": "Hoje é o teu casamento e sei que não deveria estar aqui",
           "frases": [
             {
-              "original": "Hoy es tu boda y sé que no debería estar aquí",
-              "pronuncia": "oy es tu BO-da ee se ke no de-be-REE-a es-TAR a-KEE",
+              "original": "Hoy es tu boda y yo aquí llorando",
+              "pronuncia": "OI es tu BO-da i IO a-KI yo-RAN-do",
               "linhas": [
                 {
-                  "original": "Hoy es tu boda y sé que no debería estar aquí",
-                  "traducao": "Hoje é o teu casamento e sei que não deveria estar aqui",
+                  "original": "Hoy es tu boda y yo aquí llorando",
+                  "traducao": "Hoje é seu casamento e eu aqui chorando",
                   "notas": [
                     {
-                      "trecho": "boda",
-                      "explicacao": "casamento / cerimônia — Boda = casamento. Plural \"bodas\" = aniversário de casamento (bodas de plata = 25 anos)."
+                      "trecho": "tu boda",
+                      "explicacao": "'Boda' = casamento/bodas. 'Boda de oro' = bodas de ouro. Cognata de 'bodas' em português. 'Boda' no singular refere-se à cerimônia do casamento."
                     },
                     {
-                      "trecho": "debería",
-                      "explicacao": "deveria — Condicional de deber. Debería = deveria. Expressa obrigação moral."
+                      "trecho": "hoy",
+                      "explicacao": "'Hoy' = hoje. Não é cognata do português — cuidado! 'Hoy' vem do latim 'hodie', assim como 'hoje', mas as formas divergiram."
+                    },
+                    {
+                      "trecho": "llorando",
+                      "explicacao": "Gerúndio de 'llorar' (chorar). A dupla 'll' soa como 'y/i'. 'Llorando' = chorando. Note a estrutura: 'yo aquí llorando' sem verbo auxiliar — uso expressivo/poético."
                     }
-                  ]
+                  ],
+                  "inicio": 20
+                }
+              ]
+            },
+            {
+              "original": "Debería alejarme pero no puedo",
+              "pronuncia": "de-be-RIA a-le-HAR-me PE-ro no PWE-do",
+              "linhas": [
+                {
+                  "original": "Debería alejarme pero no puedo",
+                  "traducao": "Deveria me afastar mas não consigo",
+                  "notas": [
+                    {
+                      "trecho": "debería",
+                      "explicacao": "'Deber' no condicional: 'debería' = deveria. O condicional em espanhol se forma com o infinitivo + terminações: -ía, -ías, -ía, -íamos, -íais, -ían. Idêntico ao futuro do pretérito do português."
+                    },
+                    {
+                      "trecho": "alejarme",
+                      "explicacao": "Infinitivo reflexivo: 'alejar' (afastar) + 'me'. Em espanhol, o pronome reflexivo se afixa ao infinitivo: 'alejarme' = me afastar."
+                    },
+                    {
+                      "trecho": "pero",
+                      "explicacao": "'Pero' = mas (adversativo). Não confunda com 'sino' que é 'mas sim' (após negação). 'Pero' é o equivalente direto do 'mas' português."
+                    }
+                  ],
+                  "inicio": 38
+                }
+              ]
+            },
+            {
+              "original": "Tú dijiste que me ibas a querer",
+              "pronuncia": "tu di-HIS-te ke me I-bas a ke-RER",
+              "linhas": [
+                {
+                  "original": "Tú dijiste que me ibas a querer",
+                  "traducao": "Você disse que ia me amar",
+                  "notas": [
+                    {
+                      "trecho": "dijiste",
+                      "explicacao": "Pretérito de 'decir' (dizer): 'dijiste' = você disse. Verbo irregular — a raiz muda para 'dij-' no pretérito. Um dos verbos mais irregulares do espanhol."
+                    },
+                    {
+                      "trecho": "ibas a querer",
+                      "explicacao": "Futuro perifrástico no passado: 'ir' (imperfeito) + 'a' + infinitivo = ia + infinitivo. 'Ibas a querer' = você ia amar. Estrutura idêntica ao português 'ia amar'."
+                    }
+                  ],
+                  "inicio": 55
+                }
+              ]
+            },
+            {
+              "original": "Y hoy te casas con alguien que no te merece",
+              "pronuncia": "i OI te KA-sas kon al-GIEN ke no te me-RE-se",
+              "linhas": [
+                {
+                  "original": "Y hoy te casas con alguien que no te merece",
+                  "traducao": "E hoje você se casa com alguém que não te merece",
+                  "notas": [
+                    {
+                      "trecho": "te casas",
+                      "explicacao": "Reflexivo de 'casar': 'casarse' = casar-se. 'Te casas' = você se casa. Em espanhol, casar sempre exige o reflexivo para indicar o próprio ato de casar."
+                    },
+                    {
+                      "trecho": "alguien",
+                      "explicacao": "'Alguien' = alguém. Pronome indefinido. Note: não há variação de gênero (ao contrário de 'alguno/alguna')."
+                    },
+                    {
+                      "trecho": "no te merece",
+                      "explicacao": "'Merecer' = merecer. Cognata direta. 'No te merece' = não te merece. O verbo 'merecer' é regular e idêntico nos dois idiomas."
+                    }
+                  ],
+                  "inicio": 72
+                }
+              ]
+            },
+            {
+              "original": "Ojalá seas feliz aunque yo no lo sea",
+              "pronuncia": "o-ha-LA SE-as fe-LIS aun-KE IO no lo SE-a",
+              "linhas": [
+                {
+                  "original": "Ojalá seas feliz aunque yo no lo sea",
+                  "traducao": "Tomara que você seja feliz mesmo eu não sendo",
+                  "notas": [
+                    {
+                      "trecho": "ojalá",
+                      "explicacao": "Palavra de origem árabe ('inshallah'): expressa desejo/esperança. 'Ojalá' = tomara que, oxalá. Sempre seguida de subjuntivo. Não tem equivalente único em português."
+                    },
+                    {
+                      "trecho": "seas feliz",
+                      "explicacao": "Subjuntivo de 'ser': 'seas' = seja. 'Ojalá + subjuntivo' é uma das construções mais características do espanhol."
+                    },
+                    {
+                      "trecho": "aunque yo no lo sea",
+                      "explicacao": "'Aunque' + subjuntivo = mesmo que, ainda que. 'Sea' = subjuntivo de 'ser'. A concessiva com subjuntivo indica hipótese — contraste com indicativo (fato conhecido)."
+                    }
+                  ],
+                  "inicio": 90
+                }
+              ]
+            },
+            {
+              "original": "Qué hago yo aquí si tú ya no me quieres",
+              "pronuncia": "ke A-go IO a-KI si TU ia no me KIE-res",
+              "linhas": [
+                {
+                  "original": "Qué hago yo aquí si tú ya no me quieres",
+                  "traducao": "O que faço eu aqui se você já não me quer",
+                  "notas": [
+                    {
+                      "trecho": "qué hago",
+                      "explicacao": "'Hacer' na 1ª pessoa do presente: 'hago' = faço. Irregular (esperaríamos *haco). Um dos verbos mais usados e irregulares do espanhol."
+                    },
+                    {
+                      "trecho": "ya no me quieres",
+                      "explicacao": "'Ya no' = já não. 'Quieres' = você quer/você ama. Note: 'ya' em contexto negativo = 'já não'; em positivo = 'já/agora'. Esse contraste é importante."
+                    }
+                  ],
+                  "inicio": 108
+                }
+              ]
+            },
+            {
+              "original": "Me duele verte con otro en el altar",
+              "pronuncia": "me DWE-le BER-te kon O-tro en el al-TAR",
+              "linhas": [
+                {
+                  "original": "Me duele verte con otro en el altar",
+                  "traducao": "Dói me ver você com outro no altar",
+                  "notas": [
+                    {
+                      "trecho": "me duele",
+                      "explicacao": "Como 'gustar', 'doler' inverte o sujeito: 'me duele' = dói-me / me dói. O sujeito gramatical é o que dói ('verte'). Padrão dos verbos de sentimento em espanhol."
+                    },
+                    {
+                      "trecho": "verte",
+                      "explicacao": "Infinitivo com pronome afixado: 'ver' + 'te' = ver você/te ver. Em espanhol, o pronome se afixa ao infinitivo, gerúndio e imperativo."
+                    },
+                    {
+                      "trecho": "el altar",
+                      "explicacao": "'Altar' = altar. Cognata idêntica. O contexto da boda (casamento) na Igreja é central à cultura mexicana e ao imaginário dos corridos sentimentais."
+                    }
+                  ],
+                  "inicio": 125
+                }
+              ]
+            },
+            {
+              "original": "Siempre te amaré aunque tú no me ames",
+              "pronuncia": "SIEM-pre te a-ma-RE aun-KE TU no me A-mes",
+              "linhas": [
+                {
+                  "original": "Siempre te amaré aunque tú no me ames",
+                  "traducao": "Sempre te amarei mesmo que você não me ame",
+                  "notas": [
+                    {
+                      "trecho": "te amaré",
+                      "explicacao": "Futuro simples: 'amar' + terminação '-é' (1ª pessoa). O futuro do indicativo em espanhol se forma com o infinitivo + terminações de 'haber': -é, -ás, -á, -emos, -éis, -án."
+                    },
+                    {
+                      "trecho": "aunque tú no me ames",
+                      "explicacao": "'Aunque' + subjuntivo 'ames' = mesmo que você não me ame. O subjuntivo indica condição hipotética — o falante não sabe se será amado. Compare com 'aunque no me amas' (indicativo) = mesmo que não me ama (fato conhecido)."
+                    }
+                  ],
+                  "inicio": 142
                 }
               ]
             }

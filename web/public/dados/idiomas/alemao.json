@@ -1670,10 +1670,320 @@
           "traducaoTrecho": "Sem fôlego pela noite, até um novo dia despertar",
           "frases": [
             {
-              "original": "Atemlos durch die Nacht, bis ein neuer Tag erwacht",
-              "traducao": "Sem fôlego pela noite, até um novo dia despertar",
-              "vocabulario": [],
-              "pronuncia": ""
+              "original": "Atemlos durch die Nacht\nbis ein neuer Tag erwacht",
+              "pronuncia": "A-tem-LOS durtch di NACHT\nbis ain NOI-er TAK er-VACHT",
+              "linhas": [
+                {
+                  "original": "Atemlos durch die Nacht",
+                  "traducao": "Sem fôlego pela noite",
+                  "notas": [
+                    {
+                      "trecho": "Atemlos",
+                      "explicacao": "Palavra composta: Atem (fôlego, respiração) + los (sufixo que indica ausência, como '-less' em inglês). Aqui funciona como advérbio, sem fôlego. Pronúncia: o 'a' inicial é aberto, 'los' rima com 'bos'."
+                    },
+                    {
+                      "trecho": "durch",
+                      "explicacao": "Preposição que significa 'através de' ou 'pela'. Em alemão, 'durch' sempre rege o Akkusativ (caso acusativo), por isso o artigo seguinte é 'die' (acusativo feminino)."
+                    },
+                    {
+                      "trecho": "die Nacht",
+                      "explicacao": "'A noite'. 'die' é o artigo definido feminino no alemão. Substantivos femininos sempre usam 'die' no Nominativ e no Akkusativ. A letra 'ch' após vogal posterior soa como um 'h' fricativo gutural."
+                    }
+                  ],
+                  "inicio": 15
+                },
+                {
+                  "original": "bis ein neuer Tag erwacht",
+                  "traducao": "até um novo dia despertar",
+                  "notas": [
+                    {
+                      "trecho": "bis",
+                      "explicacao": "Conjunção/preposição que significa 'até'. Inicia uma oração subordinada temporal."
+                    },
+                    {
+                      "trecho": "ein neuer Tag",
+                      "explicacao": "'Um novo dia'. 'Tag' (dia) é masculino: Nominativ usa 'ein'. O adjetivo 'neuer' recebe terminação '-er' porque segue artigo indefinido no Nominativ masculino (declinação mista)."
+                    },
+                    {
+                      "trecho": "erwacht",
+                      "explicacao": "Verbo 'erwachen' (despertar) na 3ª pessoa do singular. IMPORTANTE: em orações subordinadas introduzidas por 'bis', o verbo vai para o FINAL da frase — regra fundamental da ordem das palavras em alemão."
+                    }
+                  ],
+                  "inicio": 20
+                }
+              ]
+            },
+            {
+              "original": "Komm und tanz mit mir\nFühl den Herzschlag hier",
+              "pronuncia": "KOM unt TANTS mit IER\nFIUL den HERTS-schlag HIER",
+              "linhas": [
+                {
+                  "original": "Komm und tanz mit mir",
+                  "traducao": "Vem e dança comigo",
+                  "notas": [
+                    {
+                      "trecho": "Komm",
+                      "explicacao": "Imperativo do verbo 'kommen' (vir). No imperativo informal (du), o alemão usa apenas o radical: komm! (vem!), geh! (vai!), tanz! (dança!)."
+                    },
+                    {
+                      "trecho": "mit mir",
+                      "explicacao": "'Comigo'. 'mit' é uma preposição que sempre rege Dativ. 'mir' é o pronome pessoal 'eu' no caso Dativ. Compare: ich (Nominativ), mich (Akkusativ), mir (Dativ)."
+                    }
+                  ],
+                  "inicio": 32
+                },
+                {
+                  "original": "Fühl den Herzschlag hier",
+                  "traducao": "Sente a batida do coração aqui",
+                  "notas": [
+                    {
+                      "trecho": "Fühl",
+                      "explicacao": "Imperativo de 'fühlen' (sentir). A vogal 'ü' é um som específico do alemão: pronuncia-se com os lábios arredondados como para dizer 'u', mas tentando dizer 'i'. Não existe no português."
+                    },
+                    {
+                      "trecho": "Herzschlag",
+                      "explicacao": "Palavra composta típica do alemão: Herz (coração) + Schlag (batida/pancada) = batimento cardíaco. O alemão forma palavras novas juntando substantivos. 'sch' soa como 'ch' no português ('chave')."
+                    }
+                  ],
+                  "inicio": 37
+                }
+              ]
+            },
+            {
+              "original": "Ich will nur tanzen heute Nacht\nbis der Morgen graut",
+              "pronuncia": "ICH vil NUR TANTSEN HOI-te NACHT\nbis der MOR-gen grAUT",
+              "linhas": [
+                {
+                  "original": "Ich will nur tanzen heute Nacht",
+                  "traducao": "Eu só quero dançar esta noite",
+                  "notas": [
+                    {
+                      "trecho": "Ich will",
+                      "explicacao": "'Eu quero'. 'wollen' é um verbo modal em alemão. Verbos modais (wollen, können, müssen, dürfen, sollen, mögen) modificam outros verbos e enviam o infinitivo para o final da frase."
+                    },
+                    {
+                      "trecho": "tanzen",
+                      "explicacao": "Infinitivo de 'dançar'. Fica no final da frase por ser o verbo principal governado pelo modal 'will'. Ordem: Sujeito + Modal + ... + Infinitivo."
+                    },
+                    {
+                      "trecho": "heute Nacht",
+                      "explicacao": "'Esta noite / hoje à noite'. 'heute' = hoje. Em alemão, expressões de tempo com dias e partes do dia frequentemente dispensam preposição."
+                    }
+                  ],
+                  "inicio": 55
+                },
+                {
+                  "original": "bis der Morgen graut",
+                  "traducao": "até o amanhecer",
+                  "notas": [
+                    {
+                      "trecho": "der Morgen",
+                      "explicacao": "'A manhã / o amanhecer'. 'der' é o artigo masculino. 'Morgen' como substantivo = manhã. Como advérbio = amanhã. O contexto diferencia os dois."
+                    },
+                    {
+                      "trecho": "graut",
+                      "explicacao": "Verbo 'grauen' (amanhecer, clarear). Literalmente 'ficar cinza' — o céu fica cinza antes do sol nascer. Verbo no final por estar em oração subordinada com 'bis'."
+                    }
+                  ],
+                  "inicio": 60
+                }
+              ]
+            },
+            {
+              "original": "Wir sind jung\ndie Nacht ist jung",
+              "pronuncia": "VIR zint YUNG\ndi NACHT ist YUNG",
+              "linhas": [
+                {
+                  "original": "Wir sind jung",
+                  "traducao": "Nós somos jovens",
+                  "notas": [
+                    {
+                      "trecho": "Wir sind",
+                      "explicacao": "'Nós somos'. 'sein' (ser/estar) é irregular: ich bin, du bist, er/sie/es ist, wir sind, ihr seid, sie sind. É o verbo mais fundamental do alemão."
+                    },
+                    {
+                      "trecho": "jung",
+                      "explicacao": "'Jovem'. Adjetivo predicativo (depois do verbo) não recebe terminação. Compare: 'jung' (predicativo) vs. 'ein junger Mann' (atributivo, antes do substantivo, recebe terminação)."
+                    }
+                  ],
+                  "inicio": 85
+                },
+                {
+                  "original": "die Nacht ist jung",
+                  "traducao": "a noite é jovem",
+                  "notas": [
+                    {
+                      "trecho": "die Nacht ist jung",
+                      "explicacao": "Expressão idiomática: 'a noite ainda é jovem', ou seja, ainda há muito tempo pela frente. Em alemão, a ordem básica é: Sujeito + Verbo + Resto (SVO), com o verbo sempre na segunda posição."
+                    }
+                  ],
+                  "inicio": 88
+                }
+              ]
+            },
+            {
+              "original": "Frei wie der Wind\nschnell wie das Licht",
+              "pronuncia": "FRAI vi der VINT\nCHNEL vi das LICHT",
+              "linhas": [
+                {
+                  "original": "Frei wie der Wind",
+                  "traducao": "Livre como o vento",
+                  "notas": [
+                    {
+                      "trecho": "frei",
+                      "explicacao": "'Livre'. Adjetivo predicativo ou adverbial. O ditongo 'ei' soa como 'ai' em português."
+                    },
+                    {
+                      "trecho": "wie der Wind",
+                      "explicacao": "'Como o vento'. 'wie' = como (em comparações). 'Wind' (vento) é masculino: der Wind. O 'W' em alemão sempre soa como 'v' em português."
+                    }
+                  ],
+                  "inicio": 112
+                },
+                {
+                  "original": "schnell wie das Licht",
+                  "traducao": "rápido como a luz",
+                  "notas": [
+                    {
+                      "trecho": "schnell",
+                      "explicacao": "'Rápido'. 'sch' soa como 'ch' em 'chave'. Pronúncia: 'chnel'."
+                    },
+                    {
+                      "trecho": "das Licht",
+                      "explicacao": "'A luz'. 'das' é o artigo neutro. Alemão tem 3 gêneros: masculino (der), feminino (die) e neutro (das). 'ch' após vogal frontal (i, e) soa como 'h' suave, quase como 'hi' sussurrado."
+                    }
+                  ],
+                  "inicio": 115
+                }
+              ]
+            },
+            {
+              "original": "Spür die Energie\nlass uns fliegen",
+              "pronuncia": "CHPÜR di ener-GIE\nlas uns FLI-gen",
+              "linhas": [
+                {
+                  "original": "Spür die Energie",
+                  "traducao": "Sente a energia",
+                  "notas": [
+                    {
+                      "trecho": "Spür",
+                      "explicacao": "Imperativo de 'spüren' (sentir/perceber fisicamente). O 'ü' arredondado: lábios em 'u', língua em posição de 'i'. O 'sp' no início de palavra soa como 'chp'."
+                    },
+                    {
+                      "trecho": "Energie",
+                      "explicacao": "Palavra internacional! Em alemão, o acento cai na última sílaba: ener-GIE. Muitas palavras de origem grega/latina são reconhecíveis no alemão, mas a pronúncia pode ser diferente."
+                    }
+                  ],
+                  "inicio": 125
+                },
+                {
+                  "original": "lass uns fliegen",
+                  "traducao": "deixa a gente voar",
+                  "notas": [
+                    {
+                      "trecho": "lass uns",
+                      "explicacao": "'Deixa a gente / vamos'. 'lassen' + uns + infinitivo = estrutura para 'vamos fazer algo'. Similar ao francês 'laissez-nous'. Imperativo de 'lassen': lass!"
+                    },
+                    {
+                      "trecho": "fliegen",
+                      "explicacao": "'Voar'. Infinitivo no final por ser governado por 'lassen'. Vogal 'ie' soa como 'i' longo: FLI-gen."
+                    }
+                  ],
+                  "inicio": 128
+                }
+              ]
+            },
+            {
+              "original": "Hand in Hand\ndurch die ganze Nacht",
+              "pronuncia": "HANT in HANT\ndurtch di GAN-tse NACHT",
+              "linhas": [
+                {
+                  "original": "Hand in Hand",
+                  "traducao": "De mãos dadas",
+                  "notas": [
+                    {
+                      "trecho": "Hand in Hand",
+                      "explicacao": "Expressão idiomática: literalmente 'mão em mão'. Em alemão, 'Hand' (mão) é feminino: die Hand. Plural: die Hände (com Umlaut — trema que muda a pronúncia da vogal)."
+                    }
+                  ],
+                  "inicio": 155
+                },
+                {
+                  "original": "durch die ganze Nacht",
+                  "traducao": "pela noite toda",
+                  "notas": [
+                    {
+                      "trecho": "ganze",
+                      "explicacao": "'Toda/inteira'. Adjetivo que recebe terminação '-e' após artigo definido no Akkusativ feminino ('die'). A sequência 'durch + die + adjetivo + Nacht' mostra: preposição (Akkusativ) + artigo fem. Akk. + adjetivo com terminação fraca + substantivo."
+                    }
+                  ],
+                  "inicio": 158
+                }
+              ]
+            },
+            {
+              "original": "Kein Schlaf, kein Müde\nnur diese Melodie",
+              "pronuncia": "KAIN CHLAF, kain MÜ-de\nnur DI-ze melo-DIE",
+              "linhas": [
+                {
+                  "original": "Kein Schlaf, kein Müde",
+                  "traducao": "Sem sono, sem cansaço",
+                  "notas": [
+                    {
+                      "trecho": "kein",
+                      "explicacao": "'Nenhum/nenhuma/sem'. É o artigo indefinido negativo em alemão. Concorda com o substantivo: kein (masculino/neutro), keine (feminino/plural). 'Kein Schlaf' = sem sono (Schlaf é masculino)."
+                    },
+                    {
+                      "trecho": "Müde",
+                      "explicacao": "Normalmente adjetivo ('cansado/a'), mas aqui usado como substantivo (substantivação de adjetivo — muito comum em alemão). O 'ü' é o mesmo som arredondado: lábios em 'u', som de 'i'."
+                    }
+                  ],
+                  "inicio": 175
+                },
+                {
+                  "original": "nur diese Melodie",
+                  "traducao": "apenas esta melodia",
+                  "notas": [
+                    {
+                      "trecho": "diese",
+                      "explicacao": "'Esta/esse'. Pronome demonstrativo. 'diese' é a forma feminina: diese Melodie (feminino Akkusativ). Compare: dieser (masc.), dieses (neutro), diese (fem./plural)."
+                    },
+                    {
+                      "trecho": "Melodie",
+                      "explicacao": "Palavra internacional! O acento em alemão cai na última sílaba: melo-DIE. Em português falamos 'me-LO-dia' — posição do acento diferente!"
+                    }
+                  ],
+                  "inicio": 180
+                }
+              ]
+            },
+            {
+              "original": "Wir tanzen weiter\nbis das Licht uns findet",
+              "pronuncia": "VIR TANT-sen VAI-ter\nbis das LICHT uns FIN-det",
+              "linhas": [
+                {
+                  "original": "Wir tanzen weiter",
+                  "traducao": "Continuamos dançando",
+                  "notas": [
+                    {
+                      "trecho": "tanzen weiter",
+                      "explicacao": "'Weiter' com um verbo = continuar fazendo algo (weitertanzen = continuar dançando). Prefixos separáveis como 'weiter-' ficam no final da frase na forma conjugada: 'Wir tanzen weiter'."
+                    }
+                  ],
+                  "inicio": 195
+                },
+                {
+                  "original": "bis das Licht uns findet",
+                  "traducao": "até a luz nos encontrar",
+                  "notas": [
+                    {
+                      "trecho": "bis das Licht uns findet",
+                      "explicacao": "Oração subordinada com 'bis': verbo 'findet' vai para o final. 'uns' = nos (pronome Dativ/Akkusativ plural de 'wir'). 'finden' = encontrar. Note: sujeito é 'das Licht', objeto é 'uns'."
+                    }
+                  ],
+                  "inicio": 200
+                }
+              ]
             }
           ]
         }
