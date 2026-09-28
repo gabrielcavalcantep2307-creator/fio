@@ -419,91 +419,263 @@
           "frases": [
             {
               "original": "Donnez-moi une suite au Ritz, je n'en veux pas\nDes bijoux de chez Chanel, je n'en veux pas",
-              "traducao": "Me dêem uma suíte no Ritz, eu não quero\nJoias da Chanel, eu não quero",
-              "vocabulario": [
+              "pronuncia": "donê-muá ün süít o rits, jə nã vø pá / dê bijú də chê chanél, jə nã vø pá",
+              "linhas": [
                 {
-                  "palavra": "donnez-moi",
-                  "significado": "me dêem / me dem",
-                  "detalhe": "Imperativo de \"donner\" (dar). \"Moi\" é o pronome tônico para \"eu/me\".",
-                  "sinonimos": "offrez-moi"
+                  "original": "Donnez-moi une suite au Ritz, je n'en veux pas",
+                  "traducao": "Me deem uma suíte no Ritz, eu não quero",
+                  "notas": [
+                    {
+                      "trecho": "donnez-moi",
+                      "explicacao": "me deem / me dê — Imperativo de \"donner\" (dar) na 2ª pessoa do plural — o \"vous\" educado, usado mesmo falando com uma pessoa só. — Sinônimos: offrez-moi"
+                    },
+                    {
+                      "trecho": "une suite",
+                      "explicacao": "uma suíte (de hotel) — Pronuncia-se \"süít\". Parece com o português, mas não é cognato por acaso: as duas línguas pegaram a palavra do inglês."
+                    },
+                    {
+                      "trecho": "je n'en veux pas",
+                      "explicacao": "eu não quero (disso) — \"En\" retoma o que já foi dito sem repetir a palavra — evita repetir \"suite\" ou \"bijoux\". Na fala real o \"ne\" quase sempre cai (\"j'en veux pas\"); aqui ele aparece porque é letra cantada, mais formal que a fala do dia a dia."
+                    }
+                  ],
+                  "inicio": 13.3
                 },
                 {
-                  "palavra": "suite",
-                  "significado": "suíte (de hotel)",
-                  "detalhe": "Mesmo significado que em português. Pronuncia-se \"süít\".",
-                  "sinonimos": "chambre de luxe"
-                },
-                {
-                  "palavra": "je n'en veux pas",
-                  "significado": "eu não quero (disso)",
-                  "detalhe": "\"En\" substitui o objeto mencionado antes. \"Veux\" vem de \"vouloir\" (querer). A negação é ne...pas."
-                },
-                {
-                  "palavra": "bijoux",
-                  "significado": "joias",
-                  "detalhe": "Plural irregular: bijou → bijoux. Pronuncia-se \"bijú\"."
+                  "original": "Des bijoux de chez Chanel, je n'en veux pas",
+                  "traducao": "Joias da Chanel, eu não quero",
+                  "notas": [
+                    {
+                      "trecho": "je n'en veux pas",
+                      "explicacao": "eu não quero (disso) — \"En\" retoma o que já foi dito sem repetir a palavra — evita repetir \"suite\" ou \"bijoux\". Na fala real o \"ne\" quase sempre cai (\"j'en veux pas\"); aqui ele aparece porque é letra cantada, mais formal que a fala do dia a dia."
+                    },
+                    {
+                      "trecho": "bijoux",
+                      "explicacao": "joias — Plural irregular: bijou → bijoux (não é \"bijous\"). \"De chez Chanel\" é literalmente \"da casa da Chanel\" — \"chez\" + nome próprio = \"na loja/casa de\"."
+                    }
+                  ],
+                  "inicio": 16.4
                 }
-              ],
-              "pronuncia": "donê-muá ün süít o rits, jə nã vø pá / dê bijú də chê chanél, jə nã vø pá"
+              ]
             },
             {
               "original": "Donnez-moi une limousine, j'en ferais quoi?\nOffrez-moi du personnel, j'en ferais quoi?",
-              "traducao": "Me dêem uma limusine, eu faria o quê?\nMe ofereçam funcionários, eu faria o quê?",
-              "vocabulario": [
+              "pronuncia": "donê-muá ün limuzín, jã fərê kuá / ofrê-muá dü personél, jã fərê kuá",
+              "linhas": [
                 {
-                  "palavra": "limousine",
-                  "significado": "limusine",
-                  "detalhe": "Mesma palavra em português. Pronuncia-se \"limuzin\"."
+                  "original": "Donnez-moi une limousine, j'en ferais quoi?",
+                  "traducao": "Me deem uma limusine, eu faria o quê?",
+                  "notas": [
+                    {
+                      "trecho": "j'en ferais quoi",
+                      "explicacao": "eu faria o quê (com isso) — Condicional de \"faire\" + \"en\" de novo. É pergunta retórica sarcástica — \"pra que serviria isso\" — não é dúvida de verdade, é ironia."
+                    }
+                  ],
+                  "inicio": 19.3
                 },
                 {
-                  "palavra": "j'en ferais quoi",
-                  "significado": "eu faria o quê com isso",
-                  "detalhe": "\"Ferais\" é o condicional de \"faire\" (fazer). \"En\" = disso. \"Quoi\" = o quê."
-                },
-                {
-                  "palavra": "offrez-moi",
-                  "significado": "me ofereçam",
-                  "detalhe": "Imperativo de \"offrir\" (oferecer). Mesmo padrão de \"donnez-moi\"."
-                },
-                {
-                  "palavra": "personnel",
-                  "significado": "funcionários / pessoal",
-                  "detalhe": "Pronuncia-se \"personél\". Sem o acento que o português usa."
+                  "original": "Offrez-moi du personnel, j'en ferais quoi?",
+                  "traducao": "Me deem funcionários, eu faria o quê?",
+                  "notas": [
+                    {
+                      "trecho": "j'en ferais quoi",
+                      "explicacao": "eu faria o quê (com isso) — Condicional de \"faire\" + \"en\" de novo. É pergunta retórica sarcástica — \"pra que serviria isso\" — não é dúvida de verdade, é ironia."
+                    },
+                    {
+                      "trecho": "offrez-moi",
+                      "explicacao": "me ofereçam / me deem — Mesmo padrão de \"donnez-moi\". \"Offrir\" e \"donner\" se sobrepõem no uso cotidiano, mas \"offrir\" carrega mais peso de presente/gentileza."
+                    },
+                    {
+                      "trecho": "personnel",
+                      "explicacao": "equipe, funcionários — Falso amigo parcial: não é \"pessoal\" no sentido de \"particular\" — é o quadro de funcionários de alguém."
+                    }
+                  ],
+                  "inicio": 25.8
                 }
-              ],
-              "pronuncia": "donê-muá ün limuzin, jã fərê kuá / ofrê-muá dü personél, jã fərê kuá"
+              ]
             },
             {
-              "original": "Je veux de l'amour, de la joie, de la bonne humeur\nCe n'est pas votre argent qui f'ra mon bonheur",
-              "traducao": "Eu quero amor, alegria, bom humor\nNão é o dinheiro de vocês que vai fazer minha felicidade",
-              "vocabulario": [
+              "original": "Un manoir à Neuchâtel? Ce n'est pas pour moi\nOffrez-moi la Tour Eiffel, j'en ferais quoi?",
+              "pronuncia": "ãn manuár a nêshatél? sə nê pá pur muá / ofrê-muá la tur efél, jã fərê kuá",
+              "linhas": [
                 {
-                  "palavra": "je veux",
-                  "significado": "eu quero",
-                  "detalhe": "Presente de \"vouloir\". Pronuncia-se \"jə vø\". O ø é um som entre \"ê\" e \"ô\"."
+                  "original": "Un manoir à Neuchâtel? Ce n'est pas pour moi",
+                  "traducao": "Uma mansão em Neuchâtel? Não é pra mim",
+                  "notas": [
+                    {
+                      "trecho": "un manoir",
+                      "explicacao": "uma mansão, um solar — Não confundir com \"maison\" (casa comum): \"manoir\" é residência grande, de família rica."
+                    },
+                    {
+                      "trecho": "Neuchâtel",
+                      "explicacao": "cidade suíça — Referência a dinheiro discreto — é onde bancos e famílias abastadas da Suíça francófona vivem. A piada da letra é rejeitar até isso."
+                    },
+                    {
+                      "trecho": "ce n'est pas pour moi",
+                      "explicacao": "isso não é pra mim — Na fala corrente, \"ce n'est pas\" quase sempre vira \"c'est pas\"."
+                    }
+                  ],
+                  "inicio": 28.9
                 },
                 {
-                  "palavra": "amour",
-                  "significado": "amor",
-                  "detalhe": "Pronuncia-se \"amúr\". O R francês é gutural."
-                },
-                {
-                  "palavra": "joie",
-                  "significado": "alegria",
-                  "detalhe": "Pronuncia-se \"juá\". Um som muito francês."
-                },
-                {
-                  "palavra": "argent",
-                  "significado": "dinheiro / prata",
-                  "detalhe": "Pronuncia-se \"arjã\". O T final é mudo."
-                },
-                {
-                  "palavra": "bonheur",
-                  "significado": "felicidade",
-                  "detalhe": "Pronuncia-se \"bonør\". Literalmente \"boa hora\", mas significa felicidade."
+                  "original": "Offrez-moi la Tour Eiffel, j'en ferais quoi?",
+                  "traducao": "Me deem a Torre Eiffel, eu faria o quê?",
+                  "notas": [],
+                  "inicio": 31.8
                 }
-              ],
-              "pronuncia": "jə vø də lamúr, də la juá, də la bon ümør / sə nê pá votr arjã ki fra mõ bonør"
+              ]
+            },
+            {
+              "original": "Je veux de l'amour, de la joie, de la bonne humeur\nCe n'est pas votre argent qui f'ra mon bonheur\nMoi, j'veux crever la main sur le cœur\nAllons ensemble découvrir ma liberté\nOubliez, donc, tous vos clichés\nBienvenue dans ma réalité",
+              "pronuncia": "jə vø də lamúr, də la juá, də la bon ümœ́r / sə nê pá votr arjã ki fra mõ bonœ́r / muá, jvø crəvê la mẽ sür lə kœr / alõ zãsãbl dekuvrír ma libertê / ublié, dõ, tu vo cliché / biãvnü dã ma realité",
+              "linhas": [
+                {
+                  "original": "Je veux de l'amour, de la joie, de la bonne humeur",
+                  "traducao": "Eu quero amor, alegria, bom humor",
+                  "notas": [
+                    {
+                      "trecho": "je veux",
+                      "explicacao": "eu quero — Presente de \"vouloir\" — dá nome à música. Pronuncia-se \"jə vø\", com o \"ø\" entre \"ê\" e \"ô\"."
+                    }
+                  ],
+                  "inicio": 43.6
+                },
+                {
+                  "original": "Ce n'est pas votre argent qui f'ra mon bonheur",
+                  "traducao": "Não é o dinheiro de vocês que vai fazer minha felicidade",
+                  "notas": [
+                    {
+                      "trecho": "f'ra",
+                      "explicacao": "vai fazer — Forma cantada e contraída de \"fera\" (futuro de \"faire\"). Comer sílaba assim pra caber no ritmo é comum em letra de música, mas soa estranho fora dela."
+                    }
+                  ],
+                  "inicio": 47.5
+                },
+                {
+                  "original": "Moi, j'veux crever la main sur le cœur",
+                  "traducao": "Eu quero viver de verdade, com a mão sobre o coração",
+                  "notas": [
+                    {
+                      "trecho": "crever la main sur le cœur",
+                      "explicacao": "viver/morrer de verdade, com a mão no peito — Expressão figurada — não é \"crever\" no sentido literal de morrer. É \"viver com sentimento verdadeiro\", em oposição a viver por dinheiro."
+                    }
+                  ],
+                  "inicio": 50.5
+                },
+                {
+                  "original": "Allons ensemble découvrir ma liberté",
+                  "traducao": "Vamos juntos descobrir minha liberdade",
+                  "notas": [],
+                  "inicio": 56
+                },
+                {
+                  "original": "Oubliez, donc, tous vos clichés",
+                  "traducao": "Esqueçam, então, todos os seus clichês",
+                  "notas": [
+                    {
+                      "trecho": "clichés",
+                      "explicacao": "clichês, lugares-comuns — Mesma palavra do português, pronúncia diferente: \"cli-chê\", sem o \"s\" final audível."
+                    }
+                  ],
+                  "inicio": 59.9
+                },
+                {
+                  "original": "Bienvenue dans ma réalité",
+                  "traducao": "Bem-vindos à minha realidade",
+                  "notas": [
+                    {
+                      "trecho": "bienvenue",
+                      "explicacao": "bem-vindo(a) — Invariável — não concorda com gênero como em português, onde temos \"bem-vindo\"/\"bem-vinda\"."
+                    }
+                  ],
+                  "inicio": 62.9
+                }
+              ]
+            },
+            {
+              "original": "J'en ai marre de vos bonnes manières, c'est trop pour moi\nMoi, je mange avec les mains, et je suis comme ça\nJe parle fort et je suis franche, excusez-moi",
+              "pronuncia": "jãn ê mar də vo bon maniér, sê tro pur muá / muá, jə mãj avék lê mẽ, ê jə süí kom sa / jə parl for ê jə süí frãch, ekskizê-muá",
+              "linhas": [
+                {
+                  "original": "J'en ai marre de vos bonnes manières, c'est trop pour moi",
+                  "traducao": "Estou farta das suas boas maneiras, é demais pra mim",
+                  "notas": [
+                    {
+                      "trecho": "j'en ai marre",
+                      "explicacao": "estou farta, estou de saco cheio — Expressão coloquial muito comum, mais forte que \"je suis fatiguée\". \"En avoir marre de\" = estar cheio de algo."
+                    },
+                    {
+                      "trecho": "bonnes manières",
+                      "explicacao": "boas maneiras, etiqueta — Aqui usado com ironia — ela rejeita a etiqueta da alta sociedade que o resto da música descreve."
+                    }
+                  ],
+                  "inicio": 71.9
+                },
+                {
+                  "original": "Moi, je mange avec les mains, et je suis comme ça",
+                  "traducao": "Eu como com as mãos, e eu sou assim",
+                  "notas": [],
+                  "inicio": 75
+                },
+                {
+                  "original": "Je parle fort et je suis franche, excusez-moi",
+                  "traducao": "Eu falo alto e sou franca, desculpem-me",
+                  "notas": [
+                    {
+                      "trecho": "excusez-moi",
+                      "explicacao": "desculpem-me — Forma \"vous\" educada, usada aqui de forma sarcástica: ela não está pedindo desculpa de verdade, é retórica."
+                    }
+                  ],
+                  "inicio": 78.2
+                }
+              ]
+            },
+            {
+              "original": "Finie l'hypocrisie, moi, je me casse de là\nJ'en ai marre des langues de bois\nRegardez-moi, toute manière, je vous en veux pas\nEt je suis comme ça\nJe suis comme ça",
+              "pronuncia": "finí lipokrizí, muá, jə mə kas də la / jãn ê mar dê lãg də buá / rəgardê-muá, tut maniér, jə vu zã vø pá / ê jə süí kom sa / jə süí kom sa",
+              "linhas": [
+                {
+                  "original": "Finie l'hypocrisie, moi, je me casse de là",
+                  "traducao": "Acabou a hipocrisia, eu vou embora daqui",
+                  "notas": [
+                    {
+                      "trecho": "je me casse",
+                      "explicacao": "eu vou embora, eu dou o fora — Muito coloquial/gíria — \"se casser\" = ir embora rápido. Não usar em contexto formal."
+                    }
+                  ],
+                  "inicio": 84.3
+                },
+                {
+                  "original": "J'en ai marre des langues de bois",
+                  "traducao": "Estou farta de discurso vazio",
+                  "notas": [
+                    {
+                      "trecho": "langues de bois",
+                      "explicacao": "discurso vazio, \"língua de pau\" — Expressão idiomática — literalmente \"línguas de madeira\" — usada para falar de político ou autoridade que fala muito e não diz nada de real."
+                    }
+                  ],
+                  "inicio": 87.5
+                },
+                {
+                  "original": "Regardez-moi, toute manière, je vous en veux pas",
+                  "traducao": "Olhem pra mim, de qualquer jeito, eu não guardo rancor de vocês",
+                  "notas": [
+                    {
+                      "trecho": "je vous en veux pas",
+                      "explicacao": "eu não guardo rancor de vocês — \"En vouloir à quelqu'un\" = ter rancor de alguém. Não confundir com \"vouloir\" simples (querer) — o \"en\" muda o sentido do verbo inteiro."
+                    }
+                  ]
+                },
+                {
+                  "original": "Et je suis comme ça",
+                  "traducao": "E eu sou assim",
+                  "notas": []
+                },
+                {
+                  "original": "Je suis comme ça",
+                  "traducao": "Eu sou assim",
+                  "notas": []
+                }
+              ]
             }
           ]
         }
@@ -739,63 +911,304 @@
           "traducaoTrecho": "Então a gente dança, então a gente dança",
           "frases": [
             {
-              "original": "Qui dit étude dit travail\nQui dit taf te dit les thunes\nQui dit argent dit dépenses",
-              "traducao": "Quem fala estudo fala trabalho\nQuem fala trampo fala grana\nQuem fala dinheiro fala gastos",
-              "vocabulario": [
+              "original": "Qui dit étude dit travail\nQui dit taf te dit des thunes\nQui dit argent dit dépenses\nQui dit crédit dit créance\nQui dit dette te dit huissier\nLui dit assis dans la merde",
+              "pronuncia": "ki di etüd di travái / ki di taf tə di dê tün / ki di arjã di depãs / ki di kredí di kreãs / ki di dét tə di üisiê / lüí di así dã la mérd",
+              "linhas": [
                 {
-                  "palavra": "qui dit",
-                  "significado": "quem diz / quem fala",
-                  "detalhe": "\"Qui\" = quem. \"Dit\" = diz, presente de \"dire\"."
+                  "original": "Qui dit étude dit travail",
+                  "traducao": "Quem diz estudo diz trabalho",
+                  "notas": [
+                    {
+                      "trecho": "Qui dit X dit Y",
+                      "explicacao": "É o motor de toda a letra: uma corrente de associação de ideias, cada palavra puxando a próxima como dominó — estudo leva a trabalho, que leva a dinheiro, que leva a dívida, até \"a merda\". Não é gramática comum, é um recurso poético que Stromae repete a música toda."
+                    }
+                  ],
+                  "inicio": 16.6
                 },
                 {
-                  "palavra": "étude",
-                  "significado": "estudo",
-                  "detalhe": "Pronuncia-se \"étüd\". O E final é mudo."
+                  "original": "Qui dit taf te dit des thunes",
+                  "traducao": "Quem diz trampo te diz grana",
+                  "notas": [
+                    {
+                      "trecho": "taf",
+                      "explicacao": "trampo, batente — Gíria bem coloquial pra \"travail\" (trabalho). Registro de rua, não se usa em contexto formal."
+                    },
+                    {
+                      "trecho": "des thunes",
+                      "explicacao": "grana, dinheiro — Gíria antiga e ainda viva pra \"argent\". Equivalente a \"grana\" ou \"bufunfa\" em português."
+                    }
+                  ],
+                  "inicio": 18.6
                 },
                 {
-                  "palavra": "taf",
-                  "significado": "trampo / trabalho (gíria)",
-                  "detalhe": "Gíria francesa muito usada para \"emprego\" ou \"trabalho\"."
+                  "original": "Qui dit argent dit dépenses",
+                  "traducao": "Quem diz dinheiro diz gastos",
+                  "notas": [],
+                  "inicio": 20.7
                 },
                 {
-                  "palavra": "thunes",
-                  "significado": "grana / dinheiro (gíria)",
-                  "detalhe": "Pronuncia-se \"tün\". Gíria para dinheiro, como \"bufunfa\" em português."
+                  "original": "Qui dit crédit dit créance",
+                  "traducao": "Quem diz crédito diz dívida",
+                  "notas": [],
+                  "inicio": 22.6
                 },
                 {
-                  "palavra": "dépenses",
-                  "significado": "gastos / despesas",
-                  "detalhe": "Do verbo \"dépenser\" (gastar). Pronuncia-se \"depãs\"."
+                  "original": "Qui dit dette te dit huissier",
+                  "traducao": "Quem diz dívida te diz oficial de justiça",
+                  "notas": [
+                    {
+                      "trecho": "huissier",
+                      "explicacao": "oficial de justiça — Quem executa cobranças e penhoras na França — a pessoa que bate na porta quando a dívida não foi paga. A palavra carrega peso de ameaça real, não é neutra."
+                    }
+                  ],
+                  "inicio": 24.7
+                },
+                {
+                  "original": "Lui dit assis dans la merde",
+                  "traducao": "Esse diz sentado na merda",
+                  "notas": [],
+                  "inicio": 26.5
                 }
-              ],
-              "pronuncia": "ki di etüd di traválh / ki di taf tə di lê tün / ki di arjã di depãs"
+              ]
             },
             {
-              "original": "Alors on sort pour oublier tous les problèmes\nAlors on danse",
-              "traducao": "Então a gente sai para esquecer todos os problemas\nEntão a gente dança",
-              "vocabulario": [
+              "original": "Qui dit amour dit les gosses\nDit toujours et dit divorce\nQui dit proches te dis deuils car les problèmes ne viennent pas seul\nQui dit crise te dis monde dit famine dit tiers-monde\nQui dit fatigue dit réveille encore sourd de la veille\nAlors on sort pour oublier tous les problèmes",
+              "pronuncia": "ki di amúr di lê gós / di tujúr ê di divórs / ki di proch tə di dœ́i kar lê problém nə vién pá sœ́l / ki di kríz tə di mõd di famín di tiér-mõd / ki di fatíg di revéi ãkór surd də la véi / alór õ sor pur ublié tu lê problém",
+              "linhas": [
                 {
-                  "palavra": "alors",
-                  "significado": "então",
-                  "detalhe": "Pronuncia-se \"alór\". Uma das palavras mais usadas em francês."
+                  "original": "Qui dit amour dit les gosses",
+                  "traducao": "Quem diz amor diz os filhos",
+                  "notas": [
+                    {
+                      "trecho": "les gosses",
+                      "explicacao": "os filhos, as crianças — Gíria comum e neutra pra \"les enfants\" — não é pejorativa, é só informal."
+                    }
+                  ],
+                  "inicio": 28.5
                 },
                 {
-                  "palavra": "on",
-                  "significado": "a gente / nós",
-                  "detalhe": "Pronome indefinido. Na fala do dia a dia, substitui \"nous\" (nós)."
+                  "original": "Dit toujours et dit divorce",
+                  "traducao": "Diz sempre e diz divórcio",
+                  "notas": [
+                    {
+                      "trecho": "dit toujours et dit divorce",
+                      "explicacao": "diz sempre e diz divórcio — A ironia central da linha: \"toujours\" (a promessa de \"pra sempre\" do casamento) puxa direto pra \"divorce\", sem meio-termo — o amor romântico já nasce contendo o próprio fim, na lógica corrosiva da música."
+                    }
+                  ],
+                  "inicio": 30.6
                 },
                 {
-                  "palavra": "oublier",
-                  "significado": "esquecer",
-                  "detalhe": "Pronuncia-se \"ubliê\". O OU francês soa como \"u\" português."
+                  "original": "Qui dit proches te dis deuils car les problèmes ne viennent pas seul",
+                  "traducao": "Quem diz parentes te diz luto, porque os problemas não vêm sozinhos",
+                  "notas": []
                 },
                 {
-                  "palavra": "danse",
-                  "significado": "dança",
-                  "detalhe": "Do verbo \"danser\". O E final é mudo."
+                  "original": "Qui dit crise te dis monde dit famine dit tiers-monde",
+                  "traducao": "Quem diz crise te diz mundo, diz fome, diz terceiro mundo",
+                  "notas": [
+                    {
+                      "trecho": "tiers-monde",
+                      "explicacao": "terceiro mundo — Termo datado (dos anos 1950-80) que a música usa de propósito, ligando crise pessoal a crise global — dívida de cartão de crédito e fome mundial na mesma cadeia de associação."
+                    }
+                  ],
+                  "inicio": 36.6
+                },
+                {
+                  "original": "Qui dit fatigue dit réveille encore sourd de la veille",
+                  "traducao": "Quem diz cansaço diz acordar ainda surdo do dia anterior",
+                  "notas": [
+                    {
+                      "trecho": "sourd de la veille",
+                      "explicacao": "surdo do dia anterior — \"La veille\" = a véspera, o dia de ontem. \"Sourd\" aqui é figurado: \"ainda zonzo/anestesiado\" pelo cansaço do dia anterior, não surdez literal."
+                    }
+                  ]
+                },
+                {
+                  "original": "Alors on sort pour oublier tous les problèmes",
+                  "traducao": "Então a gente sai pra esquecer todos os problemas",
+                  "notas": [],
+                  "inicio": 44.6
                 }
-              ],
-              "pronuncia": "alór õ sór pur ubliê tu lê problém / alór õ dãs"
+              ]
+            },
+            {
+              "original": "Alors on danse",
+              "pronuncia": "alór õ dãs",
+              "linhas": [
+                {
+                  "original": "Alors on danse",
+                  "traducao": "Então a gente dança",
+                  "notas": [
+                    {
+                      "trecho": "alors on danse",
+                      "explicacao": "então a gente dança — O refrão que dá nome à música — repetido dezenas de vezes seguidas na gravação, quase até virar hipnótico. \"On\" aqui é o \"a gente\"/\"nós\" impessoal do francês falado, muito mais comum que \"nous\" no dia a dia."
+                    },
+                    {
+                      "trecho": "alors",
+                      "explicacao": "então, nesse caso — Conectivo lógico que conecta cada bloco de problemas ao refrão: PORQUE existem esses problemas, ENTÃO a gente dança — dançar como fuga, não como celebração."
+                    }
+                  ],
+                  "inicio": 47.4
+                }
+              ]
+            },
+            {
+              "original": "Et là tu t'dis que c'est fini car pire que ça ce serait la mort\nQu'en tu crois enfin que tu t'en sors quand y en a plus et ben y en a encore!",
+              "pronuncia": "ê la tü tdí kə sê finí kar pir kə sa sərê la mor / kãn tü kruá ãfẽ kə tü tã sor kã í ãn na plü ê bã í ãn na ãkór",
+              "linhas": [
+                {
+                  "original": "Et là tu t'dis que c'est fini car pire que ça ce serait la mort",
+                  "traducao": "E aí você pensa que acabou, porque pior que isso só a morte",
+                  "notas": [
+                    {
+                      "trecho": "tu t'dis que",
+                      "explicacao": "você pensa/fala pra si mesmo que — \"Se dire que\" = pensar, refletir consigo — bem mais direto e falado que \"penser que\"."
+                    }
+                  ],
+                  "inicio": 82.4
+                },
+                {
+                  "original": "Qu'en tu crois enfin que tu t'en sors quand y en a plus et ben y en a encore!",
+                  "traducao": "Quando você finalmente acha que se livrou, quando já não tem mais, bem, ainda tem mais!",
+                  "notas": [
+                    {
+                      "trecho": "tu t'en sors",
+                      "explicacao": "você se livra, você dá conta — \"S'en sortir\" = sair de uma situação difícil. Muito usado no dia a dia francês, sempre com \"en\" grudado."
+                    },
+                    {
+                      "trecho": "y en a plus... y en a encore",
+                      "explicacao": "\"Y en a\" é a forma falada de \"il y en a\" (tem, existe). A contradição da frase — acabou mas ainda tem mais — é o clímax da música: o ciclo de problemas não tem fim de verdade."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "original": "Est-ce la zik ou les problèmes?\nLes problèmes ou bien la musique?\nÇa t'prends les trips\nÇa te prends la tête\nEt puis tu prie pour que ça s'arrête\nMais c'est ton corps\nCe n'est pas le ciel\nAlors tu t'bouche plus les oreilles\nEt là tu cries encore plus fort\nEt ça persiste",
+              "pronuncia": "és la zík u lê problém? / lê problém u biẽ la müzík? / sa tprã lê tríp / sa tə prã la tét / ê püí tü prí pur kə sa saprét / mê sê tõ kor / sə nê pá lə siél / alór tü tbush plü lê zoréi / ê la tü krí ãkór plü for / ê sa persíst",
+              "linhas": [
+                {
+                  "original": "Est-ce la zik ou les problèmes?",
+                  "traducao": "É a música ou os problemas?",
+                  "notas": [
+                    {
+                      "trecho": "la zik",
+                      "explicacao": "a música — Gíria/apócope de \"la musique\", muito usada informalmente."
+                    }
+                  ],
+                  "inicio": 88.7
+                },
+                {
+                  "original": "Les problèmes ou bien la musique?",
+                  "traducao": "Os problemas ou então a música?",
+                  "notas": [],
+                  "inicio": 90.6
+                },
+                {
+                  "original": "Ça t'prends les trips",
+                  "traducao": "Isso pega o seu barato",
+                  "notas": [
+                    {
+                      "trecho": "ça t'prends les trips",
+                      "explicacao": "isso pega o seu barato — \"Les trips\" (emprestado do inglês \"trip\") é gíria pra sensação forte, efeito de festa/droga/música — o \"barato\" que a música dá."
+                    }
+                  ]
+                },
+                {
+                  "original": "Ça te prends la tête",
+                  "traducao": "Isso toma a sua cabeça",
+                  "notas": [
+                    {
+                      "trecho": "ça te prends la tête",
+                      "explicacao": "isso toma a sua cabeça — \"Prendre la tête à quelqu'un\" = mexer com a cabeça de alguém, deixar obcecado — aqui, sem saber se é a música ou os problemas que estão fazendo isso."
+                    }
+                  ]
+                },
+                {
+                  "original": "Et puis tu prie pour que ça s'arrête",
+                  "traducao": "E aí você reza pra que isso pare",
+                  "notas": [],
+                  "inicio": 94.4
+                },
+                {
+                  "original": "Mais c'est ton corps",
+                  "traducao": "Mas é o seu corpo",
+                  "notas": []
+                },
+                {
+                  "original": "Ce n'est pas le ciel",
+                  "traducao": "Não é o céu",
+                  "notas": []
+                },
+                {
+                  "original": "Alors tu t'bouche plus les oreilles",
+                  "traducao": "Então você já nem tapa mais os ouvidos",
+                  "notas": [
+                    {
+                      "trecho": "tu t'bouche les oreilles",
+                      "explicacao": "\"Se boucher les oreilles\" = tapar os ouvidos, ignorar. \"Plus\" aqui nega — \"tu t'bouche plus\" = \"você já não tapa mais\", ou seja, desistiu de tentar ignorar."
+                    }
+                  ],
+                  "inicio": 98.5
+                },
+                {
+                  "original": "Et là tu cries encore plus fort",
+                  "traducao": "E aí você grita ainda mais forte",
+                  "notas": [],
+                  "inicio": 100.4
+                },
+                {
+                  "original": "Et ça persiste",
+                  "traducao": "E isso persiste",
+                  "notas": [],
+                  "inicio": 102.7
+                }
+              ]
+            },
+            {
+              "original": "Alors on chante\nLalalalalala, lalalalalala",
+              "pronuncia": "alór õ shãt / lalalalalalá, lalalalalalá",
+              "linhas": [
+                {
+                  "original": "Alors on chante",
+                  "traducao": "Então a gente canta",
+                  "notas": [
+                    {
+                      "trecho": "alors on chante",
+                      "explicacao": "então a gente canta — Variação do refrão principal: quando dançar não resolve mais (\"et ça persiste\", o problema continua), a resposta seguinte é cantar — outra forma de descarga, tão automática quanto a primeira."
+                    }
+                  ],
+                  "inicio": 103.5
+                },
+                {
+                  "original": "Lalalalalala, lalalalalala",
+                  "traducao": "Lalalalalala, lalalalalala",
+                  "notas": [
+                    {
+                      "trecho": "lalalalalala",
+                      "explicacao": "lalalalalala — Vocalização sem palavra, cantada no lugar de letra — o momento em que a música literalmente substitui a fala, o ponto máximo de \"esquecer os problemas\" sem pensar em mais nada."
+                    }
+                  ],
+                  "inicio": 104.7
+                }
+              ]
+            },
+            {
+              "original": "Et ben y en a encore",
+              "pronuncia": "ê bã í ãn na ãkór",
+              "linhas": [
+                {
+                  "original": "Et ben y en a encore",
+                  "traducao": "Bem, ainda tem mais",
+                  "notas": [
+                    {
+                      "trecho": "et ben y en a encore",
+                      "explicacao": "bem, ainda tem mais — Frase final da música, repetida várias vezes até a faixa acabar — sem resolução. É a mesma linha do meio da música (\"y en a encore\"), só que agora sozinha, fechando o ciclo: depois de dançar e cantar, os problemas continuam do mesmo jeito, e a música termina admitindo isso em vez de resolver."
+                    }
+                  ],
+                  "inicio": 167.2
+                }
+              ]
             }
           ]
         }
@@ -1025,25 +1438,33 @@
           "frases": [
             {
               "original": "Tu sais, tu sais, tu sais\nJe ne suis pas formidable",
-              "traducao": "Você sabe, você sabe, você sabe\nEu não sou formidável",
-              "vocabulario": [
+              "pronuncia": "tü sê, tü sê, tü sê / jə nə süí pá formidábl",
+              "linhas": [
                 {
-                  "palavra": "tu sais",
-                  "significado": "você sabe",
-                  "detalhe": "Presente de \"savoir\" (saber). Pronuncia-se \"tü sê\". O S final é mudo."
+                  "original": "Tu sais, tu sais, tu sais",
+                  "traducao": "Você sabe, você sabe, você sabe",
+                  "notas": [
+                    {
+                      "trecho": "tu sais",
+                      "explicacao": "você sabe — Presente de \"savoir\" (saber). Pronuncia-se \"tü sê\". O S final é mudo."
+                    }
+                  ]
                 },
                 {
-                  "palavra": "formidable",
-                  "significado": "formidável / incrível",
-                  "detalhe": "Pronuncia-se \"formidábl\". Mesma raiz latina que em português."
-                },
-                {
-                  "palavra": "je ne suis pas",
-                  "significado": "eu não sou",
-                  "detalhe": "Negação: ne + verbo + pas. \"Suis\" = sou, do verbo \"être\" (ser/estar)."
+                  "original": "Je ne suis pas formidable",
+                  "traducao": "Eu não sou formidável",
+                  "notas": [
+                    {
+                      "trecho": "formidable",
+                      "explicacao": "formidável / incrível — Pronuncia-se \"formidábl\". Mesma raiz latina que em português."
+                    },
+                    {
+                      "trecho": "je ne suis pas",
+                      "explicacao": "eu não sou — Negação: ne + verbo + pas. \"Suis\" = sou, do verbo \"être\" (ser/estar)."
+                    }
+                  ]
                 }
-              ],
-              "pronuncia": "tü sê, tü sê, tü sê / jə nə süí pá formidábl"
+              ]
             }
           ]
         }
@@ -1282,7 +1703,368 @@
           "artista": "Yamê",
           "youtubeId": "XDPn2Ko6z2A",
           "trechoLetra": "Je suis sur ma bécane, oh-la-la",
-          "traducaoTrecho": "Eu tô na minha moto, oh-la-la"
+          "traducaoTrecho": "Eu tô na minha moto, oh-la-la",
+          "frases": [
+            {
+              "original": "Bitch, ça fait très, très longtemps\nQue j'y pense à comment se mettre bien, moi j'ai pas ton élan\nN'écoute jamais les on dit\nCeux qui jactent n'ont pas vu la vie au travers de ton monde",
+              "pronuncia": "bitch, sa fê trê, trê lõtã / kə jí pãs a komã sə métr biẽ, muá jê pá tõ elã / nekút jamê lê zõ-dí / sø ki jákt nõ pá vü la ví o travér də tõ mõd",
+              "linhas": [
+                {
+                  "original": "Bitch, ça fait très, très longtemps",
+                  "traducao": "Vadia, faz muito, muito tempo",
+                  "notas": [
+                    {
+                      "trecho": "ça fait très longtemps",
+                      "explicacao": "Estrutura \"ça fait + tempo + que\" = \"faz [tempo] que\" — quase idêntica ao português, a ordem das palavras ajuda bastante aqui."
+                    }
+                  ]
+                },
+                {
+                  "original": "Que j'y pense à comment se mettre bien, moi j'ai pas ton élan",
+                  "traducao": "que eu penso em como me estabelecer bem, eu não tenho o seu embalo",
+                  "notas": [
+                    {
+                      "trecho": "j'y pense",
+                      "explicacao": "eu penso nisso — \"Y\" é um pronome sem tradução direta em português — substitui \"à ça\" (nisso). Aparece o tempo todo no francês falado, mesmo sem equivalente direto."
+                    },
+                    {
+                      "trecho": "se mettre bien",
+                      "explicacao": "se estabelecer bem, se dar bem na vida — Expressão de gíria, não literal — não confundir com \"se colocar bem\" ao pé da letra."
+                    },
+                    {
+                      "trecho": "j'ai pas ton élan",
+                      "explicacao": "eu não tenho o seu embalo — \"J'ai pas\" em vez de \"je n'ai pas\": no francês falado e sobretudo no rap, o \"ne\" da negação quase sempre cai. \"Élan\" é impulso, embalo, ímpeto — sem cognato direto em português."
+                    }
+                  ],
+                  "inicio": 0.2
+                },
+                {
+                  "original": "N'écoute jamais les on dit",
+                  "traducao": "Nunca escute as fofocas",
+                  "notas": [
+                    {
+                      "trecho": "les on-dit",
+                      "explicacao": "\"On dit que...\" (dizem que) virando substantivo composto: \"les on-dit\" = fofoca, boato. Não existe tradução palavra-por-palavra boa; \"les\" na frente mostra que virou substantivo, não frase verbal."
+                    }
+                  ]
+                },
+                {
+                  "original": "Ceux qui jactent n'ont pas vu la vie au travers de ton monde",
+                  "traducao": "Quem fica falando não viu a vida através do seu mundo",
+                  "notas": [
+                    {
+                      "trecho": "jactent",
+                      "explicacao": "falam demais, tagarelam — Verbo de gíria (\"jacter\"), registro bem informal, de rap/argot — significa falar pra caramba, às vezes com conotação de fofocar. Não é palavra de dicionário formal."
+                    }
+                  ],
+                  "inicio": 3.8
+                }
+              ]
+            },
+            {
+              "original": "J'ai beau parler dans leur langue\nMais faut croire qu'ils n'entendent que le langage de la violence\nJ'me faufile en bal sans les mains\nTu m'as pas vu bégayer quand fallait passer le lent",
+              "pronuncia": "jê bo parlê dã lœ́r lãg / mê fo kruár kil nãtãd kə lə lãgáj də la violãs / jmə fofíl ã bál sã lê mẽ / tü ma pá vü begeié kã falê pasê lə lã",
+              "linhas": [
+                {
+                  "original": "J'ai beau parler dans leur langue",
+                  "traducao": "Por mais que eu fale na língua deles",
+                  "notas": [
+                    {
+                      "trecho": "j'ai beau parler",
+                      "explicacao": "por mais que eu fale — \"Avoir beau + infinitivo\" = \"por mais que\" — estrutura de concessão muito comum, sem tradução literal palavra por palavra."
+                    }
+                  ]
+                },
+                {
+                  "original": "Mais faut croire qu'ils n'entendent que le langage de la violence",
+                  "traducao": "Parece que só entendem a linguagem da violência",
+                  "notas": [],
+                  "inicio": 7.7
+                },
+                {
+                  "original": "J'me faufile en bal sans les mains",
+                  "traducao": "Eu me esgueiro no baile sem usar as mãos",
+                  "notas": [
+                    {
+                      "trecho": "j'me faufile",
+                      "explicacao": "eu me esgueiro, eu me infiltro — \"Se faufiler\" = passar discretamente por um espaço apertado ou uma situação difícil, sem ser notado. Aqui é figurado — sobreviver na vida sem chamar atenção."
+                    }
+                  ]
+                },
+                {
+                  "original": "Tu m'as pas vu bégayer quand fallait passer le lent",
+                  "traducao": "Você não me viu gaguejar na hora de passar pelo difícil",
+                  "notas": [
+                    {
+                      "trecho": "bégayer",
+                      "explicacao": "gaguejar, hesitar — Aqui é figurado: \"não gaguejar\" = não hesitar, não vacilar diante de um obstáculo, não literalmente falar tropeçando."
+                    },
+                    {
+                      "trecho": "passer le lent",
+                      "explicacao": "passar pelo difícil — \"Le lent\" (o lento) é gíria/referência ambígua no verlan e no argot de rua — passar pela parte mais dura ou mais arriscada de um percurso."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "original": "Sankara, Cheikh Anta, négro, j'ai choisi mes modèles\nC'est fiable comme un moteur allemand\nEn indé', sans carats, sans chico\nOui, je fais quer-cro bien plus que les grands de tes grands",
+              "pronuncia": "sãkará, chêk ãtá, negró, jê shuází mê modél / sê fiábl kom ãn motœ́r almã / ãn ẽdé, sã kará, sã shikó / uí, jə fê kér-kro biẽ plüs kə lê grã də tê grã",
+              "linhas": [
+                {
+                  "original": "Sankara, Cheikh Anta, négro, j'ai choisi mes modèles",
+                  "traducao": "Sankara, Cheikh Anta, mano, eu escolhi meus modelos",
+                  "notas": [
+                    {
+                      "trecho": "Sankara",
+                      "explicacao": "Thomas Sankara — Ex-presidente de Burkina Faso, ícone pan-africanista de resistência anticolonial e integridade política — referência de peso histórico, não um nome qualquer."
+                    },
+                    {
+                      "trecho": "Cheikh Anta",
+                      "explicacao": "Cheikh Anta Diop — Historiador e cientista senegalês, defensor da origem africana de conhecimentos historicamente atribuídos só à Europa — junto com Sankara, forma um par de referências políticas fortes, de orgulho e identidade africana."
+                    }
+                  ]
+                },
+                {
+                  "original": "C'est fiable comme un moteur allemand",
+                  "traducao": "É confiável como um motor alemão",
+                  "notas": []
+                },
+                {
+                  "original": "En indé', sans carats, sans chico",
+                  "traducao": "Independente, sem diamante, sem luxo",
+                  "notas": [
+                    {
+                      "trecho": "en indé'",
+                      "explicacao": "independente — Apócope de \"indépendant\" — sem gravadora grande, carreira construída por conta própria."
+                    }
+                  ]
+                },
+                {
+                  "original": "Oui, je fais quer-cro bien plus que les grands de tes grands",
+                  "traducao": "Sim, eu faço carreira muito mais do que os grandes dos seus grandes",
+                  "notas": [
+                    {
+                      "trecho": "quer-cro",
+                      "explicacao": "carreira, trajetória — Verlan (gíria que inverte sílabas) de \"carrière\" (carreira) — car-rière → cro-quer → \"quer-cro\". Reconhecer o verlan é essencial pra entender rap francês: a palavra original vira irreconhecível se você não souber o truque."
+                    }
+                  ],
+                  "inicio": 19.9
+                }
+              ]
+            },
+            {
+              "original": "J'les té-ma pas, ils sont pas concentrés\nJ'attends pas la passe, ils peuvent pas centrer\nJ'suis bantu, me parle pas de basané\nOn n'est pas v'nus ici pour se pavaner",
+              "pronuncia": "jlê temá pá, il sõ pá kõsãtrê / jatã pá la pás, il pœv pá sãtrê / jsüí bãtú, mə parl pá də bazanê / õ nê pá vnü isí pur sə pavanê",
+              "linhas": [
+                {
+                  "original": "J'les té-ma pas, ils sont pas concentrés",
+                  "traducao": "Eu nem olho pra eles, eles não estão concentrados",
+                  "notas": [
+                    {
+                      "trecho": "té-ma",
+                      "explicacao": "olhar, reparar — Verlan de \"mater\" (olhar, encarar, de forma informal) — mat-er → té-ma. \"J'les té-ma pas\" = eu nem olho pra eles, não dou bola."
+                    }
+                  ]
+                },
+                {
+                  "original": "J'attends pas la passe, ils peuvent pas centrer",
+                  "traducao": "Eu não espero o passe, eles não conseguem cruzar a bola",
+                  "notas": [],
+                  "inicio": 24
+                },
+                {
+                  "original": "J'suis bantu, me parle pas de basané",
+                  "traducao": "Eu sou bantu, não me fale de \"moreno\"",
+                  "notas": [
+                    {
+                      "trecho": "j'suis bantu",
+                      "explicacao": "eu sou bantu — \"Bantu\" designa um grande grupo de povos e línguas da África subsaariana — reivindicação direta de identidade e origem, em contraste com o termo seguinte."
+                    },
+                    {
+                      "trecho": "basané",
+                      "explicacao": "moreno, de pele morena — Termo em francês usado historicamente (e de forma controversa) para descrever pessoas de pele mais escura de origem ambígua — a letra rejeita esse rótulo genérico e reivindica uma identidade específica (bantu) em seu lugar."
+                    }
+                  ]
+                },
+                {
+                  "original": "On n'est pas v'nus ici pour se pavaner",
+                  "traducao": "A gente não veio aqui pra se exibir",
+                  "notas": [
+                    {
+                      "trecho": "se pavaner",
+                      "explicacao": "se exibir, se armar — Verbo que descreve andar se exibindo, como um pavão (\"paon\") — daí a origem da palavra."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "original": "Remballe ta c, j'ai mes cc\nJ'tourne la poignée, je froisse le temps\nJ'roule comme si quelqu'un m'attendait\nJe cale l'pétard entre mes dents\nM'bah ouais, m'bah ouais",
+              "pronuncia": "rãbál ta se, jê mê sese / jturn la puanié, jə fruás lə tã / jrúl kom si kélkẽ matãdê / jə kál lpetár ãtr mê dã / mba uê, mba uê",
+              "linhas": [
+                {
+                  "original": "Remballe ta c, j'ai mes cc",
+                  "traducao": "Guarda o seu papo, eu tenho os meus cilindros",
+                  "notas": [
+                    {
+                      "trecho": "remballe ta c",
+                      "explicacao": "guarda/esquece o seu papo — \"Remballer\" = recolher, guardar de volta — usado de forma figurada e cortante pra mandar alguém parar de falar besteira. \"Ta c\" é abreviação/censura de uma palavra de baixo calão."
+                    },
+                    {
+                      "trecho": "cc",
+                      "explicacao": "cilindradas — Abreviação técnica de \"centimètres cubes\" (cilindrada de motor) — ele está comparando potência de moto (e status) com quem duvidou dele."
+                    }
+                  ],
+                  "inicio": 31.7
+                },
+                {
+                  "original": "J'tourne la poignée, je froisse le temps",
+                  "traducao": "Eu giro o acelerador, eu amasso o tempo",
+                  "notas": [
+                    {
+                      "trecho": "je froisse le temps",
+                      "explicacao": "eu amasso o tempo — Imagem poética: andar de moto tão rápido que o tempo parece se comprimir, \"amassar\" — não é expressão fixa do francês, é criação do autor."
+                    }
+                  ],
+                  "inicio": 35.7
+                },
+                {
+                  "original": "J'roule comme si quelqu'un m'attendait",
+                  "traducao": "Eu ando como se alguém estivesse me esperando",
+                  "notas": [],
+                  "inicio": 38.9
+                },
+                {
+                  "original": "Je cale l'pétard entre mes dents",
+                  "traducao": "Eu prendo o baseado entre os dentes",
+                  "notas": [
+                    {
+                      "trecho": "le pétard",
+                      "explicacao": "Gíria comum pra cigarro de maconha — não confundir com o sentido literal de \"pétard\" (fogos de artifício, rojão)."
+                    }
+                  ],
+                  "inicio": 42.4
+                },
+                {
+                  "original": "M'bah ouais, m'bah ouais",
+                  "traducao": "Pois é, pois é",
+                  "notas": []
+                }
+              ]
+            },
+            {
+              "original": "J'sors la bécane, di-di-da-da\nJ'fume la beuh\nJ'm'en bats les couilles si c'est dangereux sa mère\nJ'vois que des barreaux, des barreaux en fer\nLa bécane crie et j'sors de l'enfer\nSur un gros fer, bah ouais",
+              "pronuncia": "jsor la bekán, di-di-da-da / jfüm la bœ / jmã bá lê kúi si sê dãjrø sa mér / jvuá kə dê baró, dê baró ã fér / la bekán krí ê jsor də lãfér / sür ãn gro fér, ba uê",
+              "linhas": [
+                {
+                  "original": "J'sors la bécane, di-di-da-da",
+                  "traducao": "Eu tiro a moto, di-di-da-da",
+                  "notas": [
+                    {
+                      "trecho": "la bécane",
+                      "explicacao": "a moto — Gíria bem estabelecida pra motocicleta — dá nome à música. Também pode ser usada informalmente pra bicicleta ou qualquer \"máquina\", mas aqui é moto mesmo."
+                    }
+                  ],
+                  "inicio": 48.1
+                },
+                {
+                  "original": "J'fume la beuh",
+                  "traducao": "Eu fumo maconha",
+                  "notas": [
+                    {
+                      "trecho": "la beuh",
+                      "explicacao": "maconha — Gíria de rua padrão pra maconha na França — equivalente a \"erva\" em português."
+                    }
+                  ],
+                  "inicio": 112.1
+                },
+                {
+                  "original": "J'm'en bats les couilles si c'est dangereux sa mère",
+                  "traducao": "Eu não ligo a mínima se é perigoso, caramba",
+                  "notas": [
+                    {
+                      "trecho": "j'm'en bats les couilles",
+                      "explicacao": "eu não ligo a mínima — Expressão muito vulgar e muito comum no francês coloquial/rap — literalmente algo como \"eu bato as bolas nisso\", usada pra dizer \"não me importa nem um pouco\". Registro pesado, não se usa fora de contexto informal."
+                    }
+                  ],
+                  "inicio": 55
+                },
+                {
+                  "original": "J'vois que des barreaux, des barreaux en fer",
+                  "traducao": "Só vejo grades, grades de ferro",
+                  "notas": [
+                    {
+                      "trecho": "des barreaux en fer",
+                      "explicacao": "grades de ferro — Imagem dupla: grades de prisão (a vida de onde ele quer sair) e também o \"gros fer\" (ferro grande) da moto no verso seguinte — o mesmo material, dois sentidos opostos: prisão e fuga."
+                    }
+                  ],
+                  "inicio": 56.7
+                },
+                {
+                  "original": "La bécane crie et j'sors de l'enfer",
+                  "traducao": "A moto grita e eu saio do inferno",
+                  "notas": [
+                    {
+                      "trecho": "la bécane",
+                      "explicacao": "a moto — Gíria bem estabelecida pra motocicleta — dá nome à música. Também pode ser usada informalmente pra bicicleta ou qualquer \"máquina\", mas aqui é moto mesmo."
+                    }
+                  ],
+                  "inicio": 75
+                },
+                {
+                  "original": "Sur un gros fer, bah ouais",
+                  "traducao": "Em cima de um ferro grande, pois é",
+                  "notas": [
+                    {
+                      "trecho": "sur un gros fer",
+                      "explicacao": "em cima de um ferro grande — Gíria pra moto grande/potente — \"fer\" (ferro) como sinônimo informal de motocicleta."
+                    }
+                  ],
+                  "inicio": 77.7
+                }
+              ]
+            },
+            {
+              "original": "L'akra aide à focaliser\nLa haine que j'ressens dans mes pensées, hum\nDans ce business balisé\nAh-ouais",
+              "pronuncia": "lakrá éd a fokalizê / la hén kə jresã dã mê pãsé, œm / dã sə biznés balizê / a-uê",
+              "linhas": [
+                {
+                  "original": "L'akra aide à focaliser",
+                  "traducao": "O akra ajuda a focar",
+                  "notas": [
+                    {
+                      "trecho": "l'akra",
+                      "explicacao": "akra (comida frita) — Referência a \"akra\" (ou \"accra\"), bolinho frito típico da culinária caribenha e africana ocidental — aqui citado de forma quase informal/pessoal, ligando comida de casa a um momento de foco antes de agir."
+                    }
+                  ],
+                  "inicio": 82.4
+                },
+                {
+                  "original": "La haine que j'ressens dans mes pensées, hum",
+                  "traducao": "O ódio que eu sinto nos meus pensamentos, hum",
+                  "notas": [],
+                  "inicio": 86.4
+                },
+                {
+                  "original": "Dans ce business balisé",
+                  "traducao": "Nesse negócio bem sinalizado",
+                  "notas": [
+                    {
+                      "trecho": "balisé",
+                      "explicacao": "sinalizado, com regras claras — \"Baliser\" = marcar um percurso com sinalização (como pistas de esqui ou estradas). \"Ce business balisé\" sugere um esquema/negócio bem estabelecido, com regras conhecidas por quem está dentro."
+                    }
+                  ],
+                  "inicio": 90.9
+                },
+                {
+                  "original": "Ah-ouais",
+                  "traducao": "É isso aí",
+                  "notas": []
+                }
+              ]
+            }
+          ]
         }
       ],
       "quiz": [
@@ -1713,7 +2495,381 @@
           "artista": "Dadju",
           "youtubeId": "bFEP26jCtsQ",
           "trechoLetra": "C'est compliqué entre nous mais j'aime ça",
-          "traducaoTrecho": "É complicado entre nós mas eu gosto disso"
+          "traducaoTrecho": "É complicado entre nós mas eu gosto disso",
+          "frases": [
+            {
+              "original": "J'ai rencontré une meuf en soirée sur Paris\nOn s'voyait quelques soirs, on était plus qu'amis\nElle m'appelait quand ça chauffait avec son p'tit ami\nHistoire de décompresser sur le tatami",
+              "pronuncia": "jê rãkõtrê ün mœf ã suarê sür parí / õ svuayê kélk suár, õ netê plü zamí / él mapelê kã sa shofê avék sõ ptí amí / istuár də dekõpresê sür lə tatamí",
+              "linhas": [
+                {
+                  "original": "J'ai rencontré une meuf en soirée sur Paris",
+                  "traducao": "Eu conheci uma garota numa festa em Paris",
+                  "notas": [
+                    {
+                      "trecho": "une meuf",
+                      "explicacao": "uma mulher, uma garota — Verlan de \"femme\" (mulher): fem-me → meuf. Uma das palavras de verlan mais usadas e já quase neutras no francês coloquial — perdeu boa parte da marca de gíria de rua."
+                    }
+                  ],
+                  "inicio": 12
+                },
+                {
+                  "original": "On s'voyait quelques soirs, on était plus qu'amis",
+                  "traducao": "Nos encontrávamos algumas noites, éramos mais que amigos",
+                  "notas": [],
+                  "inicio": 15.3
+                },
+                {
+                  "original": "Elle m'appelait quand ça chauffait avec son p'tit ami",
+                  "traducao": "Ela me chamava quando a coisa ficava feia com o namorado",
+                  "notas": [
+                    {
+                      "trecho": "ça chauffait",
+                      "explicacao": "a coisa esquentava, ficava feia — \"Chauffer\" (esquentar) usado de forma figurada pra tensão ou briga — \"ça chauffe\" = está pegando fogo, está tenso."
+                    }
+                  ],
+                  "inicio": 18.5
+                },
+                {
+                  "original": "Histoire de décompresser sur le tatami",
+                  "traducao": "Só pra desestressar no tatame",
+                  "notas": [
+                    {
+                      "trecho": "sur le tatami",
+                      "explicacao": "no tatame — Eufemismo/gíria pra sexo casual, brincando com a ideia de \"exercício físico\" (tapete de artes marciais) — registro leve e malicioso, não literal."
+                    }
+                  ],
+                  "inicio": 21.8
+                }
+              ]
+            },
+            {
+              "original": "Les trois règles, c'étaient: D'une, on n'se promet rien\nDe deux, pas de jalousie, de trois, personne parle jusqu'à la fin\nBien évidemment, j'accepte, moi, je n'risque rien\nSon mec, c'est pas mon souci, t'inquiète, j'risque pas d'y mettre fin",
+              "pronuncia": "lê truá régl, setê: dün, õ nsə promé riẽ / də dø, pá də jaluzí, də truá, personn parl jüská la fẽ / biẽ evidamã, jaksépt, muá, jə nrísk riẽ / sõ mék, sê pá mõ susí, tẽkiét, jrísk pá dí métr fẽ",
+              "linhas": [
+                {
+                  "original": "Les trois règles, c'étaient: D'une, on n'se promet rien",
+                  "traducao": "As três regras eram: primeiro, não prometemos nada",
+                  "notas": [
+                    {
+                      "trecho": "d'une... de deux... de trois",
+                      "explicacao": "Forma falada e numerada de listar regras, mais direta que \"premièrement, deuxièmement\" — comum em fala informal quando se está enumerando combinados."
+                    }
+                  ]
+                },
+                {
+                  "original": "De deux, pas de jalousie, de trois, personne parle jusqu'à la fin",
+                  "traducao": "Segundo, nada de ciúmes, terceiro, ninguém fala até o fim",
+                  "notas": [],
+                  "inicio": 29
+                },
+                {
+                  "original": "Bien évidemment, j'accepte, moi, je n'risque rien",
+                  "traducao": "Claro que aceitei, eu não arrisco nada",
+                  "notas": []
+                },
+                {
+                  "original": "Son mec, c'est pas mon souci, t'inquiète, j'risque pas d'y mettre fin",
+                  "traducao": "O namorado dela não é problema meu, relaxa, não vou acabar com isso",
+                  "notas": [
+                    {
+                      "trecho": "j'risque pas d'y mettre fin",
+                      "explicacao": "não vou acabar com isso (correndo esse risco) — \"Risquer de\" + infinitivo = correr o risco de. Ele está dizendo, com falsa segurança, que não vai ser ele quem vai colocar tudo em risco — ironia que a música desmente depois."
+                    },
+                    {
+                      "trecho": "un mec",
+                      "explicacao": "Gíria neutra e muito comum pra \"homem\" ou, como aqui, \"namorado\" (\"son mec\" = o namorado dela)."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "original": "Célibataire endurci, rien à foutre que l'on me juge\nSi vous savez c'qu'elle me disait, mais bon là, c'est pas le sujet\nQuand j'lui disais de venir, mon appart' c'était le QG\nEt comme toute femme qui se livre, mademoiselle se sent négligée",
+              "pronuncia": "selibatér ãndürsí, riẽ a fútr kə lõ mə jüj / si vu savê skél mə dizê, mê bõ la, sê pá lə süjé / kã jlüí dizê də vəní, mõn apár setê lə küjé / ê kom tut fám ki sə lívr, madmuazél sə sã neglijê",
+              "linhas": [
+                {
+                  "original": "Célibataire endurci, rien à foutre que l'on me juge",
+                  "traducao": "Solteiro convicto, não ligo se me julgam",
+                  "notas": [
+                    {
+                      "trecho": "rien à foutre",
+                      "explicacao": "não ligo a mínima, não dou a mínima — Expressão muito vulgar e muito comum — \"en avoir rien à foutre\" = não se importar nada. Registro pesado, típico de fala informal/rap."
+                    }
+                  ],
+                  "inicio": 39.6
+                },
+                {
+                  "original": "Si vous savez c'qu'elle me disait, mais bon là, c'est pas le sujet",
+                  "traducao": "Se soubessem o que ela me dizia, mas, enfim, esse não é o assunto",
+                  "notas": []
+                },
+                {
+                  "original": "Quand j'lui disais de venir, mon appart' c'était le QG",
+                  "traducao": "Quando eu dizia pra ela vir, meu apartamento era o QG",
+                  "notas": [
+                    {
+                      "trecho": "le QG",
+                      "explicacao": "o QG (quartel-general) — Sigla de \"quartier général\", usada de forma bem-humorada pro apartamento dele — o ponto de encontro central."
+                    }
+                  ]
+                },
+                {
+                  "original": "Et comme toute femme qui se livre, mademoiselle se sent négligée",
+                  "traducao": "E como toda mulher que se entrega, a moça se sente negligenciada",
+                  "notas": [
+                    {
+                      "trecho": "se livre",
+                      "explicacao": "se entrega, se abre — \"Se livrer\" (de \"livrer\", entregar) = se entregar emocionalmente, se abrir com alguém — verbo reflexivo importante pro tema da música, sobre alguém que se envolve mais do que o combinado."
+                    }
+                  ],
+                  "inicio": 47.2
+                }
+              ]
+            },
+            {
+              "original": "Et t'as beau fixer les règles, au final, c'est compliqué, ouais\nOn était d'accord, au final, elle est piquée, ouais\nElle est prête à tout, tout pour me faire abdiquer, ouais\nJ'ai voulu être clair, mademoiselle a paniqué\nDans tous les cas, ça finit mal\nDans tous les cas, ça finit mal, mal, mal",
+              "pronuncia": "ê ta bo fiksê lê régl, o final, sê kõplikê, uê / õn etê dakór, o final, él ê pikê, uê / él ê prét a tú, tú pur mə fér abdikê, uê / jê vulü étr klér, madmuazél a panikê / dã tu lê ka, sa finí mál / dã tu lê ka, sa finí mál, mál, mál",
+              "linhas": [
+                {
+                  "original": "Et t'as beau fixer les règles, au final, c'est compliqué, ouais",
+                  "traducao": "E você pode tentar impor as regras, mas, no final, é complicado, sim",
+                  "notas": [
+                    {
+                      "trecho": "t'as beau fixer les règles",
+                      "explicacao": "você pode tentar impor as regras — \"Avoir beau + infinitivo\" de novo (já visto em \"Bécane\") = \"por mais que\"/\"mesmo tentando\" — estrutura de concessão: por mais que você estabeleça regras, elas não seguram a realidade."
+                    }
+                  ],
+                  "inicio": 50.5
+                },
+                {
+                  "original": "On était d'accord, au final, elle est piquée, ouais",
+                  "traducao": "A gente tinha combinado, mas no final, ela se apaixonou, sim",
+                  "notas": [
+                    {
+                      "trecho": "elle est piquée",
+                      "explicacao": "ela se apaixonou, ela ficou grudada — \"Être piqué(e)\" = estar apaixonado de forma repentina e meio incontrolável, gíria — literalmente \"picada\" (por um inseto), imagem de algo que aconteceu contra a vontade."
+                    }
+                  ],
+                  "inicio": 53.8
+                },
+                {
+                  "original": "Elle est prête à tout, tout pour me faire abdiquer, ouais",
+                  "traducao": "Ela está disposta a tudo, tudo pra me fazer ceder, sim",
+                  "notas": [
+                    {
+                      "trecho": "me faire abdiquer",
+                      "explicacao": "me fazer ceder, me fazer desistir — \"Abdiquer\" normalmente é abdicar de um trono — aqui usado de forma exagerada/irônica pra dizer \"desistir das próprias regras\"."
+                    }
+                  ],
+                  "inicio": 57
+                },
+                {
+                  "original": "J'ai voulu être clair, mademoiselle a paniqué",
+                  "traducao": "Eu quis ser claro, a moça entrou em pânico",
+                  "notas": [],
+                  "inicio": 60.2
+                },
+                {
+                  "original": "Dans tous les cas, ça finit mal",
+                  "traducao": "De qualquer forma, termina mal",
+                  "notas": [
+                    {
+                      "trecho": "dans tous les cas, ça finit mal",
+                      "explicacao": "de qualquer forma, termina mal — O refrão-conclusão da música: não importa como a situação começa, o resultado é sempre o mesmo — funciona quase como um provérbio dentro da letra."
+                    }
+                  ],
+                  "inicio": 63
+                },
+                {
+                  "original": "Dans tous les cas, ça finit mal, mal, mal",
+                  "traducao": "De qualquer forma, termina mal, mal, mal",
+                  "notas": [
+                    {
+                      "trecho": "dans tous les cas, ça finit mal",
+                      "explicacao": "de qualquer forma, termina mal — O refrão-conclusão da música: não importa como a situação começa, o resultado é sempre o mesmo — funciona quase como um provérbio dentro da letra."
+                    }
+                  ],
+                  "inicio": 63
+                }
+              ]
+            },
+            {
+              "original": "J'ai rencontré une autre femme et toujours sur Paris\nElle avait l'air sérieuse, elle m'parlait d'avenir\nDu coup, j'ai pris l'temps d'écouter c'qu'elle avait à me dire\nJ'aimais sa façon d'être et j'aimais son charisme",
+              "pronuncia": "jê rãkõtrê ün otr fám ê tujúr sür parí / él avê lér seriœz, él mparlê davəní / dü kú, jê prí ltã dekutê skél avê a mə dír / jémê sa fasõ détr ê jémê sõ karizm",
+              "linhas": [
+                {
+                  "original": "J'ai rencontré une autre femme et toujours sur Paris",
+                  "traducao": "Eu conheci outra mulher, ainda em Paris",
+                  "notas": [],
+                  "inicio": 75.9
+                },
+                {
+                  "original": "Elle avait l'air sérieuse, elle m'parlait d'avenir",
+                  "traducao": "Ela parecia séria, falava sobre futuro",
+                  "notas": [
+                    {
+                      "trecho": "elle avait l'air sérieuse",
+                      "explicacao": "ela parecia séria — \"Avoir l'air + adjetivo\" = parecer, ter aparência de. Estrutura muito usada no francês pra impressão/aparência, equivalente a \"parecer\" em português."
+                    }
+                  ],
+                  "inicio": 79.4
+                },
+                {
+                  "original": "Du coup, j'ai pris l'temps d'écouter c'qu'elle avait à me dire",
+                  "traducao": "Então eu tirei um tempo pra ouvir o que ela tinha a dizer",
+                  "notas": [
+                    {
+                      "trecho": "du coup",
+                      "explicacao": "então, por causa disso — Conectivo extremamente comum no francês falado contemporâneo, meio coringa — liga uma consequência ao que foi dito antes, parecido com \"aí\" ou \"então\" no português falado."
+                    }
+                  ],
+                  "inicio": 82.2
+                },
+                {
+                  "original": "J'aimais sa façon d'être et j'aimais son charisme",
+                  "traducao": "Eu gostava do jeito dela e gostava do carisma dela",
+                  "notas": [
+                    {
+                      "trecho": "son charisme",
+                      "explicacao": "o carisma dela — Cognato direto do português — poucas armadilhas de pronúncia aqui, mas note que em francês o \"ch\" soa \"sh\", não \"k\"."
+                    }
+                  ],
+                  "inicio": 85.7
+                }
+              ]
+            },
+            {
+              "original": "Plus l'temps passe et plus, je kiffe être en sa présence\nEt qui l'aurait parié? J'esquive les appels, elle recommence\nEt j'ai toujours cinq ou six appels en absence\nPourtant, je l'avais briefée, j'ai quelqu'un qui me fait confiance",
+              "pronuncia": "plü ltã pás ê plü, jə kíf étr ã sa prezãs / ê ki loré parié? jeskív lê zapél, él rəkomãs / ê jê tujúr sẽk u sís apél ãn absãs / purtã, jə lavê brifê, jê kélkẽ ki mə fê kõfiãs",
+              "linhas": [
+                {
+                  "original": "Plus l'temps passe et plus, je kiffe être en sa présence",
+                  "traducao": "Quanto mais o tempo passa, mais eu curto estar com ela",
+                  "notas": [
+                    {
+                      "trecho": "je kiffe",
+                      "explicacao": "eu curto, eu adoro — Gíria muito popular (vem do árabe, via banlieue) para \"gostar muito de\" — mais forte e mais informal que \"j'aime bien\". Usada o tempo todo no francês coloquial de hoje."
+                    },
+                    {
+                      "trecho": "plus... plus",
+                      "explicacao": "Estrutura comparativa \"plus... plus\" = \"quanto mais... mais\" — direta e literal, mas sem vírgula no meio como em português."
+                    }
+                  ],
+                  "inicio": 88.8
+                },
+                {
+                  "original": "Et qui l'aurait parié? J'esquive les appels, elle recommence",
+                  "traducao": "E quem diria? Eu ignoro as ligações, ela liga de novo",
+                  "notas": []
+                },
+                {
+                  "original": "Et j'ai toujours cinq ou six appels en absence",
+                  "traducao": "E eu sempre tenho cinco ou seis chamadas perdidas",
+                  "notas": [],
+                  "inicio": 95.3
+                },
+                {
+                  "original": "Pourtant, je l'avais briefée, j'ai quelqu'un qui me fait confiance",
+                  "traducao": "Mesmo assim, eu já tinha avisado que tenho alguém que confia em mim",
+                  "notas": [
+                    {
+                      "trecho": "je l'avais briefée",
+                      "explicacao": "eu já tinha avisado ela — Empréstimo do inglês \"to brief\" (informar/preparar alguém com antecedência), virou verbo regular em francês coloquial: briefer. Uso bem contemporâneo, tipo gíria de trabalho que migrou pro dia a dia."
+                    }
+                  ],
+                  "inicio": 99.4
+                }
+              ]
+            },
+            {
+              "original": "Elle veut pas lâcher l'affaire, elle me dit qu'elle veut me revoir\nElle a repris ses affaires, elle a même quitté son gava\nMaintenant, j'ai quelque chose à perdre, je veux plus croiser ton regard\nElle me dit que c'est la dernière, après ça, j'te dirais: Au revoir, ah",
+              "pronuncia": "él vø pá lashê lafér, él mə dí kél vø mə rəvuár / él a rəprí sê zafér, él a mém kitê sõ gavá / mẽtnã, jê kélkə shoz a pérdr, jə vø plü kruazê tõ rəgár / él mə dí kə sê la dernier, aprê sa, jtə diré: o rəvuár, a",
+              "linhas": [
+                {
+                  "original": "Elle veut pas lâcher l'affaire, elle me dit qu'elle veut me revoir",
+                  "traducao": "Ela não quer desistir, diz que quer me ver de novo",
+                  "notas": [
+                    {
+                      "trecho": "lâcher l'affaire",
+                      "explicacao": "desistir, largar o assunto — \"Lâcher\" = soltar, largar. \"Lâcher l'affaire\" é expressão fixa pra \"deixar pra lá\", \"desistir de algo\"."
+                    }
+                  ],
+                  "inicio": 103.4
+                },
+                {
+                  "original": "Elle a repris ses affaires, elle a même quitté son gava",
+                  "traducao": "Ela pegou suas coisas, até largou o namorado",
+                  "notas": [
+                    {
+                      "trecho": "son gava",
+                      "explicacao": "o namorado dela — Gíria regional/argot pra \"petit ami\" (namorado) — palavra bem informal, pouco previsível pra quem só estudou francês de livro didático."
+                    }
+                  ],
+                  "inicio": 106.7
+                },
+                {
+                  "original": "Maintenant, j'ai quelque chose à perdre, je veux plus croiser ton regard",
+                  "traducao": "Agora eu tenho algo a perder, não quero mais cruzar o seu olhar",
+                  "notas": [
+                    {
+                      "trecho": "je veux plus croiser ton regard",
+                      "explicacao": "eu não quero mais cruzar o seu olhar — Mudança de pessoa dentro da própria frase (de \"elle\" pra \"ton\") — recurso comum em letra de música pra criar efeito de confronto direto, como se ele passasse a falar com ela mesma nesse momento."
+                    }
+                  ]
+                },
+                {
+                  "original": "Elle me dit que c'est la dernière, après ça, j'te dirais: Au revoir, ah",
+                  "traducao": "Ela me diz que é a última vez, depois disso, eu te digo: adeus, ah",
+                  "notas": []
+                }
+              ]
+            },
+            {
+              "original": "Eh, j'ai pris l'risque d'y aller une dernière fois\nJe savais qu'j'allais faire n'importe quoi\nMaintenant, la shh ose venir m'faire du chantage\nSoit c'est elle, soit elle dit tout à ma femme",
+              "pronuncia": "ê, jê prí lrísk di alê ün dernier fuá / jə savê jalê fér nẽport kuá / mẽtnã, la sh oz vəní mfér dü shãtáj / suá sê él, suá él dí tu a ma fám",
+              "linhas": [
+                {
+                  "original": "Eh, j'ai pris l'risque d'y aller une dernière fois",
+                  "traducao": "Eh, eu arrisquei ir lá mais uma vez",
+                  "notas": [
+                    {
+                      "trecho": "j'ai pris l'risque",
+                      "explicacao": "eu arrisquei — \"Prendre le risque de\" = correr o risco de — assumir conscientemente que algo pode dar errado."
+                    }
+                  ],
+                  "inicio": 140.8
+                },
+                {
+                  "original": "Je savais qu'j'allais faire n'importe quoi",
+                  "traducao": "Eu sabia que eu ia fazer qualquer besteira",
+                  "notas": [],
+                  "inicio": 144.6
+                },
+                {
+                  "original": "Maintenant, la shh ose venir m'faire du chantage",
+                  "traducao": "Agora, ela ousa vir me chantagear",
+                  "notas": [
+                    {
+                      "trecho": "la shh",
+                      "explicacao": "ela (censurado) — Autocensura da letra oficial — no lugar de um xingamento dirigido à mulher, a gravação e a transcrição usam \"shh\". Sinal de que o tom vira hostil bem rápido na virada da música."
+                    }
+                  ],
+                  "inicio": 147.7
+                },
+                {
+                  "original": "Soit c'est elle, soit elle dit tout à ma femme",
+                  "traducao": "Ou escolho ela ou ela conta tudo pra minha mulher",
+                  "notas": [
+                    {
+                      "trecho": "ma femme",
+                      "explicacao": "minha esposa — A revelação final da letra: ele é casado. Só nessa última estrofe fica claro que todo o \"não prometemos nada\" das primeiras regras escondia uma mentira maior — ele tinha uma esposa o tempo todo."
+                    }
+                  ],
+                  "inicio": 151.2
+                }
+              ]
+            }
+          ]
         }
       ],
       "quiz": [
@@ -1958,30 +3114,47 @@
           "frases": [
             {
               "original": "Bruxelles je t'aime\nJe t'aime à jamais\nMais qu'est-ce que j'aurais pu faire?",
-              "traducao": "Bruxelas, eu te amo\nEu te amo para sempre\nMas o que eu poderia ter feito?",
-              "vocabulario": [
+              "pronuncia": "brüsél jə tém / jə tém a jamê / mê késkə jorê pü fêr",
+              "linhas": [
                 {
-                  "palavra": "je t'aime",
-                  "significado": "eu te amo",
-                  "detalhe": "A expressão de amor mais clássica do francês. Pronuncia-se \"jə tém\"."
+                  "original": "Bruxelles je t'aime",
+                  "traducao": "Bruxelas, eu te amo",
+                  "notas": [
+                    {
+                      "trecho": "je t'aime",
+                      "explicacao": "eu te amo — A expressão de amor mais clássica do francês. Pronuncia-se \"jə tém\"."
+                    }
+                  ]
                 },
                 {
-                  "palavra": "à jamais",
-                  "significado": "para sempre",
-                  "detalhe": "\"Jamais\" = nunca/sempre. Com \"à\", significa \"para sempre\". Pronuncia-se \"a jamê\"."
+                  "original": "Je t'aime à jamais",
+                  "traducao": "Eu te amo para sempre",
+                  "notas": [
+                    {
+                      "trecho": "je t'aime",
+                      "explicacao": "eu te amo — A expressão de amor mais clássica do francês. Pronuncia-se \"jə tém\"."
+                    },
+                    {
+                      "trecho": "à jamais",
+                      "explicacao": "para sempre — \"Jamais\" = nunca/sempre. Com \"à\", significa \"para sempre\". Pronuncia-se \"a jamê\"."
+                    }
+                  ]
                 },
                 {
-                  "palavra": "qu'est-ce que",
-                  "significado": "o que",
-                  "detalhe": "Forma interrogativa. Pronuncia-se \"késkə\". Parece complicado, mas é uma só palavra na fala."
-                },
-                {
-                  "palavra": "j'aurais pu",
-                  "significado": "eu poderia ter / eu teria podido",
-                  "detalhe": "Condicional passado. \"Aurais\" do verbo \"avoir\" + \"pu\" do verbo \"pouvoir\"."
+                  "original": "Mais qu'est-ce que j'aurais pu faire?",
+                  "traducao": "Mas o que eu poderia ter feito?",
+                  "notas": [
+                    {
+                      "trecho": "qu'est-ce que",
+                      "explicacao": "o que — Forma interrogativa. Pronuncia-se \"késkə\". Parece complicado, mas é uma só palavra na fala."
+                    },
+                    {
+                      "trecho": "j'aurais pu",
+                      "explicacao": "eu poderia ter / eu teria podido — Condicional passado. \"Aurais\" do verbo \"avoir\" + \"pu\" do verbo \"pouvoir\"."
+                    }
+                  ]
                 }
-              ],
-              "pronuncia": "brüsél jə tém / jə tém a jamê / mê késkə jorê pü fêr"
+              ]
             }
           ]
         }

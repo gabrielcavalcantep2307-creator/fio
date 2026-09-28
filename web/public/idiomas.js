@@ -1,5 +1,10 @@
 const main = document.getElementById('main')
 let CURSO_ATUAL = null
+let LISTA_IDIOMAS = null
+
+// localStorage pode falhar (privado, cota) — nunca deixa a página quebrar por causa disso
+function guardarLocal(chave, valor) { try { localStorage.setItem(chave, valor) } catch {} }
+function lerLocal(chave) { try { return localStorage.getItem(chave) } catch { return null } }
 
 const SAUDACOES = {
   espanhol:  { s: '¡Bienvenido!', f: 'Aprender español es abrir una puerta al mundo.' },
@@ -28,16 +33,22 @@ async function iniciar() {
   window.fioDono?.conferir(pessoa.id)
   let lista
   try { ({ idiomas: lista } = await pedir('/idiomas')) } catch (e) { por(main, recado('ruim', e.message)); return }
+  LISTA_IDIOMAS = lista
   addEventListener('hashchange', () => roteador(lista))
   roteador(lista)
 }
+
+const FERRAMENTAS_GERAIS = { tradutor: 'dicionario', estudio: 'musica' }
 
 function roteador(lista) {
   const partes = location.hash.replace(/^#\/?/, '').split('/')
   const chave = partes[0]
   const secao = partes[1] || ''
   const detalhe = partes.slice(2).join('/')
-  if (chave && lista.some((i) => i.chave === chave)) {
+  if (FERRAMENTAS_GERAIS[chave]) {
+    CURSO_ATUAL = null
+    abrirFerramentaGeral(chave, lista)
+  } else if (chave && lista.some((i) => i.chave === chave)) {
     abrirIdioma(chave, secao, detalhe)
   } else {
     CURSO_ATUAL = null
@@ -45,21 +56,124 @@ function roteador(lista) {
   }
 }
 
-function desenharGrade(lista) {
-  const PROF = { completo: 'curso completo', basico: 'o básico — mais chegando' }
+/** Tradutor/Estúdio Musical acessados direto do hub, sem escolher idioma antes. */
+function abrirFerramentaGeral(ferramenta, lista) {
+  const secaoAlvo = FERRAMENTAS_GERAIS[ferramenta]
+  const lembrado = lerLocal('fio:idiomas:ultimo')
+  if (lembrado && lista.some((i) => i.chave === lembrado)) {
+    location.hash = `#/${lembrado}/${secaoAlvo}`
+    return
+  }
+  const nomeFerramenta = ferramenta === 'tradutor' ? 'o Tradutor' : 'o Estúdio Musical'
   por(main,
     el('div', { class: 'topo-idiomas' },
+      el('a', { href: '#/', class: 'voltar-link' }, '← todos os idiomas')),
+    el('div', { class: 'escolher-ferramenta' },
+      el('h1', {}, `Escolha o idioma para usar ${nomeFerramenta}`),
+      el('p', { class: 'sub' }, 'Depois dá para trocar de idioma sem sair daqui.'),
+      el('div', { class: 'grade-idiomas' }, lista.map((i) => el('button', {
+        class: 'cartao-idioma', type: 'button',
+        onclick: () => { location.hash = `#/${i.chave}/${secaoAlvo}` },
+      },
+        el('span', { class: 'bandeira', 'aria-hidden': 'true' }, i.bandeira),
+        el('h3', {}, i.nome))))))
+}
+
+let PALAVRA_PENDENTE = null
+
+function desenharGrade(lista) {
+  const PROF = { completo: 'curso completo', basico: 'o básico — mais chegando' }
+  // ordenados por uso: quem já tem progresso vem primeiro
+  const ordenada = [...lista].sort((a, b) => (b.feitas ?? 0) - (a.feitas ?? 0))
+  const totalFeitas = lista.reduce((s, i) => s + (i.feitas ?? 0), 0)
+  const totalUnidades = lista.reduce((s, i) => s + (i.unidades ?? 0), 0)
+  const idiomasComecados = lista.filter((i) => (i.feitas ?? 0) > 0).length
+
+  const continuarAlvo = el('div', { class: 'continuar-estudando', style: 'display:none' })
+
+  const buscaRapida = el('input', { type: 'search', class: 'hub-busca-rapida', placeholder: '🔎 Traduzir uma palavra em qualquer idioma…', autocomplete: 'off' })
+  buscaRapida.addEventListener('keydown', (ev) => {
+    if (ev.key !== 'Enter' || !buscaRapida.value.trim()) return
+    PALAVRA_PENDENTE = buscaRapida.value.trim()
+    location.hash = '#/tradutor'
+  })
+
+  por(main,
+    el('div', { class: 'topo-idiomas hub-topo' },
       el('div', {},
         el('h1', {}, 'Idiomas'),
-        el('p', { class: 'sub', style: 'margin:0' }, 'Aulas, gramática, diálogos, flashcards, música e quiz — para aprender de verdade.')),
+        el('p', { class: 'sub', style: 'margin:0;max-width:56ch' }, 'Aulas do zero, gramática, diálogos, flashcards, música estrofe por estrofe e quiz — escolha uma língua e mergulhe.')),
       el('span', { class: 'selo-tear' }, '✦ plano Tear')),
-    el('div', { class: 'grade-idiomas' }, lista.map((i) => el('button', {
-      class: 'cartao-idioma', type: 'button',
-      onclick: () => { location.hash = `#/${i.chave}` },
-    },
-      el('span', { class: 'bandeira', 'aria-hidden': 'true' }, i.bandeira),
-      el('h3', {}, i.nome),
-      el('span', { class: 'prof' }, `${PROF[i.profundidade] ?? i.profundidade} · ${i.unidades} unidades`)))))
+
+    continuarAlvo,
+    buscaRapida,
+
+    idiomasComecados ? el('div', { class: 'hub-stats' },
+      el('div', { class: 'hub-stat' }, el('b', {}, String(totalFeitas)), el('span', {}, 'unidades no total')),
+      el('div', { class: 'hub-stat' }, el('b', {}, `${idiomasComecados}/${lista.length}`), el('span', {}, 'idiomas começados')),
+      el('div', { class: 'hub-stat' }, el('b', {}, String(totalUnidades)), el('span', {}, 'unidades no catálogo'))) : null,
+
+    el('div', { class: 'grade-idiomas' }, ordenada.map((i) => {
+      const pct = i.unidades ? Math.round(((i.feitas ?? 0) / i.unidades) * 100) : 0
+      return el('button', {
+        class: 'cartao-idioma', type: 'button',
+        onclick: () => { location.hash = `#/${i.chave}` },
+      },
+        i.feitas ? el('span', { class: 'selo-andamento' }, 'em andamento') : null,
+        el('span', { class: 'bandeira', 'aria-hidden': 'true' }, i.bandeira),
+        el('h3', {}, i.nome),
+        el('span', { class: 'prof' }, `${PROF[i.profundidade] ?? i.profundidade} · ${i.unidades} unidades`),
+        i.feitas ? el('div', { class: 'cartao-progresso' },
+          el('div', { class: 'cartao-progresso-barra' }, el('i', { style: `width:${pct}%` })),
+          el('span', {}, `${i.feitas}/${i.unidades} unidades feitas`)) : null)
+    })),
+
+    el('div', { class: 'hub-separador' }, el('span', {}, 'ou use sem escolher idioma')),
+
+    el('div', { class: 'hub-ferramentas' },
+      el('h2', {}, 'Ferramentas gerais'),
+      el('p', { class: 'sub' }, 'Sem precisar escolher idioma primeiro — você escolhe lá dentro.'),
+      el('div', { class: 'painel-secoes' },
+        el('button', { class: 'painel-card', type: 'button', onclick: () => { location.hash = '#/tradutor' } },
+          el('span', { class: 'painel-card-ico' }, '💬'),
+          el('div', {}, el('h3', {}, 'Tradutor'), el('p', {}, 'Traduza qualquer palavra, em qualquer um dos sete idiomas'))),
+        el('button', { class: 'painel-card', type: 'button', onclick: () => { location.hash = '#/estudio' } },
+          el('span', { class: 'painel-card-ico' }, '🎵'),
+          el('div', {}, el('h3', {}, 'Estúdio Musical'), el('p', {}, 'Estude qualquer música do catálogo, estrofe por estrofe'))))))
+
+  carregarContinuarEstudando(continuarAlvo, lista)
+}
+
+/** Card "continuar de onde parou" + música em destaque — carrega depois, sem travar o hub. */
+async function carregarContinuarEstudando(alvo, lista) {
+  const chave = lerLocal('fio:idiomas:ultimo')
+  if (!chave || !lista.some((i) => i.chave === chave)) return
+  let resposta
+  try { resposta = await pedir(`/idiomas/${chave}`) } catch { return }
+  const { curso, progresso, sequencia } = resposta
+  const proxima = curso.unidades.find((u) => !progresso[u.chave])
+  const musicas = []
+  for (const u of curso.unidades) for (const m of (u.musicas || [])) if (m.youtubeId) musicas.push(m)
+  const destaque = musicas[Math.floor(Math.random() * musicas.length)]
+
+  por(alvo,
+    el('div', { class: 'continuar-card' },
+      el('div', { class: 'continuar-txt' },
+        el('span', { class: 'continuar-rotulo' }, `${curso.bandeira} continuando em ${curso.nome}`),
+        el('h2', {}, proxima ? proxima.titulo : 'Curso completo — reveja quando quiser'),
+        sequencia > 0 ? el('span', { class: 'selo-sequencia' }, `🔥 ${sequencia} ${sequencia === 1 ? 'dia seguido' : 'dias seguidos'}`) : null),
+      el('button', { class: 'botao', type: 'button', onclick: () => {
+        location.hash = proxima ? `#/${chave}/curso/${proxima.chave}` : `#/${chave}/curso`
+      } }, '▶ Continuar')),
+    destaque ? el('button', { class: 'destaque-musica', type: 'button', onclick: () => {
+      const idx = musicas.indexOf(destaque)
+      location.hash = `#/${chave}/musica/${idx}`
+    } },
+      el('img', { src: `https://img.youtube.com/vi/${destaque.youtubeId}/mqdefault.jpg`, alt: '', loading: 'lazy' }),
+      el('div', { class: 'destaque-musica-txt' },
+        el('span', {}, 'Música em destaque'),
+        el('b', {}, destaque.titulo), ' — ', destaque.artista)) : null)
+  alvo.style.display = 'flex'
 }
 
 async function abrirIdioma(chave, secao, detalhe) {
@@ -73,6 +187,7 @@ async function abrirIdioma(chave, secao, detalhe) {
       por(main, recado('ruim', e.message)); return
     }
     CURSO_ATUAL = { chave, ...resposta }
+    guardarLocal('fio:idiomas:ultimo', chave)
   }
   desenharSecoes(secao, detalhe)
 }
@@ -111,6 +226,14 @@ function desenharSecoes(secao, detalhe) {
       },
     }, s.label)))
 
+  // trocar de idioma sem sair da ferramenta — só faz sentido em Tradutor/Estúdio,
+  // que valem sozinhos (o Painel e o Curso são a imersão NESSE idioma específico)
+  const trocador = (secao === 'musica' || secao === 'dicionario') && LISTA_IDIOMAS?.length > 1
+    ? el('select', { class: 'trocador-idioma', 'aria-label': 'Trocar de idioma', onchange: (ev) => {
+        location.hash = `#/${ev.target.value}/${secao}`
+      } }, LISTA_IDIOMAS.map((i) => el('option', { value: i.chave, selected: i.chave === CURSO_ATUAL.chave ? '' : null }, `${i.bandeira} ${i.nome}`)))
+    : null
+
   const conteudo = el('div', { class: 'secao-conteudo' })
 
   por(main,
@@ -118,9 +241,10 @@ function desenharSecoes(secao, detalhe) {
       el('a', { href: '#/', class: 'voltar-link' }, '← todos os idiomas'),
       el('div', { class: 'idioma-hero' },
         el('span', { class: 'idioma-bandeira' }, curso.bandeira),
-        el('div', {},
+        el('div', { style: 'flex:1' },
           el('h1', { style: 'margin:0' }, curso.nome),
-          saud.s ? el('p', { class: 'saudacao-nativa' }, `${saud.s} ${saud.f}`) : null))),
+          saud.s ? el('p', { class: 'saudacao-nativa' }, `${saud.s} ${saud.f}`) : null),
+        trocador)),
     navBtns,
     conteudo)
 
@@ -132,15 +256,50 @@ function desenharSecoes(secao, detalhe) {
 
 // ── painel principal (dashboard) ──
 
+/**
+ * Nível CEFR aproximado, só a partir de palavras vistas e unidades concluídas
+ * — não é exame nenhum, é uma régua grosseira pra dar noção de onde se está.
+ * Faixas soltas de propósito: a pesquisa (Cambridge/ALTE) fala em ~70h pro A1
+ * e mais de 300h pro B1; aqui a proxy é "quanto vocabulário + prática já
+ * passou pela pessoa", não hora cronometrada.
+ */
+function nivelEstimado(totalV, feitas) {
+  const pontos = totalV * 1 + feitas * 15
+  if (pontos < 60) return { nivel: 'A1', rotulo: 'iniciante' }
+  if (pontos < 160) return { nivel: 'A2', rotulo: 'básico' }
+  if (pontos < 320) return { nivel: 'B1', rotulo: 'intermediário' }
+  if (pontos < 550) return { nivel: 'B2', rotulo: 'intermediário avançado' }
+  return { nivel: 'C1', rotulo: 'avançado' }
+}
+
 function desenharPainelPrincipal(alvo) {
-  const { curso, progresso, revisao } = CURSO_ATUAL
+  const { curso, progresso, revisao, salvas = [], sequencia = 0 } = CURSO_ATUAL
   const feitas = Object.keys(progresso).length
   const totalU = curso.unidades.length
   const totalV = curso.unidades.reduce((s, u) => s + (u.vocabulario?.length || 0), 0)
   const musicas = coletarMusicas()
   const primeiraNaoFeita = curso.unidades.find((u) => !progresso[u.chave])
+  const pct = totalU ? Math.round((feitas / totalU) * 100) : 0
+  const nivel = nivelEstimado(totalV, feitas)
+
+  const recentes = Object.entries(progresso)
+    .sort(([, a], [, b]) => new Date(b.concluido_em) - new Date(a.concluido_em))
+    .slice(0, 5)
+    .map(([chave, p]) => ({ ...p, titulo: curso.unidades.find((u) => u.chave === chave)?.titulo || chave }))
+
+  const musicaSugerida = musicas.find((m) => m.youtubeId)
 
   por(alvo,
+    el('div', { class: 'painel-topo' },
+      el('div', { class: 'anel-progresso', style: `--pct:${pct}%` },
+        el('div', { class: 'anel-miolo' }, el('b', {}, `${pct}%`), el('span', {}, 'do curso'))),
+      el('div', { class: 'painel-topo-txt' },
+        el('h2', {}, feitas === 0 ? 'Vamos começar' : feitas === totalU ? 'Curso completo!' : 'Continue de onde parou'),
+        el('p', {}, `${feitas} de ${totalU} unidades concluídas · ${totalV} palavras no curso`),
+        el('div', { class: 'painel-selos' },
+          el('span', { class: 'selo-nivel', title: 'Estimativa a partir do que você já viu — não é um exame' }, `Nível estimado: ${nivel.nivel} (${nivel.rotulo})`),
+          sequencia > 0 ? el('span', { class: 'selo-sequencia' }, `🔥 ${sequencia} ${sequencia === 1 ? 'dia seguido' : 'dias seguidos'}`) : null))),
+
     el('div', { class: 'painel-stats' },
       el('div', { class: 'stat' },
         el('div', { class: 'stat-num' }, `${feitas}/${totalU}`),
@@ -153,7 +312,10 @@ function desenharPainelPrincipal(alvo) {
         el('div', { class: 'stat-label' }, 'músicas')),
       el('div', { class: 'stat' },
         el('div', { class: 'stat-num' }, String(revisao.length)),
-        el('div', { class: 'stat-label' }, 'para revisar'))),
+        el('div', { class: 'stat-label' }, 'para revisar')),
+      el('button', { class: 'stat stat-clicavel', type: 'button', onclick: () => { location.hash = `#/${CURSO_ATUAL.chave}/dicionario` } },
+        el('div', { class: 'stat-num' }, String(salvas.length)),
+        el('div', { class: 'stat-label' }, 'palavras salvas'))),
 
     el('div', { class: 'painel-acoes' },
       primeiraNaoFeita
@@ -172,6 +334,7 @@ function desenharPainelPrincipal(alvo) {
 
     el('div', { class: 'painel-secoes' },
       el('button', { class: 'painel-card', type: 'button', onclick: () => { location.hash = `#/${CURSO_ATUAL.chave}/musica` } },
+        musicaSugerida ? el('img', { class: 'painel-card-capa', src: `https://img.youtube.com/vi/${musicaSugerida.youtubeId}/mqdefault.jpg`, alt: '', loading: 'lazy' }) : null,
         el('span', { class: 'painel-card-ico' }, '🎵'),
         el('div', {},
           el('h3', {}, 'Estúdio Musical'),
@@ -180,7 +343,23 @@ function desenharPainelPrincipal(alvo) {
         el('span', { class: 'painel-card-ico' }, '💬'),
         el('div', {},
           el('h3', {}, 'Tradutor'),
-          el('p', {}, 'Traduz e tira dúvidas no idioma')))))
+          el('p', {}, 'Traduz palavra ou frase, nos dois sentidos')))),
+
+    recentes.length ? el('div', { class: 'bloco painel-atividade' },
+      el('h3', {}, 'Atividade recente'),
+      recentes.map((r) => el('div', { class: 'atividade-item' },
+        el('span', { class: 'atividade-ico' }, '✓'),
+        el('span', { class: 'atividade-txt' }, `${r.titulo} — ${r.acertos}/${r.total} acertos`),
+        el('span', { class: 'atividade-quando' }, formatarQuando(r.concluido_em))))) : null)
+}
+
+function formatarQuando(iso) {
+  const diffMs = Date.now() - new Date(iso.replace(' ', 'T') + 'Z').getTime()
+  const dias = Math.floor(diffMs / 86400000)
+  if (dias <= 0) return 'hoje'
+  if (dias === 1) return 'ontem'
+  if (dias < 30) return `${dias} dias atrás`
+  return new Date(iso).toLocaleDateString('pt-BR')
 }
 
 // ── curso (unidades em abas horizontais) ──
@@ -191,7 +370,7 @@ function desenharCurso(alvo, unidadeChave) {
     || curso.unidades.find((u) => !progresso[u.chave])
     || curso.unidades[0]
 
-  const listaUnidades = el('div', { class: 'unidades-tabs', role: 'tablist' },
+  const tabs = el('div', { class: 'unidades-tabs', role: 'tablist' },
     curso.unidades.map((u, i) => el('button', {
       class: 'unidade-tab' + (u.chave === unidade.chave ? ' ativa' : '') + (progresso[u.chave] ? ' feita' : ''),
       type: 'button', role: 'tab',
@@ -200,9 +379,24 @@ function desenharCurso(alvo, unidadeChave) {
       el('span', { class: 'tab-num' }, progresso[u.chave] ? '✓' : String(i + 1)),
       el('span', { class: 'tab-titulo' }, u.titulo))))
 
+  const btnEsq = el('button', { class: 'unidades-seta esq', type: 'button', title: 'Ver anteriores', onclick: () => {
+    tabs.scrollBy({ left: -240, behavior: 'smooth' })
+  } }, '‹')
+  const btnDir = el('button', { class: 'unidades-seta dir', type: 'button', title: 'Ver mais', onclick: () => {
+    tabs.scrollBy({ left: 240, behavior: 'smooth' })
+  } }, '›')
+
+  function atualizarSetas() {
+    btnEsq.classList.toggle('escondida', tabs.scrollLeft <= 4)
+    btnDir.classList.toggle('escondida', tabs.scrollLeft >= tabs.scrollWidth - tabs.clientWidth - 4)
+  }
+  tabs.addEventListener('scroll', atualizarSetas)
+
+  const listaUnidades = el('div', { class: 'unidades-tabs-wrap' }, btnEsq, tabs, btnDir)
   const painel = el('div', { class: 'licao' })
   por(alvo, listaUnidades, painel)
   desenharPainelUnidade(painel, unidade)
+  setTimeout(atualizarSetas, 0)
 }
 
 // ── painel com abas ──
@@ -325,6 +519,8 @@ function desenharAbaAprender(alvo, unidade) {
   if (unidade.dica) {
     blocos.push(el('div', { class: 'bloco' }, el('div', { class: 'dica' }, el('b', {}, '✎ Dica — '), unidade.dica)))
   }
+
+  blocos.push(notaPessoal(unidade.chave, 'Anote aqui seu próprio jeito de lembrar desta unidade…'))
 
   por(alvo, blocos)
 }
@@ -461,10 +657,13 @@ function desenharEstudioMusical(alvo, detalhe) {
     return
   }
 
+  const formPedido = desenharPedirMusica()
+
   por(alvo,
     el('div', { class: 'bloco', style: 'border:none;background:none;padding:0' },
       el('h2', { style: 'margin-bottom:4px' }, '🎵 Estúdio Musical'),
-      el('p', { class: 'sub', style: 'margin:0 0 20px' }, 'Estude cada música estrofe por estrofe. Aprenda palavras, significados e pronúncia.')),
+      el('p', { class: 'sub', style: 'margin:0 0 14px' }, 'Estude cada música estrofe por estrofe. Aprenda palavras, significados e pronúncia.'),
+      musicas.length ? el('button', { class: 'botao mini', type: 'button', onclick: () => { location.hash = `#/${CURSO_ATUAL.chave}/musica/0` } }, '▶ Tocar tudo') : null),
     el('div', { class: 'grade-musicas' },
       musicas.map((m, i) => el('button', {
         class: 'cartao-musica', type: 'button',
@@ -476,11 +675,134 @@ function desenharEstudioMusical(alvo, detalhe) {
         el('div', { class: 'info-musica' },
           el('div', { class: 'titulo-musica' }, m.titulo),
           el('div', { class: 'artista-musica' }, m.artista),
-          el('div', { class: 'unidade-musica' }, m._unidade))))))
+          el('div', { class: 'unidade-musica' }, m._unidade))))),
+    formPedido)
+}
+
+function desenharPedirMusica() {
+  const chave = CURSO_ATUAL.chave
+  const aberto = el('div', { class: 'pedir-musica-form', style: 'display:none' })
+  const saida = el('div')
+  const tituloC = el('input', { type: 'text', placeholder: 'Título da música', maxlength: '200' })
+  const artistaC = el('input', { type: 'text', placeholder: 'Artista (opcional)', maxlength: '120' })
+  const notaC = el('input', { type: 'text', placeholder: 'Link do YouTube ou observação (opcional)', maxlength: '500' })
+  const enviar = el('button', { class: 'botao mini', type: 'button', onclick: async () => {
+    if (!tituloC.value.trim()) { por(saida, recado('ruim', 'Diga ao menos o título.')); return }
+    enviar.disabled = true
+    try {
+      await pedir(`/idiomas/${chave}/pedir-musica`, { titulo: tituloC.value, artista: artistaC.value, nota: notaC.value })
+      por(saida, recado('bom', 'Pedido enviado — obrigado! Vamos avaliar para adicionar ao catálogo.'))
+      tituloC.value = ''; artistaC.value = ''; notaC.value = ''
+    } catch (e) { por(saida, recado('ruim', e.message)) }
+    enviar.disabled = false
+  } }, 'Enviar pedido')
+  por(aberto, el('div', { class: 'bloco' },
+    el('h3', { style: 'margin-top:0' }, 'Peça uma música'),
+    el('p', { class: 'sub', style: 'margin:0 0 12px' }, 'Não achou a música que queria estudar? Peça aqui — avaliamos e adicionamos ao catálogo.'),
+    el('div', { class: 'pedir-musica-campos' }, tituloC, artistaC, notaC, enviar),
+    saida))
+  return el('div', {},
+    el('button', { class: 'botao fraco mini', type: 'button', style: 'margin-top:16px', onclick: () => {
+      aberto.style.display = aberto.style.display === 'none' ? 'block' : 'none'
+    } }, '🎤 Peça uma música que falta'),
+    aberto)
+}
+
+// ── player do YouTube ──
+//
+// Um <iframe src="youtube-nocookie.com/embed/..."> puro, sem carregar o
+// script externo da API (`youtube.com/iframe_api`) — a CSP do site só libera
+// `script-src 'self'`, e carregar JS de fora quebrava o player em produção
+// em silêncio (24/09/2026). Pular para uma estrofe ainda funciona: com
+// `enablejsapi=1` o player aceita comando por `postMessage`, sem precisar
+// do script nenhum.
+
+/**
+ * Fala com o player do YouTube por `postMessage`, sem carregar o script
+ * `youtube.com/iframe_api` (bloqueado pela CSP — foi a causa do "Erro 153"/tela
+ * preta de antes). Mandando `listening` de tempos em tempos, o player começa a
+ * devolver `infoDelivery` sozinho, com `currentTime` — é assim que a legenda ao
+ * vivo sabe em que ponto da música está, sem precisar da biblioteca oficial.
+ */
+function criarControlePlayer(iframe) {
+  const ORIGEM = 'https://www.youtube-nocookie.com'
+  const mandar = (func, args = []) => iframe?.contentWindow?.postMessage(JSON.stringify({ event: 'command', func, args }), ORIGEM)
+  let tempoAtual = 0
+  const ouvintes = new Set()
+  function aoReceber(ev) {
+    if (ev.source !== iframe?.contentWindow) return
+    let dado
+    try { dado = JSON.parse(ev.data) } catch { return }
+    if (dado.event === 'infoDelivery' && typeof dado.info?.currentTime === 'number') {
+      tempoAtual = dado.info.currentTime
+      for (const fn of ouvintes) fn(tempoAtual)
+    }
+  }
+  window.addEventListener('message', aoReceber)
+  const intervalo = setInterval(() => {
+    iframe?.contentWindow?.postMessage(JSON.stringify({ event: 'listening', id: musicaIdAtual, channel: 'widget' }), ORIGEM)
+  }, 100)
+  return {
+    pular(seg) { mandar('seekTo', [seg, true]); mandar('playVideo') },
+    velocidade(r) { mandar('setPlaybackRate', [r]) },
+    tempoAgora: () => tempoAtual,
+    aoAtualizar(fn) { ouvintes.add(fn); return () => ouvintes.delete(fn) },
+    destruir() { window.removeEventListener('message', aoReceber); clearInterval(intervalo) },
+  }
+}
+let musicaIdAtual = 'player'
+let loopAtivo = null // { intervalo, botao }
+
+/** Liga/desliga repetição de um trecho (usa o tempo do player, sem precisar de setInterval preciso). */
+function alternarLoop(botao, controle, inicioSeg, fimSeg) {
+  if (loopAtivo) {
+    clearInterval(loopAtivo.intervalo)
+    loopAtivo.botao.classList.remove('ativa')
+    const eraEsteBotao = loopAtivo.botao === botao
+    loopAtivo = null
+    if (eraEsteBotao) return
+  }
+  controle.pular(inicioSeg)
+  const intervalo = setInterval(() => {
+    if (controle.tempoAgora() >= fimSeg) controle.pular(inicioSeg)
+  }, 500)
+  botao.classList.add('ativa')
+  loopAtivo = { intervalo, botao }
+}
+
+/** A tira de legenda que acompanha a música tocando — mostra a linha atual sozinha. */
+function desenharLegendaAoVivo(estrofes, controle) {
+  const todasLinhas = []
+  estrofes.forEach((e, iEst) => (e.linhas || []).forEach((l, iLinha) => {
+    if (l.inicio != null) todasLinhas.push({ ...l, iEst, iLinha })
+  }))
+  todasLinhas.sort((a, b) => a.inicio - b.inicio)
+  if (!todasLinhas.length || !controle) return null
+
+  const original = el('div', { class: 'legenda-original' }, '♪ toque em play e acompanhe a letra aqui, em tempo real')
+  const traducao = el('div', { class: 'legenda-traducao' })
+  const caixa = el('div', { class: 'legenda-ao-vivo' }, el('span', { class: 'legenda-rotulo' }, 'AO VIVO'), original, traducao)
+
+  let indiceAtual = -1
+  const parar = controle.aoAtualizar((tempo) => {
+    let i = -1
+    for (let k = 0; k < todasLinhas.length; k++) { if (todasLinhas[k].inicio <= tempo + 0.5) i = k; else break }
+    if (i === indiceAtual) return
+    indiceAtual = i
+    if (i < 0) { original.textContent = '♪ toque em play e acompanhe a letra aqui, em tempo real'; traducao.textContent = ''; return }
+    original.textContent = todasLinhas[i].original
+    traducao.textContent = todasLinhas[i].traducao
+    caixa.dataset.estrofe = todasLinhas[i].iEst
+    document.querySelectorAll('.linha-tocando').forEach((n) => n.classList.remove('linha-tocando'))
+    document.querySelector(`[data-linha-chave="${todasLinhas[i].iEst}-${todasLinhas[i].iLinha}"]`)?.classList.add('linha-tocando')
+  })
+  caixa._pararSincronia = parar
+  return caixa
 }
 
 function desenharEstudoMusica(alvo, musica, idx, total) {
   const estrofes = musica.frases || []
+  musicaIdAtual = `player-${idx}`
 
   const nav = el('div', { class: 'estudo-musica-nav' },
     idx > 0 ? el('button', { class: 'botao mini fraco', type: 'button', onclick: () => {
@@ -491,43 +813,73 @@ function desenharEstudoMusica(alvo, musica, idx, total) {
       location.hash = `#/${CURSO_ATUAL.chave}/musica/${idx + 1}`
     } }, 'Próxima →') : el('span'))
 
-  const playerEl = musica.youtubeId
-    ? el('div', { class: 'yt-player-wrap' },
-        el('iframe', {
-          class: 'yt-player',
-          src: `https://www.youtube-nocookie.com/embed/${musica.youtubeId}?rel=0`,
-          allow: 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture',
-          allowfullscreen: '', loading: 'lazy', frameborder: '0',
-          title: musica.titulo,
-        }))
+  const iframe = musica.youtubeId
+    ? el('iframe', {
+        class: 'yt-player', id: musicaIdAtual,
+        src: `https://www.youtube-nocookie.com/embed/${musica.youtubeId}?rel=0&enablejsapi=1`,
+        allow: 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture',
+        allowfullscreen: '', loading: 'lazy', frameborder: '0',
+        // O site manda `Referrer-Policy: no-referrer` (proposital, ver Caddyfile.fiolib)
+        // — mas sem referrer nenhum, o YouTube recusa alguns vídeos (os de selo/VEVO)
+        // com "Erro 153" de configuração. Este atributo vale só PARA ESTE iframe,
+        // manda a origem (não a URL inteira) e não afeta o resto do site.
+        referrerpolicy: 'origin',
+        title: musica.titulo,
+      })
+    : null
+  const playerEl = iframe
+    ? el('div', { class: 'yt-player-wrap' }, iframe)
     : el('a', {
         class: 'yt-thumb-busca botao mini fraco',
         href: `https://www.youtube.com/results?search_query=${encodeURIComponent(musica.titulo + ' ' + musica.artista)}`,
         target: '_blank', rel: 'noopener',
       }, '🔎 Procurar no YouTube')
 
-  const header = el('div', { class: 'bloco estudo-musica-header' },
+  const controle = iframe ? criarControlePlayer(iframe) : null
+  const velocidadeBtns = controle ? el('div', { class: 'velocidade-btns' },
+    [0.75, 1, 1.25].map((r) => el('button', { class: 'botao mini fraco', type: 'button', onclick: (ev) => {
+      controle.velocidade(r)
+      ev.currentTarget.parentElement.querySelectorAll('button').forEach((b) => b.classList.remove('ativa'))
+      ev.currentTarget.classList.add('ativa')
+    } }, `${r}x`))) : null
+
+  const header = el('div', { class: 'bloco estudo-musica-header', style: musica.youtubeId
+    ? `--capa:url(https://img.youtube.com/vi/${musica.youtubeId}/hqdefault.jpg)` : '' },
     el('h2', { style: 'margin:0 0 4px' }, musica.titulo),
     el('p', { class: 'sub', style: 'margin:0 0 14px' }, musica.artista),
-    playerEl)
+    playerEl,
+    velocidadeBtns)
+
+  const legenda = desenharLegendaAoVivo(estrofes, controle)
+
+  const adivinha = el('input', { type: 'checkbox', id: 'modo-adivinha' })
+  const modoAdivinha = el('label', { class: 'modo-adivinha', for: 'modo-adivinha' },
+    adivinha, ' 🙈 Esconder tradução até eu clicar (testar antes de ver)')
+  adivinha.addEventListener('change', () => {
+    estrofesEl.classList.toggle('adivinha-ativo', adivinha.checked)
+  })
 
   const estrofesEl = el('div', { class: 'bloco estudo-estrofes' },
     el('h2', { style: 'margin:0 0 4px' }, 'Estrofe por estrofe'),
-    el('p', { class: 'sub', style: 'margin:0 0 18px' }, 'Toque em cada estrofe para ver a tradução e o significado de cada palavra.'),
+    el('p', { class: 'sub', style: 'margin:0 0 14px' }, musica.frases?.some((f) => f.linhas?.some((l) => l.inicio != null))
+      ? 'Toque em qualquer linha para pular o vídeo até ali.'
+      : 'Toque em cada estrofe para ver a tradução e o significado de cada palavra.'),
+    modoAdivinha,
     estrofes.length
-      ? el('div', { class: 'lista-estrofes' }, estrofes.map((e, i) => criarEstrofe(e, i + 1)))
+      ? el('div', { class: 'lista-estrofes', style: 'margin-top:14px' }, estrofes.map((e, i) => criarEstrofe(e, i + 1, controle, `${musica.titulo}::${i + 1}`, i)))
       : el('p', { class: 'sub' }, 'Letra ainda não disponível para estudo.'))
 
   por(alvo,
     el('button', { class: 'voltar-estudio', type: 'button', onclick: () => {
       location.hash = `#/${CURSO_ATUAL.chave}/musica`
     } }, '← Voltar ao estúdio'),
-    header, estrofesEl, nav)
+    header, legenda, estrofesEl, nav)
 }
 
-function criarEstrofe(estrofe, num) {
+function criarEstrofe(estrofe, num, controle, notaChave, iEst) {
   const detalhe = el('div', { class: 'estrofe-detalhe', style: 'display:none' })
   const item = el('div', { class: 'estrofe-item' })
+  const linhasComTempo = estrofe.linhas?.filter((l) => l.inicio != null) || []
 
   const cabecalho = el('div', { class: 'estrofe-cabecalho', onclick: () => {
     const aberto = detalhe.style.display !== 'none'
@@ -540,24 +892,46 @@ function criarEstrofe(estrofe, num) {
         ev.stopPropagation()
         falar(limparParaVoz(estrofe.original), CURSO_ATUAL.curso.voz)
       } }, '🔊'),
+      (estrofe.inicio != null || linhasComTempo[0]) && controle ? el('button', { class: 'fala mini', type: 'button', title: 'Pular o vídeo pra cá', onclick: (ev) => {
+        ev.stopPropagation()
+        controle.pular(estrofe.inicio ?? linhasComTempo[0].inicio)
+      } }, '▶') : null,
+      linhasComTempo.length >= 2 && controle ? el('button', { class: 'fala mini loop-btn', type: 'button', title: 'Repetir esta estrofe em loop', onclick: (ev) => {
+        ev.stopPropagation()
+        alternarLoop(ev.currentTarget, controle, linhasComTempo[0].inicio, (estrofe.linhas.at(-1).inicio ?? linhasComTempo.at(-1).inicio) + 3)
+      } }, '🔁') : null,
       el('span', {}, estrofe.original)))
 
   const detalhes = []
-  if (estrofe.traducao) {
+  if (estrofe.linhas?.length) {
+    detalhes.push(el('div', { class: 'estrofe-linhas' },
+      el('h4', {}, 'Linha por linha'),
+      estrofe.linhas.map((l, iLinha) => el('div', { class: 'linha-item', 'data-linha-chave': `${iEst}-${iLinha}` },
+        el('div', { class: 'linha-original' },
+          el('button', { class: 'fala mini', type: 'button', onclick: () => falar(limparParaVoz(l.original), CURSO_ATUAL.curso.voz) }, '🔊'),
+          l.inicio != null && controle ? el('button', { class: 'fala mini', type: 'button', title: 'Pular pra esta linha', onclick: () => controle.pular(l.inicio) }, '▶') : null,
+          el('span', {}, l.original)),
+        el('div', { class: 'linha-trad' }, l.traducao),
+        l.notas?.length ? el('div', { class: 'linha-notas' },
+          l.notas.map((n) => el('div', { class: 'linha-nota' },
+            el('b', {}, n.trecho), ' — ', n.explicacao))) : null,
+        el('button', { class: 'revelar-linha', type: 'button', onclick: (ev) => ev.currentTarget.closest('.linha-item').classList.add('revelada') }, '👁 revelar')))))
+  } else if (estrofe.traducao) {
+    // músicas ainda não reescritas no formato linha por linha (ver o método em docs)
     detalhes.push(el('div', { class: 'estrofe-trad' },
       el('strong', {}, 'Tradução: '),
       estrofe.traducao))
-  }
-  if (estrofe.vocabulario?.length) {
-    detalhes.push(el('div', { class: 'estrofe-vocab' },
-      el('h4', {}, 'Palavra por palavra'),
-      estrofe.vocabulario.map((v) => el('div', { class: 'vocab-item' },
-        el('button', { class: 'fala mini', type: 'button', onclick: () => falar(limparParaVoz(v.palavra), CURSO_ATUAL.curso.voz) }, '🔊'),
-        el('div', { class: 'vocab-info' },
-          el('div', { class: 'vocab-palavra' }, v.palavra),
-          el('div', { class: 'vocab-sig' }, v.significado),
-          v.detalhe ? el('div', { class: 'vocab-detalhe' }, v.detalhe) : null,
-          v.sinonimos ? el('div', { class: 'vocab-sin' }, `Sinônimos: ${v.sinonimos}`) : null)))))
+    if (estrofe.vocabulario?.length) {
+      detalhes.push(el('div', { class: 'estrofe-vocab' },
+        el('h4', {}, 'Palavra por palavra'),
+        estrofe.vocabulario.map((v) => el('div', { class: 'vocab-item' },
+          el('button', { class: 'fala mini', type: 'button', onclick: () => falar(limparParaVoz(v.palavra), CURSO_ATUAL.curso.voz) }, '🔊'),
+          el('div', { class: 'vocab-info' },
+            el('div', { class: 'vocab-palavra' }, v.palavra),
+            el('div', { class: 'vocab-sig' }, v.significado),
+            v.detalhe ? el('div', { class: 'vocab-detalhe' }, v.detalhe) : null,
+            v.sinonimos ? el('div', { class: 'vocab-sin' }, `Sinônimos: ${v.sinonimos}`) : null)))))
+    }
   }
   if (estrofe.pronuncia) {
     detalhes.push(el('div', { class: 'estrofe-pron' },
@@ -568,6 +942,7 @@ function criarEstrofe(estrofe, num) {
   if (!detalhes.length) {
     detalhes.push(el('div', { class: 'estrofe-trad sub' }, '(toque no alto-falante para ouvir a estrofe)'))
   }
+  if (notaChave) detalhes.push(notaPessoal(notaChave, 'Sua nota sobre esta estrofe…', true))
   por(detalhe, detalhes)
   item.append(cabecalho, detalhe)
   return item
@@ -603,52 +978,113 @@ function coletarVocabulario() {
 function desenharTradutor(alvo) {
   const vocab = coletarVocabulario()
   const idioma = CURSO_ATUAL.curso.nome
+  const bandeira = CURSO_ATUAL.curso.bandeira
   const chave = CURSO_ATUAL.chave
-  const codigoGt = { espanhol: 'es', frances: 'fr', ingles: 'en', japones: 'ja', alemao: 'de', russo: 'ru', italiano: 'it' }
-  const tl = codigoGt[chave] || 'en'
+  const salvasSet = new Set((CURSO_ATUAL.salvas || []).map((s) => s.palavra))
+
+  let direcao = 'pt->idioma'
+  let timer = null
+
+  const ladoEsq = el('span', { class: 'tradutor-lado ativo' },
+    el('span', { class: 'tradutor-lado-bandeira' }, '🇧🇷'), 'Português')
+  const ladoDir = el('span', { class: 'tradutor-lado' },
+    el('span', { class: 'tradutor-lado-bandeira' }, bandeira), idioma)
+  const swap = el('button', { class: 'tradutor-swap', type: 'button', title: 'Trocar direção', onclick: () => {
+    direcao = direcao === 'pt->idioma' ? 'idioma->pt' : 'pt->idioma'
+    ladoEsq.classList.toggle('ativo', direcao === 'pt->idioma')
+    ladoDir.classList.toggle('ativo', direcao === 'idioma->pt')
+    swap.classList.toggle('girou')
+    campo.placeholder = direcao === 'pt->idioma' ? `Digite em português…` : `Digite em ${idioma.toLowerCase()}…`
+    campo.value = ''
+    buscar()
+  } }, '⇄')
 
   const campo = el('input', {
     type: 'search', class: 'busca-dicionario',
-    placeholder: `Digite em português ou ${idioma.toLowerCase()}…`,
+    placeholder: `Digite em português…`,
     autocomplete: 'off', spellcheck: 'false',
   })
+  const resultado = el('div', { style: 'display:none' })
   const resultados = el('div', { class: 'resultados-busca' })
 
-  function buscar() {
-    const q = campo.value.trim().toLowerCase()
-    if (!q) {
-      por(resultados,
-        el('p', { class: 'sub' }, `Digite uma palavra ou frase para traduzir.`),
-        el('p', { class: 'sub', style: 'margin-top:8px' }, `${vocab.length} palavras do curso disponíveis para consulta rápida.`))
-      return
+  async function traduzirAoVivo(q) {
+    por(resultado, el('div', { class: 'tradutor-resultado tradutor-carregando' },
+      el('div', { class: 'tradutor-resultado-txt' }, 'traduzindo…')))
+    resultado.style.display = 'flex'
+    try {
+      const r = await pedir(`/idiomas/${chave}/traduzir`, { texto: q, direcao })
+      const langFala = direcao === 'pt->idioma' ? CURSO_ATUAL.curso.voz : 'pt-BR'
+      const jaSalva = salvasSet.has(q)
+      const estrela = el('button', { class: 'fala estrela' + (jaSalva ? ' salva' : ''), type: 'button', title: jaSalva ? 'Tirar dos salvos' : 'Salvar para revisar depois', onclick: async () => {
+        try {
+          if (salvasSet.has(q)) {
+            await pedir(`/idiomas/${chave}/tirar-salva`, { palavra: q })
+            salvasSet.delete(q)
+            CURSO_ATUAL.salvas = (CURSO_ATUAL.salvas || []).filter((s) => s.palavra !== q)
+          } else {
+            await pedir(`/idiomas/${chave}/salvar`, { palavra: q, traducao: r.traducao })
+            salvasSet.add(q)
+            CURSO_ATUAL.salvas = [{ palavra: q, traducao: r.traducao, criado_em: new Date().toISOString() }, ...(CURSO_ATUAL.salvas || [])]
+          }
+          const agoraSalva = salvasSet.has(q)
+          estrela.classList.toggle('salva', agoraSalva)
+          estrela.title = agoraSalva ? 'Tirar dos salvos' : 'Salvar para revisar depois'
+          estrela.textContent = agoraSalva ? '⭐' : '☆'
+        } catch {}
+      } }, salvasSet.has(q) ? '⭐' : '☆')
+      por(resultado, el('div', { class: 'tradutor-resultado' },
+        el('button', { class: 'fala', type: 'button', title: 'Ouvir', onclick: () => falar(limparParaVoz(r.traducao), langFala) }, '🔊'),
+        el('div', { class: 'tradutor-resultado-txt' }, r.traducao || '—'),
+        estrela))
+    } catch (e) {
+      por(resultado, el('div', { class: 'tradutor-resultado' },
+        el('div', { class: 'tradutor-resultado-txt', style: 'font-size:14px;color:var(--tinta2);font-style:italic;font-weight:400' }, e.message || 'Não consegui traduzir agora.')))
     }
+  }
+
+  function buscar() {
+    const q = campo.value.trim()
+    clearTimeout(timer)
+
     const norm = (s) => s.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase()
-    const achados = vocab.filter((v) =>
+    const achados = q ? vocab.filter((v) =>
       norm(v.palavra).includes(norm(q)) || norm(v.traducao).includes(norm(q)) ||
-      (v.exemplo && norm(v.exemplo).includes(norm(q))))
+      (v.exemplo && norm(v.exemplo).includes(norm(q)))) : []
 
-    const gtUrl = `https://translate.google.com/?sl=auto&tl=${tl}&text=${encodeURIComponent(q)}`
-    const gtUrlPt = `https://translate.google.com/?sl=${tl}&tl=pt&text=${encodeURIComponent(q)}`
-
-    const itens = []
-    itens.push(el('div', { class: 'tradutor-acoes' },
-      el('a', { class: 'botao mini', href: gtUrlPt, target: '_blank', rel: 'noopener' },
-        `🌐 Traduzir para português`),
-      el('a', { class: 'botao mini fraco', href: gtUrl, target: '_blank', rel: 'noopener' },
-        `🌐 Traduzir para ${idioma.toLowerCase()}`)))
-
+    // o resultado local é síncrono: aparece na hora, sem esperar a rede
     if (achados.length) {
-      itens.push(el('div', { class: 'tradutor-local' },
-        el('h4', { style: 'margin:0 0 10px' }, `Do curso de ${idioma}:`),
+      por(resultados, el('div', { class: 'tradutor-local' },
+        el('h4', {}, `Já ensinado no curso de ${idioma}`),
         achados.map((v) => el('div', { class: 'resultado-item' },
           el('button', { class: 'fala mini', type: 'button', onclick: () => falar(limparParaVoz(v.palavra), CURSO_ATUAL.curso.voz) }, '🔊'),
-          el('div', {},
-            el('div', { class: 'orig' }, v.palavra),
-            el('div', { class: 'trad' }, v.traducao),
-            v.exemplo ? el('div', { class: 'exemplo' }, v.exemplo) : null,
+          el('div', { class: 'vocab-info' },
+            el('div', { class: 'vocab-palavra' }, v.palavra),
+            el('div', { class: 'vocab-sig' }, v.traducao),
+            v.exemplo ? el('div', { class: 'vocab-detalhe' }, v.exemplo) : null,
             el('div', { class: 'unid-tag' }, v._unidade))))))
+    } else if (q) {
+      por(resultados)
+    } else {
+      const salvas = CURSO_ATUAL.salvas || []
+      por(resultados,
+        el('p', { class: 'sub' }, `${vocab.length} palavras do curso disponíveis para consulta rápida.`),
+        salvas.length ? el('div', { class: 'tradutor-local', style: 'margin-top:18px' },
+          el('h4', {}, `⭐ Suas palavras salvas (${salvas.length})`),
+          salvas.map((s) => el('div', { class: 'resultado-item' },
+            el('button', { class: 'fala mini', type: 'button', onclick: () => falar(limparParaVoz(s.palavra), CURSO_ATUAL.curso.voz) }, '🔊'),
+            el('div', { class: 'vocab-info' },
+              el('div', { class: 'vocab-palavra' }, s.palavra),
+              el('div', { class: 'vocab-sig' }, s.traducao)),
+            el('button', { class: 'fala mini', type: 'button', title: 'Tirar dos salvos', onclick: async () => {
+              await pedir(`/idiomas/${chave}/tirar-salva`, { palavra: s.palavra })
+              CURSO_ATUAL.salvas = CURSO_ATUAL.salvas.filter((x) => x.palavra !== s.palavra)
+              salvasSet.delete(s.palavra)
+              buscar()
+            } }, '✕')))) : null)
     }
-    por(resultados, itens)
+
+    if (!q) { resultado.style.display = 'none'; return }
+    timer = setTimeout(() => traduzirAoVivo(q), 600)
   }
 
   campo.addEventListener('input', buscar)
@@ -656,10 +1092,17 @@ function desenharTradutor(alvo) {
   por(alvo,
     el('div', { class: 'bloco', style: 'border:none;background:none;padding:0' },
       el('h2', { style: 'margin-bottom:4px' }, `💬 Tradutor de ${idioma}`),
-      el('p', { class: 'sub', style: 'margin:0 0 16px' }, `Busque qualquer palavra ou frase — traduz direto pelo Google Translate e mostra o que o curso já ensinou.`)),
-    el('div', { class: 'bloco' }, campo),
+      el('p', { class: 'sub', style: 'margin:0 0 16px' }, `Traduz na hora, nos dois sentidos — sem abrir outra aba.`)),
+    el('div', { class: 'ficha-tradutor' },
+      el('div', { class: 'tradutor-direcao' }, ladoEsq, swap, ladoDir),
+      campo,
+      resultado),
     resultados)
 
+  if (PALAVRA_PENDENTE) {
+    campo.value = PALAVRA_PENDENTE
+    PALAVRA_PENDENTE = null
+  }
   buscar()
 }
 
@@ -788,20 +1231,76 @@ function iniciarRevisao() {
   proxima()
 }
 
+// ── notas pessoais ──
+
+/** Campo de texto livre, salvo por `item` (chave de unidade ou "música::N"). */
+function notaPessoal(item, dica, compacta = false) {
+  let timer = null
+  const status = el('span', { class: 'nota-status' })
+  const campo = el('textarea', {
+    class: 'nota-pessoal-campo', placeholder: dica, rows: compacta ? '2' : '3',
+    oninput: () => {
+      clearTimeout(timer)
+      status.textContent = ''
+      timer = setTimeout(async () => {
+        try {
+          await pedir(`/idiomas/${CURSO_ATUAL.chave}/nota`, { item, texto: campo.value })
+          CURSO_ATUAL.notas[item] = campo.value
+          status.textContent = 'salvo'
+          setTimeout(() => { status.textContent = '' }, 1500)
+        } catch {}
+      }, 700)
+    },
+  }, CURSO_ATUAL.notas?.[item] || '')
+  if (compacta) {
+    return el('div', { class: 'nota-pessoal nota-pessoal-compacta' },
+      el('div', { class: 'nota-pessoal-titulo' }, '✏️ Sua nota', status), campo)
+  }
+  return el('div', { class: 'bloco nota-pessoal' },
+    el('div', { class: 'bloco-titulo' }, el('span', { class: 'ico' }, '✏️'), el('h2', { style: 'margin:0' }, 'Suas notas'), status),
+    campo)
+}
+
 // ── helpers ──
 
 function limparParaVoz(texto) {
   return texto.replace(/\s*[\/|]\s*/g, ' ').replace(/\([^)]*\)/g, '').replace(/\s+/g, ' ').trim()
 }
 
+// Vozes carregam de forma assíncrona no Chrome — `getVoices()` devolve [] na
+// primeira chamada e só fica preenchido depois do evento `voiceschanged`.
+// Guardamos uma lista cacheada e a atualizamos quando o evento chega.
+let _vozes = []
+if ('speechSynthesis' in window) {
+  const atualizar = () => { _vozes = speechSynthesis.getVoices() }
+  atualizar()
+  speechSynthesis.addEventListener('voiceschanged', atualizar)
+}
+
 function falar(texto, lang) {
   if (!('speechSynthesis' in window)) return
   speechSynthesis.cancel()
   const limpo = limparParaVoz(texto)
-  const u = new SpeechSynthesisUtterance(limpo)
-  u.lang = lang || 'pt-BR'
-  u.rate = 0.85
-  speechSynthesis.speak(u)
+  if (!limpo) return
+  const codigo = (lang || 'pt-BR').slice(0, 2)
+
+  function emitir() {
+    const u = new SpeechSynthesisUtterance(limpo)
+    u.lang = lang || 'pt-BR'
+    u.rate = 0.85
+    // tenta achar uma voz para o idioma; sem ela o navegador usa a padrão
+    const lista = _vozes.length ? _vozes : speechSynthesis.getVoices()
+    const voz = lista.find((v) => v.lang.toLowerCase().startsWith(codigo))
+    if (voz) u.voice = voz
+    speechSynthesis.speak(u)
+  }
+
+  // se as vozes ainda não chegaram, espera o evento e fala logo depois
+  if (_vozes.length) {
+    emitir()
+  } else {
+    speechSynthesis.addEventListener('voiceschanged', emitir, { once: true })
+  }
 }
 
 iniciar()

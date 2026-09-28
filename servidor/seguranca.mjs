@@ -164,6 +164,10 @@ export const LIMITES = {
   // "fale com a gente" (contato.mjs): aberto a quem não tem conta, então
   // por endereço — seis mensagens por hora não atrapalha ninguém de verdade
   'contato': { quantas: 6, minutos: 60 },
+  // pedir tradução de música no Estúdio Musical (idiomas.mjs): mesma família
+  // de 'pedir-traducao', só que por conta (não por IP) — dez por hora é sala
+  // de aula pedindo música à vontade, não um laço.
+  'pedir-musica': { quantas: 10, minutos: 60 },
 }
 
 /**

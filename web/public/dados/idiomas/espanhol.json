@@ -179,55 +179,279 @@
           "traducaoTrecho": "Ela dança sozinha, sozinha, sozinha",
           "frases": [
             {
-              "original": "Ella baila sola, sola",
-              "traducao": "Ela dança sozinha, sozinha",
-              "vocabulario": [
+              "original": "Compa, ¿qué le parece esa morra?\nLa que anda bailando sola, me gusta pa' mí\nBella, ella sabe que está buena\nQue todos andan mirándola cómo baila",
+              "pronuncia": "kómpa, ke le parése ésa mórra? / la ke ánda baiándo sóla, me gústa pa mí / béya, éya sábe ke está buéna / ke tódos ándan mirándola kómo báila",
+              "linhas": [
                 {
-                  "palavra": "baila",
-                  "significado": "dança",
-                  "detalhe": "Do verbo bailar (dançar). Presente do indicativo, 3ª pessoa."
+                  "original": "Compa, ¿qué le parece esa morra?",
+                  "traducao": "Parceiro, o que você acha daquela garota?",
+                  "notas": [
+                    {
+                      "trecho": "compa",
+                      "explicacao": "parceiro, mano — Apócope de \"compadre\" — forma de tratamento entre amigos muito comum no espanhol mexicano, sem o peso religioso original do termo (padrinho de batismo)."
+                    },
+                    {
+                      "trecho": "morra",
+                      "explicacao": "garota, mina — Gíria mexicana pra \"muchacha\" (garota, moça). Muito usada em corridos e regional do norte do México — não é neutra, é claramente coloquial."
+                    }
+                  ],
+                  "inicio": 25.6
                 },
                 {
-                  "palavra": "sola",
-                  "significado": "sozinha",
-                  "detalhe": "Feminino de solo. Em espanhol, solo/sola = sozinho/a."
+                  "original": "La que anda bailando sola, me gusta pa' mí",
+                  "traducao": "A que está dançando sozinha, eu gosto dela pra mim",
+                  "notas": [
+                    {
+                      "trecho": "me gusta pa' mí",
+                      "explicacao": "eu gosto dela pra mim — \"Pa'\" é apócope falada de \"para\", extremamente comum na fala coloquial mexicana. A frase toda é redundante de propósito (\"gusta\" já indica \"pra mim\" gramaticalmente) — reforço enfático típico da fala cantada."
+                    }
+                  ],
+                  "inicio": 27.9
+                },
+                {
+                  "original": "Bella, ella sabe que está buena",
+                  "traducao": "Linda, ela sabe que está gostosa",
+                  "notas": [
+                    {
+                      "trecho": "que está buena",
+                      "explicacao": "que está gostosa, que está bonita — \"Estar bueno/a\" (diferente de \"ser bueno\") é usado pra atratividade física — um dos contrastes clássicos entre \"ser\" e \"estar\" no espanhol."
+                    }
+                  ],
+                  "inicio": 35.4
+                },
+                {
+                  "original": "Que todos andan mirándola cómo baila",
+                  "traducao": "Que todo mundo fica olhando como ela dança",
+                  "notas": [],
+                  "inicio": 37.9
                 }
-              ],
-              "pronuncia": "E-ya BAI-la SO-la, SO-la"
+              ]
             },
             {
-              "original": "Solita sola, se ve mejor",
-              "traducao": "Sozinha, sozinha, fica melhor",
-              "vocabulario": [
+              "original": "Me acerco y le tiro todo un verbo\nTomamos tragos sin peros, solo tentación",
+              "pronuncia": "me asérko i le tíro tódo un vérbo / tomámos trágos sin péros, sólo tentasión",
+              "linhas": [
                 {
-                  "palavra": "solita",
-                  "significado": "sozinha (diminutivo carinhoso)",
-                  "detalhe": "Solita = solinha. O sufixo -ita é diminutivo muito usado no espanhol mexicano."
+                  "original": "Me acerco y le tiro todo un verbo",
+                  "traducao": "Eu me aproximo e mando todo um papo",
+                  "notas": [
+                    {
+                      "trecho": "le tiro todo un verbo",
+                      "explicacao": "eu mando todo um papo, jogo verbo — \"Tirar verbo\" é expressão de gíria mexicana/norteña pra \"paquerar conversando\", ter lábia, soltar um discurso de conquista — \"verbo\" no sentido de conversa fiada, não gramática."
+                    }
+                  ],
+                  "inicio": 45
                 },
                 {
-                  "palavra": "se ve",
-                  "significado": "se vê / fica",
-                  "detalhe": "Verso (parecer): se ve mejor = parece melhor / fica melhor assim."
+                  "original": "Tomamos tragos sin peros, solo tentación",
+                  "traducao": "A gente toma umas doses sem \"mas\", só tentação",
+                  "notas": [
+                    {
+                      "trecho": "tragos",
+                      "explicacao": "doses, drinques — \"Trago\" é uma dose de bebida — muito usado em contexto de festa/balada em todo o espanhol latino-americano."
+                    },
+                    {
+                      "trecho": "sin peros",
+                      "explicacao": "sem \"mas\", sem objeção — \"Pero\" (mas) virando substantivo informal — \"sin peros\" = sem ressalvas, sem hesitação, direto ao ponto."
+                    }
+                  ],
+                  "inicio": 47.4
                 }
-              ],
-              "pronuncia": "so-LI-ta SO-la, se ve me-JOR"
+              ]
             },
             {
-              "original": "Y yo que pensaba que ya no creía en el amor",
-              "traducao": "E eu que pensava que já não acreditava no amor",
-              "vocabulario": [
+              "original": "Le dije: Voy a conquistar tu familia\nQue en unos días vas a ser mía\nMe dijo: Que estoy muy loco, pero le gusta\nQue ningún vato como yo actúa",
+              "pronuncia": "le díje: vói a konkistár tu família / ke en únos días vas a sér mía / me díjo: ke estói mui lóko, péro le gústa / ke ningún báto kómo ió aktúa",
+              "linhas": [
                 {
-                  "palavra": "pensaba",
-                  "significado": "pensava",
-                  "detalhe": "Pretérito imperfeito de pensar — ação contínua no passado."
+                  "original": "Le dije: Voy a conquistar tu familia",
+                  "traducao": "Eu disse a ela: vou conquistar sua família",
+                  "notas": [],
+                  "inicio": 56.5
                 },
                 {
-                  "palavra": "creía",
-                  "significado": "acreditava",
-                  "detalhe": "Imperfeito de creer. Creía = acreditava/cria."
+                  "original": "Que en unos días vas a ser mía",
+                  "traducao": "Que em uns dias você vai ser minha",
+                  "notas": [
+                    {
+                      "trecho": "vas a ser mía",
+                      "explicacao": "você vai ser minha — Futuro perifrástico \"ir a + infinitivo\", igual em português (\"vou ser\"). Note o tom possessivo/direto, típico do registro machista comum no gênero corrido — vale notar sem endossar."
+                    }
+                  ],
+                  "inicio": 59
+                },
+                {
+                  "original": "Me dijo: Que estoy muy loco, pero le gusta",
+                  "traducao": "Ela me disse: que eu sou muito louco, mas ela gosta",
+                  "notas": [],
+                  "inicio": 66.4
+                },
+                {
+                  "original": "Que ningún vato como yo actúa",
+                  "traducao": "Que nenhum cara age como eu",
+                  "notas": [
+                    {
+                      "trecho": "vato",
+                      "explicacao": "cara, mano — Gíria mexicana muito comum pra \"homem, sujeito\" — equivalente a \"cara\" ou \"mano\" em português. Vem do caló mexicano (dialeto de origem cigana/urbana)."
+                    },
+                    {
+                      "trecho": "actúa",
+                      "explicacao": "age, se comporta — \"Actuar\" aqui não é \"atuar\" no sentido de teatro, é \"agir\", \"se comportar\" — falso amigo parcial com o português."
+                    }
+                  ],
+                  "inicio": 68.9
                 }
-              ],
-              "pronuncia": "ee yo ke pen-SA-ba ke ya no kre-EE-a en el a-MOR"
+              ]
+            },
+            {
+              "original": "Y ahí te va, mija\nY pura doble P, viejo\nAsí nomás, compa Pedro\nPuro Eslabon Armado\nPa' las plebitas\n¡Cha-chau!",
+              "pronuncia": "i aí te vá, míja / i púra dóble pé, biéjo / así nomás, kómpa pédro / púro eslabón armádo / pa las plebítas / cha-chau!",
+              "linhas": [
+                {
+                  "original": "Y ahí te va, mija",
+                  "traducao": "E aí vai, filha",
+                  "notas": [
+                    {
+                      "trecho": "mija",
+                      "explicacao": "filha (carinhoso) — Contração de \"mi hija\" — forma de tratamento carinhosa e comum entre pessoas próximas, não implica parentesco real."
+                    }
+                  ],
+                  "inicio": 73.7
+                },
+                {
+                  "original": "Y pura doble P, viejo",
+                  "traducao": "E só a dupla P, véio",
+                  "notas": [
+                    {
+                      "trecho": "doble P",
+                      "explicacao": "dupla P — Referência ao apelido de Peso Pluma (\"Double P\"), o artista convidado na faixa — tag de assinatura vocal que aparece em várias músicas em que ele participa."
+                    }
+                  ],
+                  "inicio": 76.1
+                },
+                {
+                  "original": "Así nomás, compa Pedro",
+                  "traducao": "Assim mesmo, parceiro Pedro",
+                  "notas": []
+                },
+                {
+                  "original": "Puro Eslabon Armado",
+                  "traducao": "Só Eslabon Armado",
+                  "notas": []
+                },
+                {
+                  "original": "Pa' las plebitas",
+                  "traducao": "Pra garotada",
+                  "notas": [
+                    {
+                      "trecho": "plebitas",
+                      "explicacao": "garotada, mulherada jovem — Diminutivo de \"plebe\" usado como gíria regional mexicana pra moças jovens — comum em corridos tumbados."
+                    }
+                  ],
+                  "inicio": 81.7
+                },
+                {
+                  "original": "¡Cha-chau!",
+                  "traducao": "Cha-chau!",
+                  "notas": [
+                    {
+                      "trecho": "¡Cha-chau!",
+                      "explicacao": "Cha-chau! (grito de assinatura) — Interjeição sem tradução, tag vocal de assinatura do gênero corridos tumbados — funciona como um \"grito de marca\", parecido com um \"vem!\" ou \"e aí!\" de efeito, sem significado literal fixo."
+                    }
+                  ],
+                  "inicio": 83.3
+                }
+              ]
+            },
+            {
+              "original": "No soy un vato que tiene varo\nPero hablando del corazón, te cumplo todo\nMe agarró pegadito de su mano\nMi compa ni se la creyó, que al pasar fui yo",
+              "pronuncia": "no sói un báto ke tiéne báro / péro abländo del korasón, te kúmplo tódo / me agarró pegadíto de su máno / mi kómpa ni se la kreyó, ke al pasár fuí io",
+              "linhas": [
+                {
+                  "original": "No soy un vato que tiene varo",
+                  "traducao": "Eu não sou um cara que tem grana",
+                  "notas": [
+                    {
+                      "trecho": "varo",
+                      "explicacao": "grana, dinheiro — Gíria mexicana pra dinheiro, equivalente a \"grana\" ou \"bufunfa\"."
+                    }
+                  ],
+                  "inicio": 93.8
+                },
+                {
+                  "original": "Pero hablando del corazón, te cumplo todo",
+                  "traducao": "Mas falando de coração, eu cumpro tudo pra você",
+                  "notas": [],
+                  "inicio": 96.2
+                },
+                {
+                  "original": "Me agarró pegadito de su mano",
+                  "traducao": "Ela me pegou bem juntinho pela mão",
+                  "notas": [
+                    {
+                      "trecho": "pegadito",
+                      "explicacao": "bem juntinho, coladinho — Diminutivo de \"pegado\" (colado, junto) — o \"-ito\" suaviza e dá um tom carinhoso/íntimo ao gesto."
+                    }
+                  ],
+                  "inicio": 103.4
+                },
+                {
+                  "original": "Mi compa ni se la creyó, que al pasar fui yo",
+                  "traducao": "Meu parceiro nem acreditou, que quem se deu bem fui eu",
+                  "notas": [
+                    {
+                      "trecho": "ni se la creyó",
+                      "explicacao": "nem acreditou — \"Creerse algo\" = acreditar em algo. \"Ni se la creyó\" (com \"la\" retomando a situação implícita) é forma coloquial mexicana de dizer que alguém ficou surpreso/incrédulo."
+                    }
+                  ],
+                  "inicio": 105.8
+                }
+              ]
+            },
+            {
+              "original": "Su cuerpo, juro por Dios, que era tan perfecto\nSu cinturita como modelo\nSus ojos desde el principio me enamoraron\nA ella le gusto y a mí me gusta",
+              "pronuncia": "su kuérpo, júro por dyós, ke éra tan perfékto / su sinturíta kómo modélo / sus ójos desde el prinsípio me enamorárón / a éya le gústo i a mí me gústa",
+              "linhas": [
+                {
+                  "original": "Su cuerpo, juro por Dios, que era tan perfecto",
+                  "traducao": "O corpo dela, eu juro por Deus, era tão perfeito",
+                  "notas": [
+                    {
+                      "trecho": "juro por Dios",
+                      "explicacao": "eu juro por Deus — Expressão de ênfase muito comum no espanhol coloquial, equivalente direto ao português — funciona igual nas duas línguas."
+                    }
+                  ],
+                  "inicio": 115.1
+                },
+                {
+                  "original": "Su cinturita como modelo",
+                  "traducao": "A cinturinha dela, de modelo",
+                  "notas": [
+                    {
+                      "trecho": "cinturita",
+                      "explicacao": "cinturinha — Diminutivo afetivo de \"cintura\" — o \"-ita\" no espanhol funciona de forma bem parecida ao \"-inha\" do português, adicionando carinho/ênfase, não necessariamente tamanho pequeno."
+                    }
+                  ],
+                  "inicio": 117.4
+                },
+                {
+                  "original": "Sus ojos desde el principio me enamoraron",
+                  "traducao": "Os olhos dela desde o início me enamoraram",
+                  "notas": [],
+                  "inicio": 124.8
+                },
+                {
+                  "original": "A ella le gusto y a mí me gusta",
+                  "traducao": "Ela gosta de mim e eu gosto dela",
+                  "notas": [
+                    {
+                      "trecho": "a ella le gusto y a mí me gusta",
+                      "explicacao": "ela gosta de mim e eu gosto dela — Ponto de gramática importante: \"gustar\" se conjuga com o que É QUERIDO, não com quem gosta — por isso \"a ella LE GUSTO\" (eu sou o que agrada a ela, verbo na 1ª pessoa concordando com \"yo\") e \"a mí ME GUSTA\" (ela é o que me agrada, verbo na 3ª pessoa concordando com \"ella\"). É o oposto da lógica do verbo \"gostar\" em português."
+                    }
+                  ],
+                  "inicio": 127.2
+                }
+              ]
             }
           ]
         }
@@ -477,38 +701,193 @@
           "traducaoTrecho": "É a diabla disfarçada de mulher",
           "frases": [
             {
-              "original": "Es la diabla disfrazada de mujer",
-              "traducao": "É a diabla disfarçada de mulher",
-              "vocabulario": [
+              "original": "Y yo puedo comerte como a ti te gusta\nSi solo te dejas querer\nEn caliente yo voy por ti\nMija, aquí no muerdo, no se me asuste\nNo hay más tiempo que perder\nSolo se vive una vez",
+              "pronuncia": "i io puédo komérte kómo a tí te gústa / si sólo te déjas kerér / en kaliénte io vói por tí / míja, akí no muérdo, no se me asúste / no ai más tiémpo ke perdér / sólo se víve úna vés",
+              "linhas": [
                 {
-                  "palavra": "diabla",
-                  "significado": "diaba / mulher perigosa",
-                  "detalhe": "Feminino de diablo. Na gíria, mulher que seduz e engana."
+                  "original": "Y yo puedo comerte como a ti te gusta",
+                  "traducao": "E eu posso te comer do jeito que você gosta",
+                  "notas": [
+                    {
+                      "trecho": "comerte",
+                      "explicacao": "te comer — Sentido sexual explícito e direto — registro de reggaeton/corrido urbano contemporâneo, sem eufemismo. Vale sinalizar o registro pesado antes de cantar junto em qualquer contexto."
+                    }
+                  ],
+                  "inicio": 24.7
                 },
                 {
-                  "palavra": "disfrazada",
-                  "significado": "disfarçada",
-                  "detalhe": "De disfrazar = disfarçar. Part. passado com -ada (feminino)."
+                  "original": "Si solo te dejas querer",
+                  "traducao": "Se você só se deixar querer",
+                  "notas": [
+                    {
+                      "trecho": "dejarse querer",
+                      "explicacao": "\"Dejarse\" + infinitivo = permitir que algo aconteça consigo mesmo. \"Dejarse querer\" é expressão fixa e romântica comum, aqui usada em tom de conquista mais direto."
+                    }
+                  ],
+                  "inicio": 28.4
+                },
+                {
+                  "original": "En caliente yo voy por ti",
+                  "traducao": "No calor do momento eu vou atrás de você",
+                  "notas": [],
+                  "inicio": 31.1
+                },
+                {
+                  "original": "Mija, aquí no muerdo, no se me asuste",
+                  "traducao": "Filha, aqui eu não mordo, não se assuste",
+                  "notas": [
+                    {
+                      "trecho": "no se me asuste",
+                      "explicacao": "não se assuste (comigo) — Construção reflexiva com pronome de interesse (\"se me\") — comum no espanhol coloquial pra suavizar/pessoalizar um pedido."
+                    }
+                  ],
+                  "inicio": 35.1
+                },
+                {
+                  "original": "No hay más tiempo que perder",
+                  "traducao": "Não há mais tempo a perder",
+                  "notas": [],
+                  "inicio": 39.1
+                },
+                {
+                  "original": "Solo se vive una vez",
+                  "traducao": "Só se vive uma vez",
+                  "notas": [
+                    {
+                      "trecho": "solo se vive una vez",
+                      "explicacao": "só se vive uma vez — Expressão-clichê universal (\"you only live once\"), usada aqui como justificativa pra pressa/impulsividade da conquista."
+                    }
+                  ],
+                  "inicio": 41.9
                 }
-              ],
-              "pronuncia": "es la di-A-bla dis-fra-SA-da de mu-JER"
+              ]
             },
             {
-              "original": "Tiene cara de ángel pero es cruel",
-              "traducao": "Tem cara de anjo mas é cruel",
-              "vocabulario": [
+              "original": "Soy la mala influencia y eso te gustó\nEres niña mala, se nota, mi amor\nEres una diabla, mira cómo bailas\nDel uno al diez, tú eres un millón",
+              "pronuncia": "sói la mála influénsia i éso te gustó / éres níña mála, se nóta, mi amór / éres úna diábla, míra kómo báilas / del úno al diés, tú éres un milyón",
+              "linhas": [
                 {
-                  "palavra": "cara de ángel",
-                  "significado": "cara de anjo",
-                  "detalhe": "Expressão: aparentar inocência."
+                  "original": "Soy la mala influencia y eso te gustó",
+                  "traducao": "Eu sou a má influência e isso te agradou",
+                  "notas": [
+                    {
+                      "trecho": "mala influencia",
+                      "explicacao": "má influência — Cognato direto — sem armadilha de tradução, só atenção à pronúncia do \"ll\" espanhol (\"i\" iodizado, não \"lh\" como em português)."
+                    }
+                  ],
+                  "inicio": 45.4
                 },
                 {
-                  "palavra": "cruel",
-                  "significado": "cruel",
-                  "detalhe": "Igual em português! Cognato perfeito."
+                  "original": "Eres niña mala, se nota, mi amor",
+                  "traducao": "Você é uma garota má, dá pra ver, meu amor",
+                  "notas": [
+                    {
+                      "trecho": "se nota",
+                      "explicacao": "dá pra ver, se nota — \"Notarse\" = ser perceptível, evidente. Expressão coloquial de confirmação, muito comum na fala do dia a dia."
+                    }
+                  ],
+                  "inicio": 48.1
+                },
+                {
+                  "original": "Eres una diabla, mira cómo bailas",
+                  "traducao": "Você é uma diaba, olha como você dança",
+                  "notas": [
+                    {
+                      "trecho": "una diabla",
+                      "explicacao": "uma diaba — Forma feminina de \"diablo\" — dá nome à música, usada aqui como elogio/provocação carinhosa pro comportamento ousado da mulher, não como insulto real."
+                    }
+                  ],
+                  "inicio": 50.9
+                },
+                {
+                  "original": "Del uno al diez, tú eres un millón",
+                  "traducao": "De um a dez, você é um milhão",
+                  "notas": [
+                    {
+                      "trecho": "del uno al diez",
+                      "explicacao": "de um a dez — Escala informal de avaliação, igual em português — \"tú eres un millón\" quebra a escala de propósito pra exagerar o elogio."
+                    }
+                  ],
+                  "inicio": 56.1
                 }
-              ],
-              "pronuncia": "TIE-ne CA-ra de AN-jel PE-ro es kru-EL"
+              ]
+            },
+            {
+              "original": "Si te vas conmigo, puro Christian Dior, Fendi, Balenciaga\nPa' ti me sobra lana\nLo que quieras, mi amor",
+              "pronuncia": "si te vás konmígo, púro kristian diór, féndi, balensiága / pa tí me sóbra lána / lo ke kiéras, mi amór",
+              "linhas": [
+                {
+                  "original": "Si te vas conmigo, puro Christian Dior, Fendi, Balenciaga",
+                  "traducao": "Se você for comigo, só Christian Dior, Fendi, Balenciaga",
+                  "notas": [
+                    {
+                      "trecho": "si te vas conmigo",
+                      "explicacao": "se você for comigo — \"Irse con\" = ir embora com alguém — a preposição \"con\" muda o significado de \"ir\" (\"irse\", pronominal, dá sentido de partida/decisão)."
+                    }
+                  ],
+                  "inicio": 58.9
+                },
+                {
+                  "original": "Pa' ti me sobra lana",
+                  "traducao": "Pra você eu tenho grana de sobra",
+                  "notas": [
+                    {
+                      "trecho": "me sobra lana",
+                      "explicacao": "eu tenho grana de sobra — \"Lana\" é gíria mexicana muito comum pra dinheiro (literalmente \"lã\") — \"sobrar\" aqui funciona como em português, indicando abundância."
+                    }
+                  ],
+                  "inicio": 61.5
+                },
+                {
+                  "original": "Lo que quieras, mi amor",
+                  "traducao": "O que você quiser, meu amor",
+                  "notas": [
+                    {
+                      "trecho": "lo que quieras",
+                      "explicacao": "o que você quiser — Subjuntivo em oração relativa indefinida — \"quieras\" no subjuntivo porque se refere a algo hipotético/não especificado ainda, padrão comum no espanhol que o português às vezes resolve diferente."
+                    }
+                  ],
+                  "inicio": 66.8
+                }
+              ]
+            },
+            {
+              "original": "Mi chula princesa, te bajo la Luna\nY si te dejas, verás que ninguno te va a dar lo que yo te voy a dar\nEres una diabla",
+              "pronuncia": "mi chúla prinsésa, te bájo la lúna / i si te déjas, verás ke ningúno te vá a dár lo ke io te vói a dár / éres úna diábla",
+              "linhas": [
+                {
+                  "original": "Mi chula princesa, te bajo la Luna",
+                  "traducao": "Minha linda princesa, eu tiro a Lua do céu pra você",
+                  "notas": [
+                    {
+                      "trecho": "chula",
+                      "explicacao": "linda, gata — Gíria mexicana muito comum e afetuosa pra \"bonita\", \"atraente\" — usada como adjetivo carinhoso, não vulgar."
+                    },
+                    {
+                      "trecho": "te bajo la Luna",
+                      "explicacao": "eu tiro a Lua do céu pra você — Expressão hiperbólica romântica — \"bajar la luna/las estrellas\" (baixar a lua/as estrelas) é promessa exagerada de dar tudo, equivalente ao \"te dou o mundo\" em português."
+                    }
+                  ],
+                  "inicio": 68.6
+                },
+                {
+                  "original": "Y si te dejas, verás que ninguno te va a dar lo que yo te voy a dar",
+                  "traducao": "E se você deixar, vai ver que ninguém vai te dar o que eu vou te dar",
+                  "notas": [
+                    {
+                      "trecho": "verás que",
+                      "explicacao": "você vai ver que — Futuro de \"ver\" usado como marcador de certeza/promessa — \"verás que\" = \"você vai constatar que\", comum em discurso de convencimento."
+                    }
+                  ],
+                  "inicio": 72.5
+                },
+                {
+                  "original": "Eres una diabla",
+                  "traducao": "Você é uma diaba",
+                  "notas": [],
+                  "inicio": 88.9
+                }
+              ]
             }
           ]
         }
@@ -736,21 +1115,276 @@
           "traducaoTrecho": "Andamos blindados, os chifres de cabra",
           "frases": [
             {
-              "original": "Andamos blindados, los cuernos de chivo",
-              "traducao": "Andamos blindados, os chifres de cabra",
-              "vocabulario": [
+              "original": "Me levanto, un baño y, luego, me pongo a forjar\nEs veneno, da pa' arriba de muy buena calidad\nLos teléfonos no paran nunca de sonar\nSi no es alguna plebita, es porque un cliente quiere más",
+              "pronuncia": "me levánto, un báño i, luégo, me póngo a forhár / es venéno, da pa arríba de mui buéna kalidád / los teléfonos no páran núnka de sonár / si no es algúna plebíta, es pórke un kliénte kiére más",
+              "linhas": [
                 {
-                  "palavra": "blindados",
-                  "significado": "blindados / protegidos",
-                  "detalhe": "Gíria dos corridos: andar blindado = estar protegido."
+                  "original": "Me levanto, un baño y, luego, me pongo a forjar",
+                  "traducao": "Eu levanto, um banho e, depois, começo a enrolar",
+                  "notas": [
+                    {
+                      "trecho": "me pongo a forjar",
+                      "explicacao": "eu começo a enrolar (um baseado) — \"Ponerse a\" + infinitivo = começar a fazer algo. \"Forjar\" aqui é gíria pra enrolar um cigarro de maconha, não o sentido literal de forjar metal."
+                    }
+                  ],
+                  "inicio": 32.7
                 },
                 {
-                  "palavra": "cuernos de chivo",
-                  "significado": "chifres de cabra",
-                  "detalhe": "Gíria mexicana para AK-47 (pelo formato do carregador curvo)."
+                  "original": "Es veneno, da pa' arriba de muy buena calidad",
+                  "traducao": "É veneno, dá aquele barato, de muito boa qualidade",
+                  "notas": [
+                    {
+                      "trecho": "es veneno",
+                      "explicacao": "é veneno (gíria pra maconha forte) — \"Veneno\" usado como elogio irônico pra maconha de alta potência — \"da pa' arriba\" reforça o efeito forte."
+                    },
+                    {
+                      "trecho": "da pa' arriba",
+                      "explicacao": "dá aquele barato, sobe — \"Dar para arriba\" é gíria de efeito de droga — sensação de euforia, \"vai lá em cima\"."
+                    }
+                  ],
+                  "inicio": 37.9
+                },
+                {
+                  "original": "Los teléfonos no paran nunca de sonar",
+                  "traducao": "Os telefones não param nunca de tocar",
+                  "notas": [],
+                  "inicio": 43.1
+                },
+                {
+                  "original": "Si no es alguna plebita, es porque un cliente quiere más",
+                  "traducao": "Se não é alguma menina, é porque um cliente quer mais",
+                  "notas": [
+                    {
+                      "trecho": "plebita",
+                      "explicacao": "menina, mina — Diminutivo de \"plebe\" (já visto em \"Ella Baila Sola\" e \"Pacas de Billetes\") — gíria regional mexicana comum pra garota jovem."
+                    }
+                  ],
+                  "inicio": 48.3
                 }
-              ],
-              "pronuncia": "an-DA-mos blin-DA-dos, los KWER-nos de CHI-vo"
+              ]
+            },
+            {
+              "original": "Y, bien forrados, los paquetes van\nNo hay pendiente, no puedo fallar\nSiempre estoy listo para cruzar\nPolvo, ruedas y también cristal",
+              "pronuncia": "i, bién forrádos, los pakétes ván / no ai pendiénte, no puédo fayár / siémpre estói lísto pára kruzár / pólvo, ruédas i también kristál",
+              "linhas": [
+                {
+                  "original": "Y, bien forrados, los paquetes van",
+                  "traducao": "E, bem embrulhados, os pacotes vão",
+                  "notas": [
+                    {
+                      "trecho": "bien forrados",
+                      "explicacao": "bem embrulhados, bem forrados — \"Forrar\" = revestir, embrulhar bem — aqui descreve pacotes preparados com cuidado pra transporte, sem detalhar do quê."
+                    }
+                  ],
+                  "inicio": 53.5
+                },
+                {
+                  "original": "No hay pendiente, no puedo fallar",
+                  "traducao": "Não tem pendência, eu não posso falhar",
+                  "notas": [
+                    {
+                      "trecho": "no hay pendiente",
+                      "explicacao": "não tem pendência, está tudo certo — \"Pendiente\" (pendência, assunto em aberto) — \"no hay pendiente\" é forma coloquial de tranquilizar, dizer que está tudo resolvido."
+                    }
+                  ],
+                  "inicio": 56.2
+                },
+                {
+                  "original": "Siempre estoy listo para cruzar",
+                  "traducao": "Estou sempre pronto pra cruzar",
+                  "notas": [],
+                  "inicio": 58.8
+                },
+                {
+                  "original": "Polvo, ruedas y también cristal",
+                  "traducao": "Pó, rodinhas e também cristal",
+                  "notas": [
+                    {
+                      "trecho": "polvo, ruedas, cristal",
+                      "explicacao": "pó, rodinhas, cristal — nomes de código pra drogas — Vocabulário-código do gênero corridos tumbados: \"polvo\" (cocaína), \"ruedas\" (comprimidos/pílulas, literalmente \"rodinhas\") e \"cristal\" (metanfetamina) — três substâncias diferentes nomeadas por gírias de rua, sem dizer os nomes diretos."
+                    }
+                  ],
+                  "inicio": 61.3
+                }
+              ]
+            },
+            {
+              "original": "Aquí, el papelito viene y va\nLas morritas bien locas se van\nDisfrutamos este bien o mal\nDe esta vida, no me vo'a quejar",
+              "pronuncia": "akí, el papelíto viéne i vá / las morrítas bién lókas se ván / disfrutámos éste bién o mál / de ésta vída, no me voa kehár",
+              "linhas": [
+                {
+                  "original": "Aquí, el papelito viene y va",
+                  "traducao": "Aqui, o papelzinho vai e vem",
+                  "notas": [
+                    {
+                      "trecho": "el papelito",
+                      "explicacao": "o papelzinho (embalagem de droga) — Diminutivo de \"papel\" — gíria pra pequena embalagem de papel usada pra vender doses de droga, \"vai e vem\" descrevendo o fluxo constante de venda."
+                    }
+                  ],
+                  "inicio": 63.8
+                },
+                {
+                  "original": "Las morritas bien locas se van",
+                  "traducao": "As garotas bem doidas vão embora",
+                  "notas": [
+                    {
+                      "trecho": "morritas",
+                      "explicacao": "garotas, minas — Variante de \"morra\" (já vista em \"Ella Baila Sola\") — gíria mexicana regional pra moça jovem."
+                    }
+                  ],
+                  "inicio": 66.5
+                },
+                {
+                  "original": "Disfrutamos este bien o mal",
+                  "traducao": "A gente aproveita isso, bem ou mal",
+                  "notas": [],
+                  "inicio": 69.1
+                },
+                {
+                  "original": "De esta vida, no me vo'a quejar",
+                  "traducao": "Dessa vida, eu não vou reclamar",
+                  "notas": [
+                    {
+                      "trecho": "no me vo'a quejar",
+                      "explicacao": "eu não vou reclamar — \"Vo'a\" é a contração falada de \"voy a\" — comum em letras de corrido pra imitar a fala corrida e casual, sem o \"y\" pronunciado."
+                    }
+                  ],
+                  "inicio": 71.5
+                }
+              ]
+            },
+            {
+              "original": "¡Eah! Y bien jalados con la Doble P\nLos corridos tumbados\nAsí nomás, viejo",
+              "pronuncia": "eáh! i bién haládos kon la dóble pé / los korrídos tumbádos / así nomás, biéjo",
+              "linhas": [
+                {
+                  "original": "¡Eah! Y bien jalados con la Doble P",
+                  "traducao": "Eah! E bem chapados com a Doble P",
+                  "notas": [
+                    {
+                      "trecho": "con la Doble P",
+                      "explicacao": "com a Doble P — Assinatura vocal de Peso Pluma (\"Double P\"), o artista da faixa — mesma tag já vista em \"Ella Baila Sola\", ele reaparece como convidado em ambas."
+                    }
+                  ],
+                  "inicio": 76.8
+                },
+                {
+                  "original": "Los corridos tumbados",
+                  "traducao": "Os corridos tumbados",
+                  "notas": [
+                    {
+                      "trecho": "corridos tumbados",
+                      "explicacao": "corridos tumbados (o gênero musical) — Nome do próprio subgênero musical a que a canção pertence — mistura de corrido tradicional mexicano com trap/hip-hop, tema recorrente de riqueza rápida, drogas e ostentação."
+                    }
+                  ],
+                  "inicio": 79.6
+                },
+                {
+                  "original": "Así nomás, viejo",
+                  "traducao": "Assim mesmo, véio",
+                  "notas": [
+                    {
+                      "trecho": "así nomás",
+                      "explicacao": "assim mesmo, só isso — \"Nomás\" (apenas, só) é advérbio muito comum no espanhol mexicano coloquial — \"así nomás\" = \"é assim mesmo\", sem mais explicação necessária."
+                    }
+                  ],
+                  "inicio": 83.1
+                }
+              ]
+            },
+            {
+              "original": "Fino con las Balenciaga\nCorridos bien verga sonaban\nLas morritas, muy bien, bailaban\nY yo ando silver, LV",
+              "pronuncia": "fíno kon las balensiága / korrídos bién vérga sonában / las morrítas, mui bién, bailában / i yo ándo sílver, éle-úve",
+              "linhas": [
+                {
+                  "original": "Fino con las Balenciaga",
+                  "traducao": "Chique com as Balenciaga",
+                  "notas": [
+                    {
+                      "trecho": "fino",
+                      "explicacao": "chique, estiloso — Adjetivo de elogio pra estilo/roupa cara — \"andar fino\" é andar bem vestido, com classe."
+                    }
+                  ],
+                  "inicio": 105.7
+                },
+                {
+                  "original": "Corridos bien verga sonaban",
+                  "traducao": "Corridos muito bons tocavam",
+                  "notas": [
+                    {
+                      "trecho": "bien verga",
+                      "explicacao": "muito bom, dahora — \"Verga\" de novo (já vista em \"Pacas de Billetes\") como intensificador de gíria mexicana — \"bien verga\" = muito bom, excelente, registro bem pesado/informal."
+                    }
+                  ],
+                  "inicio": 108.1
+                },
+                {
+                  "original": "Las morritas, muy bien, bailaban",
+                  "traducao": "As garotas dançavam muito bem",
+                  "notas": [],
+                  "inicio": 110.6
+                },
+                {
+                  "original": "Y yo ando silver, LV",
+                  "traducao": "E eu ando prateado, LV",
+                  "notas": [
+                    {
+                      "trecho": "silver, LV",
+                      "explicacao": "prateado, Louis Vuitton — Mistura de inglês (\"silver\") com sigla de marca de luxo (\"LV\" = Louis Vuitton) — traço típico de ostentação no corrido tumbado contemporâneo, cantado em espanglish."
+                    }
+                  ],
+                  "inicio": 113.3
+                }
+              ]
+            },
+            {
+              "original": "Siento que ando volando ya, carnal\nY, aquí, nunca nos vamos a quejar\n¿Para qué vamos a voltear pa' atrás?\nNi pedo, yo le voy a atorar",
+              "pronuncia": "siénto ke ándo volándo ya, karnál / i, akí, núnka nos vámos a kehár / pára ké vámos a voltear pa atrás? / ni pédo, yo le vói a atorár",
+              "linhas": [
+                {
+                  "original": "Siento que ando volando ya, carnal",
+                  "traducao": "Sinto que já estou voando, mano",
+                  "notas": [
+                    {
+                      "trecho": "carnal",
+                      "explicacao": "mano, irmão — Gíria mexicana muito forte pra \"amigo/irmão de confiança\" — mais íntimo que \"compa\", tratamento de proximidade real."
+                    }
+                  ],
+                  "inicio": 115.7
+                },
+                {
+                  "original": "Y, aquí, nunca nos vamos a quejar",
+                  "traducao": "E aqui, a gente nunca vai reclamar",
+                  "notas": [],
+                  "inicio": 118.5
+                },
+                {
+                  "original": "¿Para qué vamos a voltear pa' atrás?",
+                  "traducao": "Pra que vamos olhar pra trás?",
+                  "notas": [
+                    {
+                      "trecho": "voltear pa' atrás",
+                      "explicacao": "olhar pra trás, voltar atrás — \"Voltear\" = virar, olhar — \"pa' atrás\" (apócope de \"para atrás\") reforça a ideia de retroceder, seja literal ou no sentido de arrepender-se."
+                    }
+                  ],
+                  "inicio": 121.3
+                },
+                {
+                  "original": "Ni pedo, yo le voy a atorar",
+                  "traducao": "Sem estresse, eu vou continuar",
+                  "notas": [
+                    {
+                      "trecho": "ni pedo",
+                      "explicacao": "sem estresse, sem problema — Expressão coloquial mexicana muito comum — literalmente \"nem um pum\", usada pra dizer \"sem problema nenhum\", \"relaxa\"."
+                    },
+                    {
+                      "trecho": "le voy a atorar",
+                      "explicacao": "eu vou continuar, vou seguir em frente — \"Atorarle\" é gíria mexicana pra \"continuar fazendo algo com determinação\", seguir sem parar — verbo bem regional, difícil de achar em dicionário padrão."
+                    }
+                  ],
+                  "inicio": 123.9
+                }
+              ]
             }
           ]
         }
@@ -984,26 +1618,333 @@
           "traducaoTrecho": "Maços de notas que eu ganhei",
           "frases": [
             {
-              "original": "Pacas de billetes que yo me he ganado",
-              "traducao": "Maços de notas que eu ganhei",
-              "vocabulario": [
+              "original": "Pacas de billetes y una mente que las puede\nDesde plebes, sabíamos que íbamos pa' este level\nMe cambió la vida, nos cambió ya el modo\nNunca para abajo, siempre para arriba\nNo me hizo menos ni un cabrón, nunca pudieron\nCarrito del año y hasta gente que me cuida",
+              "pronuncia": "pákas de biyétes i úna ménte ke las puéde / désde plébes, sabíamos ke íbamos pa éste lével / me kambyó la vída, nos kambyó ya el módo / núnka pára abájo, siémpre pára arríba / no me íso ménos ni un kabrón, núnka pudiéron / karríto del áño i ásta hénte ke me kuída",
+              "linhas": [
                 {
-                  "palavra": "pacas",
-                  "significado": "maços / fardos",
-                  "detalhe": "Gíria mexicana: paca de billetes = maço grosso de dinheiro."
+                  "original": "Pacas de billetes y una mente que las puede",
+                  "traducao": "Fardos de notas e uma mente que dá conta delas",
+                  "notas": [
+                    {
+                      "trecho": "pacas de billetes",
+                      "explicacao": "fardos/maços de notas de dinheiro — \"Paca\" é gíria mexicana pra maço grande e compactado de cédulas — dá nome à música e é imagem central do gênero corridos tumbados, ligado a riqueza rápida."
+                    }
+                  ],
+                  "inicio": 23.8
                 },
                 {
-                  "palavra": "billetes",
-                  "significado": "notas (de dinheiro)",
-                  "detalhe": "Billete = nota/cédula. Em Espanha também é passagem de trem."
+                  "original": "Desde plebes, sabíamos que íbamos pa' este level",
+                  "traducao": "Desde moleques, já sabíamos que íamos chegar nesse nível",
+                  "notas": [
+                    {
+                      "trecho": "plebes",
+                      "explicacao": "moleques, molecada — Gíria regional mexicana pra \"crianças/jovens\" — aqui no sentido de \"desde pequeno\", \"desde moleque\"."
+                    },
+                    {
+                      "trecho": "este level",
+                      "explicacao": "esse nível — Empréstimo direto do inglês \"level\", incorporado à fala coloquial mexicana contemporânea sem tradução — comum em corridos tumbados, que misturam espanhol e inglês com naturalidade."
+                    }
+                  ],
+                  "inicio": 28.8
                 },
                 {
-                  "palavra": "me he ganado",
-                  "significado": "ganhei (para mim)",
-                  "detalhe": "Pretérito perfecto compuesto: he + participio. O \"me\" é reflexivo enfatizando que foi mérito próprio."
+                  "original": "Me cambió la vida, nos cambió ya el modo",
+                  "traducao": "Isso mudou minha vida, já mudou nosso jeito de ser",
+                  "notas": [],
+                  "inicio": 33.1
+                },
+                {
+                  "original": "Nunca para abajo, siempre para arriba",
+                  "traducao": "Nunca pra baixo, sempre pra cima",
+                  "notas": [],
+                  "inicio": 36.8
+                },
+                {
+                  "original": "No me hizo menos ni un cabrón, nunca pudieron",
+                  "traducao": "Nenhum desgraçado me diminuiu, nunca conseguiram",
+                  "notas": [
+                    {
+                      "trecho": "cabrón",
+                      "explicacao": "desgraçado, filho da mãe — Xingamento muito comum no espanhol mexicano, de intensidade variável conforme o tom — aqui usado como \"ninguém desgraçado conseguiu me diminuir\"."
+                    }
+                  ],
+                  "inicio": 40.3
+                },
+                {
+                  "original": "Carrito del año y hasta gente que me cuida",
+                  "traducao": "Carro do ano e até gente que cuida de mim",
+                  "notas": [],
+                  "inicio": 43.8
                 }
-              ],
-              "pronuncia": "PA-kas de bi-YE-tes ke yo me e ga-NA-do"
+              ]
+            },
+            {
+              "original": "Un Bugatti Chiron me lo compro, Dios me guía\nYa no me detienen, bola de hocicone'\nYa traigo con qué, por si quieren quererme\nY no andamos jugando, y hágale si quiere",
+              "pronuncia": "un bugáti chirón me lo kómpro, dyós me guía / ya no me detiénen, bóla de osikóne / ya tráigo kon ké, por si kiéren kererme / i no andámos hugándo, i ágale si kiére",
+              "linhas": [
+                {
+                  "original": "Un Bugatti Chiron me lo compro, Dios me guía",
+                  "traducao": "Um Bugatti Chiron eu compro, Deus me guia",
+                  "notas": [],
+                  "inicio": 48.9
+                },
+                {
+                  "original": "Ya no me detienen, bola de hocicone'",
+                  "traducao": "Já não me detêm, bando de fofoqueiros",
+                  "notas": [
+                    {
+                      "trecho": "bola de hocicone'",
+                      "explicacao": "bando de fofoqueiros, bando de bocudos — \"Hocicón/hocicona\" é gíria mexicana pra quem fala demais ou fofoca — de \"hocico\" (focinho), imagem de boca grande. O apóstrofo marca a queda do \"s\" final na fala cantada."
+                    }
+                  ],
+                  "inicio": 53
+                },
+                {
+                  "original": "Ya traigo con qué, por si quieren quererme",
+                  "traducao": "Já tenho com que contar, caso queiram me querer",
+                  "notas": [
+                    {
+                      "trecho": "ya traigo con qué",
+                      "explicacao": "já tenho com que contar — \"Traer con qué\" é expressão idiomática — \"ter recursos/condições pra alguma coisa\", aqui no sentido de estar em posição de poder, não literalmente carregar algo."
+                    }
+                  ],
+                  "inicio": 57
+                },
+                {
+                  "original": "Y no andamos jugando, y hágale si quiere",
+                  "traducao": "E a gente não está brincando, e vá em frente se quiser",
+                  "notas": [
+                    {
+                      "trecho": "hágale si quiere",
+                      "explicacao": "vá em frente se quiser, force a barra se quiser — \"Hágale\" é imperativo formal de \"hacerle\" usado como interjeição coloquial mexicana — desafio direto, tipo \"pode tentar\" ou \"fica à vontade\"."
+                    }
+                  ],
+                  "inicio": 60.5
+                }
+              ]
+            },
+            {
+              "original": "Siempre me miré tranquilo\nY, al negocio, siempre le metí los kilos\nAndo trabajando, me abrí los caminos\nUnos dicen que yo ya no soy el mismo",
+              "pronuncia": "siémpre me miré trankílo / i, al negósio, siémpre le metí los kílos / ándo trabahándo, me abrí los kamínos / únos dísen ke yo ya no sói el mísmo",
+              "linhas": [
+                {
+                  "original": "Siempre me miré tranquilo",
+                  "traducao": "Sempre me mantive tranquilo",
+                  "notas": [
+                    {
+                      "trecho": "me miré tranquilo",
+                      "explicacao": "me mantive tranquilo — \"Mirarse\" reflexivo com sentido de \"se manter\", \"se mostrar\" — não é literalmente \"se olhar no espelho\", é figurado: manter a postura/atitude calma."
+                    }
+                  ],
+                  "inicio": 64.1
+                },
+                {
+                  "original": "Y, al negocio, siempre le metí los kilos",
+                  "traducao": "E no negócio sempre botei os quilos pra dentro",
+                  "notas": [
+                    {
+                      "trecho": "meter los kilos",
+                      "explicacao": "Expressão de duplo sentido no gênero: literalmente \"meter quilos\" no negócio pode referir tanto a \"trabalhar pesado\" quanto, no contexto de corridos, a quantidade em quilos de substância movimentada — a ambiguidade é proposital na letra."
+                    }
+                  ],
+                  "inicio": 65.8
+                },
+                {
+                  "original": "Ando trabajando, me abrí los caminos",
+                  "traducao": "Ando trabalhando, abri meus próprios caminhos",
+                  "notas": [
+                    {
+                      "trecho": "me abrí los caminos",
+                      "explicacao": "abri meus próprios caminhos — \"Abrirse el camino\" = conquistar o próprio espaço por esforço próprio, sem ajuda — expressão de superação bem comum em espanhol, equivalente direto ao português."
+                    }
+                  ],
+                  "inicio": 68.4
+                },
+                {
+                  "original": "Unos dicen que yo ya no soy el mismo",
+                  "traducao": "Uns dizem que eu já não sou o mesmo",
+                  "notas": [],
+                  "inicio": 70.8
+                }
+              ]
+            },
+            {
+              "original": "Me aferré a la vida buena\nCon clase y estilo, todo estaba afuera\nHoy me bajo verga, a subir la escalera\nNo van a poder tumbarme, aunque quisieran",
+              "pronuncia": "me aferré a la vída buéna / kon kláse i estílo, tódo estába afuéra / oi me bájo vérga, a subír la eskaléra / no ván a podér tumbárme, aúnke kisiéran",
+              "linhas": [
+                {
+                  "original": "Me aferré a la vida buena",
+                  "traducao": "Eu me agarrei à vida boa",
+                  "notas": [
+                    {
+                      "trecho": "me aferré",
+                      "explicacao": "eu me agarrei — \"Aferrarse a\" = se apegar com força a algo, se agarrar — verbo forte, indica determinação, não um apego qualquer."
+                    }
+                  ],
+                  "inicio": 75.4
+                },
+                {
+                  "original": "Con clase y estilo, todo estaba afuera",
+                  "traducao": "Com classe e estilo, tudo estava lá fora, esperando",
+                  "notas": [],
+                  "inicio": 77
+                },
+                {
+                  "original": "Hoy me bajo verga, a subir la escalera",
+                  "traducao": "Hoje eu desço pra valer, pra subir a escada",
+                  "notas": [
+                    {
+                      "trecho": "me bajo verga",
+                      "explicacao": "eu desço pra valer, vou com tudo — \"Verga\" é palavra de calão muito versátil no espanhol mexicano — aqui, \"bajarse verga\" é gíria de intensidade (\"com tudo\", \"sem economizar esforço\"), não tem relação com o sentido literal e vulgar da palavra isolada."
+                    }
+                  ],
+                  "inicio": 79.7
+                },
+                {
+                  "original": "No van a poder tumbarme, aunque quisieran",
+                  "traducao": "Não vão conseguir me derrubar, ainda que quisessem",
+                  "notas": [
+                    {
+                      "trecho": "tumbarme",
+                      "explicacao": "me derrubar — \"Tumbar\" = derrubar, fazer cair — usado tanto literalmente quanto de forma figurada pra \"arruinar\", \"vencer\" alguém."
+                    }
+                  ],
+                  "inicio": 82
+                }
+              ]
+            },
+            {
+              "original": "¡Eah! Y bien jalados\nY arriba la bandera, viejo",
+              "pronuncia": "eáh! i bién haládos / i arríba la bandéra, biéjo",
+              "linhas": [
+                {
+                  "original": "¡Eah! Y bien jalados",
+                  "traducao": "Eah! E bem chapados",
+                  "notas": [
+                    {
+                      "trecho": "¡Eah!",
+                      "explicacao": "Eah! (grito de assinatura) — Interjeição de efeito, comum em corridos tumbados como marcador rítmico — sem tradução literal, funciona como grito de empolgação."
+                    },
+                    {
+                      "trecho": "jalados",
+                      "explicacao": "chapados, doidões — \"Jalado/a\" é gíria mexicana pra estar sob efeito de álcool ou droga — de \"jalar\" (puxar, cheirar/fumar algo)."
+                    }
+                  ],
+                  "inicio": 88.5
+                },
+                {
+                  "original": "Y arriba la bandera, viejo",
+                  "traducao": "E pra cima a bandeira, véio",
+                  "notas": [
+                    {
+                      "trecho": "arriba la bandera",
+                      "explicacao": "pra cima a bandeira — Grito de orgulho regional/de origem — \"levantar a bandeira\" do estado ou região de quem canta, comum em corridos como afirmação de identidade."
+                    }
+                  ],
+                  "inicio": 90.7
+                }
+              ]
+            },
+            {
+              "original": "701, la clave que se respeta\nLa mente brillante y, el negocio, la receta\nTraigo medicina pa' curar enfermos\nMúsica en la casa, tengo en la cocina\nAlterando el sistema, así es como se mueve",
+              "pronuncia": "sietesiénto úno, la kláve ke se respéta / la ménte briyánte i, el negósio, la reséta / tráigo medisína pa kurár enférmos / músika en la kása, téngo en la kosína / alteránd el sistéma, así és kómo se muéve",
+              "linhas": [
+                {
+                  "original": "701, la clave que se respeta",
+                  "traducao": "701, o código que se respeita",
+                  "notas": [
+                    {
+                      "trecho": "701",
+                      "explicacao": "701 (código numérico) — Código associado à região/grupo de origem do artista (Hermosillo, Sonora) — funciona como \"assinatura\" de identidade regional dentro do corrido, parecido com um código de área usado como símbolo de pertencimento."
+                    },
+                    {
+                      "trecho": "la clave",
+                      "explicacao": "o código, a senha — \"Clave\" = código, chave — aqui no sentido de marca de identidade/organização reconhecida entre quem entende a referência."
+                    }
+                  ],
+                  "inicio": 108.2
+                },
+                {
+                  "original": "La mente brillante y, el negocio, la receta",
+                  "traducao": "A mente brilhante e o negócio, a receita",
+                  "notas": [],
+                  "inicio": 113.2
+                },
+                {
+                  "original": "Traigo medicina pa' curar enfermos",
+                  "traducao": "Traigo remédio pra curar doentes",
+                  "notas": [
+                    {
+                      "trecho": "medicina pa' curar enfermos",
+                      "explicacao": "remédio pra curar doentes — Metáfora dupla e proposital no gênero: \"medicina\" pode se referir tanto a dinheiro/sucesso quanto, veladamente, ao próprio produto do narcotráfico que o gênero corridos tumbados costuma retratar em código."
+                    }
+                  ],
+                  "inicio": 117.4
+                },
+                {
+                  "original": "Música en la casa, tengo en la cocina",
+                  "traducao": "Música na casa, eu tenho na cozinha",
+                  "notas": [],
+                  "inicio": 121.3
+                },
+                {
+                  "original": "Alterando el sistema, así es como se mueve",
+                  "traducao": "Alterando o sistema, é assim que se move",
+                  "notas": [],
+                  "inicio": 124.9
+                }
+              ]
+            },
+            {
+              "original": "Rolando por playas, por las nubes, mis placeres\nUn jetski en Miami, por el mundo y las mujeres\nTraigan a la cuenta\nUna botellita, destapo champaña, coroné la vuelta\nY una de nueve tiros, cargo una Beretta",
+              "pronuncia": "rolándo por pláyas, por las núbes, mis placéres / un yétski en maiámi, por el múndo i las muhéres / tráigan a la kuénta / úna boteyíta, destápo champáña, koroné la vuélta / i úna de nuéve tíros, kárgo úna berétta",
+              "linhas": [
+                {
+                  "original": "Rolando por playas, por las nubes, mis placeres",
+                  "traducao": "Rodando por praias, pelas nuvens, meus prazeres",
+                  "notas": [
+                    {
+                      "trecho": "rolando",
+                      "explicacao": "rodando, circulando — Gerúndio de \"rolar\" no sentido de \"andar por aí\", \"circular\" — uso bem coloquial, igual em português informal."
+                    }
+                  ],
+                  "inicio": 128.2
+                },
+                {
+                  "original": "Un jetski en Miami, por el mundo y las mujeres",
+                  "traducao": "Um jetski em Miami, pelo mundo e as mulheres",
+                  "notas": [],
+                  "inicio": 133.3
+                },
+                {
+                  "original": "Traigan a la cuenta",
+                  "traducao": "Tragam pra conta",
+                  "notas": [
+                    {
+                      "trecho": "traigan a la cuenta",
+                      "explicacao": "tragam pra conta — Imperativo formal (\"traigan\", vocês) pedindo pra colocar algo na conta do estabelecimento — cena de festa/balada cara."
+                    }
+                  ],
+                  "inicio": 137.6
+                },
+                {
+                  "original": "Una botellita, destapo champaña, coroné la vuelta",
+                  "traducao": "Uma garrafinha, eu abro champanhe, coroei a volta",
+                  "notas": [],
+                  "inicio": 140
+                },
+                {
+                  "original": "Y una de nueve tiros, cargo una Beretta",
+                  "traducao": "E uma de nove tiros, eu carrego uma Beretta",
+                  "notas": [
+                    {
+                      "trecho": "cargo una Beretta",
+                      "explicacao": "eu carrego uma Beretta — Referência direta e literal a uma arma de fogo (pistola Beretta) — traço comum do imaginário de poder/perigo no gênero corridos tumbados, mencionada sem meias palavras."
+                    }
+                  ],
+                  "inicio": 145
+                }
+              ]
             }
           ]
         }
@@ -1233,37 +2174,43 @@
           "frases": [
             {
               "original": "Yo te miro y se me corta la respiración",
-              "traducao": "Eu te olho e me falta a respiração",
-              "vocabulario": [
+              "pronuncia": "yo te MI-ro ee se me KOR-ta la res-pi-ra-SION",
+              "linhas": [
                 {
-                  "palavra": "te miro",
-                  "significado": "te olho",
-                  "detalhe": "Mirar = olhar. Em espanhol da América, mirar é mais usado que ver para \"olhar com atenção\"."
-                },
-                {
-                  "palavra": "se me corta",
-                  "significado": "me corta / me falta",
-                  "detalhe": "Expressão: cortarse la respiración = ficar sem ar de emoção."
+                  "original": "Yo te miro y se me corta la respiración",
+                  "traducao": "Eu te olho e me falta a respiração",
+                  "notas": [
+                    {
+                      "trecho": "te miro",
+                      "explicacao": "te olho — Mirar = olhar. Em espanhol da América, mirar é mais usado que ver para \"olhar com atenção\"."
+                    },
+                    {
+                      "trecho": "se me corta",
+                      "explicacao": "me corta / me falta — Expressão: cortarse la respiración = ficar sem ar de emoção."
+                    }
+                  ]
                 }
-              ],
-              "pronuncia": "yo te MI-ro ee se me KOR-ta la res-pi-ra-SION"
+              ]
             },
             {
               "original": "Con tu física y tu química",
-              "traducao": "Com teu físico e tua química",
-              "vocabulario": [
+              "pronuncia": "kon tu FI-si-ka ee tu KI-mi-ka",
+              "linhas": [
                 {
-                  "palavra": "física",
-                  "significado": "físico / corpo",
-                  "detalhe": "Jogo de palavras: física = aparência física + a ciência."
-                },
-                {
-                  "palavra": "química",
-                  "significado": "química / conexão",
-                  "detalhe": "Duplo sentido: a ciência + \"ter química\" = ter conexão com alguém."
+                  "original": "Con tu física y tu química",
+                  "traducao": "Com teu físico e tua química",
+                  "notas": [
+                    {
+                      "trecho": "física",
+                      "explicacao": "físico / corpo — Jogo de palavras: física = aparência física + a ciência."
+                    },
+                    {
+                      "trecho": "química",
+                      "explicacao": "química / conexão — Duplo sentido: a ciência + \"ter química\" = ter conexão com alguém."
+                    }
+                  ]
                 }
-              ],
-              "pronuncia": "kon tu FI-si-ka ee tu KI-mi-ka"
+              ]
             }
           ]
         }
@@ -1482,20 +2429,23 @@
           "frases": [
             {
               "original": "Te quiero, mi amor, pero tumbado",
-              "traducao": "Te amo, meu amor, mas do meu jeito",
-              "vocabulario": [
+              "pronuncia": "te KIE-ro, mi a-MOR, PE-ro tum-BA-do",
+              "linhas": [
                 {
-                  "palavra": "te quiero",
-                  "significado": "te amo / te quero",
-                  "detalhe": "Querer = amar/querer. \"Te quiero\" é a forma mais comum de dizer \"eu te amo\" na América Latina."
-                },
-                {
-                  "palavra": "tumbado",
-                  "significado": "do meu jeito / relaxado",
-                  "detalhe": "Gíria dos corridos tumbados: tumbado = no estilo próprio, tranquilo, sem frescura."
+                  "original": "Te quiero, mi amor, pero tumbado",
+                  "traducao": "Te amo, meu amor, mas do meu jeito",
+                  "notas": [
+                    {
+                      "trecho": "te quiero",
+                      "explicacao": "te amo / te quero — Querer = amar/querer. \"Te quiero\" é a forma mais comum de dizer \"eu te amo\" na América Latina."
+                    },
+                    {
+                      "trecho": "tumbado",
+                      "explicacao": "do meu jeito / relaxado — Gíria dos corridos tumbados: tumbado = no estilo próprio, tranquilo, sem frescura."
+                    }
+                  ]
                 }
-              ],
-              "pronuncia": "te KIE-ro, mi a-MOR, PE-ro tum-BA-do"
+              ]
             }
           ]
         }
@@ -1949,20 +2899,23 @@
           "frases": [
             {
               "original": "Hoy es tu boda y sé que no debería estar aquí",
-              "traducao": "Hoje é o teu casamento e sei que não deveria estar aqui",
-              "vocabulario": [
+              "pronuncia": "oy es tu BO-da ee se ke no de-be-REE-a es-TAR a-KEE",
+              "linhas": [
                 {
-                  "palavra": "boda",
-                  "significado": "casamento / cerimônia",
-                  "detalhe": "Boda = casamento. Plural \"bodas\" = aniversário de casamento (bodas de plata = 25 anos)."
-                },
-                {
-                  "palavra": "debería",
-                  "significado": "deveria",
-                  "detalhe": "Condicional de deber. Debería = deveria. Expressa obrigação moral."
+                  "original": "Hoy es tu boda y sé que no debería estar aquí",
+                  "traducao": "Hoje é o teu casamento e sei que não deveria estar aqui",
+                  "notas": [
+                    {
+                      "trecho": "boda",
+                      "explicacao": "casamento / cerimônia — Boda = casamento. Plural \"bodas\" = aniversário de casamento (bodas de plata = 25 anos)."
+                    },
+                    {
+                      "trecho": "debería",
+                      "explicacao": "deveria — Condicional de deber. Debería = deveria. Expressa obrigação moral."
+                    }
+                  ]
                 }
-              ],
-              "pronuncia": "oy es tu BO-da ee se ke no de-be-REE-a es-TAR a-KEE"
+              ]
             }
           ]
         }

@@ -533,8 +533,11 @@
     ],
     "voz": "string"
    },
+   "notas": {},
    "progresso": {},
-   "revisao": []
+   "revisao": [],
+   "salvas": [],
+   "sequencia": "number"
   }
  },
  "idiomas idioma que não existe :: dona GET /api/idiomas/klingon": {

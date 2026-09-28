@@ -331,7 +331,7 @@
         h('p', {}, 'Biblioteca online e gratuita de livros em português: clássicos em domínio público, leis brasileiras, quadrinhos livres e obras publicadas pelos próprios leitores.'),
         h('p', { class: 'selos-rodape' }, h('span', {}, 'Sem anúncios'), h('span', {}, 'Sem venda de dados'), h('span', {}, 'Lei 9.610/98 e LGPD')),
         h('p', { class: 'presente-rodape' }, 'A casa está começando: os planos ainda não são vendidos — são ', h('a', { href: '/assinaturas.html' }, 'dados de presente a quem pede'), '.')),
-      col('Acervo', [['Todos os livros', '/livros'], ['Autores', '/autores'], ['Quadrinhos e mangá', '/quadrinhos.html'], ['Comunidade', '/publicacoes.html']]),
+      col('Acervo', [['Todos os livros', '/livros'], ['Autores', '/autores'], ['Quadrinhos e mangá', '/quadrinhos.html'], ['Idiomas', '/idiomas.html'], ['Comunidade', '/publicacoes.html']]),
       col('Sua conta', [['Entrar ou criar conta', '/#/entrar'], ['Planos', '/assinaturas.html'], ['Notificações', '/central.html#avisos'], ['Privacidade e dados', '/conta.html#dados']]),
       col('A Fiolib', [['Direitos autorais e o acervo', '/direitos.html'], ['Termos de uso', '/termos.html'], ['Política de privacidade', '/privacidade.html'], ['Denunciar um conteúdo', '/direitos.html#avisar'], ['Fale com a gente', '/direitos.html#contato']])),
     h('div', { class: 'baixo' },

@@ -40,6 +40,33 @@ export function garantirTabelas(banco) {
       UNIQUE (leitor_id, idioma, item)
     );
     CREATE INDEX IF NOT EXISTS idx_revisao_fila ON idioma_revisao (leitor_id, idioma, proxima_em);
+    CREATE TABLE IF NOT EXISTS idioma_pedido_musica (
+      id            INTEGER PRIMARY KEY,
+      leitor_id     INTEGER NOT NULL REFERENCES leitor(id) ON DELETE CASCADE,
+      idioma        TEXT NOT NULL,
+      titulo        TEXT NOT NULL,
+      artista       TEXT,
+      nota          TEXT,
+      criado_em     TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+    CREATE TABLE IF NOT EXISTS idioma_palavra_salva (
+      id            INTEGER PRIMARY KEY,
+      leitor_id     INTEGER NOT NULL REFERENCES leitor(id) ON DELETE CASCADE,
+      idioma        TEXT NOT NULL,
+      palavra       TEXT NOT NULL,
+      traducao      TEXT NOT NULL,
+      criado_em     TEXT NOT NULL DEFAULT (datetime('now')),
+      UNIQUE (leitor_id, idioma, palavra)
+    );
+    CREATE TABLE IF NOT EXISTS idioma_nota (
+      id            INTEGER PRIMARY KEY,
+      leitor_id     INTEGER NOT NULL REFERENCES leitor(id) ON DELETE CASCADE,
+      idioma        TEXT NOT NULL,
+      item          TEXT NOT NULL,
+      texto         TEXT NOT NULL,
+      atualizado_em TEXT NOT NULL DEFAULT (datetime('now')),
+      UNIQUE (leitor_id, idioma, item)
+    );
   `)
 }
 
@@ -49,14 +76,28 @@ const PASTA = process.env.FIO_ESTATICO
 
 const IDIOMAS = ['frances', 'espanhol', 'japones', 'alemao', 'russo', 'italiano', 'ingles']
 
-/** A lista dos sete, só com o que cabe num cartão — sem o curso inteiro. */
-export function listaIdiomas() {
+/**
+ * A lista dos sete, só com o que cabe num cartão — sem o curso inteiro.
+ *
+ * Com `leitorId`, cada item ganha `feitas` (unidades concluídas naquele
+ * idioma) — é só LEITURA do que a pessoa já tem gravado, por isso não exige
+ * Tear aqui: ver o próprio progresso no hub não é "usar" a área paga, é
+ * lembrar que ela já foi usada antes.
+ */
+export function listaIdiomas(banco, leitorId) {
+  const feitasPorIdioma = leitorId
+    ? Object.fromEntries(banco.prepare(
+        'SELECT idioma, COUNT(*) n FROM idioma_progresso WHERE leitor_id = ? GROUP BY idioma')
+        .all(leitorId).map((l) => [l.idioma, l.n]))
+    : {}
   return IDIOMAS.map((chave) => {
     const caminho = join(PASTA, `${chave}.json`)
     if (!existsSync(caminho)) return null
     try {
       const c = JSON.parse(readFileSync(caminho, 'utf8'))
-      return { chave, nome: c.nome, bandeira: c.bandeira, profundidade: c.profundidade, unidades: c.unidades.length }
+      const item = { chave, nome: c.nome, bandeira: c.bandeira, profundidade: c.profundidade, unidades: c.unidades.length }
+      if (leitorId) item.feitas = feitasPorIdioma[chave] ?? 0
+      return item
     } catch { return null }
   }).filter(Boolean)
 }
@@ -124,4 +165,89 @@ export function filaDeRevisao(banco, leitorId, idioma, limite = 20) {
     SELECT item, facilidade, intervalo FROM idioma_revisao
      WHERE leitor_id = ? AND idioma = ? AND proxima_em <= datetime('now')
      ORDER BY proxima_em LIMIT ?`).all(leitorId, idioma, limite)
+}
+
+// ── pedir tradução de música ──
+
+export function pedirMusica(banco, leitorId, idioma, { titulo, artista, nota }) {
+  const t = String(titulo ?? '').trim().slice(0, 200)
+  if (!t) throw new Error('Diga o título da música.')
+  banco.prepare(`
+    INSERT INTO idioma_pedido_musica (leitor_id, idioma, titulo, artista, nota)
+    VALUES (?, ?, ?, ?, ?)`)
+    .run(leitorId, idioma, t, String(artista ?? '').trim().slice(0, 120) || null, String(nota ?? '').trim().slice(0, 500) || null)
+}
+
+// ── palavras salvas (do Tradutor) ──
+
+export function palavrasSalvas(banco, leitorId, idioma) {
+  return banco.prepare(
+    'SELECT palavra, traducao, criado_em FROM idioma_palavra_salva WHERE leitor_id = ? AND idioma = ? ORDER BY criado_em DESC')
+    .all(leitorId, idioma)
+}
+
+export function salvarPalavra(banco, leitorId, idioma, { palavra, traducao }) {
+  const p = String(palavra ?? '').trim().slice(0, 200)
+  if (!p) throw new Error('Falta a palavra.')
+  banco.prepare(`
+    INSERT INTO idioma_palavra_salva (leitor_id, idioma, palavra, traducao)
+    VALUES (?, ?, ?, ?)
+    ON CONFLICT (leitor_id, idioma, palavra) DO UPDATE SET traducao = excluded.traducao`)
+    .run(leitorId, idioma, p, String(traducao ?? '').trim().slice(0, 500))
+}
+
+export function tirarPalavraSalva(banco, leitorId, idioma, palavra) {
+  banco.prepare('DELETE FROM idioma_palavra_salva WHERE leitor_id = ? AND idioma = ? AND palavra = ?')
+    .run(leitorId, idioma, String(palavra ?? '').trim().slice(0, 200))
+}
+
+// ── notas pessoais (unidade do curso ou estrofe de música) ──
+
+export function notasDe(banco, leitorId, idioma) {
+  const linhas = banco.prepare(
+    'SELECT item, texto FROM idioma_nota WHERE leitor_id = ? AND idioma = ?')
+    .all(leitorId, idioma)
+  return Object.fromEntries(linhas.map((l) => [l.item, l.texto]))
+}
+
+export function salvarNota(banco, leitorId, idioma, item, texto) {
+  const i = String(item ?? '').trim().slice(0, 120)
+  if (!i) throw new Error('Falta dizer a que essa nota pertence.')
+  const t = String(texto ?? '').trim().slice(0, 2000)
+  if (!t) {
+    banco.prepare('DELETE FROM idioma_nota WHERE leitor_id = ? AND idioma = ? AND item = ?').run(leitorId, idioma, i)
+    return
+  }
+  banco.prepare(`
+    INSERT INTO idioma_nota (leitor_id, idioma, item, texto, atualizado_em)
+    VALUES (?, ?, ?, ?, datetime('now'))
+    ON CONFLICT (leitor_id, idioma, item) DO UPDATE SET texto = excluded.texto, atualizado_em = excluded.atualizado_em`)
+    .run(leitorId, idioma, i, t)
+}
+
+// ── sequência de dias (streak) ──
+//
+// Não é tabela nova: conta dias distintos em que a pessoa deixou algum rastro
+// nesse idioma (unidade concluída OU item revisado) — a mesma ideia de streak
+// do Duolingo, mas sem inventar contador separado que pode dessincronizar do
+// que a pessoa realmente fez.
+export function sequenciaDias(banco, leitorId, idioma) {
+  const dias = banco.prepare(`
+    SELECT DISTINCT date(quando) d FROM (
+      SELECT concluido_em quando FROM idioma_progresso WHERE leitor_id = ? AND idioma = ?
+      UNION ALL
+      SELECT proxima_em quando FROM idioma_revisao WHERE leitor_id = ? AND idioma = ? AND proxima_em <= datetime('now')
+    ) ORDER BY d DESC`).all(leitorId, idioma, leitorId, idioma).map((l) => l.d)
+  if (!dias.length) return 0
+  const hoje = new Date().toISOString().slice(0, 10)
+  const ontem = new Date(Date.now() - 86_400_000).toISOString().slice(0, 10)
+  if (dias[0] !== hoje && dias[0] !== ontem) return 0 // sequência já quebrou
+  let n = 0
+  let cursor = new Date(dias[0] + 'T00:00:00Z')
+  for (const d of dias) {
+    if (d !== cursor.toISOString().slice(0, 10)) break
+    n++
+    cursor = new Date(cursor.getTime() - 86_400_000)
+  }
+  return n
 }

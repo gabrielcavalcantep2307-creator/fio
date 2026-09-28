@@ -55,7 +55,12 @@ fiolib.com.br {
 		# `style-src` precisa de 'unsafe-inline' porque os temas são
 		# aplicados por variável em atributo `style`. É uma folga conhecida,
 		# e ela não permite executar código.
-		Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://covers.openlibrary.org https://archive.org https://*.archive.org; font-src 'self'; connect-src 'self'; form-action 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'"
+		#
+		# `img.youtube.com` (capa da música) e `www.youtube-nocookie.com`
+		# (o player, em `frame-src`) são as outras exceções nomeadas — pela
+		# área de Idiomas, que toca a música dentro do site em vez de linkar
+		# para fora. Nomeadas, não curinga, pelo mesmo motivo do resto.
+		Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://covers.openlibrary.org https://archive.org https://*.archive.org https://img.youtube.com; frame-src https://www.youtube-nocookie.com; font-src 'self'; connect-src 'self'; form-action 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'"
 		Strict-Transport-Security "max-age=63072000; includeSubDomains"
 		Referrer-Policy "no-referrer"
 		X-Content-Type-Options "nosniff"
