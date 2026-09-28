@@ -727,25 +727,47 @@ function desenharPedirMusica() {
 function criarControlePlayer(iframe) {
   const ORIGEM = 'https://www.youtube-nocookie.com'
   const mandar = (func, args = []) => iframe?.contentWindow?.postMessage(JSON.stringify({ event: 'command', func, args }), ORIGEM)
-  let tempoAtual = 0
+
+  // O YouTube devolve currentTime pelo buffer decodificado, que pode estar
+  // 1-2 s na frente do áudio que sai no speaker. A solução: usamos os valores
+  // do YouTube só para sincronizar um relógio LOCAL que avança com Date.now()
+  // enquanto o vídeo está tocando — assim a precisão não depende do intervalo
+  // do postMessage.
+  let tempoBase = 0      // currentTime recebido do YouTube
+  let momentoBase = 0    // Date.now() quando recebemos esse currentTime
+  let tocando = false    // playerState === 1
   const ouvintes = new Set()
+
+  const tempoInterpolado = () =>
+    tocando ? tempoBase + (Date.now() - momentoBase) / 1000 : tempoBase
+
   function aoReceber(ev) {
     if (ev.source !== iframe?.contentWindow) return
     let dado
     try { dado = JSON.parse(ev.data) } catch { return }
     if (dado.event === 'infoDelivery' && typeof dado.info?.currentTime === 'number') {
-      tempoAtual = dado.info.currentTime
-      for (const fn of ouvintes) fn(tempoAtual)
+      // resincroniza o relógio local com o valor do YouTube
+      tempoBase = dado.info.currentTime
+      momentoBase = Date.now()
+      tocando = dado.info.playerState === 1
     }
   }
   window.addEventListener('message', aoReceber)
+
+  // dispara os ouvintes a cada 100 ms com o tempo interpolado — independente
+  // de quando o YouTube responde
   const intervalo = setInterval(() => {
     iframe?.contentWindow?.postMessage(JSON.stringify({ event: 'listening', id: musicaIdAtual, channel: 'widget' }), ORIGEM)
+    if (tocando) for (const fn of ouvintes) fn(tempoInterpolado())
   }, 100)
+
   return {
-    pular(seg) { mandar('seekTo', [seg, true]); mandar('playVideo') },
+    pular(seg) {
+      tempoBase = seg; momentoBase = Date.now()
+      mandar('seekTo', [seg, true]); mandar('playVideo')
+    },
     velocidade(r) { mandar('setPlaybackRate', [r]) },
-    tempoAgora: () => tempoAtual,
+    tempoAgora: tempoInterpolado,
     aoAtualizar(fn) { ouvintes.add(fn); return () => ouvintes.delete(fn) },
     destruir() { window.removeEventListener('message', aoReceber); clearInterval(intervalo) },
   }
@@ -786,7 +808,7 @@ function desenharLegendaAoVivo(estrofes, controle) {
   let indiceAtual = -1
   const parar = controle.aoAtualizar((tempo) => {
     let i = -1
-    for (let k = 0; k < todasLinhas.length; k++) { if (todasLinhas[k].inicio <= tempo + 0.5) i = k; else break }
+    for (let k = 0; k < todasLinhas.length; k++) { if (todasLinhas[k].inicio <= tempo + 0.2) i = k; else break }
     if (i === indiceAtual) return
     indiceAtual = i
     if (i < 0) { original.textContent = '♪ toque em play e acompanhe a letra aqui, em tempo real'; traducao.textContent = ''; return }
