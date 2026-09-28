@@ -443,7 +443,358 @@
         {
           "titulo": "Zitti e buoni",
           "artista": "Måneskin",
-          "youtubeId": "QN1odfjtMoo"
+          "youtubeId": "QN1odfjtMoo",
+          "trechoLetra": "Siamo fuori di testa, ma diversi da loro",
+          "traducaoTrecho": "Somos loucos, mas diferentes deles — hino de não-conformismo vencedor do Eurovision 2021",
+          "frases": [
+            {
+              "original": "Loro non sanno di che parlo\nVestiti sporchi, fra', di fango\nGiallo di siga' fra le dita\nIo con la siga' camminando",
+              "pronuncia": "LO-ro non SA-no di ke PAR-lo / ve-STI-ti SPOR-ki fra di FAN-go / JAL-lo di si-GA fra le DI-ta / IO kon la si-GA kam-mi-NAN-do",
+              "linhas": [
+                {
+                  "original": "Loro non sanno di che parlo",
+                  "traducao": "Eles não sabem do que falo",
+                  "notas": [],
+                  "inicio": 7.0
+                },
+                {
+                  "original": "Vestiti sporchi, fra', di fango",
+                  "traducao": "Roupas sujas, irmão, de lama",
+                  "notas": [
+                    { "trecho": "fra'", "explicacao": "contração de 'fratello' (irmão) — gíria romana, equivalente ao 'mano' do português brasileiro" }
+                  ],
+                  "inicio": 11.0
+                },
+                {
+                  "original": "Giallo di siga' fra le dita",
+                  "traducao": "Amarelo de cigarro entre os dedos",
+                  "notas": [
+                    { "trecho": "siga'", "explicacao": "contração de 'sigaretta' (cigarro) — gíria, muito usada na fala coloquial italiana" }
+                  ],
+                  "inicio": 15.0
+                },
+                {
+                  "original": "Io con la siga' camminando",
+                  "traducao": "Eu andando com o cigarro",
+                  "notas": [],
+                  "inicio": 19.0
+                }
+              ]
+            },
+            {
+              "original": "Scusami, ma ci credo tanto\nChe posso fare questo salto\nE anche se la strada è in salita\nPer questo ora mi sto allenando",
+              "pronuncia": "sku-ZA-mi ma tchi KRE-do TAN-to / ke POS-so FA-re KWE-sto SAL-to / e AN-ke se la STRA-da è in sa-LI-ta / per KWE-sto O-ra mi sto al-le-NAN-do",
+              "linhas": [
+                {
+                  "original": "Scusami, ma ci credo tanto",
+                  "traducao": "Me desculpa, mas acredito muito nisso",
+                  "notas": [
+                    { "trecho": "ci credo", "explicacao": "'ci' aqui é pronome clítico que substitui 'nisso' — 'credere in qualcosa' = acreditar em algo; 'ci' evita repetir o objeto" }
+                  ],
+                  "inicio": 23.0
+                },
+                {
+                  "original": "Che posso fare questo salto",
+                  "traducao": "Que posso dar esse salto",
+                  "notas": [],
+                  "inicio": 27.0
+                },
+                {
+                  "original": "E anche se la strada è in salita",
+                  "traducao": "E mesmo que o caminho seja íngreme",
+                  "notas": [
+                    { "trecho": "in salita", "explicacao": "'in salita' = em subida, íngreme; metáfora para dificuldades — oposto de 'in discesa' (em descida, fácil)" }
+                  ],
+                  "inicio": 31.0
+                },
+                {
+                  "original": "Per questo ora mi sto allenando",
+                  "traducao": "Por isso agora estou me preparando",
+                  "notas": [],
+                  "inicio": 35.0
+                }
+              ]
+            },
+            {
+              "original": "E buonasera, signore e signori\nFuori gli attori\nVi conviene toccarvi i coglioni\nVi conviene stare zitti e buoni",
+              "pronuncia": "e buo-na-SE-ra si-NYO-re e si-NYO-ri / FUO-ri lli at-TO-ri / vi kon-VYEN-e tok-KAR-vi i kol-LYO-ni / vi kon-VYEN-e STA-re DZIT-ti e BWO-ni",
+              "linhas": [
+                {
+                  "original": "E buonasera, signore e signori",
+                  "traducao": "E boa noite, senhoras e senhores",
+                  "notas": [
+                    { "trecho": "signore e signori", "explicacao": "fórmula de apresentação teatral — 'damas e senhores' — usada com ironia, como se o jovem fosse anunciar seu show para a elite" }
+                  ],
+                  "inicio": 39.0
+                },
+                {
+                  "original": "Fuori gli attori",
+                  "traducao": "Saiam os atores (os hipócritas)",
+                  "notas": [
+                    { "trecho": "fuori gli attori", "explicacao": "'fuori!' = fora! — 'attori' literalmente atores; aqui = pessoas que fingem, hipócritas que agem como superiores" }
+                  ],
+                  "inicio": 43.5
+                },
+                {
+                  "original": "Vi conviene toccarvi i coglioni",
+                  "traducao": "Melhor vocês se tocarem",
+                  "notas": [
+                    { "trecho": "toccarsi i coglioni", "explicacao": "expressão italiana de superstição: tocar-se para afastar o mau-olhado; coloquialmente virou 'se ligar', 'prestar atenção'" }
+                  ],
+                  "inicio": 45.5
+                },
+                {
+                  "original": "Vi conviene stare zitti e buoni",
+                  "traducao": "Melhor vocês ficarem quietos e comportados",
+                  "notas": [
+                    { "trecho": "zitti e buoni", "explicacao": "'zitti' = quietos, calados; 'buoni' = bonzinhos, obedientes — a sociedade manda os jovens 'ficarem quietos', a música é a recusa disso" }
+                  ],
+                  "inicio": 49.5
+                }
+              ]
+            },
+            {
+              "original": "Qui la gente è strana tipo spacciatori\nTroppe notti stavo chiuso fuori\nMo li prendo a calci 'sti portoni\nSguardo in alto tipo scalatori\nQuindi scusa mamma se sto sempre fuori, ma",
+              "pronuncia": "kwi la JEN-te è STRA-na TI-po spat-CHA-to-ri / TROP-pe NOT-ti STA-vo KYUSO FUO-ri / mo li PREN-do a KAL-tchi sti por-TO-ni / ZGWAR-do in AL-to TI-po ska-la-TO-ri / KWIN-di SKU-za MAM-ma se sto SEM-pre FUO-ri ma",
+              "linhas": [
+                {
+                  "original": "Qui la gente è strana tipo spacciatori",
+                  "traducao": "Aqui as pessoas são estranhas tipo traficantes",
+                  "notas": [
+                    { "trecho": "tipo", "explicacao": "'tipo' aqui = 'como', 'tipo assim' — gíria usada igual ao português coloquial" }
+                  ],
+                  "inicio": 53.5
+                },
+                {
+                  "original": "Troppe notti stavo chiuso fuori",
+                  "traducao": "Muitas noites fiquei do lado de fora",
+                  "notas": [],
+                  "inicio": 57.5
+                },
+                {
+                  "original": "Mo li prendo a calci 'sti portoni",
+                  "traducao": "Agora vou chutar essas portas",
+                  "notas": [
+                    { "trecho": "mo'", "explicacao": "'mo'' = 'adesso' (agora) — dialeto romano, muito presente no rap italiano" },
+                    { "trecho": "portoni", "explicacao": "'portone' = porta grande, portão; metáfora para as portas do sucesso que estiveram fechadas" }
+                  ],
+                  "inicio": 61.5
+                },
+                {
+                  "original": "Sguardo in alto tipo scalatori",
+                  "traducao": "Olhar para cima como alpinistas",
+                  "notas": [],
+                  "inicio": 65.5
+                },
+                {
+                  "original": "Quindi scusa mamma se sto sempre fuori, ma",
+                  "traducao": "Então desculpa mãe se fico sempre na rua, mas",
+                  "notas": [
+                    { "trecho": "quindi", "explicacao": "'quindi' = então, portanto — conjunção causal; parece 'quinto' mas não tem nada a ver com números" }
+                  ],
+                  "inicio": 69.5
+                }
+              ]
+            },
+            {
+              "original": "Sono fuori di testa, ma diverso da loro\nE tu sei fuori di testa, ma diversa da loro\nSiamo fuori di testa, ma diversi da loro\nSiamo fuori di testa, ma diversi da loro",
+              "pronuncia": "SO-no FUO-ri di TE-sta ma di-VER-so da LO-ro / e tu sei FUO-ri di TE-sta ma di-VER-sa da LO-ro / SIA-mo FUO-ri di TE-sta ma di-VER-si da LO-ro / SIA-mo FUO-ri di TE-sta ma di-VER-si da LO-ro",
+              "linhas": [
+                {
+                  "original": "Sono fuori di testa, ma diverso da loro",
+                  "traducao": "Sou louco, mas diferente deles",
+                  "notas": [
+                    { "trecho": "fuori di testa", "explicacao": "'fora da cabeça' = louco, maluco; aqui com orgulho: ser 'fuori di testa' significa não se conformar com as normas" }
+                  ],
+                  "inicio": 73.5
+                },
+                {
+                  "original": "E tu sei fuori di testa, ma diversa da loro",
+                  "traducao": "E você é louca, mas diferente delas",
+                  "notas": [
+                    { "trecho": "diversa", "explicacao": "adjetivo concordando com tu (feminino) — em italiano os adjetivos flexionam: diverso (masc.), diversa (fem.), diversi (pl.)" }
+                  ],
+                  "inicio": 77.5
+                },
+                {
+                  "original": "Siamo fuori di testa, ma diversi da loro",
+                  "traducao": "Somos loucos, mas diferentes deles",
+                  "notas": [],
+                  "inicio": 81.5
+                },
+                {
+                  "original": "Siamo fuori di testa, ma diversi da loro",
+                  "traducao": "Somos loucos, mas diferentes deles",
+                  "notas": [],
+                  "inicio": 85.5
+                }
+              ]
+            },
+            {
+              "original": "Io ho scritto pagine e pagine\nHo visto sale, poi lacrime\nQuesti uomini in macchina\nNon scalare le rapide\nScritto sopra una lapide",
+              "pronuncia": "IO o SKRIT-to PA-ji-ne e PA-ji-ne / o VI-sto SA-le poi LA-kri-me / KWE-sti UO-mi-ni in ma-KI-na / non ska-LA-re le RA-pi-de / SKRIT-to SO-pra U-na LA-pi-de",
+              "linhas": [
+                {
+                  "original": "Io ho scritto pagine e pagine",
+                  "traducao": "Eu escrevi páginas e mais páginas",
+                  "notas": [],
+                  "inicio": 91.0
+                },
+                {
+                  "original": "Ho visto sale, poi lacrime",
+                  "traducao": "Vi sal, depois lágrimas",
+                  "notas": [
+                    { "trecho": "sale, poi lacrime", "explicacao": "inversão poética: suor que vira choro — 'sale' (sal) evoca o sabor amargo das lágrimas e do esforço" }
+                  ],
+                  "inicio": 95.0
+                },
+                {
+                  "original": "Questi uomini in macchina",
+                  "traducao": "Esses homens de carro",
+                  "notas": [
+                    { "trecho": "in macchina", "explicacao": "'macchina' = carro (italiano coloquial); 'in macchina' = de carro — usa-se 'in' para meios de transporte que você entra" }
+                  ],
+                  "inicio": 99.0
+                },
+                {
+                  "original": "Non scalare le rapide",
+                  "traducao": "Não escalaram as corredeiras",
+                  "notas": [
+                    { "trecho": "scalare le rapide", "explicacao": "metáfora: 'rapide' = corredeiras de rio = desafios difíceis; 'scalare' = escalar, superar" }
+                  ],
+                  "inicio": 103.0
+                },
+                {
+                  "original": "Scritto sopra una lapide",
+                  "traducao": "Escrito sobre uma lápide",
+                  "notas": [
+                    { "trecho": "lapide", "explicacao": "'lapide' = lápide — vem do latim 'lapis' (pedra); falso cognato com 'lápis' português (= 'matita' em italiano)" }
+                  ],
+                  "inicio": 107.0
+                }
+              ]
+            },
+            {
+              "original": "In casa mia non c'è Dio\nMa se trovi il senso del tempo\nRisalirai dal tuo oblio\nE non c'è vento che fermi\nLa naturale potenza",
+              "pronuncia": "in KA-za MIA non tché DIO / ma se TRO-vi il SEN-so del TEM-po / ri-za-li-RAI dal TUO OB-lyo / e non tché VEN-to ke FER-mi / la na-tu-RA-le po-TEN-dza",
+              "linhas": [
+                {
+                  "original": "In casa mia non c'è Dio",
+                  "traducao": "Na minha casa não há Deus",
+                  "notas": [
+                    { "trecho": "non c'è", "explicacao": "'c'è' = 'ci è' contraído = 'há', 'existe'; 'non c'è' = não existe — uso muito frequente: 'non c'è problema' = não tem problema" }
+                  ],
+                  "inicio": 111.0
+                },
+                {
+                  "original": "Ma se trovi il senso del tempo",
+                  "traducao": "Mas se você encontrar o sentido do tempo",
+                  "notas": [],
+                  "inicio": 115.0
+                },
+                {
+                  "original": "Risalirai dal tuo oblio",
+                  "traducao": "Voltará a subir do seu esquecimento",
+                  "notas": [
+                    { "trecho": "oblio", "explicacao": "'oblio' = oblívio, esquecimento total — palavra literária, cognata do inglês 'oblivion'; aqui: estado de anonimato antes do sucesso" }
+                  ],
+                  "inicio": 119.0
+                },
+                {
+                  "original": "E non c'è vento che fermi",
+                  "traducao": "E não há vento que pare",
+                  "notas": [],
+                  "inicio": 123.0
+                },
+                {
+                  "original": "La naturale potenza",
+                  "traducao": "A potência natural",
+                  "notas": [],
+                  "inicio": 127.0
+                }
+              ]
+            },
+            {
+              "original": "Con ali in cera alla schiena\nRicercherò quell'altezza\nSe vuoi fermarmi, ritenta\nProva a tagliarmi la testa\nPerché",
+              "pronuncia": "kon A-li in TSE-ra al-la SKYE-na / ri-tcher-ke-RO kwel-lal-TEZ-za / se VUOI fer-MAR-mi ri-TEN-ta / PRO-va a tal-YAR-mi la TE-sta / per-KÉ",
+              "linhas": [
+                {
+                  "original": "Con ali in cera alla schiena",
+                  "traducao": "Com asas de cera nas costas",
+                  "notas": [
+                    { "trecho": "ali in cera", "explicacao": "referência ao mito de Ícaro, que voou com asas de cera até o sol derreter — metáfora de ambição que arrisca a destruição, mas que o artista aceita correr" }
+                  ],
+                  "inicio": 139.0
+                },
+                {
+                  "original": "Ricercherò quell'altezza",
+                  "traducao": "Buscarei aquela altura",
+                  "notas": [
+                    { "trecho": "ricercherò", "explicacao": "futuro do indicativo de 'ricercare' — em italiano o futuro é formado com sufixos no infinitivo: -erò, -erai, -erà, -eremo, -erete, -eranno" }
+                  ],
+                  "inicio": 143.0
+                },
+                {
+                  "original": "Se vuoi fermarmi, ritenta",
+                  "traducao": "Se quiser me parar, tente de novo",
+                  "notas": [
+                    { "trecho": "ritenta", "explicacao": "'ri-' = prefixo de repetição, igual ao 're-' português: ritentare = tentar de novo, riffare = refazer" }
+                  ],
+                  "inicio": 147.0
+                },
+                {
+                  "original": "Prova a tagliarmi la testa",
+                  "traducao": "Tente me cortar a cabeça",
+                  "notas": [],
+                  "inicio": 151.0
+                },
+                {
+                  "original": "Perché",
+                  "traducao": "Porque",
+                  "notas": [
+                    { "trecho": "perché", "explicacao": "'perché' = porque / por quê — mesma palavra para as duas funções; a frase fica suspensa intencionalmente antes do refrão" }
+                  ],
+                  "inicio": 155.0
+                }
+              ]
+            },
+            {
+              "original": "Parla la gente purtroppo\nParla, non sa di che cosa parla\nTu portami dove sto a galla\nChe qui mi manca l'aria",
+              "pronuncia": "PAR-la la JEN-te pur-TROP-po / PAR-la non sa di ke KO-za PAR-la / tu por-TA-mi DO-ve sto a GAL-la / ke kwi mi MAN-ka LA-rya",
+              "linhas": [
+                {
+                  "original": "Parla la gente purtroppo",
+                  "traducao": "As pessoas falam, infelizmente",
+                  "notas": [
+                    { "trecho": "purtroppo", "explicacao": "'purtroppo' = infelizmente — palavra muito comum, parece difícil mas é 'pur' (mesmo assim) + 'troppo' (demais) = infelizmente" }
+                  ],
+                  "inicio": 172.0
+                },
+                {
+                  "original": "Parla, non sa di che cosa parla",
+                  "traducao": "Fala, sem saber do que está falando",
+                  "notas": [],
+                  "inicio": 175.5
+                },
+                {
+                  "original": "Tu portami dove sto a galla",
+                  "traducao": "Me leve para onde consigo boiar",
+                  "notas": [
+                    { "trecho": "stare a galla", "explicacao": "'stare a galla' = ficar flutuando, não afundar; metáfora: sobreviver, aguentar as dificuldades" }
+                  ],
+                  "inicio": 179.0
+                },
+                {
+                  "original": "Che qui mi manca l'aria",
+                  "traducao": "Pois aqui me falta ar",
+                  "notas": [
+                    { "trecho": "mi manca", "explicacao": "'mancare' funciona como 'faltar': 'mi manca l'aria' = o ar me falta; igual a 'mi piace' (me agrada) — sujeito real é 'l'aria', não 'mi'" }
+                  ],
+                  "inicio": 183.0
+                }
+              ]
+            }
+          ]
         }
       ]
     },

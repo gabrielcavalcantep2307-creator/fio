@@ -811,11 +811,213 @@
       "cultura": "Nos países anglófonos, é comum sair da casa dos pais aos 18 anos, quando se vai para a faculdade (college). Muitos jovens moram em repúblicas (dorms) ou apartamentos divididos. Ficar na casa dos pais depois dos 20 e poucos pode ser visto com estranheza — uma diferença cultural enorme em relação ao Brasil, onde morar com os pais até casar é perfeitamente normal.",
       "musicas": [
         {
-          "titulo": "Hit Em Up",
+          "titulo": "Hit 'Em Up (Dirty Version)",
           "artista": "2Pac ft. Outlawz",
           "youtubeId": "41qC3w3UUkU",
-          "trechoLetra": "That's why I fucked your bitch, you fat motherfucker",
-          "traducaoTrecho": "Letra pesada de rap dos anos 90 — conteúdo adulto"
+          "trechoLetra": "Five shots couldn't drop me, I took it and smiled — now I'm back to set the record straight",
+          "traducaoTrecho": "Diss track de 1996 — o lado B mais agressivo do rap americano; 2Pac como personagem literário de fúria e sobrevivência (conteúdo adulto)",
+          "frases": [
+            {
+              "original": "First off, fuck your bitch and the clique you claim\nWestside when we ride, come equipped with game\nYou claim to be a player, but I fucked your wife\nWe bust on Bad Boys, niggas fucked for life",
+              "pronuncia": "ferst awf fak yor bitch and dha klik yu kleim / WES-said wen wi raid kam i-KWIP-t widh geim / yu kleim tu bi a PLEI-er bat ai fakt yor waif / wi bast on bad boiz NI-gaz fakt for laif",
+              "linhas": [
+                {
+                  "original": "First off, fuck your bitch and the clique you claim",
+                  "traducao": "Antes de mais nada, vou atacar sua bitch e o seu grupo",
+                  "notas": [
+                    { "trecho": "first off", "explicacao": "'first off' = antes de mais nada, em primeiro lugar — expressão de abertura muito usada para introduzir um ponto principal" },
+                    { "trecho": "clique you claim", "explicacao": "'clique' (do francês) = grupo fechado de aliados; 'claim' = alegar, reivindicar pertencer — 'the clique you claim' = o grupo ao qual você diz pertencer" }
+                  ],
+                  "inicio": 8.0
+                },
+                {
+                  "original": "Westside when we ride, come equipped with game",
+                  "traducao": "Westside quando agimos, chegamos preparados",
+                  "notas": [
+                    { "trecho": "Westside", "explicacao": "Costa Oeste americana (Califórnia) — símbolo do rap west coast; 2Pac era de LA e representava o Westside contra o East Coast (Nova York)" },
+                    { "trecho": "equipped with game", "explicacao": "'game' no slang = habilidade, astúcia, estratégia; 'equipped with game' = vir preparado, com talento e inteligência de rua" }
+                  ],
+                  "inicio": 12.0
+                },
+                {
+                  "original": "You claim to be a player, but I fucked your wife",
+                  "traducao": "Você se diz um conquistador, mas eu fui com sua esposa",
+                  "notas": [
+                    { "trecho": "player", "explicacao": "'player' no rap dos anos 90 = conquistador, alguém que lida bem com relacionamentos; 'claim to be' = se dizer, alegar ser" }
+                  ],
+                  "inicio": 16.0
+                },
+                {
+                  "original": "We bust on Bad Boys, niggas fucked for life",
+                  "traducao": "Atiramos nos Bad Boys, guerreiros destruídos para sempre",
+                  "notas": [
+                    { "trecho": "bust", "explicacao": "'bust' no rap = atirar; 'we bust on' = atiramos em — referência à Bad Boy Records (gravadora de Biggie e Puff Daddy), rival de 2Pac" }
+                  ],
+                  "inicio": 20.0
+                }
+              ]
+            },
+            {
+              "original": "Plus, Puffy tryna see me, weak hearts I rip\nBiggie Smalls and Junior M.A.F.I.A. is some mark-ass bitches\nWe keep on coming while we running for your jewels\nSteady gunning, keep on busting at them fools, you know the rules",
+              "pronuncia": "plas PU-fi TRAI-na si mi wiik harts ai rip / BI-gi smolz and JU-nyor ma-FI-a iz sam mark-as BI-tcherz / wi kiip on KA-ming wail wi RA-ning for yor djuulz / STE-di GA-ning kiip on BA-sting at dhem fuulz yu nou dha ruulz",
+              "linhas": [
+                {
+                  "original": "Plus, Puffy tryna see me, weak hearts I rip",
+                  "traducao": "E ainda, Puffy tenta me enfrentar — corações fracos eu despedaço",
+                  "notas": [
+                    { "trecho": "tryna", "explicacao": "'tryna' = 'trying to' — contração muito comum no inglês falado e rap; 'tryna see me' = tentando me enfrentar, me encontrar" },
+                    { "trecho": "I rip", "explicacao": "'rip' = rasgar, destruir — 'weak hearts I rip' = corações fracos eu parto; inversão da ordem SVO para dar ênfase" }
+                  ],
+                  "inicio": 24.0
+                },
+                {
+                  "original": "Biggie Smalls and Junior M.A.F.I.A. is some mark-ass bitches",
+                  "traducao": "Biggie Smalls e Junior M.A.F.I.A. são uns fracos",
+                  "notas": [
+                    { "trecho": "mark-ass", "explicacao": "'mark' = alvo fácil, otário, fraco — 'mark-ass' é um insulto composto frequente no rap: pessoa que se deixa enganar ou intimidar" },
+                    { "trecho": "Biggie Smalls", "explicacao": "The Notorious B.I.G. (Christopher Wallace) — maior rapper do East Coast na época; assassinado em março de 1997, 6 meses após 2Pac. Este diss track é o pico da rivalidade East vs West Coast" }
+                  ],
+                  "inicio": 28.0
+                },
+                {
+                  "original": "We keep on coming while we running for your jewels",
+                  "traducao": "Continuamos avançando enquanto corremos atrás do que é seu",
+                  "notas": [
+                    { "trecho": "running for your jewels", "explicacao": "'running for your jewels' = vindo atrás das suas joias/riquezas — 'jewels' era gíria para tudo de valor (joias, dinheiro, posição)" }
+                  ],
+                  "inicio": 32.0
+                },
+                {
+                  "original": "Steady gunning, keep on busting at them fools, you know the rules",
+                  "traducao": "Atirando sem parar, continuamos alvejando esses tolos, você conhece as regras",
+                  "notas": [
+                    { "trecho": "steady", "explicacao": "'steady' como advérbio de continuidade = sem parar, consistentemente — uso no AAVE: 'steady gunning' = atirando incessantemente" }
+                  ],
+                  "inicio": 36.0
+                }
+              ]
+            },
+            {
+              "original": "See, grab your Glocks when you see 2Pac\nCall the cops when you see 2Pac\nWho shot me? But you punks didn't finish\nNow you 'bout to feel the wrath of a menace\nNigga, I hit 'em up",
+              "pronuncia": "si grab yor gloks wen yu si TU-pak / kawl dha kops wen yu si TU-pak / hu shot mi bat yu panks DI-dent FI-nish / nau yu BAUT tu fiil dha rath ov a ME-nis / NI-ga ai hit em ap",
+              "linhas": [
+                {
+                  "original": "See, grab your Glocks when you see 2Pac",
+                  "traducao": "Olha, pegue suas armas quando vir 2Pac",
+                  "notas": [
+                    { "trecho": "Glocks", "explicacao": "'Glock' = pistola semiautomática da marca austríaca Glock — uma das marcas mais citadas no rap dos anos 90 por sua confiabilidade e capacidade" }
+                  ],
+                  "inicio": 60.0
+                },
+                {
+                  "original": "Call the cops when you see 2Pac",
+                  "traducao": "Chame a polícia quando ver 2Pac",
+                  "notas": [],
+                  "inicio": 63.5
+                },
+                {
+                  "original": "Who shot me? But you punks didn't finish",
+                  "traducao": "Quem atirou em mim? Mas vocês covardes não terminaram",
+                  "notas": [
+                    { "trecho": "Who shot me?", "explicacao": "referência ao ataque de 1994 onde 2Pac foi baleado 5 vezes no saguão de um estúdio em Nova York — ele sobreviveu; esta música é resposta direta ao incidente" }
+                  ],
+                  "inicio": 66.0
+                },
+                {
+                  "original": "Now you 'bout to feel the wrath of a menace",
+                  "traducao": "Agora você vai sentir a fúria de uma ameaça",
+                  "notas": [
+                    { "trecho": "wrath", "explicacao": "'wrath' = ira, fúria intensa — palavra de origem bíblica, presente nos 'Sete Pecados Capitais'; comum na música para expressar raiva extrema" },
+                    { "trecho": "menace", "explicacao": "'menace' = ameaça, perigo — 'Menace II Society' é um filme icônico de 1993 sobre violência na periferia de LA, referência direta ao contexto cultural" }
+                  ],
+                  "inicio": 70.0
+                },
+                {
+                  "original": "Nigga, I hit 'em up",
+                  "traducao": "Camarada, eu ataquei eles",
+                  "notas": [
+                    { "trecho": "hit 'em up", "explicacao": "'hit em up' = atacar, bater — tanto literal (atirar) quanto figurado (atacar verbalmente via música); título da canção" }
+                  ],
+                  "inicio": 74.0
+                }
+              ]
+            },
+            {
+              "original": "Peep how we do it, keep it real as penitentiary steel\nThis ain't no freestyle battle, all you niggas getting killed\nTalking about you getting money, but it's funny to me\nAll you niggas living bummy while you fucking with me",
+              "pronuncia": "piip hau wi du it kiip it riil az PE-ni-TEN-sha-ri stiil / dhis eint nou FRII-stail BA-tel awl yu NI-gaz GE-ting kild / TAW-king a-BAUT yu GE-ting MA-ni bat its FA-ni tu mi / awl yu NI-gaz LI-ving BA-mi wail yu FA-king widh mi",
+              "linhas": [
+                {
+                  "original": "Peep how we do it, keep it real as penitentiary steel",
+                  "traducao": "Presta atenção como fazemos, autênticos como o aço da penitenciária",
+                  "notas": [
+                    { "trecho": "peep", "explicacao": "'peep' no slang = prestar atenção, observar — 'peep how we do it' = olha como a gente faz" },
+                    { "trecho": "penitentiary steel", "explicacao": "aço da penitenciária = dureza de quem esteve preso; 2Pac foi preso em 1995; 'real as penitentiary steel' = tão real quanto a dureza da prisão" }
+                  ],
+                  "inicio": 130.0
+                },
+                {
+                  "original": "This ain't no freestyle battle, all you niggas getting killed",
+                  "traducao": "Isso não é batalha de freestyle, todos vocês estão destruídos",
+                  "notas": [
+                    { "trecho": "freestyle battle", "explicacao": "'freestyle battle' = batalha de improviso no hip-hop — rappers competem criando rimas na hora; 2Pac diz que isso não é improviso: é sério, não é jogo" }
+                  ],
+                  "inicio": 134.0
+                },
+                {
+                  "original": "Talking about you getting money, but it's funny to me",
+                  "traducao": "Falando que está ganhando dinheiro, mas me parece engraçado",
+                  "notas": [
+                    { "trecho": "it's funny to me", "explicacao": "expressão irônica: 'funny' aqui = estranho, ridículo — 'that's funny to me' = acho isso ridículo, não acredito nisso" }
+                  ],
+                  "inicio": 138.0
+                },
+                {
+                  "original": "All you niggas living bummy while you fucking with me",
+                  "traducao": "Todos vocês vivendo miseravelmente enquanto metem o pau em mim",
+                  "notas": [
+                    { "trecho": "bummy", "explicacao": "'bummy' = vivendo miseravelmente, como um 'bum' (mendigo/vagabundo) — adjetivo derivado de 'bum'; miserável, desalinhado, sem recursos" }
+                  ],
+                  "inicio": 142.0
+                }
+              ]
+            },
+            {
+              "original": "Five shots couldn't drop me, I took it and smiled\nNow I'm back to set the record straight\nWith my AK, I'm still the thug that you love to hate\nMotherfucker, I hit 'em up!",
+              "pronuncia": "faiv shots KUD-ent drop mi ai tuk it and SMAILD / nau aim bak tu set dha RE-kord streit / widh mai EI-kei aim stil dha thag dhat yu lav tu heit / MA-dher-FA-ker ai hit em ap",
+              "linhas": [
+                {
+                  "original": "Five shots couldn't drop me, I took it and smiled",
+                  "traducao": "Cinco tiros não me derrubaram, eu recebi e sorri",
+                  "notas": [
+                    { "trecho": "Five shots couldn't drop me", "explicacao": "referência literal: 2Pac foi baleado 5 vezes em novembro de 1994 e sobreviveu — isso alimentou sua aura de invencibilidade e contribuiu para a rivalidade East Coast–West Coast" }
+                  ],
+                  "inicio": 155.0
+                },
+                {
+                  "original": "Now I'm back to set the record straight",
+                  "traducao": "Agora estou de volta para acertar as contas",
+                  "notas": [
+                    { "trecho": "set the record straight", "explicacao": "expressão idiomática fixa: 'set the record straight' = esclarecer, corrigir algo que foi mal entendido ou distorcido — aqui com conotação de ajuste de contas" }
+                  ],
+                  "inicio": 159.0
+                },
+                {
+                  "original": "With my AK, I'm still the thug that you love to hate",
+                  "traducao": "Com meu AK, ainda sou o malandro que você ama odiar",
+                  "notas": [
+                    { "trecho": "love to hate", "explicacao": "'love to hate' = amar odiar — expressão para descrever algo/alguém que você odeia mas não consegue parar de prestar atenção; aqui: 2Pac como figura polarizadora" }
+                  ],
+                  "inicio": 163.0
+                },
+                {
+                  "original": "Motherfucker, I hit 'em up!",
+                  "traducao": "Filho da puta, eu ataquei eles!",
+                  "notas": [],
+                  "inicio": 167.0
+                }
+              ]
+            }
+          ]
         }
       ],
       "vocabulario": [
@@ -1759,8 +1961,251 @@
           "titulo": "Life Goes On",
           "artista": "2Pac",
           "youtubeId": "KrHmzJI8z3M",
-          "trechoLetra": "How many brothas fell victim to the streets",
-          "traducaoTrecho": "Quantos irmãos foram vítimas das ruas"
+          "trechoLetra": "My niggas, we the last ones left, but life goes on",
+          "traducaoTrecho": "Meus camaradas, somos os últimos que sobraram, mas a vida continua",
+          "frases": [
+            {
+              "original": "How many brothers fell victim to the streets?\nRest in peace, young nigga, there's a heaven for a G\nBe a lie if I told you that I never thought of death\nMy niggas, we the last ones left, but life goes on",
+              "pronuncia": "hau ME-ni BRA-dherz fel VIK-tim tu dha STRIITS / rest in piis yang NI-ga dherz a HE-ven for a JI / bi a lai if ai told yu dhat ai NE-ver thawt of deth / mai NI-gaz wi dha last wanz left bat laif gouz on",
+              "linhas": [
+                {
+                  "original": "How many brothers fell victim to the streets?",
+                  "traducao": "Quantos irmãos caíram vítimas das ruas?",
+                  "notas": [
+                    { "trecho": "fell victim to", "explicacao": "'fall victim to' = cair como vítima de — expressão fixa; 'fell' é o passado irregular de 'fall'" },
+                    { "trecho": "the streets", "explicacao": "no rap, 'the streets' = o mundo difícil da vida na periferia, com violência e crime — não qualquer rua" }
+                  ],
+                  "inicio": 9.0
+                },
+                {
+                  "original": "Rest in peace, young nigga, there's a heaven for a G",
+                  "traducao": "Descanse em paz, jovem, existe um paraíso para os guerreiros",
+                  "notas": [
+                    { "trecho": "Rest in peace", "explicacao": "'Rest in peace' = descanse em paz (RIP) — expressão de condolência usada ao lembrar alguém que morreu" },
+                    { "trecho": "a G", "explicacao": "'G' = abreviação de 'gangster', expandida para qualquer pessoa leal que viveu a vida difícil das ruas" }
+                  ],
+                  "inicio": 14.0
+                },
+                {
+                  "original": "Be a lie if I told you that I never thought of death",
+                  "traducao": "Seria uma mentira se eu te dissesse que nunca pensei na morte",
+                  "notas": [
+                    { "trecho": "Be a lie", "explicacao": "'it would be a lie' contraído — no inglês falado o 'it would' pode cair: 'be a lie' = 'seria mentira'" }
+                  ],
+                  "inicio": 19.0
+                },
+                {
+                  "original": "My niggas, we the last ones left, but life goes on",
+                  "traducao": "Meus camaradas, somos os últimos que sobraram, mas a vida continua",
+                  "notas": [
+                    { "trecho": "life goes on", "explicacao": "expressão fixa: 'a vida continua' — usada quando algo difícil acontece mas há que seguir em frente" },
+                    { "trecho": "the last ones left", "explicacao": "'left' aqui = que sobraram (de 'to be left' = restar); não confundir com 'left' = esquerda" }
+                  ],
+                  "inicio": 24.0
+                }
+              ]
+            },
+            {
+              "original": "As I bail through the empty halls, breath stinkin' in my jaws\nRing, ring, ring — quiet, y'all, incomin' call\nPlus this my homie from high school, he gettin' by\nIt's time to bury another brother, nobody cry",
+              "pronuncia": "az ai beil thru dhi EMP-ti hawlz breth STIN-kin in mai jawz / ring ring ring KWAI-et yawl IN-ka-ming kawl / plus dhis mai HO-mi from hai skuul hi GE-ting bai / its taim tu BE-ri a-NA-dher BRA-dher NO-ba-di krai",
+              "linhas": [
+                {
+                  "original": "As I bail through the empty halls, breath stinkin' in my jaws",
+                  "traducao": "Enquanto passo pelos corredores vazios, bafo fedorento na boca",
+                  "notas": [
+                    { "trecho": "bail", "explicacao": "'bail' no rap/AAVE = mover-se, passar — 'bail through' = atravessar; diferente do 'bail' formal (fiança)" }
+                  ],
+                  "inicio": 47.0
+                },
+                {
+                  "original": "Ring, ring, ring — quiet, y'all, incomin' call",
+                  "traducao": "Ring, ring, ring — silêncio, galera, chamada chegando",
+                  "notas": [
+                    { "trecho": "y'all", "explicacao": "'y'all' = you all = vocês todos — contração muito característica do inglês americano do Sul, adotada pelo hip-hop; equivalente ao 'galera'" }
+                  ],
+                  "inicio": 53.0
+                },
+                {
+                  "original": "Plus this my homie from high school, he gettin' by",
+                  "traducao": "E esse é meu amigo do colegial, ele se virando",
+                  "notas": [
+                    { "trecho": "get by", "explicacao": "'get by' = se virar, sobreviver com o mínimo — não prosperar, mas conseguir passar" },
+                    { "trecho": "homie", "explicacao": "'homie' = amigo próximo — de 'homeboy' (alguém do mesmo bairro)" }
+                  ],
+                  "inicio": 57.0
+                },
+                {
+                  "original": "It's time to bury another brother, nobody cry",
+                  "traducao": "É hora de enterrar mais um irmão, ninguém chora",
+                  "notas": [
+                    { "trecho": "nobody cry", "explicacao": "AAVE: 'nobody cries' com concordância omitida — padrão no inglês vernacular afro-americano" }
+                  ],
+                  "inicio": 61.0
+                }
+              ]
+            },
+            {
+              "original": "Life as a baller: alcohol and booty calls\nWe used to do 'em as adolescents, do you recall?\nRaised as G's, loc'ed out, and blazed the weed\nGet on the roof, let's get smoked out, and blaze with me",
+              "pronuncia": "laif az a BAW-ler AL-ko-hawl and BOO-ti kawlz / wi YUZD tu du em az a-do-LES-ents du yu ri-KAWL / reizd az jiiz lokd aut and bleizd dha wiid / get on dha ruuf lets get smokt aut and bleiz widh mi",
+              "linhas": [
+                {
+                  "original": "Life as a baller: alcohol and booty calls",
+                  "traducao": "A vida de ostentação: álcool e encontros casuais",
+                  "notas": [
+                    { "trecho": "baller", "explicacao": "'baller' = alguém que vive uma vida de luxo — originalmente um jogador de basquete estrela; expandiu para qualquer pessoa bem-sucedida nas ruas ou no rap" }
+                  ],
+                  "inicio": 65.0
+                },
+                {
+                  "original": "We used to do 'em as adolescents, do you recall?",
+                  "traducao": "A gente fazia isso na adolescência, você lembra?",
+                  "notas": [
+                    { "trecho": "used to", "explicacao": "'used to + verbo' = costumava — ação habitual no passado que não acontece mais: 'we used to do' = a gente costumava fazer" }
+                  ],
+                  "inicio": 69.0
+                },
+                {
+                  "original": "Raised as G's, loc'ed out, and blazed the weed",
+                  "traducao": "Criados como guerreiros, ficamos loucos e fumamos",
+                  "notas": [
+                    { "trecho": "raised", "explicacao": "'raised' = criado, educado (to raise = criar filhos); 'raised as G's' = criado como guerreiro de rua desde pequeno" }
+                  ],
+                  "inicio": 73.0
+                },
+                {
+                  "original": "Get on the roof, let's get smoked out, and blaze with me",
+                  "traducao": "Sobe no telhado, vamos fumar juntos",
+                  "notas": [
+                    { "trecho": "blaze", "explicacao": "'blaze' no slang = fumar maconha; 'blaze with me' = fuma comigo" }
+                  ],
+                  "inicio": 77.0
+                }
+              ]
+            },
+            {
+              "original": "But now that you're gone, I'm in the zone\nThinkin' I don't wanna die all alone, but now you gone\nAnd all I got left are stinkin' memories\nI love them niggas to death, I'm drinkin' Hennessy\nI drank a fifth for that ass when you passed, 'cause life goes on",
+              "pronuncia": "bat nau dhat yur gawn aim in dha zoun / THIN-kin ai dont WA-na dai awl a-LOUN bat nau yu gawn / and awl ai got left ar STIN-kin ME-mo-riiz / ai luv dhem NI-gaz tu deth aim DRIN-kin HE-ni-si / ai drangk a fifth for dhat az wen yu past koz laif gouz on",
+              "linhas": [
+                {
+                  "original": "But now that you're gone, I'm in the zone",
+                  "traducao": "Mas agora que você se foi, estou no meu mundo",
+                  "notas": [
+                    { "trecho": "in the zone", "explicacao": "'in the zone' = em estado de concentração total, absorto — aqui: pensativo, mergulhado nos sentimentos" }
+                  ],
+                  "inicio": 89.0
+                },
+                {
+                  "original": "Thinkin' I don't wanna die all alone, but now you gone",
+                  "traducao": "Pensando que não quero morrer sozinho, mas agora você se foi",
+                  "notas": [
+                    { "trecho": "wanna", "explicacao": "'wanna' = want to — contração informal muito comum; paralelo: 'gonna' = going to, 'gotta' = got to" }
+                  ],
+                  "inicio": 93.0
+                },
+                {
+                  "original": "And all I got left are stinkin' memories",
+                  "traducao": "E tudo que me sobrou são memórias ruins",
+                  "notas": [
+                    { "trecho": "all I got left", "explicacao": "'all I have left' = tudo que me sobrou — 'got' no lugar de 'have' é padrão no inglês coloquial americano" }
+                  ],
+                  "inicio": 97.0
+                },
+                {
+                  "original": "I love them niggas to death, I'm drinkin' Hennessy",
+                  "traducao": "Amo esses caras até a morte, estou bebendo Hennessy",
+                  "notas": [
+                    { "trecho": "to death", "explicacao": "'love to death' = amar até a morte, amar imensamente — expressão hiperbólica de afeto profundo" }
+                  ],
+                  "inicio": 101.0
+                },
+                {
+                  "original": "I drank a fifth for that ass when you passed, 'cause life goes on",
+                  "traducao": "Bebi uma garrafa por você quando você se foi, porque a vida continua",
+                  "notas": [
+                    { "trecho": "a fifth", "explicacao": "'a fifth' = uma garrafa de 750ml (1/5 de galão) — medida padrão de destilado nos EUA" },
+                    { "trecho": "when you passed", "explicacao": "'pass' como eufemismo de morrer — 'when you passed' = quando você faleceu" }
+                  ],
+                  "inicio": 107.0
+                }
+              ]
+            },
+            {
+              "original": "Bury me smilin' with G's in my pocket\nHave a party at my funeral, let every rapper rock it\nGive me a paper and a pen, so I can write about my life of sin\nA couple bottles of gin, in case I don't get in",
+              "pronuncia": "BE-ri mi SMAI-lin widh jiiz in mai PO-kit / hav a PAR-ti at mai FYOO-ne-ral let EV-ri RA-per rok it / giv mi a PEI-per and a pen sou ai ken rait a-BAUT mai laif ov sin / a KA-pel BO-telz ov jin in keis ai dont get in",
+              "linhas": [
+                {
+                  "original": "Bury me smilin' with G's in my pocket",
+                  "traducao": "Me enterre sorrindo com dinheiro no bolso",
+                  "notas": [
+                    { "trecho": "G's in my pocket", "explicacao": "'G' aqui = nota de $1.000 (de 'grand', mil dólares) — 'G's in my pocket' = muito dinheiro no bolso" }
+                  ],
+                  "inicio": 247.0
+                },
+                {
+                  "original": "Have a party at my funeral, let every rapper rock it",
+                  "traducao": "Façam uma festa no meu velório, deixem todo rapper animar",
+                  "notas": [
+                    { "trecho": "rock it", "explicacao": "'rock' como verbo = arrasar, mandar bem — central no vocabulário do hip-hop" }
+                  ],
+                  "inicio": 252.0
+                },
+                {
+                  "original": "Give me a paper and a pen, so I can write about my life of sin",
+                  "traducao": "Me dê papel e caneta, para eu poder escrever sobre minha vida de pecados",
+                  "notas": [
+                    { "trecho": "life of sin", "explicacao": "'sin' = pecado — 2Pac usa vocabulário bíblico misturado com o mundo das ruas; 'life of sin' = vida marcada por atos errados" }
+                  ],
+                  "inicio": 262.0
+                },
+                {
+                  "original": "A couple bottles of gin, in case I don't get in",
+                  "traducao": "Umas garrafas de gim, caso eu não entre (no céu)",
+                  "notas": [
+                    { "trecho": "in case I don't get in", "explicacao": "'get in' = entrar; a ironia: pede garrafas de gim para o velório 'caso não entre no paraíso' — humor ácido sobre sua própria salvação" }
+                  ],
+                  "inicio": 267.0
+                }
+              ]
+            },
+            {
+              "original": "Pour out some liquor, have a toast for the homies\nSee, we both gotta die, but you chose to go before me\nAnd brothers miss you while you gone\nYou left your nigga on his own; how long we mourn? Life goes on",
+              "pronuncia": "por aut sam LI-ker hav a toust for dha HO-miiz / si wi bouth GO-ta dai bat yu chouz tu gou bi-FOR mi / and BRA-dherz mis yu wail yu gawn / yu left yur NI-ga on hiz oun hau long wi morn laif gouz on",
+              "linhas": [
+                {
+                  "original": "Pour out some liquor, have a toast for the homies",
+                  "traducao": "Derrame um pouco de bebida, um brinde pelos amigos",
+                  "notas": [
+                    { "trecho": "pour out some liquor", "explicacao": "ritual de luto do hip-hop: derramar bebida no chão em homenagem a quem morreu — 'pouring one out for the homies' é expressão icônica do rap dos anos 90" }
+                  ],
+                  "inicio": 297.0
+                },
+                {
+                  "original": "See, we both gotta die, but you chose to go before me",
+                  "traducao": "Olha, os dois vamos morrer, mas você escolheu ir antes de mim",
+                  "notas": [
+                    { "trecho": "gotta", "explicacao": "'gotta' = 'got to' = 'have to' = ter que — um dos contrações mais comuns do inglês falado" }
+                  ],
+                  "inicio": 302.0
+                },
+                {
+                  "original": "And brothers miss you while you gone",
+                  "traducao": "E os irmãos sentem sua falta enquanto você está ausente",
+                  "notas": [
+                    { "trecho": "miss you", "explicacao": "'miss someone' = sentir falta de alguém — 'I miss you' = sinto sua falta (estrutura inversa ao português)" }
+                  ],
+                  "inicio": 307.0
+                },
+                {
+                  "original": "You left your nigga on his own; how long we mourn? Life goes on",
+                  "traducao": "Você deixou seu parceiro sozinho; por quanto tempo ficamos de luto? A vida continua",
+                  "notas": [
+                    { "trecho": "mourn", "explicacao": "'mourn' = lamentar, estar de luto — 'mourn for someone' = chorar alguém" }
+                  ],
+                  "inicio": 311.0
+                }
+              ]
+            }
+          ]
         }
       ],
       "vocabulario": [
