@@ -22,10 +22,14 @@ export const CHAVES = {
   revisora: 'modo',
   // 06/10: a retradução do acervo com o tradutor local (servidor/retradutor.mjs)
   retradutora: 'modo',
+  // 08/10: a modernizadora (servidor/modernizador.mjs) refaz sozinha, na VPS, as
+  // listas de grafia de 2026 e de erro de scan. Nasce LIGADA: só gasta o pouco
+  // que o compose deixa, e só quando a máquina está folgada.
+  modernizadora: 'modo',
 }
 
 /** Os únicos valores que uma chave de tipo 'modo' aceita. */
-export const MODOS = { revisora: ['parada', 'propor', 'aplicar'], retradutora: ['parada', 'ligada'] }
+export const MODOS = { revisora: ['parada', 'propor', 'aplicar'], retradutora: ['parada', 'ligada'], modernizadora: ['parada', 'ligada'] }
 
 // A régua editorial de sempre: 300 palavras por página é o meio-termo entre
 // livro de bolso e capa dura. Serve para dois cálculos — o teto do portão e o

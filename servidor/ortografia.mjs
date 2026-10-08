@@ -15,7 +15,7 @@
 //   - não toca em texto que já é moderno (tradução nossa, lei, texto de
 //     leitor) — só nas fontes de domínio público em português.
 
-import { readFileSync } from 'node:fs'
+import { readFileSync, statSync } from 'node:fs'
 
 export const FONTES_ANTIGAS = new Set(['gutenberg', 'wikisource', 'archive', 'standard_ebooks'])
 
@@ -53,18 +53,42 @@ function listaOcr() {
   return ocr
 }
 
+// ── as listas AUTOMÁTICAS (08/10/2026) ──
+// A modernizadora (servidor/modernizador.mjs, serviço da VPS) escreve duas
+// listas em /dados/mapas: grafia-auto.json (palavras velhas que só aparecem
+// em livros antigos e têm uma forma de hoje bem usada) e ocr-auto.json (erros
+// de scan de classe conhecida). Valem DEPOIS das listas lidas, que ganham em
+// qualquer conflito, e a de grafia só troca palavra toda em minúscula: nome
+// de gente com maiúscula nunca é tocado. O arquivo é relido quando muda.
+const MAPAS = process.env.FIO_MAPAS || '/dados/mapas'
+const auto = { grafia: new Map(), ocr: new Map(), mtime: {}, conferido: 0 }
+function lerAuto() {
+  if (Date.now() - auto.conferido < 60_000) return auto
+  auto.conferido = Date.now()
+  for (const [chave, arq] of [['grafia', 'grafia-auto.json'], ['ocr', 'ocr-auto.json']]) {
+    try {
+      const m = statSync(`${MAPAS}/${arq}`).mtimeMs
+      if (m === auto.mtime[chave]) continue
+      auto[chave] = new Map(Object.entries(JSON.parse(readFileSync(`${MAPAS}/${arq}`, 'utf8'))))
+      auto.mtime[chave] = m
+    } catch { if (auto.mtime[chave]) { auto[chave] = new Map(); auto.mtime[chave] = 0 } }
+  }
+  return auto
+}
+
 /** Uma troca: devolve a palavra nova com a caixa certa, ou null. */
 function trocar(palavra, comecoDeFrase, seguinte, comOcr = false) {
   const original = palavra.toLowerCase().replace(/’/g, "'")
   let chave = original
-  const lida = comOcr ? listaOcr().get(chave) : null
+  const lida = comOcr ? (listaOcr().get(chave) ?? lerAuto().ocr.get(chave) ?? null) : null
   if (lida) chave = lida
   // "ha muito tempo" -> "há"; "Ha! ha!" e "ha, ha" são riso e ficam
   if (chave === 'ha') {
     if (!/^ [a-zà-ÿ]/.test(seguinte)) return null
     return palavra === 'ha' ? 'há' : comecoDeFrase && palavra === 'Ha' ? 'Há' : null
   }
-  const nova = lista().get(chave) ?? (lida ? chave : null)
+  // a lista automática só pega palavra toda em minúscula
+  const nova = lista().get(chave) ?? (SO_MINUSCULA.test(palavra) ? lerAuto().grafia.get(chave) : null) ?? (lida ? chave : null)
   if (!nova) return null
   if (SO_MINUSCULA.test(palavra)) return nova
   if (comecoDeFrase && !nomes.has(original) && PRIMEIRA_MAIUSCULA.test(palavra)) return nova[0].toUpperCase() + nova.slice(1)

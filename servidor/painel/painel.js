@@ -1176,7 +1176,7 @@ function secaoPanorama(filaItens) {
       el('p', { class: 'ajuda' }, `${num(a.total)} livros em português, todos no site. Cada um passa pela conferência do seu grupo, e a versão corrigida entra no lugar sozinha; enquanto isso o leitor vê um aviso de que o livro está em revisão.`),
       barraEmpilhada(['limpo', 'grafia', 'escaneado', 'traducao'].map((k) => ({ rotulo: ESTADO_LIVRO[k][0], cor: ESTADO_LIVRO[k][1], texto: ESTADO_LIVRO[k][2], n: a.conta[k] ?? 0 }))))
     revisao.replaceChildren(listaDeRevisao(a))
-    s.append(listaDeTraducao(filaItens), secaoRetraducao(), avisoRevisora(),
+    s.append(secaoModernizadora(), listaDeTraducao(filaItens), secaoRetraducao(), avisoRevisora(),
       el('details', { class: 'grupo', style: 'margin-top:26px' }, el('summary', { style: 'cursor:pointer;font-weight:600' }, 'Editar um livro do acervo (título, autor, capa, esconder)'), secaoAcervo()),
       el('details', { class: 'grupo', style: 'margin-top:12px' }, el('summary', { style: 'cursor:pointer;font-weight:600' }, 'Pôr livros na fila de tradução'), secaoAdicionar()))
   }).catch((e) => livros.replaceChildren(recado('ruim', e.message)))
@@ -1223,6 +1223,32 @@ function listaDeTraducao(itens) {
 
 // ── a retradução com o tradutor novo (06/10): o portão, e a volta a um clique ──
 const ESTADO_RE = { promovida: ['no site', 'pronto'], segurada: ['segurado', 'espera'], traduzindo: ['traduzindo', 'na_esteira'], erro: ['erro', 'erro'], desfeita: ['voltou ao antigo', 'espera'] }
+function secaoModernizadora() {
+  const s = el('section', { style: 'margin-top:26px' }, el('h2', {}, 'Português de 2026: a modernizadora'))
+  s.append(el('p', { class: 'ajuda' },
+    'Um serviço da VPS que, uma vez por dia e só com a máquina folgada, refaz as listas de grafia de hoje e de erro de leitura dos escaneados. ',
+    'Cada lista nova passa por um teste em 300 capítulos antes de valer, e a anterior fica guardada. Não gasta crédito e não mexe no texto salvo: a troca acontece na hora da leitura.'))
+  const alvo = el('div', {}, el('p', { class: 'ajuda' }, 'carregando…'))
+  s.append(alvo)
+  async function carregar() {
+    let r
+    try { r = await pedir('/admin/modernizadora') } catch (e) { alvo.replaceChildren(recado('ruim', e.message)); return }
+    const e = r.estado ?? {}
+    const ligada = r.modo === 'ligada'
+    alvo.replaceChildren(
+      el('div', { style: 'display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px' },
+        el('span', { class: `selo ${ligada ? 'pronto' : 'espera'}` }, ligada ? 'ligada' : 'parada'),
+        el('button', { class: 'fraco', type: 'button', onclick: async (ev) => { ev.target.disabled = true; try { await pedir('/admin/modernizadora/modo', { modo: ligada ? 'parada' : 'ligada' }); carregar() } catch (x) { ev.target.disabled = false; alert(x.message) } } }, ligada ? 'Parar' : 'Ligar'),
+        el('span', { class: 'ajuda' }, e.quando ? `última volta: ${new Date(e.quando).toLocaleString('pt-BR')} — ${e.situacao}${e.estavel ? ' (nada novo a trocar)' : ''}` : (e.situacao === 'rodando' ? 'rodando a primeira volta…' : 'ainda não rodou'))),
+      e.quando ? el('div', { class: 'cartoes' },
+        cartao(num(e.grafia ?? 0), 'palavras de grafia automáticas'), cartao(num(e.ocr ?? 0), 'erros de scan automáticos'),
+        cartao(num(e.novas?.grafia ?? 0), 'grafia nova nesta volta'), cartao(num(e.novas?.ocr ?? 0), 'scan novo nesta volta')) : '',
+      e.motivos?.length ? recado('ruim', 'O portão segurou a lista nova: ' + e.motivos.join('; ')) : '')
+  }
+  carregar()
+  return s
+}
+
 function secaoRetraducao() {
   const s = el('section', { style: 'margin-top:26px' }, el('h2', {}, 'Retradução com o tradutor novo'))
   s.append(el('p', { class: 'ajuda' },

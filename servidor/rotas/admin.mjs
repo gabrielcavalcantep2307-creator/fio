@@ -74,6 +74,16 @@ export default function rotasDoPainel({ rota, banco, estatico }) {
 
   // ── a visão geral e a mesa de tradução (servidor/painel-geral.mjs, 05/10) ──
   rota(admin('/api/admin/geral'), () => painelGeral.visaoGeral(banco))
+  // ── a modernizadora (servidor/modernizador.mjs, 08/10): o estado que ela escreve e o liga/desliga ──
+  rota(admin('/api/admin/modernizadora'), () => {
+    let estado = {}
+    try { estado = JSON.parse(readFileSync(join(process.env.FIO_MAPAS || '/dados/mapas', 'estado.json'), 'utf8')) } catch { /* ainda não rodou */ }
+    return { modo: ajustes.ler(banco, 'modernizadora') ?? 'ligada', estado }
+  })
+  rota(post('/api/admin/modernizadora/modo'), ({ dado }) => {
+    try { ajustes.escrever(banco, 'modernizadora', dado.modo) } catch (e) { throw new Recusa(e.message) }
+    return { modo: dado.modo }
+  })
   // ── a retradução do acervo com o tradutor local (servidor/retraducao.mjs, 06/10) ──
   rota(admin('/api/admin/retraducao'), () => ({ modo: ajustes.ler(banco, 'retradutora') ?? 'parada', ...retraducao.painel(banco) }))
   rota(post('/api/admin/retraducao/modo'), ({ dado }) => {

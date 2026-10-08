@@ -211,6 +211,34 @@ services:
         max-size: 10m
         max-file: '3'
 
+  # 08/10/2026: a modernizadora leva o acervo para o português de 2026 sozinha
+  # (servidor/modernizador.mjs). Uma volta por semana, a máquina folgada, um
+  # quarto de núcleo e 768 MB: o que passar disso o Docker segura.
+  modernizadora:
+    build:
+      context: ..
+      dockerfile: infra/Dockerfile
+    command: ['node', '--max-old-space-size=300', 'servidor/modernizador.mjs']
+    restart: unless-stopped
+    depends_on:
+      - fio
+    mem_limit: 768m
+    cpus: 0.25
+    cpu_shares: 128
+    oom_score_adj: 300
+    stop_grace_period: 20s
+    environment:
+      NODE_ENV: production
+      FIO_BANCO: /dados/catalogo.db
+      FIO_MAPAS: /dados/mapas
+    volumes:
+      - dados:/dados
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '3'
+
   revisora:
     build:
       context: ..

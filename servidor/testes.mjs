@@ -2532,6 +2532,20 @@ test('diagramar: título, epígrafe, pausa, nota e fala separada por <br>', asyn
   assert.doesNotMatch(diagramar([{ ordem: 1, titulo: 'I', palavras: 0, corpo: '<p>a.</p>' }], { titulo: false })[0].corpo, /fio-cap/)
 })
 
+test('o lixo de transcrição (marcador de página, legenda de figura, crédito de quem digitou) não chega ao leitor', async () => {
+  const { diagramar } = await import('./diagramar.mjs')
+  const [c] = diagramar([{ ordem: 1, titulo: '', palavras: 0, corpo:
+    '<p>Disse ele que viria [Pg vi] amanhã e partiu.</p><p>[Illustration: um barco no rio]</p>' +
+    '<p>Esta página contém uma imagem. É necessário extraí-la e inserir o novo arquivo.</p>' +
+    '<p>Produced by Alguém and the Online Distributed Proofreading Team</p><p>{12}</p><p>Ficou só a frase certa.</p>' }], { fonte: 'gutenberg' })
+  assert.doesNotMatch(c.corpo, /Pg vi|Illustration|contém uma imagem|Produced by|\{12\}/)
+  assert.match(c.corpo, /Disse ele que viria amanhã e partiu\./)
+  assert.match(c.corpo, /Ficou só a frase certa\./)
+  // um parágrafo longo que só menciona o Projeto Gutenberg é texto do livro e fica
+  const longo = '<p>' + 'O livro conta a história do Project Gutenberg e de seus voluntários. '.repeat(14) + '</p>'
+  assert.match(diagramar([{ ordem: 1, titulo: '', palavras: 0, corpo: longo }], { fonte: 'gutenberg' })[0].corpo, /voluntários/)
+})
+
 test('diagramar: fala entre aspas no começo NÃO vira epígrafe, e o texto do muro vira parágrafos', async () => {
   const { diagramar } = await import('./diagramar.mjs')
   const [a, b] = diagramar([
@@ -3217,3 +3231,11 @@ test('títulos: caixa de título no padrão editorial, sem estragar sigla, abrev
   assert.equal(c('Manifesto dos Estados Unidos d՚America'), "Manifesto dos Estados Unidos d'America")
 })
 
+
+test('chamada mínima: só gênero, autor, ano e tempo — nada inventado', async () => {
+  const { chamadaMinima } = await import('./servicos/catalogo.mjs')
+  assert.equal(chamadaMinima({ temas: ['Contos'], autor: 'Machado de Assis', ano: null, minutos: 6 }), 'Conto de Machado de Assis, para ler em 6 minutos.')
+  assert.equal(chamadaMinima({ temas: ['Poesia'], autor: 'Cruz e Sousa', ano: 1893, minutos: 1 }), 'Poemas de Cruz e Sousa, de 1893, para ler em um minuto.')
+  assert.equal(chamadaMinima({ temas: ['Direito'], autor: 'autoria não identificada', ano: 2003, minutos: 3 }), 'Texto legal, na íntegra, para ler em 3 minutos.')
+  assert.equal(chamadaMinima({ temas: [], autor: 'Fulano', ano: 1888, minutos: 190 }), 'Obra de Fulano, de 1888, cerca de 3 h 10 min de leitura.')
+})

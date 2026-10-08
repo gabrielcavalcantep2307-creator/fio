@@ -19,6 +19,8 @@ const saida = process.argv[2] || '/dados/qualidade.json'
 const banco = new DatabaseSync(process.env.FIO_BANCO || '/dados/catalogo.db', { readOnly: true })
 const { trocas } = JSON.parse(readFileSync(new URL('../servidor/ortografia-atualizada.json', import.meta.url), 'utf8'))
 const lista = new Set(Object.keys(trocas))
+// as listas automáticas da modernizadora também contam como "já coberto"
+try { for (const k of Object.keys(JSON.parse(readFileSync('/dados/mapas/grafia-auto.json', 'utf8')))) lista.add(k) } catch { /* ainda não existe */ }
 
 // o que a lista ainda não cobre: palavras com forma moderna proposta e não lida
 const resto = new Set()

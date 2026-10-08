@@ -185,8 +185,10 @@ function preparar(banco, casa) {
 
     const ficha = {
       ...linha,
-      // a ficha mantém a chamada verdadeira, inclusive a das leis
-      ...(editorial.chamada ? { chamada: editorial.chamada } : {}),
+      // a ficha mantém a chamada verdadeira, inclusive a das leis; sem ela, a
+      // linha factual (gênero, autor, tempo de leitura) — nunca inventada, e
+      // marcada como automática para a curadoria saber que ainda falta a escrita
+      ...(editorial.chamada ? { chamada: editorial.chamada } : podeLer ? { chamada: chamadaMinima(linha), chamadaAuto: true } : {}),
       subtitulo: o.subtitulo,
       paginas: o.paginas,
       autorNasc: o.autor_nasc,
@@ -376,6 +378,28 @@ const gravarJson = (arquivo, valor) => {
  * obras do que está no ar, NÃO troca — um banco que respondeu pela metade não
  * pode apagar metade do site. Devolve os números, e `trocou: false` nesse caso.
  */
+/**
+ * A chamada mínima de um livro que ainda não tem a escrita à mão: só o que se
+ * sabe com certeza — o gênero (do tema), quem escreveu, o ano e quanto leva
+ * para ler. Serve para toda ficha ter uma linha, sem prometer o que o livro não é.
+ */
+export function chamadaMinima({ temas = [], autor, ano, minutos }) {
+  const GENERO = {
+    Poesia: 'Poemas', Contos: 'Conto', Romance: 'Romance', Teatro: 'Peça de teatro', 'Crônica e ensaio': 'Crônica ou ensaio',
+    História: 'Texto de história', 'Biografia e memórias': 'Memórias ou biografia', Filosofia: 'Texto de filosofia',
+    'Religião e mito': 'Texto sobre religião e mito', 'Política e sociedade': 'Texto de política e sociedade', Ciência: 'Texto de ciência',
+    Viagem: 'Relato de viagem', 'Crítica literária': 'Crítica literária', Humor: 'Texto de humor', Direito: 'Texto legal, na íntegra',
+    Infantojuvenil: 'Livro infantojuvenil', Arte: 'Texto sobre arte', Economia: 'Texto de economia', Psicologia: 'Texto de psicologia',
+  }
+  const genero = GENERO[temas[0]] ?? 'Obra'
+  const sem = !autor || /autoria não identificada/i.test(autor)
+  const de = sem || genero === 'Texto legal, na íntegra' ? '' : ` de ${autor}`
+  const quando = ano && !(genero === 'Texto legal, na íntegra') ? `, de ${ano}` : ''
+  const m = Math.round(minutos || 0)
+  const tempo = !m ? '' : m < 2 ? ', para ler em um minuto' : m < 60 ? `, para ler em ${m} minutos` : `, cerca de ${Math.floor(m / 60)} h${m % 60 >= 10 ? ` ${m % 60} min` : ''} de leitura`
+  return `${genero}${de}${quando}${tempo}.`
+}
+
 export function publicarCatalogo(banco, pasta, { jurisdicao = 'BR', minimo = 0.9 } = {}) {
   mkdirSync(pasta, { recursive: true })
   const novo = join(pasta, '.catalogo-novo')
