@@ -36,8 +36,10 @@ const CABECALHO_COM_PAGINA = /^(\d{1,4}\s+[A-ZÀ-Ý][A-ZÀ-Ý0-9 .,;:'’-]{3,}|
 // ("Esta página contém uma imagem"), a legenda de figura que não existe aqui
 // ("[Illustration: ...]"), os créditos de quem digitou ("Produced by", "Online
 // Distributed Proofreading") e as notas do transcritor. Só parágrafo curto.
-const LIXO_TRANSCRICAO = /^(\[\s*)?(Esta página contém uma imagem|Illustration|Ilustra[çc][ãa]o|Ilustra[çc][õo]es:|Produced by|Thanks to |This e-?book was produced|Online Distributed Proofreading|Digitized by|Nota do transcritor|Notas do transcritor|Transcriber|Project Gutenberg|\*\*\* ?(START|END) )/i
+const LIXO_TRANSCRICAO = /^(\[\s*)?(Esta página contém uma imagem|Illustration|Ilustra[çc][ãa]o|Ilustra[çc][õo]es:|Produced by|Thanks to |This e-?book was produced|Online Distributed Proofreading|Digitized by|Nota do transcritor|Notas do transcritor|Notas? de transcrição|Nota de editor|Nota do editor|Transcriber|Project Gutenberg|\*\*\* ?(START|END) )/i
 const CREDITO_EM_QUALQUER_LUGAR = /Distributed Proofreading|pgdp\.net|gutenberg\.org|archive\.org\/details|Digitized by Google/i
+// a lista de páginas-esqueleto da Wikisource ("Página:Livro.djvu/5 Página:Livro.djvu/6 ...")
+const PAGINAS_WIKISOURCE = /^(Página|Page):.{0,100}\.(djvu|pdf)\/\d+/
 const SEPARADOR = /^[*·•.~#=—–\s-]{1,24}$/
 const BLOCO = /<(p|h[1-6]|blockquote|ul|ol|table|pre)(\s[^>]*)?>[\s\S]*?<\/\1>|<hr\s*\/?>/g
 
@@ -153,7 +155,7 @@ export function diagramar(capitulos, { fonte = '', titulo: comTitulo = true } = 
       html = html.replace(/([^\s>])\[(\d{1,3})\]/g, '$1<sup class="nota">$2</sup>')
       // marcador de página do livro impresso: "[Pg vi]", "{12}"
       html = html.replace(/\s*\[Pg\s*[0-9ivxlcdm]+\]\s*/gi, ' ').replace(/\s*\{\d{1,4}\}\s*/g, ' ').trim()
-      if (b.cls === '' && b.tag === 'p' && (!texto(html) || (html.length < 700 && (LIXO_TRANSCRICAO.test(texto(html)) || CREDITO_EM_QUALQUER_LUGAR.test(texto(html)))))) return []
+      if (b.cls === '' && b.tag === 'p' && (!texto(html) || PAGINAS_WIKISOURCE.test(texto(html)) || (html.length < 700 && (LIXO_TRANSCRICAO.test(texto(html)) || CREDITO_EM_QUALQUER_LUGAR.test(texto(html)))))) return []
       const limpo = { ...b, html }
       return prosa(limpo) && /<br/i.test(html) ? desfazerQuebras(limpo) : [limpo]
     })
