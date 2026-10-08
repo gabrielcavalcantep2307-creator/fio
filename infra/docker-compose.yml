@@ -129,12 +129,17 @@ services:
       # cadernos e traduções prontas: dentro do volume, sobrevivem a redeploy
       FIO_TRADUCOES: /dados/esteira
       FIO_SITE_DADOS: /site-dados
+      FIO_SITE_CAPAS: /site-capas
       DEEPL_CHAVE: ${DEEPL_CHAVE:-}
       DEEPL_RESERVA: ${DEEPL_RESERVA:-200000}
-      FIO_PARALELO: ${FIO_PARALELO:-8}
+      # 07/10: 3 em voo (eram 8): o tradutor é um só, e os livros que já estão no
+      # site (a retradutora, com 12) passam na frente dos novos
+      FIO_PARALELO: ${FIO_PARALELO_ESTEIRA:-3}
+      FIO_TRADUTOR: http://tradutor:8095
     volumes:
       - dados:/dados
       - /opt/fio/site/dados:/site-dados
+      - /opt/fio/site/capas:/site-capas
     # Roda para sempre: o log não pode crescer para sempre junto.
     logging:
       driver: json-file
@@ -153,6 +158,59 @@ services:
   # texto. Passar para 'aplicar' é decisão do dono, pelo painel ou pelo .env.
   # O padrão tímido é de propósito — este é o único serviço do projeto que
   # mexe em livro que já está no ar.
+  # 06/10/2026: o tradutor local (Opus-MT, inglês -> português do Brasil), dentro
+  # da VPS. Sem porta para fora: só a esteira e a retradutora falam com ele, pela
+  # rede interna. Os modelos ficam em /opt/fio-mt (convertidos uma vez).
+  # cpu_shares baixo: com o site precisando, o site vem primeiro.
+  tradutor:
+    build:
+      context: ./tradutor
+    restart: unless-stopped
+    mem_limit: 1536m
+    # 07/10: a Hostinger bloqueia a VPS com CPU cheia o tempo todo. Meio
+    # núcleo e uma linha de execução: mais lento, mas a máquina respira.
+    cpus: 0.5
+    cpu_shares: 512
+    oom_score_adj: 300
+    environment:
+      MT_PASTA: /mt
+      MT_FIOS: '1'
+    volumes:
+      - /opt/fio-mt:/mt:ro
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '3'
+
+  # 06/10/2026: retraduz os livros já no site pelo tradutor local, com portão
+  # (servidor/retraducao.mjs). Nasce PARADA; liga pelo painel.
+  retradutora:
+    build:
+      context: ..
+      dockerfile: infra/Dockerfile
+    command: ['node', 'servidor/retradutor.mjs']
+    restart: unless-stopped
+    depends_on:
+      - fio
+      - tradutor
+    mem_limit: 1g
+    cpus: 0.6
+    oom_score_adj: 200
+    stop_grace_period: 20s
+    environment:
+      NODE_ENV: production
+      FIO_BANCO: /dados/catalogo.db
+      FIO_TRADUTOR: http://tradutor:8095
+      FIO_RETRADUCAO: /dados/retraducao
+    volumes:
+      - dados:/dados
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '3'
+
   revisora:
     build:
       context: ..

@@ -17,6 +17,9 @@
 import { Recusa } from './contas.mjs'
 import { avisar } from './gosto.mjs'
 import { nomeDoGutenberg, limparNome } from './nomes.mjs'
+import { writeFileSync, existsSync } from 'node:fs'
+import { join } from 'node:path'
+import { capaSvg } from '../ingestao/capas-desenhadas.mjs'
 
 export function garantirTabelas(banco) {
   banco.exec(`CREATE TABLE IF NOT EXISTS esteira_pulso (
@@ -29,7 +32,10 @@ export function garantirTabelas(banco) {
   // as tentativas com hora marcada fazem a falha passageira esperar em vez de
   // girar em falso.
   for (const col of ['bytes INTEGER', 'em_trilha INTEGER NOT NULL DEFAULT 0',
-    'tentativas INTEGER NOT NULL DEFAULT 0', 'tentar_depois TEXT']) {
+    'tentativas INTEGER NOT NULL DEFAULT 0', 'tentar_depois TEXT',
+    // 05/10: o título em português vem decidido na fila; antes a obra nascia
+    // com o título em inglês ("Crime and Punishment") e ficava assim no site
+    'titulo_pt TEXT']) {
     try { banco.exec(`ALTER TABLE fila_traducao ADD COLUMN ${col}`) } catch {}
   }
   banco.exec(`CREATE TABLE IF NOT EXISTS esteira_controle (
@@ -294,14 +300,32 @@ export function promover(banco) {
         const pessoa = achaPessoa.get(autor)
           ?? { id: Number(poePessoa.run(autor, autor, f.morte).lastInsertRowid) }
         if (f.morte) poMorte.run(f.morte, pessoa.id)
-        obraId = Number(poeObra.run(f.titulo, f.titulo, f.idioma).lastInsertRowid)
+        obraId = Number(poeObra.run(f.titulo, f.titulo_pt || f.titulo, f.idioma).lastInsertRowid)
         liga.run(obraId, pessoa.id)
+        // e já com capa: em 29/09 quarenta livros entraram sem nenhuma, e a
+        // primeira seção da home ficou com retângulos vazios
+        capaDesenhada(banco, obraId, f.titulo_pt || f.titulo, autor)
       }
       marcar.run(obraId, f.id)
     }
     banco.exec('COMMIT')
   } catch (e) { banco.exec('ROLLBACK'); throw e }
   return esperando.length
+}
+
+/**
+ * Capa desenhada (ingestao/capas-desenhadas.mjs) para a obra que nasce na
+ * esteira. FIO_SITE_CAPAS é a pasta de capas do site montada no container.
+ * Sem a pasta, não grava nada — a home desenha uma capa na hora.
+ */
+function capaDesenhada(banco, obraId, titulo, autor) {
+  const pasta = process.env.FIO_SITE_CAPAS
+  if (!pasta || !existsSync(pasta)) return
+  try {
+    const arquivo = `des-${obraId}.svg`
+    writeFileSync(join(pasta, arquivo), capaSvg({ id: obraId, titulo, autor, temas: [] }), 'utf8')
+    banco.prepare('UPDATE obra SET capa = COALESCE(capa, ?) WHERE id = ?').run(arquivo, obraId)
+  } catch { /* capa é enfeite: não derruba a fila */ }
 }
 
 /**

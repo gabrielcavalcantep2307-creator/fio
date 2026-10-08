@@ -18,6 +18,10 @@ import * as correcoes from '../correcoes.mjs'
 import * as publicacoes from '../publicacoes.mjs'
 import * as controle from '../controle.mjs'
 import * as contato from '../contato.mjs'
+import * as painelGeral from '../painel-geral.mjs'
+import * as retraducao from '../retraducao.mjs'
+import { existsSync, readFileSync, rmSync } from 'node:fs'
+import { join } from 'node:path'
 import { lerCookie } from '../http/pedido.mjs'
 
 // A fonte que a esteira vai buscar depois. Só Gutenberg, e só o .txt: a esteira
@@ -67,6 +71,50 @@ export default function rotasDoPainel({ rota, banco, estatico }) {
          ORDER BY t.criado_em DESC LIMIT 15`).all(),
     }
   })
+
+  // ── a visão geral e a mesa de tradução (servidor/painel-geral.mjs, 05/10) ──
+  rota(admin('/api/admin/geral'), () => painelGeral.visaoGeral(banco))
+  // ── a retradução do acervo com o tradutor local (servidor/retraducao.mjs, 06/10) ──
+  rota(admin('/api/admin/retraducao'), () => ({ modo: ajustes.ler(banco, 'retradutora') ?? 'parada', ...retraducao.painel(banco) }))
+  rota(post('/api/admin/retraducao/modo'), ({ dado }) => {
+    try { ajustes.escrever(banco, 'retradutora', dado.modo) } catch (e) { throw new Recusa(e.message) }
+    return { modo: dado.modo }
+  })
+  // voltar à tradução de antes: byte a byte, do que foi guardado na troca
+  rota(post('/api/admin/retraducao/desfazer'), ({ dado }) => {
+    try { retraducao.desfazer(banco, Number(dado.texto)) } catch (e) { throw new Recusa(e.message) }
+    return { ok: true }
+  })
+  // segurado ou com erro: tentar de novo (o livro volta para a fila)
+  rota(post('/api/admin/retraducao/de-novo'), ({ dado }) => {
+    const id = Number(dado.texto)
+    const mudados = banco.prepare("DELETE FROM retraducao WHERE texto_id = ? AND estado IN ('segurada','erro','desfeita')").run(id).changes
+    // o caderno guarda os parágrafos da vez passada, com as frases que ficaram
+    // em inglês dentro: começar de novo é começar sem ele
+    if (mudados) for (const ext of ['caderno.jsonl', 'json']) rmSync(join(process.env.FIO_RETRADUCAO || '/dados/retraducao', `re${id}.${ext}`), { force: true })
+    return { mudados }
+  })
+  // as frases duvidosas de um livro, para a revisão
+  rota(admin('/api/admin/retraducao/duvidas'), ({ busca }) => {
+    const id = Number(busca.get('texto'))
+    if (!Number.isInteger(id)) throw new Recusa('texto inválido')
+    const arq = join(process.env.FIO_RETRADUCAO || '/dados/retraducao', `re${id}.duvidas.jsonl`)
+    if (!existsSync(arq)) return { duvidas: [] }
+    return { duvidas: readFileSync(arq, 'utf8').split('\n').filter(Boolean).slice(0, 300).map((l) => JSON.parse(l)) }
+  })
+
+  // o estado de cada livro e a lista de revisão pelos mais lidos; os usuários de relance
+  rota(admin('/api/admin/acervo-estado'), () => painelGeral.estadoDoAcervo(banco))
+  rota(admin('/api/admin/usuarios-geral'), () => painelGeral.visaoUsuarios(banco))
+  rota(post('/api/admin/revisao'), ({ dado }) => {
+    if (![null, 'nenhum', 'grafia_lida', 'revisado'].includes(dado.estado ?? null)) throw new Recusa('estado: grafia_lida, revisado ou nenhum')
+    try { painelGeral.marcarRevisao(banco, dado.obra, dado.estado ?? null, dado.nota ? String(dado.nota).slice(0, 300) : null); return { ok: true } } catch (e) { throw new Recusa(e.message) }
+  })
+  // passar à frente na fila: prioridade alta faz a esteira pegar este antes dos outros
+  rota(post('/api/fila/prioridade'), ({ dado }) => ({
+    mudados: banco.prepare("UPDATE fila_traducao SET prioridade = ? WHERE id = ? AND estado IN ('espera','na_esteira')")
+      .run(dado.prioridade ? 5 : 0, Number(dado.id)).changes,
+  }))
 
   // ── a sala de controle (servidor/controle.mjs): tudo que roda, num retrato ──
   rota(admin('/api/admin/controle'), ({ req, pessoa }) => controle.retrato(banco, { pessoa, token: lerCookie(req) }))
@@ -171,6 +219,11 @@ export default function rotasDoPainel({ rota, banco, estatico }) {
 
   // todas as contas, com busca e filtro por plano (planos.listarContas)
   rota(admin('/api/admin/contas'), ({ busca }) => planos.listarContas(banco, { q: busca.get('q'), filtro: busca.get('filtro'), pagina: busca.get('pagina') }))
+  rota(admin('/api/admin/conta'), ({ busca }) => {
+    const detalhe = planos.detalharConta(banco, busca.get('id'))
+    if (!detalhe) throw new Recusa('Conta não encontrada.', 404)
+    return detalhe
+  })
   rota(post('/api/admin/assinatura'), ({ pessoa, dado }) => planos.conceder(banco, pessoa.id, dado, { chaveDe, Recusa }))
 
   // ── a central de ajustes ──

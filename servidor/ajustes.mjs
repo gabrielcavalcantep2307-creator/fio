@@ -20,10 +20,12 @@ export const CHAVES = {
   // padrão de fábrica é o mais tímido: 'propor' mede e lista, sem tocar no
   // texto; 'aplicar' troca de verdade; 'parada' não faz nada.
   revisora: 'modo',
+  // 06/10: a retradução do acervo com o tradutor local (servidor/retradutor.mjs)
+  retradutora: 'modo',
 }
 
 /** Os únicos valores que uma chave de tipo 'modo' aceita. */
-export const MODOS = { revisora: ['parada', 'propor', 'aplicar'] }
+export const MODOS = { revisora: ['parada', 'propor', 'aplicar'], retradutora: ['parada', 'ligada'] }
 
 // A régua editorial de sempre: 300 palavras por página é o meio-termo entre
 // livro de bolso e capa dura. Serve para dois cálculos — o teto do portão e o

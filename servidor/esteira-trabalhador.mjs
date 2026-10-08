@@ -45,6 +45,7 @@ import { fileURLToPath } from 'node:url'
 import { abrir } from './banco/base.mjs'
 import * as esteira from './esteira.mjs'
 import { traduzirLivro, traducaoPronta } from './servicos/traducao.mjs'
+import { localDisponivel } from './servicos/tradutor-local.mjs'
 import { instalarLivro } from './servicos/acervo.mjs'
 import { publicarCatalogo, publicarObra } from './servicos/catalogo.mjs'
 import { traduzir, saldoDeepL } from './servicos/motor-traducao.mjs'
@@ -192,6 +193,8 @@ async function medirTamanhos() {
  */
 async function servicoResponde(de) {
   if (de === 'pt') return true
+  // 06/10: o tradutor local de pé basta (o MinT fica de socorro por frase)
+  if (await localDisponivel(de)) return true
   try {
     const t = await Promise.race([
       traduzir('Good morning.', { de: 'en', para: 'pt' }),

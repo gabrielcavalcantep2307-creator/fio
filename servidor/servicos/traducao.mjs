@@ -45,7 +45,9 @@
 import { createHash } from 'node:crypto'
 import { mkdirSync, existsSync, readFileSync, writeFileSync, appendFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { traduzir, motorDisponivel, escolherMotor } from './motor-traducao.mjs'
+import { traduzir, motorDisponivel, escolherMotor, prepararUnidade, abrasileirar, aplicarGlossario } from './motor-traducao.mjs'
+import * as local from './tradutor-local.mjs'
+import { traducaoConfiavel } from '../revisao.mjs'
 
 const UA = 'fio/0.1 (biblioteca em portugues; https://fiolib.com.br)'
 
@@ -376,21 +378,131 @@ export function criarFreio() {
  * remontado. Parágrafo de filosofia alemã tem períodos de duzentas palavras,
  * e é exatamente onde isso acontece.
  */
-async function emPedacos(bruto, { de, glossario, motor }) {
-  try {
-    return await traduzir(bruto, { de, para: 'pt', glossario, motor })
-  } catch (e) {
-    if (!/413/.test(e.message) || bruto.length < 600) throw e
+//
+// FRASE A FRASE, COM A TRAVA DE INVENÇÃO (05/10/2026). Antes o parágrafo
+// inteiro ia num pedido só, e só era partido quando o serviço recusava por
+// tamanho. Medido em O Processo: com bloco grande o NLLB INVENTA frase ("O
+// senhor deputado Geraldo Gonzalez…", "O Conselho de Ministros…"), e nada
+// avisava. O modelo é treinado em frases; frase é o tamanho em que ele erra
+// menos. Cada frase traduzida passa por revisao.traducaoConfiavel (nome que
+// não está no original, número trocado, tamanho fora de proporção, laço,
+// língua de origem). Recusada, tenta de novo em pedaços menores (vírgula,
+// ponto e vírgula); recusada outra vez, a frase FICA NO ORIGINAL — visível,
+// e o detector/revisora a acham depois. Frase inventada não é visível.
+//
+// O caderno guarda o parágrafo pronto: livro já começado continua igual.
+const FIM_DE_FRASE = /(?<=[.!?…»"”])\s+(?=[A-ZÀ-ÞÀ-Ý"«“¿¡—–-])/u
+let seguradasPelaTrava = 0
 
-    // corta no ponto final seguido de espaço, que é o fim de frase que não
-    // erra em abreviação de uma letra só
-    const frases = bruto.split(/(?<=[.!?])\s+(?=[A-ZÀ-Þ"«])/)
-    if (frases.length < 2) throw e
-
-    const partes = []
-    for (const f of frases) partes.push(await traduzir(f, { de, para: 'pt', glossario, motor }))
-    return partes.join(' ')
+// O MinT às vezes fecha a conexão no meio ("other side closed"): uma segunda
+// chance POR FRASE, para não refazer o parágrafo inteiro por causa de uma.
+async function pedir(texto, op) {
+  try { return String(await traduzir(texto, op)).trim() } catch (e) {
+    if (/413/.test(e.message)) throw e
+    await new Promise((r) => setTimeout(r, 4000))
+    return String(await traduzir(texto, op)).trim()
   }
+}
+
+async function traduzirConferido(f, { de, glossario, motor }) {
+  const t = await pedir(f, { de, para: 'pt', glossario, motor })
+  if (traducaoConfiavel(f, t, de).pode) return t
+  // segunda chance: em orações, para o modelo não "completar" o que falta
+  const oracoes = f.split(/(?<=[,;:])\s+/)
+  if (oracoes.length > 1) {
+    const partes = []
+    for (const o of oracoes) partes.push(await pedir(o, { de, para: 'pt', glossario, motor }))
+    const junto = partes.join(' ')
+    if (traducaoConfiavel(f, junto, de).pode) return junto
+  }
+  seguradasPelaTrava++
+  return f
+}
+
+// ── o tradutor local (06/10/2026): quatro alternativas por frase ──
+//
+// O serviço devolve as 4 melhores traduções de cada frase de uma vez (um
+// pedido por parágrafo). A primeira que passa nas travas fica; nenhuma
+// passando, a frase vai ao MinT com as mesmas travas; nem assim, fica no
+// original. Tudo contado em `registro`, e a frase duvidosa vai para a lista.
+async function emPedacosLocal(bruto, { de, glossario, registro }) {
+  const { entrada, refazer } = prepararUnidade(bruto)
+  const frases = local.emFrases(entrada)
+  // cada frase vira uma ou mais orações (frase longa), traduzidas juntas no mesmo pedido
+  const pedacos = frases.map((f) => ((f.match(/\p{L}/gu) ?? []).length < 2 ? [] : local.emOracoes(f)))
+  const todos = pedacos.flat()
+  // 1ª passada rápida (uma tradução, em lote com os outros pedidos); só a
+  // frase que falhou nas travas ou deixou inglês pede as 4 alternativas
+  const rapidas = todos.length ? await local.hipoteses(todos, de, 1) : []
+  const escolhas = new Map(todos.map((o, i) => [o, local.escolherHipotese(o, rapidas[i], de)]))
+  const refazer4 = todos.filter((o) => { const e = escolhas.get(o); return e.texto == null || e.restos.length })
+  if (refazer4.length) {
+    const alt = await local.hipoteses(refazer4, de, 4)
+    refazer4.forEach((o, i) => {
+      const e = local.escolherHipotese(o, alt[i], de)
+      const antes = escolhas.get(o)
+      // fica a de 4 se ela resolveu; senão a primeira (que ao menos passou nas travas)
+      if (e.texto != null && (antes.texto == null || e.restos.length < antes.restos.length)) escolhas.set(o, { ...e, usada: Math.max(1, e.usada) })
+    })
+  }
+  const saida = []
+  for (let i = 0; i < frases.length; i++) {
+    const f = frases[i]
+    if (!pedacos[i].length) { saida.push(f); continue }
+    const partes = []
+    let falhou = false
+    for (const o of pedacos[i]) {
+      const e = escolhas.get(o)
+      if (e.texto != null) {
+        partes.push(abrasileirar(aplicarGlossario(e.texto, glossario)))
+        if (registro) {
+          registro.frases++
+          if (e.usada > 0) registro.alternativa++
+          if (e.restos.length) { registro.ingles++; registro.duvida?.({ en: o, pt: e.texto, motivo: e.motivo }) }
+        }
+        continue
+      }
+      falhou = true
+      break
+    }
+    if (!falhou) { saida.push(partes.join(' ')); continue }
+    // nenhuma das quatro passou: o tradutor novo de novo, oração por oração
+    // (vírgula, ponto e vírgula), que é onde ele não encurta nem troca nome
+    const oracoes = f.split(/(?<=[,;:])\s+|(?<=\S)--(?=\S)/).filter((x) => x.trim())
+    if (oracoes.length > 1) {
+      try {
+        const r = await local.hipoteses(oracoes, de, 1)
+        const junto = r.map((h) => h[0].t).join(' ')
+        if (traducaoConfiavel(f, junto, de).pode) {
+          if (registro) { registro.frases++; registro.alternativa++ }
+          saida.push(abrasileirar(aplicarGlossario(junto, glossario)))
+          continue
+        }
+      } catch { /* segue para o motor antigo */ }
+    }
+    // nem assim: o motor antigo, com as mesmas travas
+    const velho = await traduzirConferido(f, { de, glossario, motor: 'mint' }).catch(() => f)
+    if (registro) {
+      registro.frases++
+      if (velho === f) { registro.original++; registro.duvida?.({ en: f, pt: null, motivo: 'nenhum motor passou nas travas: ficou no original' }) }
+      else { registro.mint++; registro.duvida?.({ en: f, pt: velho, motivo: 'o tradutor novo não passou nas travas; foi o antigo' }) }
+    }
+    saida.push(velho)
+  }
+  return refazer(saida.join(' '))
+}
+
+async function emPedacos(bruto, { de, glossario, motor, registro }) {
+  if (de === 'pt') return traduzir(bruto, { de, para: 'pt', glossario, motor })
+  if (motor === 'local') return emPedacosLocal(bruto, { de, glossario, registro })
+  const frases = bruto.split(FIM_DE_FRASE).filter((x) => x.trim())
+  const saida = []
+  for (const f of frases) {
+    // número de página, "* * *", travessão sozinho: não há o que traduzir
+    if ((f.match(/\p{L}/gu) ?? []).length < 2) { saida.push(f); continue }
+    saida.push(await traduzirConferido(f, { de, glossario, motor }))
+  }
+  return saida.join(' ')
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -410,7 +522,7 @@ async function emPedacos(bruto, { de, glossario, motor }) {
 // de desalinhar.
 // ─────────────────────────────────────────────────────────────
 
-async function traduzirTudo(unidades, { de, glossario, motor, freio, paralelo, sinal }, caderno, aoAndar, aoDizer) {
+async function traduzirTudo(unidades, { de, glossario, motor, freio, paralelo, sinal, registro }, caderno, aoAndar, aoDizer) {
   const saida = new Array(unidades.length)
   const falhou = []
   let proxima = 0
@@ -428,7 +540,7 @@ async function traduzirTudo(unidades, { de, glossario, motor, freio, paralelo, s
       if (caderno.feito.has(k)) saida[i] = caderno.feito.get(k)
       else {
         try {
-          const t = await freio.comTentativas(() => emPedacos(bruto, { de, glossario, motor }))
+          const t = await freio.comTentativas(() => emPedacos(bruto, { de, glossario, motor, registro }))
           caderno.guardar(k, t)
           saida[i] = t
         } catch (e) {
@@ -467,6 +579,10 @@ async function traduzirTudo(unidades, { de, glossario, motor, freio, paralelo, s
   }
   if (falhou.length) {
     aoDizer(`${falhou.length} parágrafo(s) ficaram no original; rodar de novo tenta outra vez`)
+  }
+  if (seguradasPelaTrava) {
+    aoDizer(`${seguradasPelaTrava} frase(s) seguradas pela trava de invenção ficaram no original (o detector as lista)`)
+    seguradasPelaTrava = 0
   }
   return saida
 }
@@ -534,6 +650,8 @@ export async function baixarFonte(fonte, { tentativas = 3, aoDizer = () => {} } 
 export async function traduzirLivro({
   fonte, de = 'en', titulo = null, nome, pasta, glossario = {},
   paralelo = EM_PARALELO, aoAndar = () => {}, aoDizer = () => {}, sinal,
+  // 06/10: motor pedido (a retradução força o local) e a lista das frases duvidosas
+  motor: motorPedido = null, aoDuvidar = null,
 }) {
   if (!fonte || !nome || !pasta) throw new Error('traduzirLivro: fonte, nome e pasta são obrigatórios')
 
@@ -558,12 +676,15 @@ export async function traduzirLivro({
   const caderno = abrirCaderno(pasta, nome)
   if (caderno.feito.size) aoDizer(`caderno: ${caderno.feito.size} unidades já traduzidas de antes`)
 
-  const escolha = await escolherMotor({ caracteres: fila.reduce((n, u) => n + u.length, 0), de, jaComecado: caderno.feito.size > 0 })
+  const escolha = motorPedido
+    ? { motor: motorPedido, porque: 'pedido por quem chamou' }
+    : await escolherMotor({ caracteres: fila.reduce((n, u) => n + u.length, 0), de, jaComecado: caderno.feito.size > 0 })
+  const registro = { frases: 0, alternativa: 0, ingles: 0, mint: 0, original: 0, duvida: aoDuvidar }
   const motor = motorDisponivel(escolha.motor)
   aoDizer(`motor: ${motor.nome} — ${escolha.porque}`)
 
   const comeco = Date.now()
-  const traduzidas = await traduzirTudo(fila, { de, glossario, motor: escolha.motor, freio: criarFreio(), paralelo, sinal }, caderno, (feitas, total) => {
+  const traduzidas = await traduzirTudo(fila, { de, glossario, motor: escolha.motor, freio: criarFreio(), paralelo, sinal, registro }, caderno, (feitas, total) => {
     if (feitas % 25 !== 0 && feitas !== total) return
     const s = (Date.now() - comeco) / 1000
     aoAndar(feitas, total, Math.round(s / feitas * (total - feitas) / 60))
@@ -583,6 +704,8 @@ export async function traduzirLivro({
     motor: motor.nome,
     traduzido_em: new Date().toISOString().slice(0, 10),
     palavras_original: palavras,
+    // o que o tradutor local decidiu, frase a frase (vazio no MinT): a retradução mede o livro por isto
+    registro: { frases: registro.frases, alternativa: registro.alternativa, ingles: registro.ingles, mint: registro.mint, original: registro.original },
     capitulos: prontos.map((c) => ({
       ordem: c.ordem,
       titulo: c.titulo,
@@ -617,3 +740,4 @@ export function traducaoPronta(pasta, nome) {
   const arquivo = join(pasta, `${nome}.json`)
   return existsSync(arquivo) ? JSON.parse(readFileSync(arquivo, 'utf8')) : null
 }
+export { emPedacos as traduzirParagrafo }

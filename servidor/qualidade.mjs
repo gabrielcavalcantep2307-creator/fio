@@ -36,6 +36,18 @@ export function notas(banco) {
 
 export const notaDe = (banco, obraId) => notas(banco).get(Number(obraId)) ?? null
 
+/**
+ * O aviso de revisão (06/10/2026). O dono: "não tem essa de tirar do site;
+ * diga que está tudo passando por esse processo". Todo livro fica no ar, e o
+ * que está em conferência diz isso ao leitor, sem esconder nada.
+ */
+export function avisoDeRevisao(fonte, avisoOcr = null) {
+  if (fonte === 'fio_traducao') return 'Tradução da Fiolib em revisão: este livro está sendo conferido e traduzido de novo, frase por frase. A versão corrigida entra aqui sozinha.'
+  if (fonte === 'archive') return (avisoOcr ? avisoOcr + ' ' : 'Esta é a digitalização de uma edição antiga. ')
+    + 'O texto está em revisão: os erros de leitura estão sendo corrigidos, e a versão corrigida entra aqui sozinha.'
+  return avisoOcr
+}
+
 export function avisoDeOcr(nota) {
   if (nota == null || nota >= LIMIAR_AVISO) return null
   return nota < 0.75

@@ -15,9 +15,16 @@
 
 import { readFileSync, existsSync } from 'node:fs'
 import { join } from 'node:path'
+import { Recusa } from './contas.mjs'
 
 export function garantirTabelas(banco) {
   banco.exec(`
+    CREATE TABLE IF NOT EXISTS idioma_atividade (
+      leitor_id INTEGER NOT NULL REFERENCES leitor(id) ON DELETE CASCADE,
+      idioma TEXT NOT NULL,
+      dia TEXT NOT NULL,
+      PRIMARY KEY (leitor_id, idioma, dia)
+    );
     CREATE TABLE IF NOT EXISTS idioma_progresso (
       id            INTEGER PRIMARY KEY,
       leitor_id     INTEGER NOT NULL REFERENCES leitor(id) ON DELETE CASCADE,
@@ -68,6 +75,8 @@ export function garantirTabelas(banco) {
       UNIQUE (leitor_id, idioma, item)
     );
   `)
+  banco.exec(`INSERT OR IGNORE INTO idioma_atividade (leitor_id, idioma, dia)
+    SELECT leitor_id, idioma, date(concluido_em) FROM idioma_progresso`)
 }
 
 const PASTA = process.env.FIO_ESTATICO
@@ -119,12 +128,22 @@ export function progressoDe(banco, leitorId, idioma) {
 
 /** Marca uma unidade como concluída (ou atualiza o resultado, se refeita). */
 export function concluirUnidade(banco, leitorId, idioma, unidade, { acertos, total }) {
+  const u = cursoDe(idioma)?.unidades.find(u => u.chave === unidade)
+  if (!u) throw new Recusa('Esta unidade não existe.', 404)
+  if (!Number.isInteger(total) || total !== u.quiz.length || total < 1 || !Number.isInteger(acertos) || acertos < 0 || acertos > total) {
+    throw new Recusa('O resultado não corresponde ao quiz desta unidade.')
+  }
   banco.prepare(`
     INSERT INTO idioma_progresso (leitor_id, idioma, unidade, acertos, total, concluido_em)
     VALUES (?, ?, ?, ?, ?, datetime('now'))
     ON CONFLICT (leitor_id, idioma, unidade) DO UPDATE SET
       acertos = excluded.acertos, total = excluded.total, concluido_em = excluded.concluido_em`)
     .run(leitorId, idioma, unidade, acertos, total)
+  registrarAtividade(banco, leitorId, idioma)
+}
+
+function registrarAtividade(banco, leitorId, idioma) {
+  banco.prepare("INSERT OR IGNORE INTO idioma_atividade (leitor_id, idioma, dia) VALUES (?, ?, date('now'))").run(leitorId, idioma)
 }
 
 // ── a revisão espaçada (SM-2) ──
@@ -146,6 +165,9 @@ export function sm2(atual, qualidade) {
 
 /** Registra o resultado de um item de revisão (certo ou errado) e recalcula a próxima data. */
 export function revisarItem(banco, leitorId, idioma, item, acertou) {
+  const m = String(item).match(/^(.+)::q(\d+)$/)
+  const unidade = cursoDe(idioma)?.unidades.find(u => u.chave === m?.[1])
+  if (!m || !unidade?.quiz?.[Number(m[2])]) throw new Recusa('Esta pergunta não existe.', 404)
   const atual = banco.prepare(
     'SELECT facilidade, intervalo, acertos_seguidos FROM idioma_revisao WHERE leitor_id = ? AND idioma = ? AND item = ?')
     .get(leitorId, idioma, item) ?? { facilidade: 2.5, intervalo: 1, acertos_seguidos: 0 }
@@ -157,6 +179,7 @@ export function revisarItem(banco, leitorId, idioma, item, acertou) {
       facilidade = excluded.facilidade, intervalo = excluded.intervalo,
       acertos_seguidos = excluded.acertos_seguidos, proxima_em = excluded.proxima_em`)
     .run(leitorId, idioma, item, novo.facilidade, novo.intervalo, novo.acertos_seguidos, novo.intervalo)
+  registrarAtividade(banco, leitorId, idioma)
 }
 
 /** Os itens vencidos para revisar hoje, mais cedo primeiro. */
@@ -233,11 +256,8 @@ export function salvarNota(banco, leitorId, idioma, item, texto) {
 // que a pessoa realmente fez.
 export function sequenciaDias(banco, leitorId, idioma) {
   const dias = banco.prepare(`
-    SELECT DISTINCT date(quando) d FROM (
-      SELECT concluido_em quando FROM idioma_progresso WHERE leitor_id = ? AND idioma = ?
-      UNION ALL
-      SELECT proxima_em quando FROM idioma_revisao WHERE leitor_id = ? AND idioma = ? AND proxima_em <= datetime('now')
-    ) ORDER BY d DESC`).all(leitorId, idioma, leitorId, idioma).map((l) => l.d)
+    SELECT dia d FROM idioma_atividade WHERE leitor_id = ? AND idioma = ?
+    ORDER BY dia DESC`).all(leitorId, idioma).map((l) => l.d)
   if (!dias.length) return 0
   const hoje = new Date().toISOString().slice(0, 10)
   const ontem = new Date(Date.now() - 86_400_000).toISOString().slice(0, 10)

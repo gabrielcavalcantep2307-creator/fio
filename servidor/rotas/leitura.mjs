@@ -13,7 +13,7 @@ import { montarPdf, nomeDeArquivoPdf } from '../pdf.mjs'
 import { ondeComecaOLivro } from '../folha-de-rosto.mjs'
 import { criarBuscaParalela } from '../busca-paralela.mjs'
 import { diagramar } from '../diagramar.mjs'
-import { notaDe, avisoDeOcr } from '../qualidade.mjs'
+import { notaDe, avisoDeOcr, avisoDeRevisao } from '../qualidade.mjs'
 import { criarQuisDizer } from '../quis-dizer.mjs'
 import { redirecionar } from '../http/pedido.mjs'
 
@@ -169,7 +169,9 @@ export default function rotasDeLeitura({ rota, banco, estatico }) {
       comecaEm,
       // O defeito DESTA digitalização, dito antes de o leitor estranhar o texto.
       // (e, sem aviso escrito à mão, o da nota do OCR: qualidade.mjs)
-      aviso: o.aviso ?? (meu ? null : avisoDeOcr(notaDe(banco, o.id))),
+      // 06/10: nada sai do site; o livro em conferência diz que está nela
+      // (a tradução tem um aviso antigo gravado no texto, 'sem revisão humana': o de revisão vence)
+      aviso: meu ? null : o.fonte === 'fio_traducao' ? avisoDeRevisao(o.fonte) : (o.aviso ?? avisoDeRevisao(o.fonte, avisoDeOcr(notaDe(banco, o.id)))),
       // O rótulo viaja com o TEXTO: quem abre direto pelo endereço vê o aviso.
       traducao: o.revisao ? { revisao: o.revisao, tradutor: o.tradutor, original: o.base_url } : null,
       // 'conta' | 'limite' quando o texto veio só em amostra

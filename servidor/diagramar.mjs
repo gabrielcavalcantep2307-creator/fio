@@ -23,6 +23,8 @@
 // desloca marcação velha — o título do capítulo, por isso, entra como
 // atributo (desenhado pelo CSS) e não como texto.
 
+import { atualizarGrafia, FONTES_ANTIGAS } from './ortografia.mjs'
+
 const TERMINA_FRASE = /[.!?…:»"”’)\]]$/
 const COMECA_MINUSCULA = /^[a-zà-ÿ]/
 // Só a cauda: um parágrafo emendado de mil linhas não é relido a cada linha.
@@ -119,6 +121,9 @@ function limparOcr(html) {
  */
 export function diagramar(capitulos, { fonte = '', titulo: comTitulo = true } = {}) {
   const escaneado = fonte === 'archive'
+  // grafia de antes de 1943 -> a de hoje, pela lista lida (servidor/ortografia.mjs)
+  // e, no escaneado, os erros de leitura antes (servidor/ocr-correcoes.json)
+  const grafia = FONTES_ANTIGAS.has(fonte) ? (h) => atualizarGrafia(h, { ocr: escaneado }) : (h) => h
   const todos = capitulos.map((c) => blocos(c.corpo ?? ''))
 
   // Cabeçalho corrido: linha curta em caixa alta que se repete pelo livro.
@@ -227,6 +232,10 @@ export function diagramar(capitulos, { fonte = '', titulo: comTitulo = true } = 
       bs.unshift({ tag: 'p', cls: 'fio-cap', attrs: ' aria-hidden="true"', html: '', dados: soNumero ? { rot: 'Capítulo', titulo: titulo.replace(/\.$/, '') } : { titulo } })
     }
 
+    for (const b of bs) {
+      if (b.html) b.html = grafia(b.html)
+      if (b.dados?.titulo) b.dados.titulo = grafia(b.dados.titulo)
+    }
     return { ...c, corpo: bs.map(montar).join('') }
   })
 }

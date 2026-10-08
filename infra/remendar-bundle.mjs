@@ -400,6 +400,16 @@ const REMENDOS = [
     para: '(0,N.jsx)(`a`,{href:`/api/livro/${t.id}/pdf`,download:!0,className:`block text-center py-2 rounded text-sm`,style:{border:`1px solid var(--linha)`,color:`var(--tinta)`,marginBottom:`.5rem`},children:`Baixar este livro (PDF)`}),'
       + '(0,N.jsx)(`a`,{href:`/api/livro/${t.id}/epub`,download:!0,className:`block text-center py-2 rounded text-sm`,style:{border:`1px solid var(--linha)`,color:`var(--tinta)`}',
   },
+  // O SELO na home (05/10/2026). O destaque do topo ("Para começar") e a
+  // fileira de leituras curtas saem da lista `f` de livros legíveis. Com o
+  // selo (servidor/selo.mjs), só entra nela livro com selo — livro escaneado
+  // ou tradução não revisada deixa de ser a primeira coisa que o leitor vê.
+  // `selo!==!1`: catálogo antigo, sem o campo, continua funcionando igual.
+  {
+    nome: 'home: destaque e leituras curtas só com selo',
+    de: 'f=e.obras.filter(e=>e.trilho===`A`),p=f.filter(e=>e.chamada&&(e.capa||e.capaOL))',
+    para: 'f=e.obras.filter(e=>e.trilho===`A`&&e.selo!==!1),p=f.filter(e=>e.chamada&&(e.capa||e.capaOL))',
+  },
 ]
 
 let s = readFileSync(arg('base'), 'utf8')

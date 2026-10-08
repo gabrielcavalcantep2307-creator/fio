@@ -87,15 +87,15 @@ async function desenhar() {
   const pendencias = pubs.obras.length + pubs.denuncias.length
   main.replaceChildren(
     abas([
+      // 05/10: "panorama, tradução e acervo podem ficar tudo junto numa aba só"
+      ['panorama', 'Panorama', () => [secaoPanorama(fila.itens)]],
       ['controle', 'Controle', () => [secaoControle()]],
-      ['panorama', 'Panorama', () => [esteiraAoVivo(), panorama(p), recentes(p.recentes)]],
-      ['esteira', 'Esteira', () => [esteiraAoVivo(), revisoraAoVivo(), secaoFila(fila.itens), secaoAdicionar()]],
       ['publicacoes', `Publicações${pendencias ? ` (${pendencias})` : ''}`, () => [secaoPublicacoes(pubs)]],
       ['correcoes', `Correções${cor.pendentes.length ? ` (${cor.pendentes.length})` : ''}`, () => [secaoCorrecoes(cor)]],
-      ['acervo', 'Acervo', () => [secaoAcervo()]],
-      ['assinaturas', `Assinaturas${msg.presentes ? ` (${msg.presentes})` : ''}`, () => [secaoAssinaturas()]],
+      ['assinaturas', `Contas e assinaturas${msg.presentes ? ` (${msg.presentes})` : ''}`, () => [painelUsuarios(), secaoAssinaturas()]],
       ['mensagens', `Mensagens${msg.pendentes ? ` (${msg.pendentes})` : ''}`, () => [secaoMensagens()]],
-      ['ajustes', 'Configurações', () => [secaoAjustes(aj)]],
+      ['ajustes', 'Cadastro e acesso', () => [secaoAjustes(aj)]],
+      ['ambiente', 'Configurações do site', () => [grupo('Esteira e jurisdição', 'Configuração do ambiente do servidor.', cartao(aj.esteira_paralelo, 'traduções em paralelo'), cartao(aj.jurisdicao, 'jurisdição de direito'))]],
     ]),
   )
 }
@@ -563,7 +563,7 @@ const dataCurta = (s) => (s ? new Date(s.replace(' ', 'T') + 'Z').toLocaleDateSt
 const estiloSelect = 'padding:6px;border-radius:7px;border:1px solid var(--linha);background:var(--pg);color:var(--tinta)'
 
 function secaoAssinaturas() {
-  const s = el('section', {}, el('h2', {}, 'Assinaturas e contas'))
+  const s = el('section', {}, el('h2', {}, 'Usuários — contas e assinaturas'))
   s.append(el('p', { class: 'ajuda' },
     'Todas as contas do site. Troque o plano na própria linha e clique em "aplicar". O pagamento ainda não existe: quem tem plano é quem você presenteia aqui. ',
     'Quem pediu um presente aparece em "Pediram presente" — e o site promete que chega em até 24 horas. Quem recebe ganha um aviso no sino. Contas de administração são sempre Tear. ',
@@ -572,9 +572,10 @@ function secaoAssinaturas() {
   const chips = el('div', { class: 'aba', style: 'flex-wrap:wrap' })
   const busca = el('input', { type: 'search', placeholder: 'procurar por nome, usuário ou e-mail', value: estadoContas.q, style: 'max-width:340px' })
   const lista = el('div', {}, el('p', { class: 'ajuda' }, 'Carregando as contas…'))
+  const detalhe = el('div', {})
   let espera = null
   busca.addEventListener('input', () => { clearTimeout(espera); espera = setTimeout(() => { estadoContas = { ...estadoContas, q: busca.value, pagina: 1 }; carregar() }, 300) })
-  s.append(resumo, el('div', { style: 'display:flex;gap:10px;align-items:center;flex-wrap:wrap' }, busca), chips, lista)
+  s.append(resumo, el('div', { style: 'display:flex;gap:10px;align-items:center;flex-wrap:wrap' }, busca), chips, detalhe, lista)
 
   async function carregar() {
     let r
@@ -622,15 +623,18 @@ function secaoAssinaturas() {
               c.quer_por ? el('div', { class: 'ajuda', style: 'margin-top:4px;max-width:34ch' }, `"${c.quer_por}"`) : null)
               : el('span', { class: 'ajuda' }, '—')
       corpo.append(el('tr', {},
-        el('td', {}, el('div', {}, c.nome), el('div', { class: 'mono', style: 'color:var(--tinta2)' }, `@${c.usuario}${c.email ? ` · ${c.email}` : ''}${c.google ? ' · Google' : ''}`)),
+        el('td', {}, el('div', {}, c.nome), el('div', { class: 'mono', style: 'color:var(--tinta2)' }, `@${c.usuario}${c.email ? ` · ${c.email}` : ''}${c.google ? ' · Google' : ''}`),
+          el('button', { class: 'ver-conta', type: 'button', onclick: () => carregarDetalhe(c.id) }, 'ver central do leitor')),
         el('td', {}, el('div', { style: 'display:flex;gap:6px;align-items:center;flex-wrap:wrap' }, plano, prazo, aplicar)),
         el('td', {}, situacao),
-        el('td', { class: 'mono' }, c.planoAtual === 'leitor' ? `${c.livros_mes} livro${c.livros_mes === 1 ? '' : 's'}` : '—'),
+        el('td', { class: 'mono', title: 'livros com leitura nos últimos 30 dias' },
+          `${c.lendo_mes ?? 0} livro${c.lendo_mes === 1 ? '' : 's'}`,
+          c.planoAtual === 'leitor' ? el('div', { class: 'ajuda' }, `${c.livros_mes} destravado${c.livros_mes === 1 ? '' : 's'} no grátis`) : ''),
         el('td', { class: 'mono' }, dataCurta(c.visto_em)),
         el('td', { class: 'mono' }, dataCurta(c.criado_em))))
     }
     const tabela = el('table', { style: 'margin-top:12px' },
-      el('thead', {}, el('tr', {}, el('th', {}, 'Conta'), el('th', {}, 'Plano'), el('th', {}, 'Situação'), el('th', {}, 'Livros no mês'), el('th', {}, 'Visto'), el('th', {}, 'Criada'))),
+      el('thead', {}, el('tr', {}, el('th', {}, 'Conta'), el('th', {}, 'Plano'), el('th', {}, 'Situação'), el('th', {}, 'Lidos em 30 dias'), el('th', {}, 'Visto'), el('th', {}, 'Criada'))),
       corpo)
     const paginas = r.paginas > 1 ? el('div', { class: 'aba' },
       el('button', { type: 'button', disabled: r.pagina <= 1 ? '' : null, onclick: () => { estadoContas.pagina = r.pagina - 1; carregar() } }, '← anteriores'),
@@ -639,6 +643,50 @@ function secaoAssinaturas() {
     lista.replaceChildren(el('div', { style: 'overflow-x:auto' }, tabela), paginas ?? '')
   }
   carregar()
+
+  async function carregarDetalhe(id) {
+    detalhe.replaceChildren(el('div', { class: 'central-leitor' }, el('p', { class: 'vazio' }, 'Carregando a central do leitor…')))
+    let d
+    try { d = await pedir(`/admin/conta?id=${encodeURIComponent(id)}`) }
+    catch (e) { detalhe.replaceChildren(recado('ruim', e.message)); return }
+    const c = d.conta
+    const caixa = el('div', { class: 'central-leitor' })
+    const corpo = el('div', { class: 'central-corpo' })
+    const abasDetalhe = el('div', { class: 'central-abas' })
+    const linha = (titulo, texto, sub = '') => el('div', { class: 'central-linha' }, el('b', {}, titulo), ` ${texto}`, sub ? el('small', {}, sub) : '')
+    const bloco = (titulo, ...itens) => el('div', { class: 'central-bloco' }, el('h4', {}, titulo), ...itens)
+    const vazio = (texto) => el('p', { class: 'ajuda' }, texto)
+    const mostrar = (aba) => {
+      for (const b of abasDetalhe.children) b.setAttribute('aria-selected', String(b._aba === aba))
+      if (aba === 'resumo') corpo.replaceChildren(
+        el('div', { class: 'central-grade' },
+          bloco('Assinatura', linha('Plano:', ROTULO_PLANO[c.planoAtual] ?? c.planoAtual),
+            linha('Situação:', c.papel === 'admin' ? 'Tear da administração' : d.assinatura?.vencida ? 'vencida' : d.assinatura ? (d.assinatura.ate ? `até ${dataCurta(d.assinatura.ate)}` : 'sem prazo') : 'conta gratuita'),
+            linha('Origem:', d.assinatura?.origem ?? '—')),
+          bloco('Uso e participação', linha('Livros liberados:', num(d.totais.liberados)), linha('Avaliações:', num(d.participacao.avaliacoes)),
+            linha('Publicações:', num(d.participacao.publicacoes)), linha('Correções:', num(d.participacao.correcoes))),
+          bloco('Conta', linha('Criada:', dataCurta(c.criado_em)), linha('Vista:', dataCurta(c.visto_em)), linha('Sessões ativas:', num(d.totais.sessoes))),
+          bloco('Biblioteca pessoal', linha('Livros com progresso:', num(d.totais.progresso)), linha('Na estante:', num(d.guardado.estante)),
+            linha('Marcações:', num(d.guardado.marcacao)), linha('Quadrinhos:', num(d.totais.quadrinhos)))) )
+      if (aba === 'leitura') corpo.replaceChildren(el('div', { class: 'central-grade' },
+        bloco('Livros recentes', ...(d.progresso.length ? d.progresso.map((p) => linha(p.titulo, p.capitulo ? `capítulo ${p.capitulo}` : '', `${Math.round((p.segundos || 0) / 60)} min registrados · ${new Date(p.mudou_em).toLocaleDateString('pt-BR')}`)) : [vazio('Nenhum progresso sincronizado.')])) ,
+        bloco('Livros liberados', ...(d.liberados.length ? d.liberados.map((l) => linha(l.titulo || `Obra ${l.obra_id}`, dataCurta(l.liberado_em))) : [vazio('Nenhum livro liberado.')]))))
+      if (aba === 'idiomas') corpo.replaceChildren(el('div', { class: 'central-grade' },
+        bloco('Estudo de idiomas', ...(d.idiomas.length ? d.idiomas.map((i) => linha(i.idioma.toUpperCase(), `${i.unidades} unidade(s)`, `${num(i.acertos)} de ${num(i.total)} respostas corretas`)) : [vazio('Nenhuma unidade concluída.')])) ,
+        bloco('Pedidos de tradução', ...(d.pedidos.length ? d.pedidos.map((p) => linha(p.titulo || 'Pedido', p.estado || 'recebido', p.autor || dataCurta(p.criado_em))) : [vazio('Nenhum pedido de tradução.')]))))
+      if (aba === 'atividade') corpo.replaceChildren(
+        el('div', { class: 'privacidade' }, 'Downloads ainda não são registrados por leitor. Esta central não inventa esse dado e não expõe tokens, IP completo ou o conteúdo de marcações.'),
+        el('div', { class: 'central-grade' },
+          bloco('Sessões ativas', ...(d.sessoes.length ? d.sessoes.map((x) => linha(x.agente || 'Aparelho', `visto ${dataCurta(x.visto_em)}`, `criada ${dataCurta(x.criado_em)}`)) : [vazio('Nenhuma sessão ativa.')])),
+          bloco('Atividade de leitura', ...(d.progresso.length ? d.progresso.slice(0, 8).map((p) => linha(p.titulo, 'progresso atualizado', new Date(p.mudou_em).toLocaleString('pt-BR'))) : [vazio('Nenhuma atividade sincronizada.')]))))
+    }
+    for (const [k, rotulo] of [['resumo','Resumo'],['leitura','Leitura'],['idiomas','Idiomas e traduções'],['atividade','Atividade']]) {
+      const b = el('button', { type: 'button', onclick: () => mostrar(k) }, rotulo); b._aba = k; abasDetalhe.append(b)
+    }
+    caixa.append(el('div', { class: 'central-topo' }, el('div', {}, el('h3', {}, c.nome), el('p', {}, `@${c.usuario}${c.email ? ` · ${c.email}` : ''}`)),
+      el('button', { class: 'fraco', onclick: () => detalhe.replaceChildren() }, 'fechar')), abasDetalhe, corpo)
+    detalhe.replaceChildren(caixa); mostrar('resumo'); caixa.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
   return s
 }
 
@@ -752,22 +800,38 @@ function secaoPublicacoes(d) {
 
 // A navegação do painel: três frentes, uma de cada vez. Guarda a escolha em
 // memória para redesenhos não voltarem sempre ao começo.
-let abaAtual = 'controle'
+const ABAS_USUARIOS = new Set(['assinaturas', 'publicacoes', 'correcoes', 'mensagens', 'ajustes'])
+// as abas que viraram o Panorama continuam abrindo nele (endereço salvo)
+let abaAtual = ({ geral: 'panorama', esteira: 'panorama', acervo: 'panorama' })[location.hash.slice(1)] ?? (location.hash.slice(1) || 'panorama')
 function abas(defs) {
-  const barra = el('div', { class: 'aba', style: 'margin:0 0 22px' })
+  const principal = el('nav', { class: 'areas-painel', 'aria-label': 'Áreas do painel' })
+  const barra = el('nav', { class: 'aba subareas-painel', 'aria-label': 'Seções da área' })
+  const descricao = el('p', { class: 'ajuda' })
   const alvo = el('div', {})
+  const escolher = (chave) => {
+    abaAtual = chave
+    history.replaceState(null, '', '#' + chave)
+    pintar()
+  }
   const pintar = () => {
-    const def = defs.find((d) => d[0] === abaAtual) ?? defs[0]
-    for (const b of barra.children) b.setAttribute('aria-selected', String(b._chave === def[0]))
+    const def = defs.find(d => d[0] === abaAtual) ?? defs[0]
+    const usuarios = ABAS_USUARIOS.has(def[0])
+    principal.replaceChildren(...[
+      ['Site', 'Acervo, tradução e funcionamento', 'panorama', false],
+      ['Usuários', 'Contas, assinaturas e atendimento', 'assinaturas', true],
+    ].map(([titulo, subtitulo, chave, area]) => el('button', {
+      type: 'button', 'aria-pressed': String(usuarios === area), onclick: () => escolher(chave),
+    }, el('strong', {}, titulo), el('span', {}, subtitulo))))
+    descricao.textContent = usuarios
+      ? 'Tudo relacionado aos usuários: consulte cada conta, gerencie planos, acompanhe leituras e cuide do atendimento e das contribuições.'
+      : 'Administre o catálogo, as traduções e o funcionamento da Fiolib.'
+    barra.replaceChildren(...defs.filter(d => ABAS_USUARIOS.has(d[0]) === usuarios).map(([chave, rotulo]) =>
+      el('button', { type: 'button', 'aria-current': chave === def[0] ? 'page' : null,
+        'aria-selected': String(chave === def[0]), onclick: () => escolher(chave) }, rotulo)))
     alvo.replaceChildren(...def[2]())
   }
-  for (const [chave, rotulo] of defs) {
-    const b = el('button', { onclick: () => { abaAtual = chave; pintar() } }, rotulo)
-    b._chave = chave
-    barra.append(b)
-  }
   pintar()
-  return el('div', {}, barra, alvo)
+  return el('div', {}, principal, descricao, barra, alvo)
 }
 
 const recado = (tipo, texto) => el('div', { class: `recado ${tipo}` }, texto)
@@ -776,18 +840,6 @@ function cartao(n, r) {
   return el('div', { class: 'cartao' }, el('div', { class: 'n' }, num(n)), el('div', { class: 'r' }, r))
 }
 
-function panorama(p) {
-  const a = p.acervo
-  return el('section', {},
-    el('h2', {}, 'O acervo'),
-    el('div', { class: 'cartoes' },
-      cartao(a.legiveis, 'livros para ler'),
-      cartao(a.obras, 'obras no catálogo'),
-      cartao(a.nossas, 'traduzidos por nós'),
-      cartao(Math.round(a.palavras / 1e6) + ' mi', 'palavras'),
-      cartao(a.autores, 'autores'),
-      cartao(p.leitores.contas, 'contas de leitor')))
-}
 
 function secaoFila(itens) {
   const s = el('section', {}, el('h2', {}, `Fila de tradução (${itens.length})`))
@@ -800,7 +852,11 @@ function secaoFila(itens) {
   for (const it of itens) {
     const acao = el('span', {},
       it.estado === 'erro' ? el('button', { class: 'fraco', onclick: () => retentar(it.id) }, 'tentar de novo') : '',
-      ['espera', 'erro'].includes(it.estado) ? el('button', { class: 'fraco', onclick: () => remover(it.id) }, 'tirar') : '')
+      ['espera', 'erro'].includes(it.estado) ? el('button', { class: 'fraco', onclick: () => remover(it.id) }, 'tirar') : '',
+      ['espera', 'na_esteira'].includes(it.estado) ? el('button', { class: 'fraco', title: 'a esteira pega este antes dos outros', onclick: async (ev) => {
+        ev.target.disabled = true
+        try { await pedir('/fila/prioridade', { id: it.id, prioridade: true }); ev.target.textContent = 'na frente ✓' } catch (e) { ev.target.disabled = false; alert(e.message) }
+      } }, 'passar à frente') : '')
     // Na esteira depois de uma falha: diz quando volta, em vez de parecer parado.
     const volta = it.estado === 'na_esteira' && it.tentar_depois
       ? el('div', { class: 'ajuda', style: 'font-size:12px' }, `falhou ${it.tentativas}× · tenta de novo às ${new Date(it.tentar_depois.replace(' ', 'T') + 'Z').toLocaleString('pt-BR', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' })}`)
@@ -1028,6 +1084,224 @@ function secaoControle() {
   return s
 }
 
+// ─────────────────────────────────────────────────────────────
+// VISÃO GERAL (05/10/2026): a primeira tela, de relance.
+// ─────────────────────────────────────────────────────────────
+const SVG = 'http://www.w3.org/2000/svg'
+const svg = (tag, attrs = {}, ...filhos) => {
+  const e = document.createElementNS(SVG, tag)
+  for (const [k, v] of Object.entries(attrs)) if (v != null) e.setAttribute(k, v)
+  for (const f of filhos) e.append(f?.nodeType ? f : document.createTextNode(String(f ?? '')))
+  return e
+}
+const diaCurto = (d) => { const [, m, dd] = d.split('-'); return `${dd}/${m}` }
+
+/**
+ * Barras de uma série só, uma por dia. Cor de destaque do painel, barra fina
+ * com a ponta arredondada, grade discreta, valor ao passar o mouse (title) e
+ * no topo só o maior valor — número em toda barra vira ruído.
+ */
+function graficoDias(serie, rotulo) {
+  const W = 640, H = 170, M = { t: 14, r: 8, b: 22, l: 30 }
+  const max = Math.max(1, ...serie.map((p) => p.n))
+  const passo = (W - M.l - M.r) / serie.length
+  const larg = Math.max(3, passo - 3)
+  const y = (v) => M.t + (H - M.t - M.b) * (1 - v / max)
+  const g = svg('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': `${rotulo} nos últimos ${serie.length} dias`, style: 'width:100%;height:auto;display:block' })
+  for (const v of [0, Math.round(max / 2), max]) {
+    g.append(svg('line', { x1: M.l, x2: W - M.r, y1: y(v), y2: y(v), stroke: 'var(--linha)', 'stroke-width': 1 }))
+    g.append(svg('text', { x: M.l - 6, y: y(v) + 4, 'text-anchor': 'end', 'font-size': 10, fill: 'var(--tinta2)' }, v))
+  }
+  const maior = serie.reduce((a, p, i) => (p.n > serie[a].n ? i : a), 0)
+  serie.forEach((p, i) => {
+    const x = M.l + i * passo + (passo - larg) / 2
+    const h = Math.max(0, H - M.b - y(p.n))
+    const barra = svg('rect', { x, y: y(p.n), width: larg, height: h || 0.01, rx: Math.min(3, larg / 2), fill: 'var(--acento)' })
+    // alvo maior que a barra, para o mouse achar até o dia com zero
+    const alvo = svg('rect', { x: M.l + i * passo, y: M.t, width: passo, height: H - M.t - M.b, fill: 'transparent' },
+      svg('title', {}, `${diaCurto(p.dia)}: ${num(p.n)} ${rotulo}`))
+    g.append(barra, alvo)
+    if (i % 5 === 0 || i === serie.length - 1) g.append(svg('text', { x: x + larg / 2, y: H - 6, 'text-anchor': 'middle', 'font-size': 10, fill: 'var(--tinta2)' }, diaCurto(p.dia)))
+    if (i === maior && p.n > 0) g.append(svg('text', { x: x + larg / 2, y: y(p.n) - 4, 'text-anchor': 'middle', 'font-size': 10, fill: 'var(--tinta)' }, num(p.n)))
+  })
+  return g
+}
+
+
+// ─────────────────────────────────────────────────────────────
+// O PANORAMA (05/10/2026, segunda leva): uma aba só, de cima para baixo —
+// o site, os livros (o que está certo e o que falta), a lista de revisão
+// pelos mais lidos, a lista de tradução, os traduzidos e, recolhidas, as
+// ferramentas de editar o acervo e de pôr livro na fila.
+// ─────────────────────────────────────────────────────────────
+const ESTADO_LIVRO = {
+  limpo: ['Prontos', '#3aa55d', 'Texto digitado e revisado pela fonte, grafia de hoje.'],
+  grafia: ['Grafia antiga', '#4f7fd1', 'Escritos antes de 1943 ("elle", "pharmacia"). O site já mostra com a grafia de hoje ("ele", "farmácia"), por uma lista de palavras conferida antes de valer. O que a lista ainda não cobre aparece em "Falta", na lista de revisão.'],
+  escaneado: ['Escaneados', '#d08a2e', 'Lidos de foto de página (archive.org): trocam letras. Os erros de leitura que se repetem estão sendo corrigidos por uma lista conferida.'],
+  traducao: ['Traduzidos por máquina', '#c0504d', 'Estão sendo traduzidos de novo, frase por frase, pelo tradutor novo, com o portão e a volta a um clique.'],
+}
+
+function barraEmpilhada(partes) {
+  const total = partes.reduce((s, p) => s + p.n, 0) || 1
+  return el('div', {},
+    el('div', { style: 'display:flex;height:22px;border-radius:6px;overflow:hidden;gap:2px;background:var(--pg)' },
+      partes.filter((p) => p.n).map((p) => el('div', { title: `${p.rotulo}: ${num(p.n)}`, style: `flex:${p.n} 0 0;background:${p.cor}` }))),
+    el('div', { style: 'display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:12px' },
+      partes.map((p) => el('div', { style: 'font-size:14px' },
+        el('div', {}, el('span', { style: `display:inline-block;width:10px;height:10px;border-radius:2px;background:${p.cor};margin-right:6px` }),
+          el('b', {}, `${num(p.n)} ${p.rotulo.toLowerCase()}`), el('span', { class: 'ajuda' }, ` · ${Math.round((p.n / total) * 100)}%`)),
+        el('div', { class: 'ajuda', style: 'font-size:13px;margin-top:2px' }, p.texto)))))
+}
+
+function secaoPanorama(filaItens) {
+  const s = el('section', {})
+  const topo = el('div', {}, el('p', { class: 'ajuda' }, 'carregando…'))
+  const livros = el('div', {})
+  const revisao = el('div', {})
+  s.append(topo, livros, revisao)
+
+  pedir('/admin/geral').then((g) => {
+    const l = g.leitores
+    topo.replaceChildren(
+      el('h2', {}, 'O site agora'),
+      el('div', { class: 'cartoes' },
+        cartao(l.hoje, 'pessoas hoje'), cartao(l.semana, 'em 7 dias'), cartao(l.mes, 'em 30 dias'),
+        cartao(g.leituras.hoje, 'livros abertos hoje'), cartao(g.leituras.semana, 'abertos em 7 dias')),
+      grupo('Livros abertos por dia', null, graficoDias(g.leituras.porDia, 'livros abertos')))
+  }).catch((e) => topo.replaceChildren(recado('ruim', e.message)))
+
+  pedir('/admin/acervo-estado').then((a) => {
+    livros.replaceChildren(
+      el('h2', {}, 'Os livros: o que está certo e o que falta'),
+      el('p', { class: 'ajuda' }, `${num(a.total)} livros em português, todos no site. Cada um passa pela conferência do seu grupo, e a versão corrigida entra no lugar sozinha; enquanto isso o leitor vê um aviso de que o livro está em revisão.`),
+      barraEmpilhada(['limpo', 'grafia', 'escaneado', 'traducao'].map((k) => ({ rotulo: ESTADO_LIVRO[k][0], cor: ESTADO_LIVRO[k][1], texto: ESTADO_LIVRO[k][2], n: a.conta[k] ?? 0 }))))
+    revisao.replaceChildren(listaDeRevisao(a))
+    s.append(listaDeTraducao(filaItens), secaoRetraducao(), avisoRevisora(),
+      el('details', { class: 'grupo', style: 'margin-top:26px' }, el('summary', { style: 'cursor:pointer;font-weight:600' }, 'Editar um livro do acervo (título, autor, capa, esconder)'), secaoAcervo()),
+      el('details', { class: 'grupo', style: 'margin-top:12px' }, el('summary', { style: 'cursor:pointer;font-weight:600' }, 'Pôr livros na fila de tradução'), secaoAdicionar()))
+  }).catch((e) => livros.replaceChildren(recado('ruim', e.message)))
+  return s
+}
+
+// A lista de revisão: os livros que as pessoas abrem, do mais lido para baixo.
+function listaDeRevisao(a) {
+  const s = el('section', {}, el('h2', {}, 'Lista de revisão — dos mais lidos para baixo'))
+  s.append(el('p', { class: 'ajuda' },
+    'Os livros abertos nos últimos 60 dias. "Falta" diz o que ainda está errado em cada um. Quem revisa sou eu (Claude), livro a livro, começando do topo; ',
+    '"revisado" quer dizer que eu li e consertei.'))
+  const falta = (r) => r.tipo === 'grafia' ? (r.resto >= 0.5 ? `${num(r.resto)} palavras antigas em cada mil ainda sem troca` : 'grafia já atualizada')
+    : r.tipo === 'escaneado' ? 'letras trocadas pelo scan' : r.tipo === 'traducao' ? 'frases da tradução por máquina' : r.tipo === 'limpo' ? 'nada' : '—'
+  const corpo = el('tbody')
+  for (const r of a.lista) {
+    const est = r.revisao?.estado === 'revisado' ? el('span', { class: 'selo pronto', title: r.revisao.nota || '' }, 'revisado')
+      : r.revisao?.estado === 'grafia_lida' ? el('span', { class: 'selo espera', title: r.revisao.nota || '' }, 'palavras lidas')
+        : el('span', { class: 'ajuda' }, 'a revisar')
+    corpo.append(el('tr', {},
+      el('td', {}, el('a', { href: `/#/ler/${r.obra}`, target: '_blank' }, r.titulo)),
+      el('td', { class: 'mono' }, `${num(r.vezes)}×`),
+      el('td', {}, el('span', { style: `display:inline-block;width:8px;height:8px;border-radius:2px;background:${ESTADO_LIVRO[r.tipo]?.[1] ?? 'var(--linha)'};margin-right:6px` }), ESTADO_LIVRO[r.tipo]?.[0] ?? r.tipo),
+      el('td', { style: 'font-size:13px' }, falta(r)),
+      el('td', {}, est)))
+  }
+  s.append(el('div', { style: 'overflow-x:auto' }, el('table', {},
+    el('thead', {}, el('tr', {}, el('th', {}, 'Livro'), el('th', {}, 'Aberto'), el('th', {}, 'Tipo'), el('th', {}, 'Falta'), el('th', {}, 'Revisão'))), corpo)))
+  return s
+}
+
+// A lista de tradução: a esteira agora, e o que vem depois.
+function listaDeTraducao(itens) {
+  const s = el('section', { style: 'margin-top:26px' }, el('h2', {}, 'Lista de tradução'))
+  s.append(el('p', { class: 'ajuda' },
+    'A esteira pega um livro da fila, traduz frase por frase e publica. A frase que o tradutor inventa é barrada e fica no original. ',
+    'O livro traduzido entra no site na hora, com o aviso de revisão.'))
+  s.append(esteiraAoVivo())
+  const espera = itens.filter((i) => i.estado === 'espera' || i.estado === 'na_esteira')
+  const tabela = secaoFila(itens.slice(0, 40))
+  s.append(el('details', {}, el('summary', { style: 'cursor:pointer' }, `Ver a fila (${num(espera.length)} esperando; mostrando os 40 primeiros)`), tabela))
+  return s
+}
+
+// ── a retradução com o tradutor novo (06/10): o portão, e a volta a um clique ──
+const ESTADO_RE = { promovida: ['no site', 'pronto'], segurada: ['segurado', 'espera'], traduzindo: ['traduzindo', 'na_esteira'], erro: ['erro', 'erro'], desfeita: ['voltou ao antigo', 'espera'] }
+function secaoRetraducao() {
+  const s = el('section', { style: 'margin-top:26px' }, el('h2', {}, 'Retradução com o tradutor novo'))
+  s.append(el('p', { class: 'ajuda' },
+    'Os livros já traduzidos são traduzidos de novo pelo tradutor novo, dos mais lidos para os menos. O livro novo só substitui o do site se passar no portão: ',
+    'mesmo número de capítulos, tamanho parecido, quase nada sem traduzir, e menos inglês que antes. Se não passar, fica "segurado" e o site não muda. ',
+    '"Voltar ao antigo" devolve a tradução de antes, exatamente como era.'))
+  const alvo = el('div', {}, el('p', { class: 'ajuda' }, 'carregando…'))
+  s.append(alvo)
+  const acao = (caminho, corpo, rot) => el('button', { class: 'fraco', type: 'button', onclick: async (ev) => {
+    ev.target.disabled = true
+    try { await pedir(caminho, corpo); carregar() } catch (e) { ev.target.disabled = false; alert(e.message) }
+  } }, rot)
+  async function carregar() {
+    let r
+    try { r = await pedir('/admin/retraducao') } catch (e) { alvo.replaceChildren(recado('ruim', e.message)); return }
+    const c = r.conta
+    const ligada = r.modo === 'ligada'
+    alvo.replaceChildren(
+      el('div', { style: 'display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px' },
+        el('span', { class: `selo ${ligada ? 'pronto' : 'espera'}` }, ligada ? 'ligada' : 'parada'),
+        acao('/admin/retraducao/modo', { modo: ligada ? 'parada' : 'ligada' }, ligada ? 'Parar' : 'Ligar')),
+      el('div', { class: 'cartoes' },
+        cartao(c.promovida ?? 0, 'já trocados no site'), cartao(c.segurada ?? 0, 'segurados pelo portão'),
+        cartao(r.faltam, 'esperando a vez'), cartao(c.desfeita ?? 0, 'voltaram ao antigo'), cartao(c.erro ?? 0, 'com erro')),
+      r.linhas.length ? el('div', { style: 'overflow-x:auto;margin-top:12px' }, el('table', {},
+        el('thead', {}, el('tr', {}, el('th', {}, 'Livro'), el('th', {}, 'Situação'), el('th', {}, 'Medido'), el('th', {}, ''))),
+        el('tbody', {}, r.linhas.map((l) => {
+          const m = l.metricas
+          const medido = m ? `${num(m.frases)} frases · ${num(m.ficouIngles)} com palavra em inglês · ${num(m.socorroMint)} pelo motor antigo · inglês ${m.inglesAntes}→${m.inglesAgora} por mil` : ''
+          const [rot, cls] = ESTADO_RE[l.estado] ?? [l.estado, 'espera']
+          return el('tr', {},
+            el('td', {}, el('a', { href: `/#/ler/${l.obra_id}`, target: '_blank' }, l.titulo)),
+            el('td', {}, el('span', { class: `selo ${cls}` }, rot), l.motivo ? el('div', { class: 'ajuda', style: 'font-size:12px;max-width:40ch' }, l.motivo) : ''),
+            el('td', { style: 'font-size:12px' }, medido),
+            el('td', { style: 'white-space:nowrap' },
+              l.estado === 'promovida' ? acao('/admin/retraducao/desfazer', { texto: l.texto_id }, 'voltar ao antigo') : '',
+              ['segurada', 'erro', 'desfeita'].includes(l.estado) ? acao('/admin/retraducao/de-novo', { texto: l.texto_id }, 'tentar de novo') : ''))
+        })))) : el('p', { class: 'ajuda' }, 'Nenhum livro retraduzido ainda.'))
+  }
+  carregar()
+  return s
+}
+
+function avisoRevisora() {
+  return el('section', { class: 'grupo', style: 'margin-top:26px' },
+    el('h3', { style: 'margin-top:0' }, 'Revisora automática: desligada'),
+    el('p', { class: 'ajuda', style: 'margin:0' },
+      'Ela usava o mesmo tradutor da esteira para "consertar" frases, e não dá para confiar que ela entende o que muda. Foi desligada em 05/10. ',
+      'As propostas que ela deixou ficam guardadas e não são aplicadas. A revisão agora é a lista acima.'))
+}
+
+// ── os usuários, de relance (no topo da aba de contas) ──
+function painelUsuarios() {
+  const s = el('section', {}, el('h2', {}, 'Usuários'), el('p', { class: 'ajuda' }, 'carregando…'))
+  pedir('/admin/usuarios-geral').then((u) => {
+    const f = u.funil
+    const passo = (n, rotulo) => el('div', { style: 'display:grid;grid-template-columns:200px 1fr 60px;gap:10px;align-items:center;margin:6px 0;font-size:14px' },
+      el('span', {}, rotulo),
+      el('div', { style: 'height:14px;background:var(--pg);border-radius:4px;overflow:hidden' },
+        el('div', { style: `height:100%;width:${Math.round((n / Math.max(1, f.contas)) * 100)}%;background:var(--acento);border-radius:4px` })),
+      el('span', { class: 'mono', style: 'text-align:right' }, num(n)))
+    s.replaceChildren(
+      el('h2', {}, 'Usuários'),
+      el('div', { class: 'cartoes' },
+        cartao(u.contas, 'contas'), cartao(u.ativos.hoje, 'entraram hoje'), cartao(u.ativos.semana, 'entraram em 7 dias'),
+        cartao(u.leram.semana, 'leram em 7 dias'), cartao(u.novos.semana, 'contas novas em 7 dias'), cartao(u.google, 'entram pelo Google')),
+      grupo('Do cadastro à leitura', 'Quantas contas chegam a cada passo.',
+        passo(f.contas, 'criaram conta'), passo(f.abriram, 'abriram algum livro'), passo(f.doisOuMais, 'abriram 2 livros ou mais'),
+        passo(f.leram30, 'leram nos últimos 30 dias'), passo(f.comPlano, 'têm plano (sem a administração)')),
+      grupo('Pessoas lendo por dia', 'Contas que avançaram em algum livro, por dia.', graficoDias(u.leitoresPorDia, 'pessoas lendo')),
+      grupo('Contas novas por dia', null, graficoDias(u.cadastrosPorDia, 'contas novas')),
+      grupo('O que as contas estão lendo', 'Livros com progresso guardado nos últimos 30 dias, por número de pessoas.',
+        u.acompanhados.length ? el('table', {}, el('tbody', {}, u.acompanhados.map((a) => el('tr', {},
+          el('td', {}, el('a', { href: `/#/obra/${a.obra}`, target: '_blank' }, a.titulo)), el('td', { class: 'mono' }, `${num(a.leitores)} pessoa${a.leitores === 1 ? '' : 's'}`)))))
+          : el('p', { class: 'ajuda' }, 'Ninguém com progresso guardado no mês.')))
+  }).catch((e) => s.replaceChildren(recado('ruim', e.message)))
+  return s
+}
+
 // ── a central de configurações, por seções ──
 function grupo(titulo, descricao, ...filhos) {
   return el('div', { class: 'grupo' },
@@ -1059,12 +1333,6 @@ function secaoAjustes(a) {
     el('label', { class: 'liga', style: 'margin-top:10px' },
       el('span', {}, 'Plano grátis: livros novos por mês'), livrosCampo)))
 
-  s.append(grupo('Esteira e jurisdição',
-    'Só leitura. Mudam pelo ambiente do servidor, não por aqui.',
-    el('div', { class: 'cartoes' },
-      cartao(a.esteira_paralelo, 'traduções em paralelo'),
-      cartao(a.jurisdicao, 'jurisdição de direito'))))
-
   const botao = el('button', {}, 'Salvar configurações')
   const salvar = el('form', { class: 'add', onsubmit: async (ev) => {
     ev.preventDefault()
@@ -1083,20 +1351,5 @@ function secaoAjustes(a) {
   return s
 }
 
-function recentes(lista) {
-  const s = el('section', {}, el('h2', {}, 'Últimos que subiram'))
-  if (!lista?.length) { s.append(el('div', { class: 'vazio' }, 'nada ainda')); return s }
-  const t = el('table', {}, el('thead', {}, el('tr', {}, el('th', {}, 'Título'), el('th', {}, 'Autor'), el('th', {}, 'Quando'))))
-  const corpo = el('tbody', {})
-  for (const o of lista) {
-    corpo.append(el('tr', {},
-      // o site navega por hash: `/obra/12` abria a home
-      el('td', {}, el('a', { href: `/#/obra/${o.id}` }, o.titulo)),
-      el('td', {}, o.autor || '—'),
-      el('td', { class: 'mono' }, (o.criado_em || '').slice(0, 16))))
-  }
-  t.append(corpo); s.append(t)
-  return s
-}
 
 iniciar()

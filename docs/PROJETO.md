@@ -1,7 +1,7 @@
-# Fio — o projeto inteiro, em 18/09/2026
+# Fio — o projeto inteiro, em 29/09/2026
 
 Uma biblioteca em português que liga um livro ao próximo. No ar em
-<https://fiolib.com.br> (domínio próprio desde 18/09/2026, Registro.br, ID GACPE180), na mesma VPS do Wallt.
+<https://fiolib.com.br> (domínio próprio desde 18/09/2026, Registro.br, ID GACPE180), em VPS própria.
 Os endereços antigos (`fiolib.duckdns.org`, `fio.142-93-57-2.sslip.io`) e o `www` redirecionam (308) para ele.
 
 **Caddy:** o Caddy é da Fiolib (serviço `caddy` em `infra/docker-compose.yml`, container `infra-caddy-1`). Desde 20/09/2026 a máquina é só dela (2.25.210.20, Hostinger); o Wallt ficou na antiga com o Caddy dele. Configuração: `infra/Caddyfile` (os imports) e `infra/Caddyfile.fiolib` → `/opt/fio/caddy/`. Publicar com `bash infra/publicar-caddy.sh` (valida antes). O registro de acesso fica em `/opt/fio/logs`. Detalhes em docs/VPS.md.
@@ -16,9 +16,9 @@ nos outros arquivos de `docs/` (índice no fim).
 
 | | |
 |---|---|
-| Obras no catálogo | **5.077** |
-| Para ler inteiras aqui | **4.432** (113 milhões de palavras, 88 mil capítulos) |
-| Traduzidas por nós (esteira) | **41**, e o plano da esteira com **203** (86 clássicos populares entraram em 18/09: Jane Eyre, O Morro dos Ventos Uivantes, Mulherzinhas, Sherlock, Padre Brown, Arsène Lupin, Wilkie Collins…) |
+| Obras no catálogo | **5.192** |
+| Para ler inteiras aqui | **4.639** (132,6 milhões de palavras, 95 mil capítulos) |
+| Traduzidas por nós | **224** textos; nova rodada de **28** clássicos validada em 29/09, com 10 concluídos e 18 ainda na esteira no momento desta atualização |
 | Leis oficiais completas | **25** (Constituição, códigos, estatutos) |
 | Obras com capa | **1.921** — 1.405 locais (711 desenhadas por tema, 25 de lei), 516 da Open Library |
 | Seções de descoberta na home | **17** curadas + 4 mantidas + "A lei, na íntegra" |
@@ -309,6 +309,7 @@ Selva) e recusa os outros 28. Ele **não roda sozinho** e o padrão é só mostr
   - **Comunidade — seguir obra** (o "inscrever-se" do Webtoon): aviso quando sai capítulo; filtro "só o que sigo".
   - **Para você — encontro às cegas com um livro** (as livrarias que embrulham o livro): três pacotes com pistas, o título só aparece ao desembrulhar.
 - **Estudo de idiomas** (`servidor/idiomas.mjs`, `servidor/rotas/idiomas.mjs`, `/idiomas.html`, exclusivo do plano **Tear** — 23/09/2026): sete idiomas (francês, espanhol e japonês completos; alemão, russo, italiano e inglês em expansão), cada um um JSON estático em `web/public/dados/idiomas/<chave>.json` (fora do banco — igual à ficha de um livro), com vocabulário falado pela voz do navegador (`speechSynthesis`), associação/dica por unidade, canção de domínio público com letra completa, sugestão de música atual com vídeo do YouTube embutido (`youtube-nocookie.com`), e quiz. Cada resposta acertada ou errada do quiz alimenta uma fila de **repetição espaçada** (SM-2, `idiomas.sm2`) por pessoa, guardada em duas tabelas pequenas (`idioma_progresso`, `idioma_revisao`) — o curso em si nunca muda por pessoa. Respostas do quiz tipo "traduzir" são comparadas sem acento (NFD) e sem ß (vira "ss"); para russo e japonês, a resposta esperada é sempre transliteração/romaji digitável em teclado ABNT, nunca cirílico ou kana/kanji — não há como digitar isso sem teclado próprio. Os arquivos `.json` moram em `/dados`, fora do que `infra/publicar-paginas.sh` toca — sobem por scp direto para `/opt/fio/site/dados/idiomas/`.
+- **Idiomas, segunda rodada** (29/09/2026): visual refeito como mesa de estudo, busca de aulas, nova aba **Praticar** com cartões das palavras salvas e treino rápido de dez palavras, reforço das unidades abaixo de 80% e retorno explícito ao salvar quizzes e notas. A sequência de dias agora registra o dia em que a pessoa estudou (antes usava por engano a data futura da revisão). O servidor valida se unidade, pergunta e placar realmente pertencem ao curso antes de gravar. Trocar de seção cancela a voz e respostas atrasadas não redesenham a tela anterior.
 - **Gosto, recomendações e avisos** (`servidor/gosto.mjs`, `/central.html`):
   - **Conta nova** responde humores, livros que ama, autores, tempo e o que evitar, e sai com recomendações na hora. **Conta antiga** não é interrompida.
   - A recomendação é uma **conta aberta com o motivo escrito** ("porque você leu Crime e Castigo"). Pesa o que a pessoa **lê** (tempo e idade da leitura) mais do que o que ela disse, e o questionário perde peso conforme ela lê.

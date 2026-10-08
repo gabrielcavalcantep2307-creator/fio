@@ -375,6 +375,7 @@ CREATE TABLE IF NOT EXISTS fila_traducao (
   morte      INTEGER,
   fonte      TEXT NOT NULL,
   idioma     TEXT NOT NULL DEFAULT 'en',
+  titulo_pt  TEXT,                         -- 05/10: decidido na fila (antes nascia em inglês)
   estado     TEXT NOT NULL DEFAULT 'espera'
              CHECK (estado IN ('espera','na_esteira','pronto','erro')),
   obra_id    INTEGER REFERENCES obra(id),
@@ -611,4 +612,12 @@ CREATE TABLE registro (
   acao      TEXT NOT NULL,
   alvo      TEXT,
   detalhe   TEXT
+);
+
+-- 05/10/2026: o selo de qualidade (servidor/selo.mjs). Vitrine só com selo.
+CREATE TABLE IF NOT EXISTS selo_obra (
+  obra_id INTEGER PRIMARY KEY REFERENCES obra(id),
+  estado  TEXT NOT NULL CHECK (estado IN ('aprovado', 'retirado')),
+  motivo  TEXT,
+  em      TEXT NOT NULL DEFAULT (datetime('now'))
 );

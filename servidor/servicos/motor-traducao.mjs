@@ -30,6 +30,7 @@
 // {"translation": "...", "model": "nllb200-600M"}. O modelo é o NLLB-200 da
 // Meta, de 600 milhões de parâmetros, servido pela Wikimedia sem chave.
 import { readFileSync } from 'node:fs'
+import { localDisponivel } from './tradutor-local.mjs'
 
 const SERVICO = 'https://translate.wmcloud.org/api/translate'
 
@@ -83,6 +84,9 @@ export async function saldoDeepL() {
  */
 export async function escolherMotor({ caracteres, de, jaComecado, reserva: reservaPedida }) {
   if (jaComecado) return { motor: 'mint', porque: 'livro já começado no MinT' }
+  // 06/10/2026: o tradutor local (Opus-MT na VPS) é melhor que o MinT e não cai.
+  // Ele vem antes do DeepL também: o DeepL tem cota e, sem chave, nem existe.
+  if (await localDisponivel(de)) return { motor: 'local', porque: 'tradutor local (Opus-MT) de pé para ' + de }
   if (!DEEPL_ORIGENS.has(de)) return { motor: 'mint', porque: `o DeepL não traduz do ${de}` }
   const saldo = await saldoDeepL()
   if (!saldo) return { motor: 'mint', porque: 'sem chave do DeepL (ou ele não respondeu)' }
@@ -124,6 +128,7 @@ export async function traduzirDeepL(texto, de, { contexto } = {}) {
  */
 export const motorDisponivel = (motor = 'mint') => (motor === 'deepl'
   ? { nome: 'DeepL', custo: 0, instruivel: false }
+  : motor === 'local' ? { nome: 'Opus-MT (local, na VPS)', custo: 0, instruivel: false }
   : { nome: 'MinT (Wikimedia)', custo: 0, instruivel: false })
 
 /** `null` quer dizer "roda". Qualquer texto aqui é o que impede. */

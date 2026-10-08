@@ -298,6 +298,106 @@ export function trocaSegura(antes, depois, { exigirMaisPortugues = true } = {}) 
 }
 
 // ─────────────────────────────────────────────────────────────
+// A trava contra frase INVENTADA (05/10/2026)
+//
+// Ensaio da retradução por bloco em O Processo, cap. 7: o alemão
+//   "Prozesse, die ... äußerlich noch hoffnungsloser waren. Ein Verzeichnis
+//    dieser Prozesse habe er hier in der Schublade..."
+// voltou como
+//   "...eram ainda mais desesperados. O senhor deputado Geraldo Gonzalez, que
+//    foi o primeiro a apresentar o relatório, disse que o relatório foi
+//    publicado em um relatório de trabalho."
+// O NLLB não errou a frase: INVENTOU outra, com nome de gente. E a trava 4
+// aprovaria, porque o capítulo "ficou mais português". Por isso a conferência
+// é por FRASE, antes de a frase entrar, e olha o que alucinação deixa de rastro:
+//   - nome próprio no meio da frase que não existe no original;
+//   - número que não estava lá, ou que sumiu;
+//   - tamanho fora da proporção (frase engolida ou multiplicada);
+//   - o mesmo trecho de três palavras repetido em laço;
+//   - a frase continuou na língua de origem.
+// Recusar uma tradução boa custa pouco: a frase fica como estava, em alemão,
+// e espera. Aceitar uma inventada é pior que não traduzir.
+// ─────────────────────────────────────────────────────────────
+
+const DIGITOS = (s) => (String(s).match(/\d+/g) ?? []).sort().join(',')
+const raiz = (w) => w.toLowerCase().normalize('NFD').replace(/\p{M}/gu, '').slice(0, 4)
+
+// Palavra de maiúscula que o português escreve assim e não é nome inventado:
+// título, instituição, festa ("o Papa", "assuntos do Estado", "Sua Majestade").
+const TITULOS_PT = new Set(('Papa Estado Rei Rainha Deus Senhor Senhora Igreja Império Imperador Imperatriz Conde Condessa Duque Duquesa Marquês Barão '
+  + 'Príncipe Princesa Santo Santa São Dom Dona Majestade Alteza Excelência Senado Corte Coroa República Natal Páscoa Cristo Virgem Sra Srta Sua Seu Vossa Nossa Nosso Padre Madre Irmão Irmã Capitão Coronel General Doutor Professor').split(' '))
+
+/** Nomes que a tradução trouxe e o original não tem. */
+export function nomesNovos(origem, traducao) {
+  const doOriginal = new Set((String(origem).match(/\p{L}+/gu) ?? []).map(raiz))
+  const novos = []
+  // maiúscula que não abre frase: depois de letra, vírgula, etc.
+  for (const m of String(traducao).matchAll(/(?<=[\p{L},;:)\]]\s+)(\p{Lu}\p{Ll}{2,})/gu)) {
+    if (!doOriginal.has(raiz(m[1])) && !TITULOS_PT.has(m[1])) novos.push(m[1])
+  }
+  return novos
+}
+
+/**
+ * Nomes do original que a tradução não trouxe com a mesma cara — porque foram
+ * TRADUZIDOS: "Christmas" -> "Natal", "King Solomon" -> "Rei Salomão",
+ * "Her Majesty" -> "Sua Majestade". (06/10/2026: no piloto do tradutor novo,
+ * a trava de nome segurou 10 frases de 140 em O Presente dos Magos por isso.)
+ */
+const TITULOS_EN = new Set('Mr Mrs Ms Dr Sir Miss Madam Madame Mme Mlle Monsieur Lady Lord St Saint Herr Captain Colonel General Doctor Professor King Queen Pope Prince Princess Count Countess Duke Duchess Emperor Empress Baron Majesty Highness Excellency'.split(' '))
+const ABRE_FRASE = new Set('The He She It They We You I A An In On At But And This That These Those There When As If His Her Their Its Our My For With After Before So Then Now What Who Which Why How Yes No Oh Not All Some One Every Thus Yet Here Where While'.split(' '))
+export function nomesSumidos(origem, traducao) {
+  const daTraducao = new Set((String(traducao).match(/\p{L}+/gu) ?? []).map(raiz))
+  const sumidos = []
+  // qualquer maiúscula do original, também a que abre frase ("Machiavelli's
+  // life" -> "A vida de Maquiavel"), menos as palavras que só abrem frase;
+  // "St. John" -> "São João" são dois nomes por dois
+  for (const m of String(origem).matchAll(/(?<![\p{L}'’])(\p{Lu}\p{L}{1,})/gu)) {
+    // título não é nome dos dois lados: "Mr" vira "Sr", "King" vira "Rei"
+    if (ABRE_FRASE.has(m[1]) || TITULOS_EN.has(m[1])) continue
+    if (!daTraducao.has(raiz(m[1]))) sumidos.push(m[1])
+  }
+  return sumidos
+}
+
+/** Esta frase traduzida pode entrar no lugar da original? */
+export function traducaoConfiavel(origem, traducao, lingua) {
+  const o = String(origem).trim()
+  const t = String(traducao ?? '').trim()
+  if (!t) return { pode: false, motivo: 'vazio' }
+  const razao = t.length / Math.max(1, o.length)
+  if (razao < 0.55 || razao > 1.8) return { pode: false, motivo: 'proporção ' + razao.toFixed(2) }
+  if (DIGITOS(o) !== DIGITOS(t)) {
+    // "on the sixth of August" -> "em 6 de agosto": o número por extenso vira
+    // algarismo. Passa se todo número do original continua lá e o original
+    // tem número escrito por extenso para explicar o que apareceu.
+    const doO = (o.match(/\d+/g) ?? []), doT = (t.match(/\d+/g) ?? [])
+    const todosFicaram = doO.every((n) => doT.includes(n))
+    const porExtenso = /\b(one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|twenty|thirty|forty|fifty|hundred|thousand|first|second|third|fourth|fifth|sixth|seventh|eighth|ninth|tenth|eleventh|twelfth|thirteenth|fourteenth|fifteenth|sixteenth|seventeenth|eighteenth|nineteenth|twentieth|thirtieth|dozen)\b/i.test(o)
+    if (!(todosFicaram && porExtenso && doT.length - doO.length <= 2)) return { pode: false, motivo: 'números mudaram' }
+  }
+  // número romano que o original não tem ("Pope Benedict" -> "Papa Bento XVI")
+  const romanosO = new Set(o.match(/\b[IVXLCDM]{2,}\b/g) ?? [])
+  const romanoNovo = (t.match(/\b[IVXLCDM]{2,}\b/g) ?? []).find((x) => !romanosO.has(x))
+  // ("nineteenth century" -> "século XIX" é tradução: o original tem o número por extenso)
+  if (romanoNovo && !/\b(first|second|third|fourth|fifth|sixth|seventh|eighth|ninth|tenth|eleventh|twelfth|thirteenth|fourteenth|fifteenth|sixteenth|seventeenth|eighteenth|nineteenth|twentieth|twenty-first)\b/i.test(o)) return { pode: false, motivo: 'número romano que não está no original: ' + romanoNovo }
+  // nome novo só passa trocado um por um com um nome do original que sumiu
+  // ("Christmas" -> "Natal"); nome que aparece do nada ("deputado Geraldo
+  // Gonzalez", o vício do NLLB) não tem par, e segura a frase
+  // (em alemão todo substantivo tem maiúscula: "Auge", "Beamten" sumiriam e
+  // pagariam o "Conselho de Ministros" inventado — lá a regra fica a de antes)
+  const nomes = nomesNovos(o, t)
+  if (nomes.length > (lingua === 'de' ? 0 : nomesSumidos(o, t).length)) return { pode: false, motivo: 'nome que não está no original: ' + nomes.slice(0, 3).join(', ') }
+  const ws = (t.toLowerCase().match(/\p{L}+/gu) ?? [])
+  const tri = new Map()
+  for (let i = 0; i + 2 < ws.length; i++) { const k = ws[i] + ' ' + ws[i + 1] + ' ' + ws[i + 2]; tri.set(k, (tri.get(k) ?? 0) + 1) }
+  if ([...tri.values()].some((n) => n >= 3)) return { pode: false, motivo: 'repetição em laço' }
+  const m = medirLingua(t)
+  if (m.palavras >= 4 && m.lingua === lingua) return { pode: false, motivo: 'continuou em ' + lingua }
+  return { pode: true }
+}
+
+// ─────────────────────────────────────────────────────────────
 // Pedaços do tamanho que o motor aguenta
 //
 // Descoberto em 20/09/2026, medindo O Castelo: o defeito grande não é palavra

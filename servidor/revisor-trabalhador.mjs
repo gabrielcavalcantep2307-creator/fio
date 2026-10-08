@@ -160,16 +160,24 @@ function trocarTextoDoParagrafo(p, novo) {
  * voltar na língua de origem, ele fica como estava em vez de contaminar o
  * resto, e o conjunto ainda melhora.
  */
+/** O MinT às vezes fecha a conexão no meio ("other side closed"): uma segunda chance, cinco segundos depois. */
+async function comUmaTentativaAMais(fazer) {
+  try { return await fazer() } catch {
+    await new Promise((r) => setTimeout(r, 5000))
+    return fazer()
+  }
+}
+
 async function traduzirEmPedacos(cru, de) {
-  const pedacos = revisao.emPedacos(cru)
+  // 05/10/2026: frase a frase e com a trava de invenção, como a retradução
+  // de trecho — pedaço de 900 letras era onde o motor inventava frase.
   const prontos = []
-  for (const p of pedacos) {
+  for (const f of revisao.emPedacos(cru, 0)) {
     try {
-      const veio = String(await traduzir(p, { de, para: 'pt' })).trim()
-      const m = revisao.medirLingua(veio)
-      prontos.push(veio && m.lingua !== de ? veio : p)
+      const veio = String(await comUmaTentativaAMais(() => traduzir(f, { de, para: 'pt' }))).trim()
+      prontos.push(revisao.traducaoConfiavel(f, veio, de).pode ? veio : f)
     } catch {
-      prontos.push(p)
+      prontos.push(f)
     }
   }
   return prontos.join(' ')
@@ -203,6 +211,7 @@ async function revisarLivro(livro, modo) {
   let recusadas = 0
   let retraduzidos = 0
   let suspeito = null
+  const frasesRecusadas = []
 
   for (const cap of caps) {
     if (suspeito) break
@@ -252,35 +261,80 @@ async function revisarLivro(livro, modo) {
       else { trocas++; noCapitulo += quantas; if (modo === 'aplicar') corpo = n.html }
     }
 
-    // ── b. parágrafo que ficou na língua de origem ──
+    // ── b. trecho que ficou na língua de origem ──
+    //
+    // POR BLOCO DE FRASES, NÃO POR PARÁGRAFO (05/10/2026). Até aqui o
+    // parágrafo inteiro era medido, e o de mais de 4.000 letras era pulado.
+    // Só que a esteira emenda o livro em parágrafos gigantes: o capítulo 7 de
+    // O Processo tem 29 parágrafos em 98 mil letras, e 12.922 palavras em
+    // alemão moravam justamente neles — invisíveis para a medida e acima do
+    // teto. O mesmo em Ulisses (24 mil palavras em inglês) e outros dez.
+    // Agora o parágrafo é cortado em blocos de frases (emPedacos), cada bloco
+    // é medido sozinho, e só o bloco na língua de origem vai ao motor. A
+    // prova de "ficou mais português" continua valendo para o capítulo.
     const ps = corpo.match(PARAGRAFO) ?? []
     for (const p of ps) {
-      if (retraduzidos >= TETO_RETRADUCAO_LIVRO) { suspeito = 'passou de ' + TETO_RETRADUCAO_LIVRO + ' parágrafos para retraduzir'; break }
+      if (retraduzidos >= TETO_RETRADUCAO_LIVRO) { suspeito = 'passou de ' + TETO_RETRADUCAO_LIVRO + ' trechos para retraduzir'; break }
       if (noCapitulo >= tetoDo(cap)) break
-      const lingua = revisao.ficouNaOrigem(p)
-      if (!lingua) continue
       const cru = revisao.semTags(p)
-      if (cru.length < 60 || cru.length > 4000) continue
+      if (cru.length < 60) continue
 
-      let vindo
-      try {
-        vindo = await traduzir(cru, { de: lingua, para: 'pt' })
-      } catch (e) {
-        recusadas++
-        gravarTroca.run(livro.texto_id, cap.id, 'retraducao', lingua, p, '', 'recusada', 'motor: ' + e.message)
+      let novoP = p
+      let linguaDoParagrafo = null
+      let falhou = null
+      let blocos = 0
+      for (const bloco of revisao.emPedacos(cru)) {
+        const lingua = revisao.ficouNaOrigem(bloco)
+        if (!lingua || bloco.length < 60) continue
+        // marcação no meio do bloco (<em>, nota): o texto cru não aparece
+        // igual dentro do parágrafo, e trocar exigiria adivinhar onde a tag
+        // recomeça. Fica como está.
+        if (!novoP.includes(bloco)) continue
+        // FRASE A FRASE, cada uma conferida (revisao.traducaoConfiavel): o
+        // ensaio de 05/10 mostrou o motor inventando frase inteira quando
+        // recebe um bloco grande. Frase recusada fica como estava.
+        const frases = revisao.emPedacos(bloco, 0)
+        const saida = []
+        let mudou = 0
+        for (const f of frases) {
+          const lf = revisao.medirLingua(f)
+          if (lf.palavras < 3 || lf.lingua !== lingua) { saida.push(f); continue }
+          let vindo
+          try {
+            vindo = String(await comUmaTentativaAMais(() => traduzir(f, { de: lingua, para: 'pt' }))).trim()
+          } catch (e) { falhou = { lingua, motivo: 'motor: ' + e.message }; saida.push(f); continue }
+          const v = revisao.traducaoConfiavel(f, vindo, lingua)
+          if (!v.pode) { frasesRecusadas.push(v.motivo); saida.push(f); continue }
+          saida.push(vindo)
+          mudou++
+        }
+        if (!mudou) continue
+        const novoBloco = saida.join(' ')
+        novoP = novoP.replace(bloco, () => novoBloco)
+        linguaDoParagrafo = lingua
+        blocos++
+      }
+      if (novoP === p) {
+        if (falhou) { recusadas++; gravarTroca.run(livro.texto_id, cap.id, 'retraducao', falhou.lingua, p, '', 'recusada', falhou.motivo) }
         continue
       }
-      const novoP = p.replace(cru, String(vindo).trim())
-      const depois = corpo.replace(p, novoP)
+      const lingua = linguaDoParagrafo
+      // com função: um $ no texto traduzido não vira padrão de troca
+      const depois = corpo.replace(p, () => novoP)
       const fim = tentar({
         textoId: livro.texto_id, capituloId: cap.id, tipo: 'retraducao', regra: lingua,
         antes: corpo, depois, modo, exigirMaisPortugues: true,
       })
       if (fim === 'recusada') recusadas++
-      else { trocas++; retraduzidos++; noCapitulo++; if (modo === 'aplicar') corpo = depois }
+      else { trocas++; retraduzidos += blocos; noCapitulo++; if (modo === 'aplicar') corpo = depois }
     }
   }
 
+  if (frasesRecusadas.length) {
+    const porMotivo = {}
+    for (const m of frasesRecusadas) { const k = m.split(':')[0]; porMotivo[k] = (porMotivo[k] ?? 0) + 1 }
+    log('  frases que a trava de invenção segurou: ' + frasesRecusadas.length + ' ' + JSON.stringify(porMotivo))
+  }
   if (suspeito) {
     revisao.marcar(banco, livro.texto_id, 'suspeito', { trocas, recusadas, motivo: suspeito })
     log('  !! SUSPEITO:', suspeito, '— livro parado, nada mais foi mexido nele')

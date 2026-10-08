@@ -2511,7 +2511,7 @@ test('diagramar: emenda a frase cortada, tira página e cabeçalho, conserta o O
     '<p>mercial taverna. E a noite nSo acabava, entSo veio d^entre as casas.</p>' +
     '<p>Outro parágrafo, que começa depois de um ponto final e fica sozinho.</p>' }], { fonte: 'archive' })
   assert.equal(c.corpo,
-    '<p>João Romão foi, dos treze aos vinte e cinco annos, empregado de um vendeiro que enriqueceu entre as quatro paredes de uma suja e commercial taverna. E a noite não acabava, então veio d\'entre as casas.</p>' +
+    '<p>João Romão foi, dos treze aos vinte e cinco anos, empregado de um vendeiro que enriqueceu entre as quatro paredes de uma suja e comercial taverna. E a noite não acabava, então veio d\'entre as casas.</p>' +
     '<p>Outro parágrafo, que começa depois de um ponto final e fica sozinho.</p>')
 })
 
@@ -2540,6 +2540,120 @@ test('diagramar: fala entre aspas no começo NÃO vira epígrafe, e o texto do m
   ])
   assert.doesNotMatch(a.corpo, /epigrafe/)
   assert.equal(b.corpo, '<p>Este foi o primeiro capítulo.</p><p>Crie uma conta.</p>')
+})
+
+// ── o tradutor local e a retradução (06/10/2026) ──
+test('tradutor local: "Mr." não corta a frase, e frase longa vai em orações', async () => {
+  const { emFrases, emOracoes } = await import('./servicos/tradutor-local.mjs')
+  assert.deepEqual(emFrases('A perfect Heaven—and Mr. Heathcliff and I are a pair. “Mr. Lockwood, sir.” He said: no.'),
+    ['A perfect Heaven—and Mr. Heathcliff and I are a pair.', '“Mr. Lockwood, sir.”', 'He said: no.'])
+  assert.deepEqual(emOracoes('Curta; não corta.'), ['Curta; não corta.'])
+  const longa = 'Before passing the threshold I paused to admire a quantity of grotesque carving lavished over the front and the door; above which I detected the date and the name of the house: but his attitude at the door appeared to demand my entrance.'
+  assert.equal(emOracoes(longa).length, 3)
+})
+
+test('tradutor local: escolhe a primeira alternativa que passa nas travas e não deixou inglês', async () => {
+  const { escolherHipotese } = await import('./servicos/tradutor-local.mjs')
+  const o = 'Joseph was an old man, very old, though hale and sinewy.'
+  const e = escolherHipotese(o, [
+    { t: 'Joseph era um velho, muito velho, apesar de hale e sinewy.', restos: ['hale', 'sinewy'] },
+    { t: 'Joseph era um velho, muito velho, embora vigoroso e musculoso.', restos: [] },
+  ])
+  assert.equal(e.usada, 1)
+  assert.equal(e.motivo, null)
+  // laço ("Sr. Sr. Sr.") barrado pela trava; nenhuma passa -> null, e a esteira chama o motor antigo
+  const n = escolherHipotese('Mr. Lockwood.', [{ t: 'Sr. Sr. Sr. Sr. Sr. Sr. Sr. Sr. Sr. Sr. Sr. Sr. Lockwood.', restos: [] }])
+  assert.equal(n.texto, null)
+  // todas com inglês: fica a com menos, marcada
+  const m = escolherHipotese(o, [{ t: 'Joseph era um velho, muito velho, apesar de hale e sinewy.', restos: ['hale', 'sinewy'] }, { t: 'Joseph era um velho, muito velho, embora forte e sinewy.', restos: ['sinewy'] }])
+  assert.equal(m.usada, 1)
+  assert.match(m.motivo, /ficou em inglês: sinewy/)
+})
+
+test('trava de nome: nome TRADUZIDO passa (Natal, Rei Salomão), nome inventado não', async () => {
+  const { traducaoConfiavel } = await import('./revisao.mjs')
+  assert.ok(traducaoConfiavel('And the next day would be Christmas.', 'E o dia seguinte seria Natal.', 'en').pode)
+  assert.ok(traducaoConfiavel('Had King Solomon been the janitor, Jim would have pulled out his watch.', 'Se o Rei Salomão fosse o zelador, Jim teria tirado o relógio.', 'en').pode)
+  assert.equal(traducaoConfiavel('Mr. Heathcliff and I are a pair.', 'O Sr. Heathcliff e eu somos um par, disse Geraldo.', 'en').pode, false)
+  assert.equal(traducaoConfiavel('The minister met him in the hall at noon.', 'O ministro encontrou Geraldo Gonzalez no salão ao meio-dia.', 'en').pode, false)
+  // nome no começo da frase, título com maiúscula, e o romano inventado
+  assert.ok(traducaoConfiavel("Machiavelli's life was not without blemish--few lives are.", 'A vida de Maquiavel não foi sem mácula. Poucas vidas são.', 'en').pode)
+  assert.ok(traducaoConfiavel('He merely gives us the impressions he had received from princes and the affairs of state.', 'Ele apenas nos dá as impressões que recebeu dos príncipes e dos assuntos do Estado.', 'en').pode)
+  assert.ok(traducaoConfiavel('Pope Benedict restored the scarlet hat to the cardinals, and reblessed Philip, king of France.', 'O Papa Bento restituiu o chapéu escarlate aos cardeais, e abençoou Filipe, rei da França.', 'en').pode)
+  assert.match(traducaoConfiavel('Pope Benedict restored the scarlet hat to the cardinals, and reblessed Philip, king of France.', 'O Papa Bento XVI restituiu o chapéu escarlate aos cardeais, e abençoou Filipe, rei da França.', 'en').motivo, /romano/)
+  assert.ok(traducaoConfiavel('At the end of the nineteenth century the old order was general.', 'No final do século XIX a velha ordem era geral.', 'en').pode)
+  assert.ok(traducaoConfiavel('For in the condition of Nature, it cannot be known who is the Father, unless it be declared by the Mother.', 'Pois na condição da Natureza, não se pode saber quem é o Pai, a menos que seja declarado pela Mãe.', 'en').pode)
+  // data por extenso que vira algarismo passa; número trocado não
+  assert.ok(traducaoConfiavel('On the sixth of August he set out, accompanied by many citizens.', 'Em 6 de agosto ele partiu, acompanhado por muitos cidadãos.', 'en').pode)
+  assert.equal(traducaoConfiavel('In 1397 they came to Florence with many men.', 'Em 1379 eles vieram a Florença com muitos homens.', 'en').pode, false)
+})
+
+test('retradução: o portão segura livro que encolheu, mudou de capítulos ou ficou com mais inglês', async () => {
+  const { avaliar } = await import('./retraducao.mjs')
+  const cap = (n, palavra = 'casa') => ({ palavras: n, corpo: `<p>${Array(n).fill(palavra).join(' ')}</p>` })
+  const antigos = [cap(500), cap(800)]
+  const ok = avaliar(antigos, [cap(520), cap(760)], { frases: 100, mint: 2, original: 0 })
+  assert.ok(ok.passa, ok.motivos.join('; '))
+  assert.match(avaliar(antigos, [cap(1300)], { frases: 100 }).motivos.join(), /capítulos: 1 agora, 2 antes/)
+  assert.match(avaliar(antigos, [cap(500), cap(300)], { frases: 100 }).motivos.join(), /capítulo 2|tamanho do livro/)
+  assert.match(avaliar(antigos, [cap(520), cap(760)], { frases: 100, original: 3 }).motivos.join(), /ficaram no original/)
+  assert.match(avaliar(antigos, [cap(520), cap(760)], { frases: 100, mint: 15 }).motivos.join(), /socorreu/)
+  assert.match(avaliar(antigos, [cap(520, 'the'), cap(760)], { frases: 100 }).motivos.join(), /mais inglês/)
+})
+
+test('retradução: trocar e voltar devolve o livro byte a byte, com a busca junto', async () => {
+  const { DatabaseSync } = await import('node:sqlite')
+  const { promover, desfazer } = await import('./retraducao.mjs')
+  const b = new DatabaseSync(':memory:')
+  b.exec(`CREATE TABLE texto (id INTEGER PRIMARY KEY); CREATE TABLE capitulo (id INTEGER PRIMARY KEY, texto_id INTEGER, ordem INTEGER, titulo TEXT, corpo TEXT, palavras INTEGER);
+    CREATE VIRTUAL TABLE busca_capitulo USING fts5(corpo, capitulo_id UNINDEXED, texto_id UNINDEXED); INSERT INTO texto VALUES (7);
+    INSERT INTO capitulo VALUES (70, 7, 1, 'Capítulo I', '<p>Um guiño foi a resposta.</p>', 5), (71, 7, 2, 'Capítulo II', '<p>vasos de beterraba</p>', 3);
+    INSERT INTO busca_capitulo SELECT corpo, id, texto_id FROM capitulo`)
+  const antes = b.prepare('SELECT * FROM capitulo ORDER BY id').all()
+  promover(b, 7, [{ ordem: 1, palavras: 7, corpo: '<p>Um aceno de cabeça foi a resposta.</p>' }, { ordem: 2, palavras: 4, corpo: '<p>pratos de estanho</p>' }], { frases: 2 })
+  assert.equal(b.prepare("SELECT corpo FROM capitulo WHERE id = 70").get().corpo, '<p>Um aceno de cabeça foi a resposta.</p>')
+  assert.equal(b.prepare("SELECT COUNT(*) n FROM busca_capitulo WHERE busca_capitulo MATCH 'estanho'").get().n, 1)
+  assert.equal(b.prepare("SELECT titulo FROM capitulo WHERE id = 71").get().titulo, 'Capítulo II', 'o título conferido fica')
+  // retraduzir de novo não apaga a versão guardada: a volta é sempre à original
+  promover(b, 7, [{ ordem: 1, palavras: 1, corpo: '<p>x</p>' }, { ordem: 2, palavras: 1, corpo: '<p>y</p>' }], {})
+  desfazer(b, 7)
+  assert.deepEqual(b.prepare('SELECT * FROM capitulo ORDER BY id').all(), antes)
+  assert.equal(b.prepare("SELECT COUNT(*) n FROM busca_capitulo WHERE busca_capitulo MATCH 'beterraba'").get().n, 1)
+  assert.equal(b.prepare("SELECT estado FROM retraducao WHERE texto_id = 7").get().estado, 'desfeita')
+  // capítulo que não existe no site: nada muda
+  assert.throws(() => promover(b, 7, [{ ordem: 9, palavras: 1, corpo: 'z' }], {}), /não existe/)
+  assert.deepEqual(b.prepare('SELECT * FROM capitulo ORDER BY id').all(), antes)
+})
+
+// ── a grafia de hoje (05/10/2026): lista lida, aplicada na entrega ──
+test('grafia: troca a antiga pela de hoje sem tocar em nome, riso, etiqueta nem caixa alta', async () => {
+  const { atualizarGrafia } = await import('./ortografia.mjs')
+  assert.equal(atualizarGrafia('<p>Elle disse que ha muito tempo não via a bella Sophia; ella ria. Ha! ha! Foram á casa.</p>'),
+    '<p>Ele disse que há muito tempo não via a bela Sophia; ela ria. Ha! ha! Foram à casa.</p>')
+  assert.equal(atualizarGrafia('<p>—Lá vou. <em>Elle</em> quiz fazel-o, d’ellas o assucar. A noticia do seculo: "Elle veiu hontem."</p>'),
+    '<p>—Lá vou. <em>Ele</em> quis fazê-lo, delas o açúcar. A notícia do século: "Ele veio ontem."</p>')
+  // nome de gente, mesmo no começo da frase: "Mattos" é sobrenome
+  assert.equal(atualizarGrafia('<p>Chegou. Mattos e o Bella ficaram na villa.</p>'), '<p>Chegou. Mattos e o Bella ficaram na vila.</p>')
+  // o que a lista recusou depois de lida: inglês no meio do livro, mais-que-perfeito, "pêra"
+  assert.equal(atualizarGrafia('<p>the end; ouvira a pêra</p>'), '<p>the end; ouvira a pêra</p>')
+  assert.equal(atualizarGrafia('<p>ELLE GRITOU</p>'), '<p>ELLE GRITOU</p>')
+  assert.equal(atualizarGrafia('<a href="annos.html">annos</a>'), '<a href="annos.html">anos</a>')
+})
+
+test('scan: os erros de leitura só são trocados no escaneado, e antes da grafia', async () => {
+  const { diagramar } = await import('./diagramar.mjs')
+  const corpo = '<p>Eftas aquclle <b>F</b>rancifco.</p>'
+  assert.equal(diagramar([{ ordem: 1, titulo: '', palavras: 0, corpo }], { fonte: 'archive', titulo: false })[0].corpo, '<p>Estas aquele <b>F</b>rancisco.</p>')
+  // no digitado, "aquclle" não é erro conhecido: fica
+  assert.match(diagramar([{ ordem: 1, titulo: '', palavras: 0, corpo }], { fonte: 'wikisource', titulo: false })[0].corpo, /aquclle/)
+})
+
+test('grafia: só nas fontes de domínio público antigas, nunca na tradução nossa', async () => {
+  const { diagramar } = await import('./diagramar.mjs')
+  const corpo = '<p>Elle chegou hontem.</p>'
+  assert.equal(diagramar([{ ordem: 1, titulo: '', palavras: 0, corpo }], { fonte: 'gutenberg', titulo: false })[0].corpo, '<p>Ele chegou ontem.</p>')
+  assert.equal(diagramar([{ ordem: 1, titulo: '', palavras: 0, corpo }], { fonte: 'fio_traducao', titulo: false })[0].corpo, corpo)
+  assert.equal(diagramar([{ ordem: 1, titulo: '', palavras: 0, corpo }], { titulo: false })[0].corpo, corpo)
 })
 
 test('nota do OCR: aviso só abaixo do limiar, e a nota guardada é lida', async () => {
@@ -3001,3 +3115,105 @@ test('idiomas: nenhuma resposta de "traduzir" pede caractere que o teclado BR n�
     }
   }
 })
+
+// ─────────────────────────────────────────────────────────────
+// A trava contra frase inventada da revisora (05/10/2026). Os casos são os
+// do ensaio real em O Processo, cap. 7: o motor devolveu um "deputado
+// Geraldo Gonzalez" e um "Conselho de Ministros" que o Kafka não escreveu.
+// ─────────────────────────────────────────────────────────────
+import { traducaoConfiavel, emPedacos } from './revisao.mjs'
+
+test('revisora: frase com nome que o original não tem é recusada', () => {
+  const v = traducaoConfiavel('noch, wenn er alles dieses im Auge behalte über die Gereiztheit der Beamten.',
+    'O Conselho de Ministros tem de ter em conta a irritabilidade dos funcionários.', 'de')
+  assert.equal(v.pode, false)
+  assert.match(v.motivo, /nome/)
+})
+
+test('revisora: frase inventada que engole ou incha o original é recusada', () => {
+  assert.equal(traducaoConfiavel('Ein Verzeichnis dieser Prozesse habe er hier in der Schublade.',
+    'O senhor deputado Geraldo Gonzalez, que foi o primeiro a apresentar o relatório, disse que o relatório foi publicado.', 'de').pode, false)
+  assert.equal(traducaoConfiavel('Er sagte es.', 'Ele disse isso, disse isso, disse isso, disse isso.', 'de').pode, false)
+})
+
+test('revisora: número trocado é recusado, tradução fiel passa', () => {
+  const o = 'K. rückte näher zu ihm, und das ist schon länger als 5 Jahre.'
+  assert.equal(traducaoConfiavel(o, 'K. aproximou-se dele, e isso já faz mais de 7 anos.', 'de').pode, false)
+  assert.equal(traducaoConfiavel(o, 'K. aproximou-se dele, e isso já faz mais de 5 anos.', 'de').pode, true)
+  assert.equal(traducaoConfiavel('Er sagte es dem Advokaten Huld.', 'Ele disse isso ao advogado Huld.', 'de').pode, true)
+})
+
+test('revisora: frase que voltou na língua de origem é recusada', () => {
+  const o = 'Der Gedanke an den Prozeß verließ ihn nicht mehr.'
+  assert.equal(traducaoConfiavel(o, 'Der Gedanke an den Prozess verließ ihn nicht mehr.', 'de').pode, false)
+})
+
+test('revisora: emPedacos com teto 0 devolve uma frase por pedaço', () => {
+  assert.deepEqual(emPedacos('Uma frase. Outra frase! E mais uma?', 0), ['Uma frase.', 'Outra frase!', 'E mais uma?'])
+})
+
+// ─────────────────────────────────────────────────────────────
+// A barreira do detector (05/10/2026): ele acha, não conserta. Se um dia
+// alguém puser um UPDATE/INSERT/DELETE contra o banco do site dentro dele,
+// este teste fica vermelho e nenhum deploy sai (publicar-so-servidor.sh roda
+// os testes antes).
+// ─────────────────────────────────────────────────────────────
+import { readFileSync as lerFonte } from 'node:fs'
+
+test('detector: nunca escreve no banco do site', () => {
+  const fonte = lerFonte(new URL('../ingestao/detector.mjs', import.meta.url), 'utf8')
+  // o banco do site só é aberto em modo leitura
+  assert.match(fonte, /new DatabaseSync\(BANCO, \{ readOnly: true \}\)/)
+  assert.equal((fonte.match(/new DatabaseSync\(BANCO/g) ?? []).length, 1)
+  // e nenhuma tabela do site aparece como alvo de escrita
+  for (const tabela of ['obra', 'texto', 'capitulo', 'pessoa', 'leitor', 'ajuste']) {
+    assert.doesNotMatch(fonte, new RegExp(`(UPDATE|INSERT INTO|DELETE FROM|REPLACE INTO)\s+${tabela}\b`, 'i'), tabela)
+  }
+})
+
+// ─────────────────────────────────────────────────────────────
+// Títulos padronizados (05/10/2026): cada caso abaixo foi um erro REAL da
+// regra, achado na leitura da lista inteira antes de gravar. Se voltar, o
+// teste fica vermelho e nenhum deploy sai.
+// ─────────────────────────────────────────────────────────────
+import { padronizar as padronizarTitulo } from '../ingestao/padronizar-titulos.mjs'
+
+test('títulos: o dicionário não mexe em nome próprio nem em palavra que já está certa', () => {
+  const conhecidas = new Set(['O', 'chamado', 'de', 'Porque', 'a', 'fama', 'vos', 'celebre', 'Comes', 'e', 'Bebes', 'Edgar', 'Poe', 'Manual', 'Miss', 'ou'])
+  const valida = (w) => conhecidas.has(w)
+  for (const t of ['O chamado de Cthulhu', 'Porque a fama vos celebre', 'Comes e Bebes', 'Edgar Allan Poe', 'O Manual de Epicteto', 'Miss Dollar', 'Mattos, Malta ou Matta?']) {
+    assert.equal(padronizarTitulo(t, { valida }).depois, t)
+  }
+})
+
+test('títulos: língua estrangeira, sigla e reticência do autor ficam como estão', () => {
+  for (const t of ['The Prince', 'Les Misérables', 'Travesuras de la niña mala', 'SICAF', 'IS-RBHA 121-189', 'Era uma vez...', 'Antes que cases...', 'A paixão segundo G.H.', 'Só socialmente--']) {
+    assert.equal(padronizarTitulo(t, { valida: () => true }).depois, t)
+  }
+})
+
+test('títulos: volume no padrão, sem sobra de pontuação nem de colchete', () => {
+  const v = (t) => padronizarTitulo(t).depois
+  // (a lista curada de ortografia roda sempre: "Historia" → "História", "brazileiro" → "brasileiro")
+  assert.equal(v('Historia de Portugal: Tomo I'), 'História de Portugal — Volume 1')
+  assert.equal(v('Historia da litteratura portugueza [Vol. I]'), 'História da litteratura portuguesa — Volume 1')
+  assert.equal(v('O Guarany: romance brazileiro, Vol. 1 (of 2)'), 'O Guarany: romance brasileiro — Volume 1')
+  assert.equal(v('A confissão de Lucio,: Narrativa.'), 'A confissão de Lucio: Narrativa')
+})
+
+import { caixaDeTitulo, limparCaracteres } from '../ingestao/padronizar-titulos.mjs'
+test('títulos: caixa de título no padrão editorial, sem estragar sigla, abreviatura nem pronome', () => {
+  const c = (t) => caixaDeTitulo(limparCaracteres(t))
+  assert.equal(c('Memórias póstumas de Brás Cubas'), 'Memórias Póstumas de Brás Cubas')
+  assert.equal(c("Crônica d'el rei D. Diniz — Volume 1"), "Crônica d'el Rei D. Diniz — Volume 1")
+  assert.equal(c('Cartas familiares: (xv a xxxviii)'), 'Cartas Familiares: (XV a XXXVIII)')
+  assert.equal(c('SICAF'), 'SICAF')
+  assert.equal(c('A paixão segundo G.H.'), 'A Paixão Segundo G.H.')
+  assert.equal(c('Dize-me, Maria Viegas'), 'Dize-me, Maria Viegas')
+  assert.equal(c('Amei-te e por te amar'), 'Amei-te e por te Amar')
+  assert.equal(c('Eu vi o mar'), 'Eu Vi o Mar')
+  assert.equal(c('Clepsidra\nPoemas de Camilo Pessanha'), 'Clepsidra: Poemas de Camilo Pessanha')
+  assert.equal(c('Oração fúnebre do Illm.^o Sr. Pedro'), 'Oração Fúnebre do Illm.o Sr. Pedro')
+  assert.equal(c('Manifesto dos Estados Unidos d՚America'), "Manifesto dos Estados Unidos d'America")
+})
+

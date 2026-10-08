@@ -273,7 +273,13 @@ export function listarContas(banco, { q = '', filtro = 'todos', pagina = 1 } = {
     SELECT l.id, l.usuario, l.nome, l.email, l.papel, l.criado_em, l.visto_em,
            (SELECT 1 FROM leitor_google g WHERE g.leitor_id = l.id) google,
            a.plano, a.origem, a.desde, a.ate, a.nota, i.plano quer, i.motivo quer_por, i.criado_em quer_em,
-           (SELECT COUNT(*) FROM livro_liberado b WHERE b.leitor_id = l.id AND b.liberado_em > datetime('now', '-30 days')) livros_mes
+           (SELECT COUNT(*) FROM livro_liberado b WHERE b.leitor_id = l.id AND b.liberado_em > datetime('now', '-30 days')) livros_mes,
+           -- 05/10: o que a pessoa LEU no mês, em qualquer plano. livros_mes só
+           -- conta o que o plano grátis destrava, e no Tear dava "—" para todos.
+           -- mudou_em é MILISSEGUNDO (Date.now()), não data: comparar com
+           -- datetime() dava zero para todo mundo (consertado em 05/10).
+           (SELECT COUNT(*) FROM guardado g WHERE g.leitor_id = l.id AND g.tipo = 'progresso'
+              AND g.valor IS NOT NULL AND g.mudou_em > (strftime('%s', 'now', '-30 days') * 1000)) lendo_mes
       ${base}
      ORDER BY (l.papel = 'admin') DESC, (a.plano IS NOT NULL) DESC, coalesce(l.visto_em, l.criado_em) DESC
      LIMIT ? OFFSET ?`).all(...args, POR_PAGINA_CONTAS, (p - 1) * POR_PAGINA_CONTAS)
@@ -288,4 +294,60 @@ export function listarContas(banco, { q = '', filtro = 'todos', pagina = 1 } = {
   const resumo = Object.fromEntries(Object.entries(FILTROS).map(([k, sql]) => [k, conta(sql)]))
   return { contas, total, pagina: p, paginas: Math.max(1, Math.ceil(total / POR_PAGINA_CONTAS)), porPagina: POR_PAGINA_CONTAS, resumo,
     planos: ORDEM.map((k) => ({ chave: k, nome: PLANOS[k].nome })) }
+}
+
+// Retrato administrativo de uma conta. Só devolve sinais necessários para
+// atender a pessoa: nunca senha, token, resposta de segurança, IP completo ou
+// o conteúdo de marcações e resenhas.
+export function detalharConta(banco, id) {
+  const leitorId = Number(id)
+  if (!Number.isInteger(leitorId) || leitorId < 1) return null
+  const conta = banco.prepare(`SELECT id, usuario, nome, email, papel, criado_em, visto_em
+    FROM leitor WHERE id = ? AND desativado = 0`).get(leitorId)
+  if (!conta) return null
+  const todas = (sql, ...args) => banco.prepare(sql).all(...args)
+  const uma = (sql, ...args) => banco.prepare(sql).get(...args) ?? null
+  const assinatura = uma('SELECT plano, origem, desde, ate, nota FROM assinatura WHERE leitor_id = ?', leitorId)
+  const agora = new Date().toISOString().slice(0, 19).replace('T', ' ')
+  const vencida = !!(assinatura?.ate && assinatura.ate <= agora)
+  conta.planoAtual = conta.papel === 'admin' ? 'tear' : (assinatura?.plano && !vencida ? assinatura.plano : 'leitor')
+
+  const progresso = todas(`SELECT g.chave obra_id, g.valor, g.mudou_em,
+      COALESCE(o.titulo_pt, o.titulo, 'Obra ' || g.chave) titulo
+    FROM guardado g LEFT JOIN obra o ON o.id = CAST(g.chave AS INTEGER)
+    WHERE g.leitor_id = ? AND g.tipo = 'progresso' AND g.valor IS NOT NULL
+    ORDER BY g.mudou_em DESC LIMIT 20`, leitorId).map((l) => {
+      let v = {}; try { v = JSON.parse(l.valor) ?? {} } catch {}
+      return { obra_id: l.obra_id, titulo: l.titulo, mudou_em: l.mudou_em,
+        capitulo: Number(v.capitulo) || 0, segundos: Number(v.segundos) || 0,
+        percentual: Number(v.percentual ?? v.progresso) || null }
+    })
+  const guardado = Object.fromEntries(todas(`SELECT tipo, COUNT(*) n FROM guardado
+    WHERE leitor_id = ? AND valor IS NOT NULL GROUP BY tipo`, leitorId).map((l) => [l.tipo, l.n]))
+  const idiomas = todas(`SELECT idioma, COUNT(*) unidades, SUM(acertos) acertos, SUM(total) total,
+      MAX(concluido_em) ultimo FROM idioma_progresso WHERE leitor_id = ? GROUP BY idioma ORDER BY ultimo DESC`, leitorId)
+  const pedidos = todas(`SELECT p.id, p.criado_em, f.titulo, f.autor, f.estado
+    FROM pedido_traducao p LEFT JOIN fila_traducao f ON f.id = p.fila_id
+    WHERE p.leitor_id = ? ORDER BY p.criado_em DESC LIMIT 20`, leitorId)
+  const liberados = todas(`SELECT b.obra_id, b.liberado_em, COALESCE(o.titulo_pt,o.titulo) titulo
+    FROM livro_liberado b LEFT JOIN obra o ON o.id = b.obra_id
+    WHERE b.leitor_id = ? ORDER BY b.liberado_em DESC LIMIT 20`, leitorId)
+  const sessoes = todas(`SELECT criado_em, visto_em, expira_em, agente FROM sessao
+    WHERE leitor_id = ? AND expira_em > datetime('now') ORDER BY visto_em DESC LIMIT 20`, leitorId)
+  const quadrinhos = todas(`SELECT serie, cap, pag, em FROM quadrinho_progresso
+    WHERE leitor_id = ? ORDER BY em DESC LIMIT 20`, leitorId)
+  const participacao = {
+    avaliacoes: uma('SELECT COUNT(*) n FROM avaliacao WHERE leitor_id = ?', leitorId)?.n ?? 0,
+    publicacoes: uma('SELECT COUNT(*) n FROM publicacao WHERE autor_id = ?', leitorId)?.n ?? 0,
+    correcoes: uma('SELECT COUNT(*) n FROM correcao WHERE leitor_id = ?', leitorId)?.n ?? 0,
+  }
+  const totais = {
+    progresso: guardado.progresso ?? 0,
+    liberados: uma('SELECT COUNT(*) n FROM livro_liberado WHERE leitor_id = ?', leitorId).n,
+    sessoes: uma("SELECT COUNT(*) n FROM sessao WHERE leitor_id = ? AND expira_em > datetime('now')", leitorId).n,
+    quadrinhos: uma('SELECT COUNT(*) n FROM quadrinho_progresso WHERE leitor_id = ?', leitorId).n,
+  }
+  return { conta, totais, assinatura: assinatura ? { ...assinatura, vencida } : null, progresso, guardado,
+    idiomas, pedidos, liberados, sessoes, quadrinhos, participacao,
+    downloads: { disponivel: false, motivo: 'O site ainda não registra downloads por leitor.' } }
 }

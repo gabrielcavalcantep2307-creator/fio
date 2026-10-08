@@ -110,8 +110,9 @@ export function retrato(banco, { pessoa, token }) {
   if (rev.fila.suspeito) diz('atencao', 'Revisora', `${rev.fila.suspeito} livro(s) parados por suspeita — ela achou trocas demais e preferiu não mexer.`)
 
   const hB = horasDesde(backup?.quando)
-  if (hB == null) diz('atencao', 'Backup do banco', 'ainda não há registro do backup (ele grava o primeiro às 03:20).')
-  else if (hB > 36) diz('problema', 'Backup do banco', `o último é de ${Math.round(hB)} h atrás. O backup diário falhou.`)
+  if (hB == null) diz('atencao', 'Backup do banco', 'ainda não há registro do backup (ele grava aos domingos, às 03:20).')
+  // semanal desde 07/10/2026 (domingo, 03:20): problema só depois de 8 dias
+  else if (hB > 8 * 24 + 12) diz('problema', 'Backup do banco', `o último é de ${Math.round(hB / 24)} dias atrás. O backup semanal falhou.`)
   else diz('ok', 'Backup do banco', `feito há ${Math.round(hB)} h`)
 
   // A cópia no PC deixou de ser automática em 19/09 (o dono quer nada rodando

@@ -28,9 +28,11 @@ docker compose -f /opt/fio/infra/docker-compose.yml cp fio:/dados/backup.db "$PA
 docker compose -f /opt/fio/infra/docker-compose.yml exec -T fio rm -f /dados/backup.db
 gzip -f "$PASTA/catalogo-$QUANDO.db"
 
-# Guarda 14 dias. Backup que ninguém apaga enche o disco e derruba o serviço
-# que ele existia para proteger.
-find "$PASTA" -name 'catalogo-*.db.gz' -mtime +14 -delete
+# SEMANAL e só UM guardado (07/10/2026, a pedido do dono: o disco chegou a 60
+# de 75 GB, 15 deles em backups diários). O antigo só sai DEPOIS que o novo
+# existe e passou no teste do gzip — nunca fica a máquina sem nenhum.
+gzip -t "$PASTA/catalogo-$QUANDO.db.gz"
+find "$PASTA" -name 'catalogo-*.db.gz' ! -name "catalogo-$QUANDO.db.gz" -delete
 echo "$PASTA/catalogo-$QUANDO.db.gz"
 
 # ── o retrato para o painel (aba Controle, servidor/controle.mjs) ──

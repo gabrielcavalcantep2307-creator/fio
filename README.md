@@ -5,14 +5,14 @@ Uma biblioteca que não guarda livros: **liga um livro ao próximo.**
 O nome é provisório — vem da ideia de puxar um fio: você entra por *A Revolução
 dos Bichos* e sai em Hannah Arendt sem ter planejado.
 
-> **No ar em <https://fiolib.duckdns.org>**, na mesma VPS do Wallt.
-> **5.077 obras**, **4.432 para ler inteiras** num leitor próprio — inclusive a
-> Constituição e 24 leis e códigos, livres por lei — e **34 séries de quadrinhos
-> e mangá** legais, com leitor próprio. Recomendações pelo que você lê, avisos,
+> **No ar em <https://fiolib.com.br>**, em VPS própria.
+> **5.192 obras**, **4.639 para ler inteiras** num leitor próprio — inclusive a
+> Constituição e 24 leis e códigos, livres por lei — e **40 séries, 186 volumes
+> de quadrinhos e mangá** legais, com leitor próprio. Recomendações pelo que você lê, avisos,
 > painel de administração.
 >
 > **Comece por [`docs/PROJETO.md`](docs/PROJETO.md)**: o projeto inteiro, os
-> comandos e as armadilhas, atualizado em 16/09/2026.
+> comandos e as armadilhas, atualizado em 29/09/2026.
 >
 > Dá para **baixar em EPUB**. Contas funcionando: criar, entrar,
 > recuperar senha, e o que você marca aparece no outro aparelho.
