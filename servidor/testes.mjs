@@ -3239,3 +3239,26 @@ test('chamada mínima: só gênero, autor, ano e tempo — nada inventado', asyn
   assert.equal(chamadaMinima({ temas: ['Direito'], autor: 'autoria não identificada', ano: 2003, minutos: 3 }), 'Texto legal, na íntegra, para ler em 3 minutos.')
   assert.equal(chamadaMinima({ temas: [], autor: 'Fulano', ano: 1888, minutos: 190 }), 'Obra de Fulano, de 1888, cerca de 3 h 10 min de leitura.')
 })
+
+test('scan: os vizinhos decidem entre as candidatas, e sem evidência nada é trocado', async () => {
+  const { escolherPorContexto } = await import('./ortografia.mjs')
+  const { hash1, hash2 } = await import('./bigramas.mjs')
+  const bi = new Uint16Array(1 << 24), uni = new Uint32Array(1 << 22)
+  const m = (1 << 22) - 1
+  bi[hash2('o', 'neto')] = 50; bi[hash2('neto', 'de')] = 30; bi[hash2('o', 'noto')] = 1
+  uni[hash1('neto') & m] = 900; uni[hash1('noto') & m] = 300
+  const c = { bi, uni, cand: { nfto: ['neto', 'noto'] } }
+  assert.equal(escolherPorContexto('nfto', 'o', 'de', c), 'neto')
+  assert.equal(escolherPorContexto('nfto', 'x', 'y', c), null, 'sem vizinhança conhecida não troca')
+  assert.equal(escolherPorContexto('xyz', 'o', 'de', c), null, 'sem candidata não troca')
+})
+
+test('conferência: nota por caractere quebrado, lixo de transcrição, parágrafo repetido e inglês', async () => {
+  const { medir } = await import('./conferencia.mjs')
+  const limpo = medir(['<p>' + 'Era uma vez um livro bem escrito e sem nenhum problema. '.repeat(5) + '</p>'])
+  assert.equal(limpo.nota, 100); assert.equal(limpo.estado, 'ok')
+  const lixo = medir(['<p>Texto [Pg 3] com � e ⁇ dentro, e Produced by alguém.</p>'])
+  assert.ok(lixo.nota <= 88 && lixo.estado === 'atencao' && lixo.problemas.quebrados === 1 && lixo.problemas.desconhecidas === 1 && lixo.problemas.lixo >= 2)
+  const rep = '<p>' + 'A mesma frase longa que se repete sem parar no texto.'.repeat(1) + '</p>'
+  assert.ok(medir([rep + rep + rep + rep]).problemas.repetidos >= 1)
+})

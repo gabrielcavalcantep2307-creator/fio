@@ -11,11 +11,13 @@
 //   node servidor/retradutor.mjs --so 5055,5048  só estes textos, agora, e sai
 //                                                (o piloto: roda mesmo parada)
 
-import { mkdirSync, appendFileSync, writeFileSync, rmSync } from 'node:fs'
+import { mkdirSync, appendFileSync, writeFileSync, rmSync, statfsSync } from 'node:fs'
+import { loadavg } from 'node:os'
 import { join } from 'node:path'
 import { abrir } from './banco/base.mjs'
 import * as ajustes from './ajustes.mjs'
 import * as re from './retraducao.mjs'
+import * as conf from './conferencia.mjs'
 import { traduzirLivro } from './servicos/traducao.mjs'
 import { localDisponivel } from './servicos/tradutor-local.mjs'
 
@@ -25,6 +27,16 @@ const banco = abrir()
 banco.exec('PRAGMA busy_timeout = 30000')
 re.garantirTabelas(banco)
 mkdirSync(PASTA, { recursive: true })
+
+// ── as guardas de quem roda sozinho (08/10/2026) ──
+// A Hostinger já bloqueou a VPS uma vez por CPU cheia. A retradutora só começa um
+// livro com a máquina folgada e o disco livre, e se parar sozinha depois de erros
+// seguidos — quem a religa sou eu, depois de olhar o que houve.
+const CARGA_MAX = Number(process.env.FIO_RETRAD_CARGA || 1.6)
+const DISCO_MIN_GB = Number(process.env.FIO_RETRAD_DISCO_GB || 12)
+const ERROS_SEGUIDOS_MAX = 3
+let errosSeguidos = 0
+const discoLivreGB = () => { try { const f = statfsSync('/dados'); return (f.bavail * f.bsize) / 2 ** 30 } catch { return 999 } }
 
 const log = (...a) => console.log(`${new Date().toISOString().slice(0, 19).replace('T', ' ')}  ${a.join(' ')}`)
 let parar = false
@@ -82,6 +94,9 @@ async function retraduzir(c) {
     const m = { ...v.metricas, minutos: Math.round((Date.now() - t0) / MIN) }
     if (v.passa) {
       re.promover(banco, c.texto_id, novos, m)
+      errosSeguidos = 0
+      const nota = conf.conferirTexto(banco, c.texto_id)
+      log(`   conferência depois da troca: nota ${nota?.nota} (${nota?.estado})`)
       log(`   ✓ no site: ${m.frases} frases, ${m.alternativa} pela 2ª-4ª alternativa, ${m.ficouIngles} com palavra em inglês, ${m.socorroMint} pelo motor antigo, inglês ${m.inglesAntes}→${m.inglesAgora}/mil, ${m.minutos} min`)
     } else {
       re.marcar(banco, c.texto_id, 'segurada', v.motivos.join('; '), m)
@@ -90,6 +105,10 @@ async function retraduzir(c) {
   } catch (e) {
     re.marcar(banco, c.texto_id, 'erro', String(e.message).slice(0, 300))
     log(`   ! erro: ${e.message}`)
+    if (++errosSeguidos >= ERROS_SEGUIDOS_MAX) {
+      ajustes.escrever(banco, 'retradutora', 'parada')
+      log(`   !! ${errosSeguidos} erros seguidos: retradutora PARADA sozinha. Olhar o log antes de ligar de novo.`)
+    }
   } finally { emCurso = null }
 }
 
@@ -110,6 +129,8 @@ log('retradutora de pé. modo: ' + (ajustes.ler(banco, 'retradutora') ?? 'parada
 while (!parar) {
   if ((ajustes.ler(banco, 'retradutora') ?? 'parada') !== 'ligada') { await dormir(MIN); continue }
   if (!(await localDisponivel('en'))) { log('tradutor local fora do ar; olho de novo em 5 min'); await dormir(5 * MIN); continue }
+  if (loadavg()[0] > CARGA_MAX) { log(`máquina ocupada (carga ${loadavg()[0].toFixed(2)} > ${CARGA_MAX}); espero 5 min`); await dormir(5 * MIN); continue }
+  if (discoLivreGB() < DISCO_MIN_GB) { log(`disco com ${discoLivreGB().toFixed(1)} GB livres (mínimo ${DISCO_MIN_GB}); espero 30 min`); await dormir(30 * MIN); continue }
   const [c] = re.candidatos(banco, 1)
   if (c) { await retraduzir(c); continue }
   // fila no fim: os segurados ganham UMA segunda volta, do zero (as travas

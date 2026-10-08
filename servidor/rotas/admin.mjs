@@ -20,6 +20,7 @@ import * as controle from '../controle.mjs'
 import * as contato from '../contato.mjs'
 import * as painelGeral from '../painel-geral.mjs'
 import * as retraducao from '../retraducao.mjs'
+import * as conferencia from '../conferencia.mjs'
 import { existsSync, readFileSync, rmSync } from 'node:fs'
 import { join } from 'node:path'
 import { lerCookie } from '../http/pedido.mjs'
@@ -84,6 +85,7 @@ export default function rotasDoPainel({ rota, banco, estatico }) {
     try { ajustes.escrever(banco, 'modernizadora', dado.modo) } catch (e) { throw new Recusa(e.message) }
     return { modo: dado.modo }
   })
+  rota(admin('/api/admin/conferencia'), () => conferencia.resumo(banco))
   // ── a retradução do acervo com o tradutor local (servidor/retraducao.mjs, 06/10) ──
   rota(admin('/api/admin/retraducao'), () => ({ modo: ajustes.ler(banco, 'retradutora') ?? 'parada', ...retraducao.painel(banco) }))
   rota(post('/api/admin/retraducao/modo'), ({ dado }) => {

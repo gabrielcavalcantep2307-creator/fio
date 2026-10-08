@@ -16,6 +16,7 @@
 //     leitor) — só nas fontes de domínio público em português.
 
 import { readFileSync, statSync } from 'node:fs'
+import { hash1, hash2 } from './bigramas.mjs'
 
 export const FONTES_ANTIGAS = new Set(['gutenberg', 'wikisource', 'archive', 'standard_ebooks'])
 
@@ -76,11 +77,65 @@ function lerAuto() {
   return auto
 }
 
+// ── o contexto do scan (08/10/2026) ──
+// Palavra de scan com duas ou três candidatas ("nfto": neto? noto?) é decidida
+// pelos vizinhos, como o corretor do celular: a tabela de pares de palavras
+// (bigramas.bin) vem de livros digitados da mesma época (ingestao/ocr-contexto.mjs).
+// Sem evidência de vizinhança, ou com duas candidatas empatadas, não troca nada.
+const ctx = { bi: null, uni: null, cand: null, mtime: 0, conferido: 0 }
+function lerCtx() {
+  if (Date.now() - ctx.conferido < 60_000) return ctx
+  ctx.conferido = Date.now()
+  try {
+    const m = statSync(`${MAPAS}/cand.json`).mtimeMs
+    if (m === ctx.mtime) return ctx
+    const cru = (f) => { const b = readFileSync(`${MAPAS}/${f}`); return b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength) }
+    ctx.bi = new Uint16Array(cru('bigramas.bin'))
+    ctx.uni = new Uint32Array(cru('unigramas.bin'))
+    ctx.cand = JSON.parse(readFileSync(`${MAPAS}/cand.json`, 'utf8'))
+    ctx.mtime = m
+  } catch { /* ainda não existe: sem contexto */ }
+  return ctx
+}
+
+function distancia(a, b) {
+  if (Math.abs(a.length - b.length) > 2) return 9
+  let anterior = Array.from({ length: b.length + 1 }, (_, j) => j)
+  for (let i = 1; i <= a.length; i++) {
+    const atual = [i]
+    for (let j = 1; j <= b.length; j++) atual[j] = Math.min(anterior[j] + 1, atual[j - 1] + 1, anterior[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1))
+    anterior = atual
+  }
+  return anterior[b.length]
+}
+
+/** Entre as candidatas de `w`, a que mais combina com a palavra de antes e a de depois; ou null. */
+export function escolherPorContexto(w, anterior, seguinte, c = lerCtx()) {
+  const cs = c.cand?.[w]
+  if (!cs || !c.bi || w.length < 4 || w.includes('-')) return null
+  const mascara = c.uni.length - 1
+  // só candidata de verdade: a até 2 letras da lida, bem usada nos digitados, e que
+  // não seja a mesma palavra no plural/singular ("odiosidades" é palavra, só rara)
+  const boas = cs.filter((x) => !x.includes('-') && c.uni[hash1(x) & mascara] >= 150 && distancia(w, x) <= 2 && !(x + 's' === w || w + 's' === x))
+  const pontos = boas.map((x) => {
+    const b1 = anterior ? c.bi[hash2(anterior, x)] : 0
+    const b2 = seguinte ? c.bi[hash2(x, seguinte)] : 0
+    return { x, b1, b2, ev: b1 + b2, s: Math.log1p(b1) + Math.log1p(b2) + 0.25 * Math.log1p(c.uni[hash1(x) & mascara]) }
+  }).sort((a, b) => b.s - a.s)
+  const [a, b] = pontos
+  // os DOIS vizinhos têm de concordar, ou um deles concordar muito
+  if (!a || !((a.b1 >= 3 && a.b2 >= 3) || Math.max(a.b1, a.b2) >= 25)) return null
+  if (b && a.s - b.s < 2) return null
+  return a.x
+}
+
 /** Uma troca: devolve a palavra nova com a caixa certa, ou null. */
-function trocar(palavra, comecoDeFrase, seguinte, comOcr = false) {
+function trocar(palavra, comecoDeFrase, seguinte, comOcr = false, vizinhas = null) {
   const original = palavra.toLowerCase().replace(/’/g, "'")
   let chave = original
-  const lida = comOcr ? (listaOcr().get(chave) ?? lerAuto().ocr.get(chave) ?? null) : null
+  let lida = comOcr ? (listaOcr().get(chave) ?? lerAuto().ocr.get(chave) ?? null) : null
+  // sem troca fixa: os vizinhos decidem entre as candidatas, só em minúscula
+  if (comOcr && !lida && vizinhas && SO_MINUSCULA.test(palavra) && !lista().has(chave) && !lerAuto().grafia.has(chave)) lida = escolherPorContexto(chave, vizinhas[0], vizinhas[1])
   if (lida) chave = lida
   // "ha muito tempo" -> "há"; "Ha! ha!" e "ha, ha" são riso e ficam
   if (chave === 'ha') {
@@ -105,7 +160,16 @@ export function atualizarGrafia(html, { ocr: comOcr = false } = {}) {
       let j = i - 1
       while (j >= 0 && ' "“”«»\'‘’( '.includes(s[j])) j--
       const antes = j >= 0 ? s[j] : anterior
-      return trocar(p, FIM_DE_FRASE.includes(antes), s.slice(i + p.length, i + p.length + 2), comOcr) ?? p
+      // as palavras vizinhas dentro do mesmo trecho (já com a troca fixa de scan), para o contexto
+      let viz = null
+      // lixo colado na palavra ("forf;a", "c&mpos", "^") quer dizer que o scan quebrou ali: não adivinha
+      if (comOcr && !/[&;^~*|\\\d]/.test(s[i - 1] ?? '') && !/[&;^~*|\\\d]/.test(s[i + p.length] ?? '')) {
+        const a = s.slice(Math.max(0, i - 40), i).match(/([a-zà-ÿ]+)[^a-zà-ÿ]*$/i)?.[1]?.toLowerCase()
+        const d = s.slice(i + p.length, i + p.length + 40).match(/^[^a-zà-ÿ]*([a-zà-ÿ]+)/i)?.[1]?.toLowerCase()
+        const fixa = (x) => (x ? listaOcr().get(x) ?? x : null)
+        viz = [fixa(a), fixa(d)]
+      }
+      return trocar(p, FIM_DE_FRASE.includes(antes), s.slice(i + p.length, i + p.length + 2), comOcr, viz) ?? p
     })
     const t = parte.replace(/[\s"“”«»'‘’(]+$/, '')
     if (t) anterior = t.at(-1)

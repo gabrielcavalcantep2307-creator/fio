@@ -1176,7 +1176,7 @@ function secaoPanorama(filaItens) {
       el('p', { class: 'ajuda' }, `${num(a.total)} livros em português, todos no site. Cada um passa pela conferência do seu grupo, e a versão corrigida entra no lugar sozinha; enquanto isso o leitor vê um aviso de que o livro está em revisão.`),
       barraEmpilhada(['limpo', 'grafia', 'escaneado', 'traducao'].map((k) => ({ rotulo: ESTADO_LIVRO[k][0], cor: ESTADO_LIVRO[k][1], texto: ESTADO_LIVRO[k][2], n: a.conta[k] ?? 0 }))))
     revisao.replaceChildren(listaDeRevisao(a))
-    s.append(secaoModernizadora(), listaDeTraducao(filaItens), secaoRetraducao(), avisoRevisora(),
+    s.append(secaoConferencia(), secaoModernizadora(), listaDeTraducao(filaItens), secaoRetraducao(), avisoRevisora(),
       el('details', { class: 'grupo', style: 'margin-top:26px' }, el('summary', { style: 'cursor:pointer;font-weight:600' }, 'Editar um livro do acervo (título, autor, capa, esconder)'), secaoAcervo()),
       el('details', { class: 'grupo', style: 'margin-top:12px' }, el('summary', { style: 'cursor:pointer;font-weight:600' }, 'Pôr livros na fila de tradução'), secaoAdicionar()))
   }).catch((e) => livros.replaceChildren(recado('ruim', e.message)))
@@ -1223,6 +1223,29 @@ function listaDeTraducao(itens) {
 
 // ── a retradução com o tradutor novo (06/10): o portão, e a volta a um clique ──
 const ESTADO_RE = { promovida: ['no site', 'pronto'], segurada: ['segurado', 'espera'], traduzindo: ['traduzindo', 'na_esteira'], erro: ['erro', 'erro'], desfeita: ['voltou ao antigo', 'espera'] }
+function secaoConferencia() {
+  const s = el('section', { style: 'margin-top:26px' }, el('h2', {}, 'Conferência dos livros'))
+  s.append(el('p', { class: 'ajuda' },
+    'Uma nota de 0 a 100 para cada texto, medida sozinha: caractere quebrado, letra desconhecida, lixo de transcrição, parágrafo repetido, capítulo vazio e, nas traduções, inglês que sobrou. ',
+    '90 ou mais é "ok". A retradução começa pelos piores. A conferência só lê: nunca troca nada no texto.'))
+  const alvo = el('div', {}, el('p', { class: 'ajuda' }, 'carregando…'))
+  s.append(alvo)
+  pedir('/admin/conferencia').then((r) => {
+    const c = r.conta
+    alvo.replaceChildren(
+      el('div', { class: 'cartoes' }, cartao(num(r.total), 'textos conferidos'), cartao(num(c.ok ?? 0), 'ok (90+)'), cartao(num(c.atencao ?? 0), 'atenção (70–89)'), cartao(num(c.ruim ?? 0), 'ruins (abaixo de 70)')),
+      r.piores.length ? el('div', { style: 'overflow-x:auto;margin-top:12px' }, el('table', {},
+        el('thead', {}, el('tr', {}, el('th', {}, 'Livro'), el('th', {}, 'Nota'), el('th', {}, 'O que foi achado'))),
+        el('tbody', {}, r.piores.map((l) => {
+          const p = l.problemas
+          const achados = [p.quebrados && `${p.quebrados} caractere(s) quebrado(s)`, p.desconhecidas && `${p.desconhecidas} letra(s) desconhecida(s)`, p.lixo && `${p.lixo} lixo de transcrição`,
+            p.repetidos && `${p.repetidos} parágrafo(s) repetido(s)`, p.vazios && `${p.vazios} capítulo(s) vazio(s)`, p.ingles > 1 && `inglês ${p.ingles}/mil`].filter(Boolean).join(' · ')
+          return el('tr', {}, el('td', {}, el('a', { href: `/#/ler/${l.obra_id}`, target: '_blank' }, l.titulo)), el('td', {}, el('span', { class: `selo ${l.estado === 'ruim' ? 'espera' : 'pronto'}` }, String(l.nota))), el('td', { style: 'font-size:12px' }, achados))
+        })))) : el('p', { class: 'ajuda' }, 'Nenhum texto abaixo de 90 por enquanto.'))
+  }).catch((e) => alvo.replaceChildren(recado('ruim', e.message)))
+  return s
+}
+
 function secaoModernizadora() {
   const s = el('section', { style: 'margin-top:26px' }, el('h2', {}, 'Português de 2026: a modernizadora'))
   s.append(el('p', { class: 'ajuda' },

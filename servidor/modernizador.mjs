@@ -33,6 +33,7 @@ import { join } from 'node:path'
 import { loadavg } from 'node:os'
 import { abrir } from './banco/base.mjs'
 import * as ajustes from './ajustes.mjs'
+import * as conf from './conferencia.mjs'
 
 const MAPAS = process.env.FIO_MAPAS || '/dados/mapas'
 const ORTO = process.env.FIO_ORTOGRAFIA || '/dados/ortografia'
@@ -165,6 +166,16 @@ async function volta() {
     log(`✓ listas trocadas: grafia ${Object.keys(grafia).length} (+${novas.grafia}), scan ${Object.keys(ocr).length} (+${novas.ocr})`)
   }
   await passo('medir a qualidade do acervo', 'ingestao/qualidade-acervo.mjs', [], 700)
+  // a conferência: até 500 textos por volta (os nunca medidos primeiro), em fatias, sem prender a máquina
+  let conferidos = 0
+  for (let fatia = 0; fatia < 5 && !parar; fatia++) {
+    await esperarFolga()
+    const n = conf.conferirPendentes(banco, { limite: 100, dias: 7 })
+    conferidos += n
+    if (n < 100) break
+    await dormir(10_000)
+  }
+  log(`   conferência: ${conferidos} textos medidos`)
   const por = {}
   for (const v of Object.values(json('/dados/qualidade.json', { obras: {} }).obras)) por[v[0]] = (por[v[0]] ?? 0) + 1
   gravarEstado({

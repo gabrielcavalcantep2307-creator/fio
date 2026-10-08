@@ -43,6 +43,14 @@ export function garantirTabelas(banco) {
     palavras    INTEGER NOT NULL,
     guardado_em TEXT NOT NULL DEFAULT (datetime('now')),
     PRIMARY KEY (texto_id, ordem))`)
+  // a nota da conferência (servidor/conferencia.mjs): a retradução começa pelos piores
+  banco.exec(`CREATE TABLE IF NOT EXISTS conferencia (
+    texto_id  INTEGER PRIMARY KEY REFERENCES texto(id),
+    obra_id   INTEGER NOT NULL,
+    nota      INTEGER NOT NULL,
+    estado    TEXT NOT NULL CHECK (estado IN ('ok','atencao','ruim')),
+    problemas TEXT NOT NULL DEFAULT '{}',
+    medido_em TEXT NOT NULL DEFAULT (datetime('now')))`)
 }
 
 /** Os livros a retraduzir: do inglês, com o original conhecido, dos mais lidos para os menos. */
@@ -54,10 +62,11 @@ export function candidatos(banco, limite = 50) {
       (SELECT COALESCE(SUM(palavras),0) FROM capitulo c WHERE c.texto_id = t.id) palavras
     FROM texto t JOIN obra o ON o.id = t.obra_id
     JOIN fila_traducao f ON f.id = (SELECT MAX(id) FROM fila_traducao x WHERE x.obra_id = t.obra_id AND x.estado = 'pronto')
+    LEFT JOIN conferencia cf ON cf.texto_id = t.id
     WHERE t.fonte = 'fio_traducao' AND t.dono_id IS NULL AND f.idioma = 'en'
       AND NOT EXISTS (SELECT 1 FROM retraducao r WHERE r.texto_id = t.id
         AND (r.estado IN ('promovida','segurada','desfeita','traduzindo','erro') OR r.tentativas >= 2))
-    ORDER BY lido DESC, palavras ASC LIMIT ?`).all(limite)
+    ORDER BY COALESCE(cf.nota, 100) ASC, lido DESC, palavras ASC LIMIT ?`).all(limite)
 }
 
 // palavras que só o inglês usa (nenhuma existe em português)
